@@ -1,0 +1,127 @@
+import { ReactNode, useEffect, useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  FileText,
+  UserCog,
+  LogOut,
+  Menu,
+  X,
+  Stethoscope,
+  CreditCard,
+} from "lucide-react";
+import { User } from "@supabase/supabase-js";
+
+interface LayoutProps {
+  children: ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [user, setUser] = useState<User | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
+  const menuItems = [
+    { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/patients", icon: Users, label: "Patients" },
+    { path: "/appointments", icon: Calendar, label: "Appointments" },
+    { path: "/doctors", icon: Stethoscope, label: "Doctors" },
+    { path: "/medical-records", icon: FileText, label: "Medical Records" },
+    { path: "/invoices", icon: CreditCard, label: "Invoices" },
+    { path: "/staff", icon: UserCog, label: "Staff" },
+  ];
+
+  if (!user) return null;
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <div className="container flex h-16 items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X /> : <Menu />}
+            </Button>
+            <h1 className="text-xl font-bold text-primary">PMS</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="hidden text-sm text-muted-foreground sm:inline">
+              {user.email}
+            </span>
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="container flex gap-6 py-6">
+        {/* Sidebar */}
+        <aside
+          className={`${
+            mobileMenuOpen ? "block" : "hidden"
+          } fixed inset-0 top-16 z-40 bg-background md:static md:block md:w-64 md:flex-shrink-0`}
+        >
+          <nav className="space-y-1 p-4">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <Link key={item.path} to={item.path}>
+                  <Button
+                    variant={isActive ? "secondary" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Button>
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-hidden">{children}</main>
+      </div>
+    </div>
+  );
+};
+
+export default Layout;
