@@ -13,6 +13,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [clinicName, setClinicName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -36,7 +37,8 @@ const Auth = () => {
         });
         navigate("/dashboard");
       } else {
-        const { error } = await supabase.auth.signUp({
+        // Sign up the user
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -48,12 +50,40 @@ const Auth = () => {
         });
 
         if (error) throw error;
+        if (!data.user) throw new Error("User creation failed");
+
+        // Create organization with slug
+        const slug = clinicName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const { data: orgData, error: orgError } = await supabase
+          .from("organizations" as any)
+          .insert({
+            name: clinicName,
+            slug: `${slug}-${Date.now()}`,
+            created_by: data.user.id,
+          })
+          .select()
+          .single();
+
+        if (orgError) throw orgError;
+        if (!orgData) throw new Error("Organization creation failed");
+
+        // Assign admin role to the user
+        const { error: roleError } = await supabase.from("user_roles").insert({
+          user_id: data.user.id,
+          role: "admin",
+          organization_id: (orgData as any).id,
+        });
+
+        if (roleError) throw roleError;
 
         toast({
-          title: "Account created",
-          description: "You can now log in with your credentials.",
+          title: "Success!",
+          description: "Your clinic account has been created. You can now log in.",
         });
+
+        // Switch to login mode and clear password
         setIsLogin(true);
+        setPassword("");
       }
     } catch (error: any) {
       toast({
@@ -74,23 +104,38 @@ const Auth = () => {
             Patient Management System
           </CardTitle>
           <CardDescription className="text-center">
-            {isLogin ? "Sign in to your account" : "Create a new account"}
+            {isLogin
+              ? "Enter your credentials to access the system"
+              : "Create your clinic account and start managing patients"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={!isLogin}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="clinicName">Clinic/Hospital Name</Label>
+                  <Input
+                    id="clinicName"
+                    type="text"
+                    placeholder="City Medical Center"
+                    value={clinicName}
+                    onChange={(e) => setClinicName(e.target.value)}
+                    required={!isLogin}
+                  />
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

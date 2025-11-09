@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   X,
   Stethoscope,
   CreditCard,
+  Building2,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 
@@ -25,6 +27,7 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { organization } = useOrganization();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -77,7 +80,17 @@ const Layout = ({ children }: LayoutProps) => {
             >
               {mobileMenuOpen ? <X /> : <Menu />}
             </Button>
-            <h1 className="text-xl font-bold text-primary">PMS</h1>
+            <div className="flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              <div>
+                <h1 className="text-sm font-bold text-primary">
+                  {organization?.name || "Patient Management System"}
+                </h1>
+                <p className="text-xs text-muted-foreground hidden sm:block">
+                  Healthcare Management
+                </p>
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm text-muted-foreground sm:inline">
