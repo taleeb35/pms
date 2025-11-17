@@ -47,12 +47,23 @@ interface Patient {
   emergency_contact_phone: string | null;
 }
 
+interface MedicalDocument {
+  id: string;
+  document_name: string;
+  document_type: string;
+  document_url: string;
+  created_at: string;
+}
+
 const DoctorPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [documents, setDocuments] = useState<MedicalDocument[]>([]);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -88,6 +99,93 @@ const DoctorPatients = () => {
       (patient.email && patient.email.toLowerCase().includes(term))
     );
   });
+
+  const fetchDocuments = async (patientId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("medical_documents")
+        .select("*")
+        .eq("patient_id", patientId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setDocuments(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error fetching documents",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUploadDocument = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedPatient) return;
+
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get("title") as string;
+    const file = formData.get("file") as File;
+
+    if (!file || !title) {
+      toast({
+        title: "Error",
+        description: "Please provide both title and file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingDoc(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Upload file to storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${selectedPatient.id}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from("medical-documents")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("medical-documents")
+        .getPublicUrl(fileName);
+
+      // Save document metadata
+      const { error: dbError } = await supabase
+        .from("medical_documents")
+        .insert({
+          patient_id: selectedPatient.id,
+          document_name: title,
+          document_type: fileExt || "unknown",
+          document_url: publicUrl,
+          uploaded_by: user?.id,
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document uploaded successfully",
+      });
+
+      setShowUploadDialog(false);
+      fetchDocuments(selectedPatient.id);
+      e.currentTarget.reset();
+    } catch (error: any) {
+      toast({
+        title: "Error uploading document",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingDoc(false);
+    }
+  };
 
   const handleAddPatient = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -266,7 +364,10 @@ const DoctorPatients = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => setSelectedPatient(patient)}
+                            onClick={() => {
+                              setSelectedPatient(patient);
+                              fetchDocuments(patient.id);
+                            }}
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -335,11 +436,84 @@ const DoctorPatients = () => {
                                   </div>
                                 </div>
                               )}
+                              {documents.length > 0 && (
+                                <div className="mt-6 pt-4 border-t">
+                                  <h3 className="text-sm font-semibold mb-3">Uploaded Documents</h3>
+                                  <div className="space-y-2">
+                                    {documents.map((doc) => (
+                                      <div key={doc.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                        <div>
+                                          <p className="text-sm font-medium">{doc.document_name}</p>
+                                          <p className="text-xs text-muted-foreground">
+                                            {new Date(doc.created_at).toLocaleDateString()} • {doc.document_type.toUpperCase()}
+                                          </p>
+                                        </div>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => window.open(doc.document_url, '_blank')}
+                                        >
+                                          View
+                                        </Button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
                               <div className="flex justify-end gap-2 pt-4">
-                                <Button variant="outline">
-                                  <Upload className="mr-2 h-4 w-4" />
-                                  Upload Document
-                                </Button>
+                                <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline">
+                                      <Upload className="mr-2 h-4 w-4" />
+                                      Upload Document
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent>
+                                    <DialogHeader>
+                                      <DialogTitle>Upload Document</DialogTitle>
+                                      <DialogDescription>
+                                        Upload a medical document for {selectedPatient?.full_name}
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <form onSubmit={handleUploadDocument} className="space-y-4">
+                                      <div className="space-y-2">
+                                        <Label htmlFor="title">Document Title</Label>
+                                        <Input
+                                          id="title"
+                                          name="title"
+                                          placeholder="e.g., Blood Test Report"
+                                          required
+                                        />
+                                      </div>
+                                      <div className="space-y-2">
+                                        <Label htmlFor="file">File</Label>
+                                        <Input
+                                          id="file"
+                                          name="file"
+                                          type="file"
+                                          accept="image/*,.pdf,.doc,.docx"
+                                          required
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                          Accepted formats: PDF, Images, Word documents
+                                        </p>
+                                      </div>
+                                      <div className="flex justify-end gap-2">
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          onClick={() => setShowUploadDialog(false)}
+                                        >
+                                          Cancel
+                                        </Button>
+                                        <Button type="submit" disabled={uploadingDoc}>
+                                          {uploadingDoc ? "Uploading..." : "Upload"}
+                                        </Button>
+                                      </div>
+                                    </form>
+                                  </DialogContent>
+                                </Dialog>
                               </div>
                             </div>
                           )}
