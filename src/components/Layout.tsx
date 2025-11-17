@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useOrganization } from "@/contexts/OrganizationContext";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -27,7 +26,6 @@ const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { organization } = useOrganization();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -54,6 +52,21 @@ const Layout = ({ children }: LayoutProps) => {
     navigate("/auth");
   };
 
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .single();
+      setUserRole(data?.role || null);
+    };
+    fetchUserRole();
+  }, [user]);
+
   const menuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/patients", icon: Users, label: "Patients" },
@@ -63,6 +76,15 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/invoices", icon: CreditCard, label: "Invoices" },
     { path: "/staff", icon: UserCog, label: "Staff" },
   ];
+
+  // Add pending doctors link for admins
+  if (userRole === "admin") {
+    menuItems.splice(4, 0, { 
+      path: "/pending-doctors", 
+      icon: UserCog, 
+      label: "Pending Doctors" 
+    });
+  }
 
   if (!user) return null;
 
@@ -84,7 +106,7 @@ const Layout = ({ children }: LayoutProps) => {
               <Building2 className="h-5 w-5 text-primary" />
               <div>
                 <h1 className="text-sm font-bold text-primary">
-                  {organization?.name || "Patient Management System"}
+                  Patient Management System
                 </h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">
                   Healthcare Management

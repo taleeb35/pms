@@ -121,9 +121,12 @@ export type Database = {
       }
       doctors: {
         Row: {
+          approved: boolean
           available_days: string[] | null
           available_hours: string | null
+          city: string | null
           consultation_fee: number | null
+          contact_number: string | null
           created_at: string
           experience_years: number | null
           id: string
@@ -133,9 +136,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approved?: boolean
           available_days?: string[] | null
           available_hours?: string | null
+          city?: string | null
           consultation_fee?: number | null
+          contact_number?: string | null
           created_at?: string
           experience_years?: number | null
           id: string
@@ -145,9 +151,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approved?: boolean
           available_days?: string[] | null
           available_hours?: string | null
+          city?: string | null
           consultation_fee?: number | null
+          contact_number?: string | null
           created_at?: string
           experience_years?: number | null
           id?: string
@@ -494,6 +503,7 @@ export type Database = {
         Row: {
           address: string | null
           avatar_url: string | null
+          city: string | null
           created_at: string
           date_of_birth: string | null
           email: string
@@ -506,6 +516,7 @@ export type Database = {
         Insert: {
           address?: string | null
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           date_of_birth?: string | null
           email: string
@@ -518,6 +529,7 @@ export type Database = {
         Update: {
           address?: string | null
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string
