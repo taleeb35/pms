@@ -119,6 +119,76 @@ const DoctorPatients = () => {
     }
   };
 
+  const handleViewDocument = async (documentUrl: string) => {
+    try {
+      // Extract the file path from the URL
+      const urlParts = documentUrl.split('/medical-documents/');
+      if (urlParts.length < 2) {
+        throw new Error("Invalid document URL");
+      }
+      const filePath = urlParts[1];
+
+      // Create a signed URL that expires in 1 hour
+      const { data, error } = await supabase.storage
+        .from("medical-documents")
+        .createSignedUrl(filePath, 3600);
+
+      if (error) throw error;
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error viewing document",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteDocument = async (documentId: string, documentUrl: string) => {
+    if (!confirm("Are you sure you want to delete this document?")) return;
+
+    try {
+      // Extract the file path from the URL
+      const urlParts = documentUrl.split('/medical-documents/');
+      if (urlParts.length < 2) {
+        throw new Error("Invalid document URL");
+      }
+      const filePath = urlParts[1];
+
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
+        .from("medical-documents")
+        .remove([filePath]);
+
+      if (storageError) throw storageError;
+
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from("medical_documents")
+        .delete()
+        .eq("id", documentId);
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document deleted successfully",
+      });
+
+      if (selectedPatient) {
+        fetchDocuments(selectedPatient.id);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error deleting document",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleUploadDocument = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedPatient) return;
@@ -151,10 +221,8 @@ const DoctorPatients = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("medical-documents")
-        .getPublicUrl(fileName);
+      // Store the full path for later retrieval
+      const documentUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/medical-documents/${fileName}`;
 
       // Save document metadata
       const { error: dbError } = await supabase
@@ -163,7 +231,7 @@ const DoctorPatients = () => {
           patient_id: selectedPatient.id,
           document_name: title,
           document_type: fileExt || "unknown",
-          document_url: publicUrl,
+          document_url: documentUrl,
           uploaded_by: user?.id,
         });
 
@@ -443,19 +511,29 @@ const DoctorPatients = () => {
                                   <div className="space-y-2">
                                     {documents.map((doc) => (
                                       <div key={doc.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                                        <div>
+                                        <div className="flex-1">
                                           <p className="text-sm font-medium">{doc.document_name}</p>
                                           <p className="text-xs text-muted-foreground">
                                             {new Date(doc.created_at).toLocaleDateString()} • {doc.document_type.toUpperCase()}
                                           </p>
                                         </div>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => window.open(doc.document_url, '_blank')}
-                                        >
-                                          View
-                                        </Button>
+                                        <div className="flex gap-2">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleViewDocument(doc.document_url)}
+                                          >
+                                            View
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => handleDeleteDocument(doc.id, doc.document_url)}
+                                            className="text-destructive hover:text-destructive"
+                                          >
+                                            Delete
+                                          </Button>
+                                        </div>
                                       </div>
                                     ))}
                                   </div>
