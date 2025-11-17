@@ -72,8 +72,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   const adminMenuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { path: "/patients", icon: Users, label: "Patients" },
-    { path: "/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
   ];
