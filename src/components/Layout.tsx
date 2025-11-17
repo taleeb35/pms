@@ -58,25 +58,14 @@ const Layout = ({ children }: LayoutProps) => {
     const fetchUserRole = async () => {
       if (!user) return;
       
-      // Check if user is a doctor first
-      const { data: doctorData } = await supabase
-        .from("doctors")
-        .select("id")
-        .eq("id", user.id)
-        .single();
-      
-      if (doctorData) {
-        setUserRole("doctor");
-        return;
-      }
-      
-      // Otherwise check user_roles table
+      // Check user_roles table first
       const { data } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .single();
-      setUserRole(data?.role || "admin");
+      
+      setUserRole(data?.role || null);
     };
     fetchUserRole();
   }, [user]);
