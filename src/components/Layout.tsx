@@ -31,16 +31,16 @@ const Layout = ({ children }: LayoutProps) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (!session) {
-        navigate("/auth");
+        navigate("/");
       }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+  } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (!session) {
-        navigate("/auth");
+        navigate("/");
       }
     });
 
@@ -49,7 +49,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate("/");
   };
 
   const [userRole, setUserRole] = useState<string | null>(null);

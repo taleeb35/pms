@@ -55,7 +55,7 @@ const DoctorAuth = () => {
         description: "Logged in successfully",
       });
 
-      navigate("/");
+      navigate("/doctor/dashboard");
     } catch (error: any) {
       toast({
         title: "Error",
