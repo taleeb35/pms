@@ -67,10 +67,21 @@ const Layout = ({ children }: LayoutProps) => {
     fetchUserRole();
   }, [user]);
 
-  const menuItems = [
+  const adminMenuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/patients", icon: Users, label: "Patients" },
+    { path: "/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
+    { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
   ];
+
+  const doctorMenuItems = [
+    { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/doctor/patients", icon: Users, label: "Patients" },
+    { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
+  ];
+
+  const menuItems = userRole === "doctor" ? doctorMenuItems : adminMenuItems;
 
   if (!user) return null;
 
