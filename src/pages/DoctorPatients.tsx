@@ -1,0 +1,616 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Upload, Eye, Trash2, Edit, FileText } from "lucide-react";
+
+interface Patient {
+  id: string;
+  patient_id: string;
+  full_name: string;
+  email: string | null;
+  phone: string;
+  date_of_birth: string;
+  gender: string;
+  blood_group: string | null;
+  address: string | null;
+  medical_history: string | null;
+}
+
+interface Document {
+  id: string;
+  document_name: string;
+  document_type: string;
+  document_url: string;
+  created_at: string;
+}
+
+const DoctorPatients = () => {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [editForm, setEditForm] = useState<{
+    full_name: string;
+    email: string;
+    phone: string;
+    gender: "male" | "female" | "other";
+    blood_group: string;
+  }>({
+    full_name: "",
+    email: "",
+    phone: "",
+    gender: "male",
+    blood_group: "",
+  });
+  const [medicalHistory, setMedicalHistory] = useState("");
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkAuth();
+    fetchPatients();
+  }, []);
+
+  useEffect(() => {
+    if (selectedPatient) {
+      fetchDocuments(selectedPatient.id);
+      setMedicalHistory(selectedPatient.medical_history || "");
+    }
+  }, [selectedPatient]);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/doctor-auth");
+      return;
+    }
+
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", session.user.id)
+      .single();
+
+    if (!roles || roles.role !== "doctor") {
+      navigate("/");
+    }
+  };
+
+  const fetchPatients = async () => {
+    const { data, error } = await supabase
+      .from("patients")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch patients",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setPatients(data || []);
+  };
+
+  const fetchDocuments = async (patientId: string) => {
+    const { data, error } = await supabase
+      .from("medical_documents")
+      .select("*")
+      .eq("patient_id", patientId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch documents",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDocuments(data || []);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || !event.target.files[0] || !selectedPatient) return;
+
+    const file = event.target.files[0];
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${selectedPatient.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("medical_documents")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("medical_documents")
+        .getPublicUrl(fileName);
+
+      const { error: dbError } = await supabase
+        .from("medical_documents")
+        .insert({
+          patient_id: selectedPatient.id,
+          document_name: file.name,
+          document_type: fileExt || "unknown",
+          document_url: fileName,
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document uploaded successfully",
+      });
+
+      fetchDocuments(selectedPatient.id);
+      event.target.value = "";
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload document",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleViewDocument = async (documentUrl: string) => {
+    const { data, error } = await supabase.storage
+      .from("medical_documents")
+      .createSignedUrl(documentUrl, 60);
+
+    if (error || !data) {
+      toast({
+        title: "Error",
+        description: "Failed to view document",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    window.open(data.signedUrl, "_blank");
+  };
+
+  const handleDeleteDocument = async (docId: string, documentUrl: string) => {
+    try {
+      const { error: storageError } = await supabase.storage
+        .from("medical_documents")
+        .remove([documentUrl]);
+
+      if (storageError) throw storageError;
+
+      const { error: dbError } = await supabase
+        .from("medical_documents")
+        .delete()
+        .eq("id", docId);
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document deleted successfully",
+      });
+
+      if (selectedPatient) {
+        fetchDocuments(selectedPatient.id);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete document",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditPatient = (patient: Patient) => {
+    setEditForm({
+      full_name: patient.full_name,
+      email: patient.email || "",
+      phone: patient.phone,
+      gender: patient.gender as "male" | "female" | "other",
+      blood_group: patient.blood_group || "",
+    });
+    setSelectedPatient(patient);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdatePatient = async () => {
+    if (!selectedPatient) return;
+
+    const { error } = await supabase
+      .from("patients")
+      .update({
+        full_name: editForm.full_name,
+        email: editForm.email || null,
+        phone: editForm.phone,
+        gender: editForm.gender,
+        blood_group: editForm.blood_group || null,
+      })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update patient",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Patient updated successfully",
+    });
+
+    setIsEditDialogOpen(false);
+    fetchPatients();
+  };
+
+  const handleDeletePatient = async () => {
+    if (!patientToDelete) return;
+
+    const { error } = await supabase
+      .from("patients")
+      .delete()
+      .eq("id", patientToDelete.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete patient",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Patient deleted successfully",
+    });
+
+    setIsDeleteDialogOpen(false);
+    setPatientToDelete(null);
+    if (selectedPatient?.id === patientToDelete.id) {
+      setSelectedPatient(null);
+    }
+    fetchPatients();
+  };
+
+  const handleUpdateMedicalHistory = async () => {
+    if (!selectedPatient) return;
+
+    const { error } = await supabase
+      .from("patients")
+      .update({ medical_history: medicalHistory })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Medical history updated successfully",
+    });
+
+    fetchPatients();
+  };
+
+  const filteredPatients = patients.filter((patient) =>
+    patient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    patient.patient_id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">My Patients</h1>
+        <p className="text-muted-foreground">View and manage your patients</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Patients List</CardTitle>
+              <div className="relative mt-4">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search patients..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            </CardHeader>
+            <CardContent className="max-h-[600px] overflow-y-auto">
+              <div className="space-y-2">
+                {filteredPatients.map((patient) => (
+                  <div
+                    key={patient.id}
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      selectedPatient?.id === patient.id
+                        ? "bg-primary/10 border-primary"
+                        : "hover:bg-accent"
+                    }`}
+                    onClick={() => setSelectedPatient(patient)}
+                  >
+                    <div className="font-medium">{patient.full_name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      ID: {patient.patient_id}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-2">
+          {selectedPatient ? (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>{selectedPatient.full_name}</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Patient ID: {selectedPatient.patient_id}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditPatient(selectedPatient)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        setPatientToDelete(selectedPatient);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="details" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="documents">Documents</TabsTrigger>
+                    <TabsTrigger value="history">Medical History</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="details" className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label className="text-muted-foreground">Email</Label>
+                        <p className="font-medium">{selectedPatient.email || "N/A"}</p>
+                      </div>
+                      <div>
+                        <Label className="text-muted-foreground">Phone</Label>
+                        <p className="font-medium">{selectedPatient.phone}</p>
+                      </div>
+                      <div>
+                        <Label className="text-muted-foreground">Gender</Label>
+                        <p className="font-medium capitalize">{selectedPatient.gender}</p>
+                      </div>
+                      <div>
+                        <Label className="text-muted-foreground">Blood Group</Label>
+                        <p className="font-medium">{selectedPatient.blood_group || "N/A"}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <Label className="text-muted-foreground">Address</Label>
+                        <p className="font-medium">{selectedPatient.address || "N/A"}</p>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="documents" className="space-y-4 mt-4">
+                    <div className="flex justify-between items-center">
+                      <Label>Medical Documents</Label>
+                      <Button size="sm" disabled={uploading} asChild>
+                        <label className="cursor-pointer">
+                          <Upload className="h-4 w-4 mr-2" />
+                          {uploading ? "Uploading..." : "Upload Document"}
+                          <input
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileUpload}
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                          />
+                        </label>
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {documents.length === 0 ? (
+                        <p className="text-muted-foreground text-center py-8">
+                          No documents uploaded yet
+                        </p>
+                      ) : (
+                        documents.map((doc) => (
+                          <div
+                            key={doc.id}
+                            className="flex items-center justify-between p-3 border rounded-lg"
+                          >
+                            <div className="flex items-center gap-3">
+                              <FileText className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <p className="font-medium">{doc.document_name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(doc.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleViewDocument(doc.document_url)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleDeleteDocument(doc.id, doc.document_url)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="history" className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <Label>Medical History</Label>
+                      <Textarea
+                        value={medicalHistory}
+                        onChange={(e) => setMedicalHistory(e.target.value)}
+                        placeholder="Enter patient's medical history, including chronic conditions, past surgeries, allergies, etc."
+                        rows={10}
+                      />
+                      <Button onClick={handleUpdateMedicalHistory}>
+                        Save Medical History
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="flex items-center justify-center h-[400px]">
+                <p className="text-muted-foreground">
+                  Select a patient to view details
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Patient</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Full Name</Label>
+              <Input
+                value={editForm.full_name}
+                onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input
+                type="email"
+                value={editForm.email}
+                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Phone</Label>
+              <Input
+                value={editForm.phone}
+                onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Gender</Label>
+              <Select
+                value={editForm.gender}
+                onValueChange={(value) => setEditForm({ ...editForm, gender: value as "male" | "female" | "other" })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Blood Group</Label>
+              <Input
+                value={editForm.blood_group}
+                onChange={(e) => setEditForm({ ...editForm, blood_group: e.target.value })}
+                placeholder="e.g., A+, B-, O+"
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdatePatient}>Save Changes</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the patient record for{" "}
+              <strong>{patientToDelete?.full_name}</strong>. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPatientToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeletePatient} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+};
+
+export default DoctorPatients;
