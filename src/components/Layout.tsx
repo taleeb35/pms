@@ -69,22 +69,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   const menuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { path: "/patients", icon: Users, label: "Patients" },
-    { path: "/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
-    { path: "/medical-records", icon: FileText, label: "Medical Records" },
-    { path: "/invoices", icon: CreditCard, label: "Invoices" },
-    { path: "/staff", icon: UserCog, label: "Staff" },
   ];
-
-  // Add pending doctors link for admins
-  if (userRole === "admin") {
-    menuItems.splice(4, 0, { 
-      path: "/pending-doctors", 
-      icon: UserCog, 
-      label: "Pending Doctors" 
-    });
-  }
 
   if (!user) return null;
 
