@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, FileText } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, FileText, Plus, X } from "lucide-react";
 
 interface Patient {
   id: string;
@@ -32,6 +33,13 @@ interface Document {
   document_type: string;
   document_url: string;
   created_at: string;
+}
+
+interface MedicalHistoryEntry {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
 }
 
 const DoctorPatients = () => {
@@ -56,7 +64,9 @@ const DoctorPatients = () => {
     gender: "male",
     blood_group: "",
   });
-  const [medicalHistory, setMedicalHistory] = useState("");
+  const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
+  const [newHistoryTitle, setNewHistoryTitle] = useState("");
+  const [newHistoryDescription, setNewHistoryDescription] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -68,7 +78,14 @@ const DoctorPatients = () => {
   useEffect(() => {
     if (selectedPatient) {
       fetchDocuments(selectedPatient.id);
-      setMedicalHistory(selectedPatient.medical_history || "");
+      try {
+        const history = selectedPatient.medical_history 
+          ? JSON.parse(selectedPatient.medical_history) 
+          : [];
+        setMedicalHistory(Array.isArray(history) ? history : []);
+      } catch {
+        setMedicalHistory([]);
+      }
     }
   }, [selectedPatient]);
 
@@ -299,18 +316,34 @@ const DoctorPatients = () => {
     fetchPatients();
   };
 
-  const handleUpdateMedicalHistory = async () => {
-    if (!selectedPatient) return;
+  const handleAddMedicalHistory = async () => {
+    if (!selectedPatient || !newHistoryTitle.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a title for the medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newEntry: MedicalHistoryEntry = {
+      id: Date.now().toString(),
+      title: newHistoryTitle,
+      description: newHistoryDescription,
+      date: new Date().toISOString(),
+    };
+
+    const updatedHistory = [...medicalHistory, newEntry];
 
     const { error } = await supabase
       .from("patients")
-      .update({ medical_history: medicalHistory })
+      .update({ medical_history: JSON.stringify(updatedHistory) })
       .eq("id", selectedPatient.id);
 
     if (error) {
       toast({
         title: "Error",
-        description: "Failed to update medical history",
+        description: "Failed to add medical history",
         variant: "destructive",
       });
       return;
@@ -318,9 +351,40 @@ const DoctorPatients = () => {
 
     toast({
       title: "Success",
-      description: "Medical history updated successfully",
+      description: "Medical history added successfully",
     });
 
+    setMedicalHistory(updatedHistory);
+    setNewHistoryTitle("");
+    setNewHistoryDescription("");
+    fetchPatients();
+  };
+
+  const handleDeleteMedicalHistory = async (id: string) => {
+    if (!selectedPatient) return;
+
+    const updatedHistory = medicalHistory.filter(entry => entry.id !== id);
+
+    const { error } = await supabase
+      .from("patients")
+      .update({ medical_history: JSON.stringify(updatedHistory) })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Medical history deleted successfully",
+    });
+
+    setMedicalHistory(updatedHistory);
     fetchPatients();
   };
 
@@ -336,12 +400,12 @@ const DoctorPatients = () => {
         <p className="text-muted-foreground">View and manage your patients</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
               <CardTitle>Patients List</CardTitle>
-              <div className="relative mt-4">
+              <div className="relative w-64">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search patients..."
@@ -350,32 +414,57 @@ const DoctorPatients = () => {
                   className="pl-9"
                 />
               </div>
-            </CardHeader>
-            <CardContent className="max-h-[600px] overflow-y-auto">
-              <div className="space-y-2">
-                {filteredPatients.map((patient) => (
-                  <div
-                    key={patient.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedPatient?.id === patient.id
-                        ? "bg-primary/10 border-primary"
-                        : "hover:bg-accent"
-                    }`}
-                    onClick={() => setSelectedPatient(patient)}
-                  >
-                    <div className="font-medium">{patient.full_name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      ID: {patient.patient_id}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Patient ID</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Gender</TableHead>
+                    <TableHead>Blood Group</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPatients.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground">
+                        No patients found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredPatients.map((patient) => (
+                      <TableRow
+                        key={patient.id}
+                        className={`cursor-pointer ${
+                          selectedPatient?.id === patient.id
+                            ? "bg-primary/10"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedPatient(patient)}
+                      >
+                        <TableCell className="font-medium">{patient.patient_id}</TableCell>
+                        <TableCell>{patient.full_name}</TableCell>
+                        <TableCell>{patient.email || "N/A"}</TableCell>
+                        <TableCell>{patient.phone}</TableCell>
+                        <TableCell className="capitalize">{patient.gender}</TableCell>
+                        <TableCell>{patient.blood_group || "N/A"}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="lg:col-span-2">
-          {selectedPatient ? (
+        {selectedPatient && (
+          <div>
+
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -500,32 +589,67 @@ const DoctorPatients = () => {
                   </TabsContent>
 
                   <TabsContent value="history" className="space-y-4 mt-4">
-                    <div className="space-y-2">
-                      <Label>Medical History</Label>
-                      <Textarea
-                        value={medicalHistory}
-                        onChange={(e) => setMedicalHistory(e.target.value)}
-                        placeholder="Enter patient's medical history, including chronic conditions, past surgeries, allergies, etc."
-                        rows={10}
-                      />
-                      <Button onClick={handleUpdateMedicalHistory}>
-                        Save Medical History
-                      </Button>
+                    <div className="space-y-4">
+                      <div className="space-y-3">
+                        <Label>Add New Medical History</Label>
+                        <Input
+                          placeholder="Title (e.g., Diabetes Type 2, Heart Surgery)"
+                          value={newHistoryTitle}
+                          onChange={(e) => setNewHistoryTitle(e.target.value)}
+                        />
+                        <Textarea
+                          placeholder="Description (e.g., Diagnosed in 2020, controlled with medication)"
+                          value={newHistoryDescription}
+                          onChange={(e) => setNewHistoryDescription(e.target.value)}
+                          rows={3}
+                        />
+                        <Button onClick={handleAddMedicalHistory}>
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add History
+                        </Button>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label>Medical History Records</Label>
+                        {medicalHistory.length === 0 ? (
+                          <p className="text-muted-foreground text-center py-8">
+                            No medical history recorded yet
+                          </p>
+                        ) : (
+                          medicalHistory.map((entry) => (
+                            <div
+                              key={entry.id}
+                              className="p-4 border rounded-lg space-y-2"
+                            >
+                              <div className="flex justify-between items-start">
+                                <div className="space-y-1 flex-1">
+                                  <h4 className="font-semibold">{entry.title}</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    {entry.description}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Added: {new Date(entry.date).toLocaleDateString()}
+                                  </p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteMedicalHistory(entry.id)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
               </CardContent>
             </Card>
-          ) : (
-            <Card>
-              <CardContent className="flex items-center justify-center h-[400px]">
-                <p className="text-muted-foreground">
-                  Select a patient to view details
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
