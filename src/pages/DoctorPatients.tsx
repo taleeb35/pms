@@ -123,7 +123,8 @@ const DoctorPatients = () => {
     e.preventDefault();
     if (!selectedPatient) return;
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const title = formData.get("title") as string;
     const file = formData.get("file") as File;
 
@@ -173,9 +174,9 @@ const DoctorPatients = () => {
         description: "Document uploaded successfully",
       });
 
+      form.reset();
       setShowUploadDialog(false);
       fetchDocuments(selectedPatient.id);
-      e.currentTarget.reset();
     } catch (error: any) {
       toast({
         title: "Error uploading document",
