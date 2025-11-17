@@ -3,12 +3,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { OrganizationProvider } from "./contexts/OrganizationContext";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
 import Appointments from "./pages/Appointments";
 import Doctors from "./pages/Doctors";
+import PendingDoctors from "./pages/PendingDoctors";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -20,9 +20,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <OrganizationProvider>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
             <Route
               path="/dashboard"
               element={
@@ -55,10 +54,17 @@ const App = () => (
                 </Layout>
               }
             />
-            <Route path="/" element={<Auth />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </OrganizationProvider>
+            <Route
+              path="/pending-doctors"
+              element={
+                <Layout>
+                  <PendingDoctors />
+                </Layout>
+              }
+            />
+          <Route path="/" element={<Auth />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
