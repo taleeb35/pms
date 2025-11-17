@@ -130,6 +130,7 @@ export type Database = {
           created_at: string
           experience_years: number | null
           id: string
+          introduction: string | null
           license_number: string | null
           qualification: string
           specialization: string
@@ -145,6 +146,7 @@ export type Database = {
           created_at?: string
           experience_years?: number | null
           id: string
+          introduction?: string | null
           license_number?: string | null
           qualification: string
           specialization: string
@@ -160,6 +162,7 @@ export type Database = {
           created_at?: string
           experience_years?: number | null
           id?: string
+          introduction?: string | null
           license_number?: string | null
           qualification?: string
           specialization?: string
