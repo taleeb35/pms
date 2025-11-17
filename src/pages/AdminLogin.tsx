@@ -44,7 +44,7 @@ const AdminLogin = () => {
         description: "Logged in successfully",
       });
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         title: "Error",
