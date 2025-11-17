@@ -50,7 +50,17 @@ const DoctorPatients = () => {
   const [uploading, setUploading] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [addForm, setAddForm] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    date_of_birth: "",
+    gender: "male" as "male" | "female" | "other",
+    blood_group: "",
+    address: "",
+  });
   const [editForm, setEditForm] = useState<{
     full_name: string;
     email: string;
@@ -388,6 +398,61 @@ const DoctorPatients = () => {
     fetchPatients();
   };
 
+  const handleAddPatient = async () => {
+    if (!addForm.full_name || !addForm.phone || !addForm.date_of_birth) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Generate patient ID
+    const patientId = `PAT${Date.now().toString().slice(-8)}`;
+
+    const { error } = await supabase.from("patients").insert({
+      patient_id: patientId,
+      full_name: addForm.full_name,
+      email: addForm.email || null,
+      phone: addForm.phone,
+      date_of_birth: addForm.date_of_birth,
+      gender: addForm.gender,
+      blood_group: addForm.blood_group || null,
+      address: addForm.address || null,
+      created_by: user.id,
+    });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add patient",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Patient added successfully",
+    });
+
+    setIsAddDialogOpen(false);
+    setAddForm({
+      full_name: "",
+      email: "",
+      phone: "",
+      date_of_birth: "",
+      gender: "male",
+      blood_group: "",
+      address: "",
+    });
+    fetchPatients();
+  };
+
   const filteredPatients = patients.filter((patient) =>
     patient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.patient_id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -405,14 +470,20 @@ const DoctorPatients = () => {
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>Patients List</CardTitle>
-              <div className="relative w-64">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search patients..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
+              <div className="flex gap-2 items-center">
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search patients..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Patient
+                </Button>
               </div>
             </div>
           </CardHeader>
@@ -651,6 +722,90 @@ const DoctorPatients = () => {
           </div>
         )}
       </div>
+
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Patient</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Full Name *</Label>
+                <Input
+                  value={addForm.full_name}
+                  onChange={(e) => setAddForm({ ...addForm, full_name: e.target.value })}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={addForm.email}
+                  onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                  placeholder="Enter email"
+                />
+              </div>
+              <div>
+                <Label>Phone *</Label>
+                <Input
+                  value={addForm.phone}
+                  onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <Label>Date of Birth *</Label>
+                <Input
+                  type="date"
+                  value={addForm.date_of_birth}
+                  onChange={(e) => setAddForm({ ...addForm, date_of_birth: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Gender *</Label>
+                <Select
+                  value={addForm.gender}
+                  onValueChange={(value) => setAddForm({ ...addForm, gender: value as "male" | "female" | "other" })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Blood Group</Label>
+                <Input
+                  value={addForm.blood_group}
+                  onChange={(e) => setAddForm({ ...addForm, blood_group: e.target.value })}
+                  placeholder="e.g., A+, B-, O+"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Address</Label>
+                <Textarea
+                  value={addForm.address}
+                  onChange={(e) => setAddForm({ ...addForm, address: e.target.value })}
+                  placeholder="Enter address"
+                  rows={3}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddPatient}>Add Patient</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
