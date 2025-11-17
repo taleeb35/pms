@@ -14,6 +14,7 @@ import PendingDoctors from "./pages/PendingDoctors";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import DoctorPatients from "./pages/DoctorPatients";
 import DoctorAppointments from "./pages/DoctorAppointments";
+import DoctorProfile from "./pages/DoctorProfile";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -90,6 +91,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorAppointments />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/profile"
+              element={
+                <Layout>
+                  <DoctorProfile />
                 </Layout>
               }
             />

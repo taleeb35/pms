@@ -97,6 +97,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/doctor/patients", icon: Users, label: "Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
+    { path: "/doctor/profile", icon: UserCog, label: "Profile" },
   ];
 
   const menuItems = userRole === "doctor" ? doctorMenuItems : adminMenuItems;
@@ -145,17 +146,19 @@ const Layout = ({ children }: LayoutProps) => {
         <aside
           className={`${
             mobileMenuOpen ? "block" : "hidden"
-          } fixed inset-0 top-16 z-40 bg-background md:static md:block md:w-64 md:flex-shrink-0`}
+          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border md:shadow-sm`}
         >
-          <nav className="space-y-1 p-4">
+          <nav className="space-y-2 p-4">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
                 <Link key={item.path} to={item.path}>
                   <Button
-                    variant={isActive ? "secondary" : "ghost"}
-                    className="w-full justify-start"
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start transition-all ${
+                      isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                    }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Icon className="mr-2 h-4 w-4" />
@@ -168,7 +171,7 @@ const Layout = ({ children }: LayoutProps) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-hidden">{children}</main>
+        <main className="flex-1 overflow-hidden bg-muted/30 rounded-lg p-6">{children}</main>
       </div>
     </div>
   );
