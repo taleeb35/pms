@@ -107,14 +107,14 @@ const DoctorAuth = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("Signup failed");
 
-      // Create profile
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: authData.user.id,
-        full_name: fullName,
-        email: email,
-        phone: contactNumber,
-        city: city,
-      });
+      // Update profile (trigger already created it)
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          phone: contactNumber,
+          city: city,
+        })
+        .eq("id", authData.user.id);
 
       if (profileError) throw profileError;
 
