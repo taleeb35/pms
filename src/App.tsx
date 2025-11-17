@@ -8,12 +8,7 @@ import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
-import PatientRegistration from "./pages/PatientRegistration";
-import PatientProfile from "./pages/PatientProfile";
 import Appointments from "./pages/Appointments";
-import AppointmentBooking from "./pages/AppointmentBooking";
-import AppointmentDetail from "./pages/AppointmentDetail";
-import AppointmentCalendar from "./pages/AppointmentCalendar";
 import Doctors from "./pages/Doctors";
 import PendingDoctors from "./pages/PendingDoctors";
 import DoctorDashboard from "./pages/DoctorDashboard";
@@ -51,50 +46,10 @@ const App = () => (
               }
             />
             <Route
-              path="/patients/new"
-              element={
-                <Layout>
-                  <PatientRegistration />
-                </Layout>
-              }
-            />
-            <Route
-              path="/patients/:id"
-              element={
-                <Layout>
-                  <PatientProfile />
-                </Layout>
-              }
-            />
-            <Route
               path="/appointments"
               element={
                 <Layout>
                   <Appointments />
-                </Layout>
-              }
-            />
-            <Route
-              path="/appointments/new"
-              element={
-                <Layout>
-                  <AppointmentBooking />
-                </Layout>
-              }
-            />
-            <Route
-              path="/appointments/calendar"
-              element={
-                <Layout>
-                  <AppointmentCalendar />
-                </Layout>
-              }
-            />
-            <Route
-              path="/appointments/:id"
-              element={
-                <Layout>
-                  <AppointmentDetail />
                 </Layout>
               }
             />
