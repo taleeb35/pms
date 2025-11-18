@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Plus, Edit, X } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -12,6 +12,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,9 +27,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Appointment {
   id: string;
@@ -44,10 +58,9 @@ interface Appointment {
 const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [viewMode, setViewMode] = useState<"day" | "week" | "month">("day");
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -95,13 +108,22 @@ const DoctorAppointments = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
+    if (!selectedDate) {
+      toast({
+        title: "Error",
+        description: "Please select an appointment date",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
       const { error } = await supabase.from("appointments").insert({
         doctor_id: user?.id,
         patient_id: formData.get("patient_id") as string,
-        appointment_date: formData.get("appointment_date") as string,
+        appointment_date: format(selectedDate, "yyyy-MM-dd"),
         appointment_time: formData.get("appointment_time") as string,
         duration_minutes: parseInt(formData.get("duration_minutes") as string),
         reason: formData.get("reason") as string || null,
@@ -118,6 +140,7 @@ const DoctorAppointments = () => {
       });
 
       setShowAddDialog(false);
+      setSelectedDate(undefined);
       fetchAppointments();
     } catch (error: any) {
       toast({
@@ -179,37 +202,19 @@ const DoctorAppointments = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      scheduled: "bg-blue-500",
-      confirmed: "bg-green-500",
-      in_progress: "bg-yellow-500",
-      completed: "bg-gray-500",
-      cancelled: "bg-red-500",
-      no_show: "bg-orange-500",
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+      scheduled: { label: "Scheduled", variant: "secondary" },
+      confirmed: { label: "Confirmed", variant: "default" },
+      in_progress: { label: "In Progress", variant: "outline" },
+      completed: { label: "Completed", variant: "secondary" },
+      cancelled: { label: "Cancelled", variant: "destructive" },
+      no_show: { label: "No Show", variant: "destructive" },
     };
-    return colors[status] || "bg-gray-500";
+    const config = statusConfig[status] || { label: status, variant: "outline" as const };
+    return <Badge variant={config.variant}>{config.label}</Badge>;
   };
 
-  const filteredAppointments = appointments.filter((apt) => {
-    const aptDate = new Date(apt.appointment_date);
-    const selected = selectedDate;
-
-    if (viewMode === "day") {
-      return aptDate.toDateString() === selected.toDateString();
-    } else if (viewMode === "week") {
-      const weekStart = new Date(selected);
-      weekStart.setDate(selected.getDate() - selected.getDay());
-      const weekEnd = new Date(weekStart);
-      weekEnd.setDate(weekStart.getDate() + 6);
-      return aptDate >= weekStart && aptDate <= weekEnd;
-    } else {
-      return (
-        aptDate.getMonth() === selected.getMonth() &&
-        aptDate.getFullYear() === selected.getFullYear()
-      );
-    }
-  });
 
   return (
     <div className="space-y-6">
@@ -220,7 +225,7 @@ const DoctorAppointments = () => {
         </div>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
               <Plus className="mr-2 h-4 w-4" />
               New Appointment
             </Button>
@@ -228,7 +233,7 @@ const DoctorAppointments = () => {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Create Appointment</DialogTitle>
-              <DialogDescription>Schedule a new appointment</DialogDescription>
+              <DialogDescription>Schedule a new appointment for a patient</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddAppointment} className="space-y-4">
               <div className="space-y-2">
@@ -248,13 +253,31 @@ const DoctorAppointments = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="appointment_date">Date *</Label>
-                  <Input
-                    id="appointment_date"
-                    name="appointment_date"
-                    type="date"
-                    required
-                  />
+                  <Label>Appointment Date *</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                        initialFocus
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="appointment_time">Time *</Label>
@@ -285,7 +308,10 @@ const DoctorAppointments = () => {
                 <Textarea id="notes" name="notes" />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>
+                <Button type="button" variant="outline" onClick={() => {
+                  setShowAddDialog(false);
+                  setSelectedDate(undefined);
+                }}>
                   Cancel
                 </Button>
                 <Button type="submit">Create Appointment</Button>
@@ -295,87 +321,86 @@ const DoctorAppointments = () => {
         </Dialog>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-lg">Calendar</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CalendarComponent
-              mode="single"
-              selected={selectedDate}
-              onSelect={(date) => date && setSelectedDate(date)}
-              className="rounded-md border"
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Schedule</CardTitle>
-              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
-                <TabsList>
-                  <TabsTrigger value="day">Day</TabsTrigger>
-                  <TabsTrigger value="week">Week</TabsTrigger>
-                  <TabsTrigger value="month">Month</TabsTrigger>
-                </TabsList>
-              </Tabs>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-primary" />
+            All Appointments
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Loading appointments...</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">Loading appointments...</p>
-              </div>
-            ) : filteredAppointments.length === 0 ? (
-              <div className="text-center py-8">
-                <Calendar className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No appointments for this period</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredAppointments.map((appointment) => (
-                  <Card key={appointment.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold">{appointment.patients.full_name}</h4>
-                            <Badge variant="secondary" className={getStatusColor(appointment.status)}>
-                              {appointment.status}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            ID: {appointment.patients.patient_id}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {new Date(appointment.appointment_date).toLocaleDateString()} at{" "}
+          ) : appointments.length === 0 ? (
+            <div className="text-center py-8">
+              <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground">No appointments scheduled</p>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Patient</TableHead>
+                    <TableHead>Patient ID</TableHead>
+                    <TableHead>Date & Time</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {appointments.map((appointment) => (
+                    <TableRow 
+                      key={appointment.id}
+                      className="hover:bg-muted/50 transition-colors"
+                    >
+                      <TableCell className="font-medium">
+                        {appointment.patients.full_name}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {appointment.patients.patient_id}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {new Date(appointment.appointment_date).toLocaleDateString()}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
                             {appointment.appointment_time}
-                          </p>
-                          {appointment.reason && (
-                            <p className="text-sm">Reason: {appointment.reason}</p>
-                          )}
-                          {appointment.notes && (
-                            <p className="text-sm text-muted-foreground">
-                              Notes: {appointment.notes}
-                            </p>
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="max-w-[200px]">
+                          {appointment.reason ? (
+                            <span className="text-sm">{appointment.reason}</span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">No reason specified</span>
                           )}
                         </div>
-                        <div className="flex gap-2">
+                      </TableCell>
+                      <TableCell>{getStatusBadge(appointment.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex gap-2 justify-end">
                           {appointment.status === "scheduled" && (
                             <>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleUpdateStatus(appointment.id, "confirmed")}
+                                className="hover:bg-green-50 hover:text-green-600 hover:border-green-600"
                               >
+                                <Check className="h-4 w-4 mr-1" />
                                 Confirm
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleUpdateStatus(appointment.id, "in_progress")}
+                                className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-600"
                               >
                                 Start
                               </Button>
@@ -386,6 +411,7 @@ const DoctorAppointments = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => handleUpdateStatus(appointment.id, "in_progress")}
+                              className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-600"
                             >
                               Start
                             </Button>
@@ -395,6 +421,7 @@ const DoctorAppointments = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => handleUpdateStatus(appointment.id, "completed")}
+                              className="hover:bg-green-50 hover:text-green-600 hover:border-green-600"
                             >
                               Complete
                             </Button>
@@ -409,15 +436,15 @@ const DoctorAppointments = () => {
                             </Button>
                           )}
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
