@@ -9,6 +9,7 @@ const DoctorDashboard = () => {
   const [stats, setStats] = useState({
     totalPatients: 0,
     todayAppointments: 0,
+    totalAppointments: 0,
     pendingAppointments: 0,
     totalRecords: 0,
   });
@@ -20,23 +21,18 @@ const DoctorDashboard = () => {
 
       const today = new Date().toISOString().split('T')[0];
 
-      const [patientsRes, appointmentsRes, recordsRes] = await Promise.all([
+      const [patientsRes, totalAppointmentsRes, todayAppointmentsRes] = await Promise.all([
         supabase.from("patients").select("id", { count: "exact", head: true }),
+        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
-        supabase.from("medical_records").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
       ]);
-
-      const { count: pendingCount } = await supabase
-        .from("appointments")
-        .select("id", { count: "exact", head: true })
-        .eq("doctor_id", user.id)
-        .eq("status", "scheduled");
 
       setStats({
         totalPatients: patientsRes.count || 0,
-        todayAppointments: appointmentsRes.count || 0,
-        pendingAppointments: pendingCount || 0,
-        totalRecords: recordsRes.count || 0,
+        todayAppointments: todayAppointmentsRes.count || 0,
+        totalAppointments: totalAppointmentsRes.count || 0,
+        pendingAppointments: 0,
+        totalRecords: 0,
       });
     };
 
@@ -63,31 +59,21 @@ const DoctorDashboard = () => {
 
         <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/appointments")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Appointments</CardTitle>
             <Calendar className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.todayAppointments}</div>
+            <div className="text-2xl font-bold">{stats.totalAppointments}</div>
           </CardContent>
         </Card>
 
         <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/appointments")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pending Appointments</CardTitle>
+            <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
             <Clock className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingAppointments}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Medical Records</CardTitle>
-            <FileText className="h-4 w-4 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalRecords}</div>
+            <div className="text-2xl font-bold">{stats.todayAppointments}</div>
           </CardContent>
         </Card>
       </div>

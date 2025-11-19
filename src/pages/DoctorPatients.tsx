@@ -65,18 +65,24 @@ const DoctorPatients = () => {
     full_name: string;
     email: string;
     phone: string;
+    date_of_birth: string;
     gender: "male" | "female" | "other";
     blood_group: string;
+    address: string;
   }>({
     full_name: "",
     email: "",
     phone: "",
+    date_of_birth: "",
     gender: "male",
     blood_group: "",
+    address: "",
   });
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
   const [newHistoryTitle, setNewHistoryTitle] = useState("");
   const [newHistoryDescription, setNewHistoryDescription] = useState("");
+  const [newHistoryDate, setNewHistoryDate] = useState("");
+  const [editingHistoryId, setEditingHistoryId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -257,8 +263,10 @@ const DoctorPatients = () => {
       full_name: patient.full_name,
       email: patient.email || "",
       phone: patient.phone,
+      date_of_birth: patient.date_of_birth,
       gender: patient.gender as "male" | "female" | "other",
       blood_group: patient.blood_group || "",
+      address: patient.address || "",
     });
     setSelectedPatient(patient);
     setIsEditDialogOpen(true);
@@ -273,8 +281,10 @@ const DoctorPatients = () => {
         full_name: editForm.full_name,
         email: editForm.email || null,
         phone: editForm.phone,
+        date_of_birth: editForm.date_of_birth,
         gender: editForm.gender,
         blood_group: editForm.blood_group || null,
+        address: editForm.address || null,
       })
       .eq("id", selectedPatient.id);
 
@@ -327,10 +337,10 @@ const DoctorPatients = () => {
   };
 
   const handleAddMedicalHistory = async () => {
-    if (!selectedPatient || !newHistoryTitle.trim()) {
+    if (!selectedPatient || !newHistoryTitle.trim() || !newHistoryDate) {
       toast({
         title: "Error",
-        description: "Please enter a title for the medical history",
+        description: "Please enter title and date for the medical history",
         variant: "destructive",
       });
       return;
@@ -340,7 +350,7 @@ const DoctorPatients = () => {
       id: Date.now().toString(),
       title: newHistoryTitle,
       description: newHistoryDescription,
-      date: new Date().toISOString(),
+      date: newHistoryDate,
     };
 
     const updatedHistory = [...medicalHistory, newEntry];
@@ -367,7 +377,67 @@ const DoctorPatients = () => {
     setMedicalHistory(updatedHistory);
     setNewHistoryTitle("");
     setNewHistoryDescription("");
+    setNewHistoryDate("");
     fetchPatients();
+  };
+
+  const handleEditMedicalHistory = (entry: MedicalHistoryEntry) => {
+    setEditingHistoryId(entry.id);
+    setNewHistoryTitle(entry.title);
+    setNewHistoryDescription(entry.description);
+    setNewHistoryDate(entry.date);
+  };
+
+  const handleUpdateMedicalHistory = async () => {
+    if (!selectedPatient || !editingHistoryId || !newHistoryTitle.trim() || !newHistoryDate) {
+      toast({
+        title: "Error",
+        description: "Please enter title and date for the medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedHistory = medicalHistory.map(entry =>
+      entry.id === editingHistoryId
+        ? { ...entry, title: newHistoryTitle, description: newHistoryDescription, date: newHistoryDate }
+        : entry
+    );
+
+    const { error } = await supabase
+      .from("patients")
+      .update({
+        medical_history: JSON.stringify(updatedHistory),
+      })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setMedicalHistory(updatedHistory);
+    toast({
+      title: "Success",
+      description: "Medical history updated successfully",
+    });
+
+    setNewHistoryTitle("");
+    setNewHistoryDescription("");
+    setNewHistoryDate("");
+    setEditingHistoryId(null);
+    fetchPatients();
+  };
+
+  const handleCancelEditHistory = () => {
+    setEditingHistoryId(null);
+    setNewHistoryTitle("");
+    setNewHistoryDescription("");
+    setNewHistoryDate("");
   };
 
   const handleDeleteMedicalHistory = async (id: string) => {
@@ -565,6 +635,13 @@ const DoctorPatients = () => {
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedPatient(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -662,11 +739,17 @@ const DoctorPatients = () => {
                   <TabsContent value="history" className="space-y-4 mt-4">
                     <div className="space-y-4">
                       <div className="space-y-3">
-                        <Label>Add New Medical History</Label>
+                        <Label>{editingHistoryId ? "Edit Medical History" : "Add New Medical History"}</Label>
                         <Input
                           placeholder="Title (e.g., Diabetes Type 2, Heart Surgery)"
                           value={newHistoryTitle}
                           onChange={(e) => setNewHistoryTitle(e.target.value)}
+                        />
+                        <Input
+                          type="date"
+                          placeholder="Date"
+                          value={newHistoryDate}
+                          onChange={(e) => setNewHistoryDate(e.target.value)}
                         />
                         <Textarea
                           placeholder="Description (e.g., Diagnosed in 2020, controlled with medication)"
@@ -674,10 +757,23 @@ const DoctorPatients = () => {
                           onChange={(e) => setNewHistoryDescription(e.target.value)}
                           rows={3}
                         />
-                        <Button onClick={handleAddMedicalHistory}>
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add History
-                        </Button>
+                        <div className="flex gap-2">
+                          {editingHistoryId ? (
+                            <>
+                              <Button onClick={handleUpdateMedicalHistory}>
+                                Update History
+                              </Button>
+                              <Button variant="outline" onClick={handleCancelEditHistory}>
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <Button onClick={handleAddMedicalHistory}>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add History
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
                       <div className="space-y-3">
@@ -699,16 +795,25 @@ const DoctorPatients = () => {
                                     {entry.description}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
-                                    Added: {new Date(entry.date).toLocaleDateString()}
+                                    Date: {new Date(entry.date).toLocaleDateString()}
                                   </p>
                                 </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDeleteMedicalHistory(entry.id)}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEditMedicalHistory(entry)}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleDeleteMedicalHistory(entry.id)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           ))
@@ -836,6 +941,14 @@ const DoctorPatients = () => {
               />
             </div>
             <div>
+              <Label>Date of Birth</Label>
+              <Input
+                type="date"
+                value={editForm.date_of_birth}
+                onChange={(e) => setEditForm({ ...editForm, date_of_birth: e.target.value })}
+              />
+            </div>
+            <div>
               <Label>Gender</Label>
               <Select
                 value={editForm.gender}
@@ -857,6 +970,15 @@ const DoctorPatients = () => {
                 value={editForm.blood_group}
                 onChange={(e) => setEditForm({ ...editForm, blood_group: e.target.value })}
                 placeholder="e.g., A+, B-, O+"
+              />
+            </div>
+            <div>
+              <Label>Address</Label>
+              <Textarea
+                value={editForm.address}
+                onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                placeholder="Enter address"
+                rows={3}
               />
             </div>
             <div className="flex justify-end gap-2">
