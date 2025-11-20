@@ -28,6 +28,8 @@ interface Patient {
   gender: string;
   blood_group: string | null;
   address: string | null;
+  allergies: string | null;
+  marital_status: string | null;
   medical_history: string | null;
 }
 
@@ -77,6 +79,8 @@ const DoctorPatients = () => {
     gender: "male" | "female" | "other";
     blood_group: string;
     address: string;
+    allergies: string;
+    marital_status: string;
   }>({
     full_name: "",
     email: "",
@@ -85,6 +89,8 @@ const DoctorPatients = () => {
     gender: "male",
     blood_group: "",
     address: "",
+    allergies: "",
+    marital_status: "",
   });
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
   const [newHistoryTitle, setNewHistoryTitle] = useState("");
@@ -275,6 +281,8 @@ const DoctorPatients = () => {
       gender: patient.gender as "male" | "female" | "other",
       blood_group: patient.blood_group || "",
       address: patient.address || "",
+      allergies: patient.allergies || "",
+      marital_status: patient.marital_status || "",
     });
     setSelectedPatient(patient);
     setIsEditDialogOpen(true);
@@ -293,6 +301,8 @@ const DoctorPatients = () => {
         gender: editForm.gender,
         blood_group: editForm.blood_group || null,
         address: editForm.address || null,
+        allergies: editForm.allergies || null,
+        marital_status: editForm.marital_status || null,
       })
       .eq("id", selectedPatient.id);
 
@@ -1030,6 +1040,30 @@ const DoctorPatients = () => {
                 value={editForm.blood_group}
                 onChange={(e) => setEditForm({ ...editForm, blood_group: e.target.value })}
                 placeholder="e.g., A+, B-, O+"
+              />
+            </div>
+            <div>
+              <Label>Marital Status</Label>
+              <Select
+                value={editForm.marital_status}
+                onValueChange={(value) => setEditForm({ ...editForm, marital_status: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="single">Single</SelectItem>
+                  <SelectItem value="married">Married</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Allergies</Label>
+              <Textarea
+                value={editForm.allergies}
+                onChange={(e) => setEditForm({ ...editForm, allergies: e.target.value })}
+                placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
+                rows={2}
               />
             </div>
             <div>
