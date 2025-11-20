@@ -11,8 +11,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, FileText, Plus, X } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, FileText, Plus, X, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Patient {
   id: string;
@@ -60,7 +64,11 @@ const DoctorPatients = () => {
     gender: "male" as "male" | "female" | "other",
     blood_group: "",
     address: "",
+    allergies: "",
+    marital_status: "",
   });
+  const [dobDate, setDobDate] = useState<Date>();
+  const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [editForm, setEditForm] = useState<{
     full_name: string;
     email: string;
@@ -493,6 +501,8 @@ const DoctorPatients = () => {
       gender: addForm.gender,
       blood_group: addForm.blood_group || null,
       address: addForm.address || null,
+      allergies: addForm.allergies || null,
+      marital_status: addForm.marital_status || null,
       created_by: user.id,
     });
 
@@ -519,7 +529,10 @@ const DoctorPatients = () => {
       gender: "male",
       blood_group: "",
       address: "",
+      allergies: "",
+      marital_status: "",
     });
+    setDobDate(undefined);
     fetchPatients();
   };
 
@@ -862,11 +875,34 @@ const DoctorPatients = () => {
               </div>
               <div>
                 <Label>Date of Birth *</Label>
-                <Input
-                  type="date"
-                  value={addForm.date_of_birth}
-                  onChange={(e) => setAddForm({ ...addForm, date_of_birth: e.target.value })}
-                />
+                <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dobDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dobDate ? format(dobDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dobDate}
+                      onSelect={(date) => {
+                        setDobDate(date);
+                        if (date) {
+                          setAddForm({ ...addForm, date_of_birth: format(date, "yyyy-MM-dd") });
+                          setDobPopoverOpen(false);
+                        }
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div>
                 <Label>Gender *</Label>
@@ -890,6 +926,30 @@ const DoctorPatients = () => {
                   value={addForm.blood_group}
                   onChange={(e) => setAddForm({ ...addForm, blood_group: e.target.value })}
                   placeholder="e.g., A+, B-, O+"
+                />
+              </div>
+              <div>
+                <Label>Marital Status</Label>
+                <Select
+                  value={addForm.marital_status}
+                  onValueChange={(value) => setAddForm({ ...addForm, marital_status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="single">Single</SelectItem>
+                    <SelectItem value="married">Married</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-2">
+                <Label>Allergies</Label>
+                <Textarea
+                  value={addForm.allergies}
+                  onChange={(e) => setAddForm({ ...addForm, allergies: e.target.value })}
+                  placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
+                  rows={2}
                 />
               </div>
               <div className="col-span-2">

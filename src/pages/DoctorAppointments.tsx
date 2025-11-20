@@ -39,6 +39,8 @@ const DoctorAppointments = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState<Date>();
+  const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
   const { toast } = useToast();
 
   const timeSlots = Array.from({ length: 48 }, (_, i) => {
@@ -159,7 +161,7 @@ const DoctorAppointments = () => {
             <form onSubmit={handleAddAppointment} className="space-y-4">
               <div className="space-y-2"><Label htmlFor="patient_id">Patient</Label><Select name="patient_id" required><SelectTrigger><SelectValue placeholder="Select a patient" /></SelectTrigger><SelectContent>{patients.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name} ({p.patient_id})</SelectItem>)}</SelectContent></Select></div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Appointment Date</Label><Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={setSelectedDate} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
+                <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
                 <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><Select name="appointment_time" required><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
               </div>
               <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
@@ -205,7 +207,7 @@ const DoctorAppointments = () => {
           {editingAppointment && (
             <form onSubmit={handleEditAppointment} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Appointment Date</Label><Popover><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !editDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{editDate ? format(editDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={editDate} onSelect={setEditDate} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
+                <div className="space-y-2"><Label>Appointment Date</Label><Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !editDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{editDate ? format(editDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
                 <div className="space-y-2"><Label>Time</Label><Select name="appointment_time" defaultValue={editingAppointment.appointment_time} required><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
               </div>
               <div className="space-y-2"><Label htmlFor="edit_duration_minutes">Duration (minutes)</Label><Input id="edit_duration_minutes" name="duration_minutes" type="number" defaultValue={editingAppointment.duration_minutes || 30} min={15} step={15} required /></div>
