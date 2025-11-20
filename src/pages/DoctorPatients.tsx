@@ -529,7 +529,7 @@ const DoctorPatients = () => {
   );
 
   return (
-    <div className=">
+    <div className="p-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">My Patients</h1>
         <p className="text-muted-foreground">View and manage your patients</p>
