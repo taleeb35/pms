@@ -16,7 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
-import { AppointmentCalendarView } from "@/components/AppointmentCalendarView";
+import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
+import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 
 interface Appointment {
   id: string;
@@ -27,7 +28,12 @@ interface Appointment {
   notes: string | null;
   duration_minutes: number | null;
   patient_id: string;
-  patients: { full_name: string; phone: string; patient_id: string };
+  patients: { 
+    full_name: string; 
+    phone: string; 
+    patient_id: string;
+    date_of_birth: string;
+  };
 }
 
 const DoctorAppointments = () => {
@@ -36,8 +42,10 @@ const DoctorAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showVisitDialog, setShowVisitDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
+  const [visitAppointment, setVisitAppointment] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
@@ -61,7 +69,7 @@ const DoctorAppointments = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
+      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
       if (error) throw error;
       setAppointments(data || []);
     } catch (error: any) {
@@ -151,6 +159,11 @@ const DoctorAppointments = () => {
     setShowEditDialog(true);
   };
 
+  const openVisitDialog = (appointment: Appointment) => {
+    setVisitAppointment(appointment);
+    setShowVisitDialog(true);
+  };
+
   const getFilteredAppointments = () => {
     if (!dateFilter) return appointments;
     const today = startOfDay(new Date());
@@ -229,7 +242,7 @@ const DoctorAppointments = () => {
                   <TableCell>{apt.reason || <span className="text-muted-foreground">-</span>}</TableCell>
                   <TableCell>{getStatusBadge(apt.status)}</TableCell>
                   <TableCell><div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => openEditDialog(apt)}><Edit className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="outline" onClick={() => openVisitDialog(apt)} title="Record Visit"><Edit className="h-4 w-4" /></Button>
                     {apt.status === "scheduled" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "confirmed")}><Check className="h-4 w-4" /></Button>}
                     {apt.status === "confirmed" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "in_progress")}><Clock className="h-4 w-4" /></Button>}
                     {apt.status === "in_progress" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "completed")}><Check className="h-4 w-4" /></Button>}
@@ -254,8 +267,19 @@ const DoctorAppointments = () => {
             </div>
           </CardContent></Card>
         </TabsContent>
-        <TabsContent value="calendar"><AppointmentCalendarView appointments={appointments} onAppointmentClick={openEditDialog} /></TabsContent>
+        <TabsContent value="calendar">
+          <ImprovedAppointmentCalendar 
+            appointments={appointments} 
+            onAppointmentClick={openVisitDialog} 
+          />
+        </TabsContent>
       </Tabs>
+
+      <VisitRecordDialog
+        open={showVisitDialog}
+        onOpenChange={setShowVisitDialog}
+        appointment={visitAppointment}
+      />
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl">

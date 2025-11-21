@@ -582,6 +582,91 @@ export type Database = {
           },
         ]
       }
+      visit_records: {
+        Row: {
+          appointment_id: string | null
+          blood_pressure: string | null
+          chief_complaint: string | null
+          created_at: string
+          current_prescription: string | null
+          doctor_id: string
+          height: string | null
+          id: string
+          next_visit_date: string | null
+          next_visit_notes: string | null
+          patient_history: string | null
+          patient_id: string
+          pulse: string | null
+          temperature: string | null
+          test_reports: string | null
+          updated_at: string
+          visit_date: string
+          weight: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          blood_pressure?: string | null
+          chief_complaint?: string | null
+          created_at?: string
+          current_prescription?: string | null
+          doctor_id: string
+          height?: string | null
+          id?: string
+          next_visit_date?: string | null
+          next_visit_notes?: string | null
+          patient_history?: string | null
+          patient_id: string
+          pulse?: string | null
+          temperature?: string | null
+          test_reports?: string | null
+          updated_at?: string
+          visit_date?: string
+          weight?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          blood_pressure?: string | null
+          chief_complaint?: string | null
+          created_at?: string
+          current_prescription?: string | null
+          doctor_id?: string
+          height?: string | null
+          id?: string
+          next_visit_date?: string | null
+          next_visit_notes?: string | null
+          patient_history?: string | null
+          patient_id?: string
+          pulse?: string | null
+          temperature?: string | null
+          test_reports?: string | null
+          updated_at?: string
+          visit_date?: string
+          weight?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_records_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_records_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
