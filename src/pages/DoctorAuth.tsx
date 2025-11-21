@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { CitySelect } from "@/components/CitySelect";
 
 const DoctorAuth = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -16,6 +18,7 @@ const DoctorAuth = () => {
   const [fullName, setFullName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [city, setCity] = useState("");
+  const [specialization, setSpecialization] = useState("");
   const [introduction, setIntroduction] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -125,7 +128,7 @@ const DoctorAuth = () => {
         city: city,
         introduction: introduction,
         approved: false,
-        specialization: "General",
+        specialization: specialization || "General",
         qualification: "MBBS",
       });
 
@@ -154,6 +157,7 @@ const DoctorAuth = () => {
       setFullName("");
       setContactNumber("");
       setCity("");
+      setSpecialization("");
       setIntroduction("");
     } catch (error: any) {
       toast({
@@ -201,15 +205,30 @@ const DoctorAuth = () => {
                     required
                   />
                 </div>
+                <CitySelect value={city} onValueChange={setCity} required />
                 <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    type="text"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    required
-                  />
+                  <Label htmlFor="specialization">Doctor Type / Specialization</Label>
+                  <Select value={specialization} onValueChange={setSpecialization} required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select specialization" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="General Practitioner">General Practitioner</SelectItem>
+                      <SelectItem value="Gynecologist">Gynecologist</SelectItem>
+                      <SelectItem value="Cardiologist">Cardiologist</SelectItem>
+                      <SelectItem value="Dermatologist">Dermatologist</SelectItem>
+                      <SelectItem value="Neurologist">Neurologist</SelectItem>
+                      <SelectItem value="Pediatrician">Pediatrician</SelectItem>
+                      <SelectItem value="Orthopedic">Orthopedic</SelectItem>
+                      <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
+                      <SelectItem value="ENT Specialist">ENT Specialist</SelectItem>
+                      <SelectItem value="Ophthalmologist">Ophthalmologist</SelectItem>
+                      <SelectItem value="Urologist">Urologist</SelectItem>
+                      <SelectItem value="Oncologist">Oncologist</SelectItem>
+                      <SelectItem value="Pulmonologist">Pulmonologist</SelectItem>
+                      <SelectItem value="Gastroenterologist">Gastroenterologist</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="introduction">Introduction</Label>

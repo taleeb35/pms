@@ -14,7 +14,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from "date-fns";
+import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
 import { AppointmentCalendarView } from "@/components/AppointmentCalendarView";
 
@@ -41,6 +41,9 @@ const DoctorAppointments = () => {
   const [editDate, setEditDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [dateFilter, setDateFilter] = useState("");
   const { toast } = useToast();
 
   const timeSlots = Array.from({ length: 48 }, (_, i) => {
@@ -52,7 +55,7 @@ const DoctorAppointments = () => {
   useEffect(() => {
     fetchAppointments();
     fetchPatients();
-  }, []);
+  }, [dateFilter]);
 
   const fetchAppointments = async () => {
     try {
@@ -148,6 +151,30 @@ const DoctorAppointments = () => {
     setShowEditDialog(true);
   };
 
+  const getFilteredAppointments = () => {
+    if (!dateFilter) return appointments;
+    const today = startOfDay(new Date());
+    switch (dateFilter) {
+      case "today":
+        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }));
+      case "tomorrow":
+        const tomorrow = addDays(today, 1);
+        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }));
+      case "day_after":
+        const dayAfter = addDays(today, 2);
+        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }));
+      case "week":
+        const weekEnd = addDays(today, 7);
+        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }));
+      default:
+        return appointments;
+    }
+  };
+
+  const filteredAppointments = getFilteredAppointments();
+  const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const totalPages = Math.ceil(filteredAppointments.length / pageSize);
+
   if (loading) return <div className="p-8">Loading...</div>;
 
   return (
@@ -176,13 +203,28 @@ const DoctorAppointments = () => {
       <Tabs defaultValue="table" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2"><TabsTrigger value="table">Table View</TabsTrigger><TabsTrigger value="calendar">Calendar View</TabsTrigger></TabsList>
         <TabsContent value="table" className="space-y-4">
+          <div className="flex gap-2 mb-4">
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filter by date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Appointments</SelectItem>
+                <SelectItem value="today">Today</SelectItem>
+                <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                <SelectItem value="day_after">Day After Tomorrow</SelectItem>
+                <SelectItem value="week">Within 7 Days</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
-            {appointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
-              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
-              <TableBody>{appointments.map((apt) => (
+            {paginatedAppointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
+              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Patient Phone</TableHead><TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+              <TableBody>{paginatedAppointments.map((apt) => (
                 <TableRow key={apt.id} className="hover:bg-accent/50">
                   <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
                   <TableCell>{apt.patients.patient_id}</TableCell>
+                  <TableCell>{apt.patients.phone}</TableCell>
                   <TableCell>{format(new Date(apt.appointment_date), "PPP")}<br /><span className="text-sm text-muted-foreground">{apt.appointment_time}</span></TableCell>
                   <TableCell>{apt.reason || <span className="text-muted-foreground">-</span>}</TableCell>
                   <TableCell>{getStatusBadge(apt.status)}</TableCell>
@@ -196,6 +238,20 @@ const DoctorAppointments = () => {
                 </TableRow>
               ))}</TableBody></Table>
             )}
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Show</span>
+                <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(Number(v)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="25">25</SelectItem><SelectItem value="50">50</SelectItem><SelectItem value="75">75</SelectItem><SelectItem value="100">100</SelectItem></SelectContent>
+                </Select>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
+                <span className="text-sm py-2">Page {currentPage} of {totalPages || 1}</span>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>Next</Button>
+              </div>
+            </div>
           </CardContent></Card>
         </TabsContent>
         <TabsContent value="calendar"><AppointmentCalendarView appointments={appointments} onAppointmentClick={openEditDialog} /></TabsContent>

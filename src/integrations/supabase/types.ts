@@ -388,6 +388,7 @@ export type Database = {
           full_name: string
           gender: Database["public"]["Enums"]["gender"]
           id: string
+          major_diseases: string | null
           marital_status: string | null
           medical_history: string | null
           patient_id: string
@@ -409,6 +410,7 @@ export type Database = {
           full_name: string
           gender: Database["public"]["Enums"]["gender"]
           id?: string
+          major_diseases?: string | null
           marital_status?: string | null
           medical_history?: string | null
           patient_id: string
@@ -430,6 +432,7 @@ export type Database = {
           full_name?: string
           gender?: Database["public"]["Enums"]["gender"]
           id?: string
+          major_diseases?: string | null
           marital_status?: string | null
           medical_history?: string | null
           patient_id?: string
