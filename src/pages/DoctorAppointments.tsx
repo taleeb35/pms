@@ -93,13 +93,24 @@ const DoctorAppointments = () => {
     }
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      const patientId = formData.get("patient_id") as string;
+      
       const { error } = await supabase.from("appointments").insert({
-        doctor_id: user?.id, patient_id: formData.get("patient_id") as string,
+        doctor_id: user?.id, patient_id: patientId,
         appointment_date: format(selectedDate, "yyyy-MM-dd"), appointment_time: formData.get("appointment_time") as string,
         duration_minutes: parseInt(formData.get("duration_minutes") as string), reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null, status: "scheduled" as const,
       });
       if (error) throw error;
+
+      // Remove patient from waitlist if they were in it
+      await supabase
+        .from("wait_list")
+        .delete()
+        .eq("doctor_id", user?.id)
+        .eq("patient_id", patientId)
+        .eq("status", "active");
+
       toast({ title: "Success", description: "Appointment created successfully" });
       setShowAddDialog(false);
       setSelectedDate(undefined);

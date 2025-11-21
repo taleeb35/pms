@@ -32,6 +32,7 @@ import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CitySelect } from "@/components/CitySelect";
 
 interface Patient {
   id: string;
@@ -54,6 +55,7 @@ interface WaitListEntry {
     gender: string;
     date_of_birth: string;
     blood_group: string | null;
+    city: string | null;
   };
 }
 
@@ -67,20 +69,23 @@ const WaitlistPatients = () => {
   const [notes, setNotes] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterAge, setFilterAge] = useState("");
+  const [filterGender, setFilterGender] = useState("");
+  const [filterCity, setFilterCity] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchWaitList();
     fetchPatients();
-  }, []);
+  }, [filterAge, filterGender, filterCity]);
 
   const fetchWaitList = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("wait_list")
         .select(`
           *,
@@ -92,15 +97,49 @@ const WaitlistPatients = () => {
             phone,
             gender,
             date_of_birth,
-            blood_group
+            blood_group,
+            city
           )
         `)
         .eq("doctor_id", user.id)
         .eq("status", "active")
         .order("scheduled_date", { ascending: true });
 
+      const { data, error } = await query;
+
       if (error) throw error;
-      setWaitList(data || []);
+      
+      let filteredData = (data || []) as WaitListEntry[];
+
+      // Apply age filter
+      if (filterAge && filterAge !== "all") {
+        filteredData = filteredData.filter(entry => {
+          const today = new Date();
+          const birthDate = new Date(entry.patients.date_of_birth);
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          if (filterAge === "0-18") return age <= 18;
+          if (filterAge === "19-40") return age >= 19 && age <= 40;
+          if (filterAge === "41-60") return age >= 41 && age <= 60;
+          if (filterAge === "60+") return age > 60;
+          return true;
+        });
+      }
+
+      // Apply gender filter
+      if (filterGender && filterGender !== "all") {
+        filteredData = filteredData.filter(entry => entry.patients.gender === filterGender);
+      }
+
+      // Apply city filter
+      if (filterCity && filterCity !== "all") {
+        filteredData = filteredData.filter(entry => entry.patients.city === filterCity);
+      }
+
+      setWaitList(filteredData);
     } catch (error: any) {
       toast({
         title: "Error fetching wait list",
@@ -306,22 +345,55 @@ const WaitlistPatients = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Waitlist</CardTitle>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Show:</span>
-              <Select
-                value={itemsPerPage.toString()}
-                onValueChange={(value) => setItemsPerPage(Number(value))}
-              >
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="25">25</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="75">75</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Select value={filterAge} onValueChange={setFilterAge}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Filter by Age" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Ages</SelectItem>
+                    <SelectItem value="0-18">0-18 years</SelectItem>
+                    <SelectItem value="19-40">19-40 years</SelectItem>
+                    <SelectItem value="41-60">41-60 years</SelectItem>
+                    <SelectItem value="60+">60+ years</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterGender} onValueChange={setFilterGender}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Filter by Gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Genders</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <CitySelect 
+                  value={filterCity} 
+                  onValueChange={setFilterCity}
+                  label=""
+                  showAllOption={true}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Show:</span>
+                <Select
+                  value={itemsPerPage.toString()}
+                  onValueChange={(value) => setItemsPerPage(Number(value))}
+                >
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="75">75</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardHeader>
