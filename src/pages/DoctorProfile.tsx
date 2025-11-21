@@ -37,6 +37,8 @@ const DoctorProfile = () => {
     phone: "",
     email: "",
   });
+  const [letterheadFile, setLetterheadFile] = useState<File | null>(null);
+  const [letterheadUrl, setLetterheadUrl] = useState<string>("");
 
   useEffect(() => {
     fetchProfile();
@@ -79,6 +81,12 @@ const DoctorProfile = () => {
       const savedLetterhead = localStorage.getItem(`letterhead_${user.id}`);
       if (savedLetterhead) {
         setLetterheadData(JSON.parse(savedLetterhead));
+      }
+      
+      // Load letterhead image URL
+      const savedUrl = localStorage.getItem(`letterhead_url_${user.id}`);
+      if (savedUrl) {
+        setLetterheadUrl(savedUrl);
       }
     }
   };
@@ -123,8 +131,36 @@ const DoctorProfile = () => {
       return;
     }
 
-    // Save letterhead data to localStorage
-    localStorage.setItem(`letterhead_${user.id}`, JSON.stringify(letterheadData));
+      // Upload letterhead image if provided
+      if (letterheadFile) {
+        const fileExt = letterheadFile.name.split(".").pop();
+        const fileName = `letterheads/${user.id}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from("medical-documents")
+          .upload(fileName, letterheadFile, { upsert: true });
+        
+        if (uploadError) {
+          toast({
+            title: "Error",
+            description: "Failed to upload letterhead",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+        
+        const { data: urlData } = supabase.storage
+          .from("medical-documents")
+          .getPublicUrl(fileName);
+        
+        const uploadedUrl = urlData.publicUrl;
+        setLetterheadUrl(uploadedUrl);
+        localStorage.setItem(`letterhead_url_${user.id}`, uploadedUrl);
+      }
+      
+      // Save letterhead data to localStorage
+      localStorage.setItem(`letterhead_${user.id}`, JSON.stringify(letterheadData));
 
     toast({ title: "Profile updated successfully" });
     setLoading(false);
@@ -366,6 +402,26 @@ const DoctorProfile = () => {
                     placeholder="Contact email"
                     className="border-secondary/20 focus:border-secondary"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Upload Letterhead Image</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setLetterheadFile(e.target.files?.[0] || null)}
+                    className="border-secondary/20 focus:border-secondary"
+                  />
+                  {letterheadUrl && (
+                    <div className="mt-2">
+                      <p className="text-sm text-muted-foreground mb-2">Current Letterhead:</p>
+                      <img 
+                        src={letterheadUrl} 
+                        alt="Letterhead" 
+                        className="max-h-32 border rounded"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <p className="text-sm text-muted-foreground">
