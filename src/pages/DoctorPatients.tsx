@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { CitySelect } from "@/components/CitySelect";
 
 interface Patient {
   id: string;
@@ -32,6 +33,8 @@ interface Patient {
   allergies: string | null;
   marital_status: string | null;
   medical_history: string | null;
+  city: string | null;
+  major_diseases: string | null;
 }
 
 interface Document {
@@ -71,6 +74,8 @@ const DoctorPatients = () => {
     address: string;
     allergies: string;
     marital_status: string;
+    city: string;
+    major_diseases: string;
   }>({
     full_name: "",
     father_name: "",
@@ -82,6 +87,8 @@ const DoctorPatients = () => {
     address: "",
     allergies: "",
     marital_status: "",
+    city: "",
+    major_diseases: "",
   });
   const [dobDate, setDobDate] = useState<Date>();
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
@@ -90,6 +97,9 @@ const DoctorPatients = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [totalCount, setTotalCount] = useState(0);
+  const [filterAge, setFilterAge] = useState("");
+  const [filterGender, setFilterGender] = useState("");
+  const [filterCity, setFilterCity] = useState("");
   const [editForm, setEditForm] = useState<{
     full_name: string;
     father_name: string;
@@ -101,6 +111,8 @@ const DoctorPatients = () => {
     address: string;
     allergies: string;
     marital_status: string;
+    city: string;
+    major_diseases: string;
   }>({
     full_name: "",
     father_name: "",
@@ -112,6 +124,8 @@ const DoctorPatients = () => {
     address: "",
     allergies: "",
     marital_status: "",
+    city: "",
+    major_diseases: "",
   });
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
   const [newHistoryTitle, setNewHistoryTitle] = useState("");
@@ -131,7 +145,7 @@ const DoctorPatients = () => {
 
   useEffect(() => {
     fetchPatients();
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -155,21 +169,68 @@ const DoctorPatients = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data, error, count } = await supabase
-      .from("patients")
-      .select("*", { count: "exact" })
-      .eq("created_by", user.id)
-      .order("created_at", { ascending: false })
-      .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+    try {
+      // @ts-ignore - Supabase query builder types can be overly complex
+      const baseQuery = supabase
+        .from("patients")
+        .select("*", { count: "exact" })
+        .eq("created_by", user.id)
+        .order("created_at", { ascending: false });
 
-    if (error) {
+      let result;
+      if (filterGender && filterCity) {
+        // @ts-ignore
+        result = await baseQuery
+          .eq("gender", filterGender as any)
+          .eq("city", filterCity)
+          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      } else if (filterGender) {
+        // @ts-ignore
+        result = await baseQuery
+          .eq("gender", filterGender as any)
+          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      } else if (filterCity) {
+        // @ts-ignore
+        result = await baseQuery
+          .eq("city", filterCity)
+          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      } else {
+        result = await baseQuery
+          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      }
+
+      if (result.error) {
+        console.error("Error fetching patients:", result.error);
+        toast({ title: "Error fetching patients", variant: "destructive" });
+        return;
+      }
+
+      let filteredData = (result.data || []) as unknown as Patient[];
+
+      // Apply age filter if specified
+      if (filterAge) {
+        filteredData = filteredData.filter(patient => {
+          const today = new Date();
+          const birthDate = new Date(patient.date_of_birth);
+          let age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          if (filterAge === "0-18") return age <= 18;
+          if (filterAge === "19-40") return age >= 19 && age <= 40;
+          if (filterAge === "41-60") return age >= 41 && age <= 60;
+          if (filterAge === "60+") return age > 60;
+          return true;
+        });
+      }
+
+      setPatients(filteredData);
+      setTotalCount(result.count || 0);
+    } catch (error) {
       console.error("Error fetching patients:", error);
       toast({ title: "Error fetching patients", variant: "destructive" });
-      return;
     }
-
-    setPatients(data || []);
-    setTotalCount(count || 0);
   };
 
   const fetchMedicalHistory = (patient: Patient) => {
@@ -316,6 +377,8 @@ const DoctorPatients = () => {
       address: patient.address || "",
       allergies: patient.allergies || "",
       marital_status: patient.marital_status || "",
+      city: patient.city || "",
+      major_diseases: patient.major_diseases || "",
     });
     setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
     setSelectedPatient(patient);
@@ -338,6 +401,8 @@ const DoctorPatients = () => {
         address: editForm.address || null,
         allergies: editForm.allergies || null,
         marital_status: editForm.marital_status || null,
+        city: editForm.city || null,
+        major_diseases: editForm.major_diseases || null,
       })
       .eq("id", selectedPatient.id);
 
@@ -539,6 +604,8 @@ const DoctorPatients = () => {
           address: addForm.address || null,
           allergies: addForm.allergies || null,
           marital_status: addForm.marital_status || null,
+          city: addForm.city || null,
+          major_diseases: addForm.major_diseases || null,
           patient_id: patientId,
           created_by: user.id,
         },
@@ -570,6 +637,8 @@ const DoctorPatients = () => {
       address: "",
       allergies: "",
       marital_status: "",
+      city: "",
+      major_diseases: "",
     });
     setDobDate(undefined);
     setIsAddDialogOpen(false);
@@ -648,13 +717,14 @@ const DoctorPatients = () => {
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Gender</TableHead>
+                  <TableHead>Age</TableHead>
                   <TableHead>Blood Group</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground">
                       No patients found
                     </TableCell>
                   </TableRow>
@@ -675,11 +745,12 @@ const DoctorPatients = () => {
                         <TableCell>{patient.email || "N/A"}</TableCell>
                         <TableCell>{patient.phone}</TableCell>
                         <TableCell className="capitalize">{patient.gender}</TableCell>
+                        <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                         <TableCell>{patient.blood_group || "N/A"}</TableCell>
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
-                          <TableCell colSpan={6} className="p-0">
+                          <TableCell colSpan={7} className="p-0">
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
