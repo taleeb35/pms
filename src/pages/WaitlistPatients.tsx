@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -28,7 +29,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -45,8 +46,14 @@ interface WaitListEntry {
   notes: string | null;
   status: string;
   patients: {
+    id: string;
     patient_id: string;
     full_name: string;
+    email: string | null;
+    phone: string;
+    gender: string;
+    date_of_birth: string;
+    blood_group: string | null;
   };
 }
 
@@ -61,6 +68,7 @@ const WaitlistPatients = () => {
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchWaitList();
@@ -77,8 +85,14 @@ const WaitlistPatients = () => {
         .select(`
           *,
           patients (
+            id,
             patient_id,
-            full_name
+            full_name,
+            email,
+            phone,
+            gender,
+            date_of_birth,
+            blood_group
           )
         `)
         .eq("doctor_id", user.id)
@@ -326,7 +340,12 @@ const WaitlistPatients = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Patient ID</TableHead>
-                    <TableHead>Patient Name</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Gender</TableHead>
+                    <TableHead>Age</TableHead>
+                    <TableHead>Blood Group</TableHead>
                     <TableHead>Scheduled Date</TableHead>
                     <TableHead>Notes</TableHead>
                     <TableHead>Actions</TableHead>
@@ -334,16 +353,27 @@ const WaitlistPatients = () => {
                 </TableHeader>
                 <TableBody>
                   {paginatedWaitList.map((entry) => (
-                    <TableRow key={entry.id}>
+                    <TableRow 
+                      key={entry.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => navigate(`/doctor/patients/${entry.patients.id}`)}
+                    >
                       <TableCell className="font-medium">
                         {entry.patients.patient_id}
                       </TableCell>
                       <TableCell>{entry.patients.full_name}</TableCell>
+                      <TableCell>{entry.patients.email || "N/A"}</TableCell>
+                      <TableCell>{entry.patients.phone}</TableCell>
+                      <TableCell className="capitalize">{entry.patients.gender}</TableCell>
+                      <TableCell>
+                        {differenceInYears(new Date(), new Date(entry.patients.date_of_birth))}
+                      </TableCell>
+                      <TableCell>{entry.patients.blood_group || "N/A"}</TableCell>
                       <TableCell>
                         {format(new Date(entry.scheduled_date), "PPP")}
                       </TableCell>
                       <TableCell>{entry.notes || "—"}</TableCell>
-                      <TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
                         <Button
                           variant="ghost"
                           size="sm"
