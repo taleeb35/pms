@@ -165,7 +165,7 @@ const DoctorAppointments = () => {
   };
 
   const getFilteredAppointments = () => {
-    if (!dateFilter) return appointments;
+    if (!dateFilter || dateFilter === "all") return appointments;
     const today = startOfDay(new Date());
     switch (dateFilter) {
       case "today":
@@ -217,12 +217,12 @@ const DoctorAppointments = () => {
         <TabsList className="grid w-full max-w-md grid-cols-2"><TabsTrigger value="table">Table View</TabsTrigger><TabsTrigger value="calendar">Calendar View</TabsTrigger></TabsList>
         <TabsContent value="table" className="space-y-4">
           <div className="flex gap-2 mb-4">
-            <Select value={dateFilter} onValueChange={setDateFilter}>
+            <Select value={dateFilter || "all"} onValueChange={setDateFilter}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filter by date" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Appointments</SelectItem>
+                <SelectItem value="all">All Appointments</SelectItem>
                 <SelectItem value="today">Today</SelectItem>
                 <SelectItem value="tomorrow">Tomorrow</SelectItem>
                 <SelectItem value="day_after">Day After Tomorrow</SelectItem>
