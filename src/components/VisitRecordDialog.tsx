@@ -109,37 +109,63 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   };
 
   const handlePrint = async () => {
-    // Load letterhead URL from localStorage
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const letterheadUrl = localStorage.getItem(`letterhead_url_${user.id}`);
+      
+      // Create letterhead element for print
+      const letterheadElement = document.createElement("div");
+      letterheadElement.id = "print-letterhead";
+      letterheadElement.style.display = "none";
+      
       if (letterheadUrl) {
-        // Add letterhead background to print
-        const printStyles = `
-          @media print {
-            body::before {
-              content: "";
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background-image: url('${letterheadUrl}');
-              background-size: contain;
-              background-repeat: no-repeat;
-              background-position: top center;
-              opacity: 0.1;
-              z-index: -1;
-            }
-          }
+        letterheadElement.innerHTML = `
+          <img src="${letterheadUrl}" style="width: 100%; height: auto; display: block; margin-bottom: 20px;" />
         `;
-        const styleSheet = document.createElement("style");
-        styleSheet.innerText = printStyles;
-        document.head.appendChild(styleSheet);
       }
+      
+      document.body.appendChild(letterheadElement);
+      
+      // Add print styles
+      const printStyles = `
+        @media print {
+          body > *:not(#print-letterhead):not(.dialog-content-for-print) {
+            display: none !important;
+          }
+          
+          #print-letterhead {
+            display: block !important;
+            page-break-after: avoid;
+          }
+          
+          .dialog-content-for-print {
+            display: block !important;
+          }
+          
+          .print\\:hidden {
+            display: none !important;
+          }
+        }
+      `;
+      
+      const styleSheet = document.createElement("style");
+      styleSheet.innerText = printStyles;
+      document.head.appendChild(styleSheet);
+      
+      // Mark dialog content for printing
+      const dialogContent = document.querySelector('[role="dialog"]');
+      dialogContent?.classList.add("dialog-content-for-print");
     }
     
     window.print();
+    
+    // Cleanup after print
+    setTimeout(() => {
+      const letterheadElement = document.getElementById("print-letterhead");
+      if (letterheadElement) {
+        letterheadElement.remove();
+      }
+    }, 1000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -157,37 +157,63 @@ const DoctorProfile = () => {
     }
 
     setUploadingLetterhead(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Not authenticated", variant: "destructive" });
+        setUploadingLetterhead(false);
+        return;
+      }
 
-    const fileExt = letterheadFile.name.split(".").pop();
-    const fileName = `letterheads/${user.id}.${fileExt}`;
-    
-    const { error: uploadError } = await supabase.storage
-      .from("medical-documents")
-      .upload(fileName, letterheadFile, { upsert: true });
-    
-    if (uploadError) {
+      const fileExt = letterheadFile.name.split(".").pop();
+      const fileName = `letterheads/${user.id}-${Date.now()}.${fileExt}`;
+      
+      console.log("Uploading letterhead:", fileName);
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from("medical-documents")
+        .upload(fileName, letterheadFile, { upsert: true });
+      
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        toast({
+          title: "Upload Error",
+          description: uploadError.message || "Failed to upload letterhead",
+          variant: "destructive",
+        });
+        setUploadingLetterhead(false);
+        return;
+      }
+      
+      console.log("Upload successful:", uploadData);
+      
+      const { data: urlData } = supabase.storage
+        .from("medical-documents")
+        .getPublicUrl(fileName);
+      
+      const uploadedUrl = urlData.publicUrl;
+      console.log("Public URL:", uploadedUrl);
+      
+      setLetterheadUrl(uploadedUrl);
+      localStorage.setItem(`letterhead_url_${user.id}`, uploadedUrl);
+      
+      toast({ title: "Success", description: "Letterhead uploaded successfully" });
+      
+      // Reset file input
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
+      setLetterheadFile(null);
+    } catch (error: any) {
+      console.error("Exception during upload:", error);
       toast({
         title: "Error",
-        description: "Failed to upload letterhead",
+        description: error.message || "An error occurred",
         variant: "destructive",
       });
+    } finally {
       setUploadingLetterhead(false);
-      return;
     }
-    
-    const { data: urlData } = supabase.storage
-      .from("medical-documents")
-      .getPublicUrl(fileName);
-    
-    const uploadedUrl = urlData.publicUrl;
-    setLetterheadUrl(uploadedUrl);
-    localStorage.setItem(`letterhead_url_${user.id}`, uploadedUrl);
-    
-    toast({ title: "Letterhead uploaded successfully" });
-    setUploadingLetterhead(false);
-    setLetterheadFile(null);
   };
 
   return (
