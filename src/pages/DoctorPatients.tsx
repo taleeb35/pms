@@ -131,6 +131,8 @@ const DoctorPatients = () => {
   const [newHistoryTitle, setNewHistoryTitle] = useState("");
   const [newHistoryDescription, setNewHistoryDescription] = useState("");
   const [newHistoryDate, setNewHistoryDate] = useState("");
+  const [newHistoryDateObj, setNewHistoryDateObj] = useState<Date>();
+  const [newHistoryDatePopoverOpen, setNewHistoryDatePopoverOpen] = useState(false);
   const [editingHistory, setEditingHistory] = useState<MedicalHistoryEntry | null>(null);
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [documentTitle, setDocumentTitle] = useState("");
@@ -178,18 +180,21 @@ const DoctorPatients = () => {
         .order("created_at", { ascending: false });
 
       let result;
-      if (filterGender && filterCity) {
+      const hasGenderFilter = filterGender && filterGender !== "all";
+      const hasCityFilter = filterCity && filterCity !== "all";
+      
+      if (hasGenderFilter && hasCityFilter) {
         // @ts-ignore
         result = await baseQuery
           .eq("gender", filterGender as any)
           .eq("city", filterCity)
           .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else if (filterGender) {
+      } else if (hasGenderFilter) {
         // @ts-ignore
         result = await baseQuery
           .eq("gender", filterGender as any)
           .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else if (filterCity) {
+      } else if (hasCityFilter) {
         // @ts-ignore
         result = await baseQuery
           .eq("city", filterCity)
@@ -208,7 +213,7 @@ const DoctorPatients = () => {
       let filteredData = (result.data || []) as unknown as Patient[];
 
       // Apply age filter if specified
-      if (filterAge) {
+      if (filterAge && filterAge !== "all") {
         filteredData = filteredData.filter(patient => {
           const today = new Date();
           const birthDate = new Date(patient.date_of_birth);
@@ -496,6 +501,7 @@ const DoctorPatients = () => {
     setNewHistoryTitle("");
     setNewHistoryDescription("");
     setNewHistoryDate("");
+    setNewHistoryDateObj(undefined);
     setIsHistoryDialogOpen(false);
     fetchPatients();
   };
@@ -541,6 +547,7 @@ const DoctorPatients = () => {
     setNewHistoryTitle("");
     setNewHistoryDescription("");
     setNewHistoryDate("");
+    setNewHistoryDateObj(undefined);
     setEditingHistory(null);
     setIsEditHistoryDialogOpen(false);
     fetchPatients();
@@ -688,9 +695,15 @@ const DoctorPatients = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Patients List</CardTitle>
-            <div className="flex gap-2 items-center">
+          <div className="flex flex-col gap-4">
+            <div className="flex justify-between items-center">
+              <CardTitle>Patients List</CardTitle>
+              <Button onClick={() => setIsAddDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Patient
+              </Button>
+            </div>
+            <div className="flex gap-2 items-center flex-wrap">
               <div className="relative w-64">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -700,10 +713,35 @@ const DoctorPatients = () => {
                   className="pl-9"
                 />
               </div>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Patient
-              </Button>
+              <Select value={filterAge} onValueChange={setFilterAge}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Filter by Age" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Ages</SelectItem>
+                  <SelectItem value="0-18">0-18 years</SelectItem>
+                  <SelectItem value="19-40">19-40 years</SelectItem>
+                  <SelectItem value="41-60">41-60 years</SelectItem>
+                  <SelectItem value="60+">60+ years</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterGender} onValueChange={setFilterGender}>
+                <SelectTrigger className="w-[150px]">
+                  <SelectValue placeholder="Filter by Gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Genders</SelectItem>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+              <CitySelect 
+                value={filterCity} 
+                onValueChange={setFilterCity}
+                label=""
+                showAllOption={true}
+              />
             </div>
           </div>
         </CardHeader>
@@ -884,11 +922,38 @@ const DoctorPatients = () => {
                                           </div>
                                           <div>
                                             <Label>Date</Label>
-                                            <Input
-                                              type="date"
-                                              value={newHistoryDate}
-                                              onChange={(e) => setNewHistoryDate(e.target.value)}
-                                            />
+                                            <Popover open={newHistoryDatePopoverOpen} onOpenChange={setNewHistoryDatePopoverOpen}>
+                                              <PopoverTrigger asChild>
+                                                <Button
+                                                  variant="outline"
+                                                  className={cn(
+                                                    "w-full justify-start text-left font-normal",
+                                                    !newHistoryDate && "text-muted-foreground"
+                                                  )}
+                                                >
+                                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                                  {newHistoryDate ? format(new Date(newHistoryDate), "PPP") : <span>Pick a date</span>}
+                                                </Button>
+                                              </PopoverTrigger>
+                                              <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                  mode="single"
+                                                  selected={newHistoryDateObj}
+                                                  onSelect={(date) => {
+                                                    if (date) {
+                                                      setNewHistoryDateObj(date);
+                                                      setNewHistoryDate(format(date, "yyyy-MM-dd"));
+                                                      setNewHistoryDatePopoverOpen(false);
+                                                    }
+                                                  }}
+                                                  initialFocus
+                                                  className="pointer-events-auto"
+                                                  captionLayout="dropdown-buttons"
+                                                  fromYear={1900}
+                                                  toYear={new Date().getFullYear()}
+                                                />
+                                              </PopoverContent>
+                                            </Popover>
                                           </div>
                                         </div>
                                         <DialogFooter>
@@ -914,11 +979,12 @@ const DoctorPatients = () => {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => {
-                                                  setEditingHistory(entry);
-                                                  setNewHistoryTitle(entry.title);
-                                                  setNewHistoryDescription(entry.description);
-                                                  setNewHistoryDate(entry.date);
-                                                  setIsEditHistoryDialogOpen(true);
+                                                 setEditingHistory(entry);
+                                                 setNewHistoryTitle(entry.title);
+                                                 setNewHistoryDescription(entry.description);
+                                                 setNewHistoryDate(entry.date);
+                                                 setNewHistoryDateObj(new Date(entry.date));
+                                                 setIsEditHistoryDialogOpen(true);
                                                 }}
                                               >
                                                 <Edit className="h-4 w-4" />
@@ -1217,12 +1283,28 @@ const DoctorPatients = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <CitySelect 
+                  value={addForm.city} 
+                  onValueChange={(value) => setAddForm({ ...addForm, city: value })}
+                  label="City"
+                />
+              </div>
               <div className="col-span-2">
                 <Label>Allergies</Label>
                 <Textarea
                   value={addForm.allergies}
                   onChange={(e) => setAddForm({ ...addForm, allergies: e.target.value })}
                   placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
+                  rows={2}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Major Diseases</Label>
+                <Textarea
+                  value={addForm.major_diseases}
+                  onChange={(e) => setAddForm({ ...addForm, major_diseases: e.target.value })}
+                  placeholder="List any major diseases"
                   rows={2}
                 />
               </div>
@@ -1374,12 +1456,28 @@ const DoctorPatients = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <CitySelect 
+                  value={editForm.city} 
+                  onValueChange={(value) => setEditForm({ ...editForm, city: value })}
+                  label="City"
+                />
+              </div>
               <div className="col-span-2">
                 <Label>Allergies</Label>
                 <Textarea
                   value={editForm.allergies}
                   onChange={(e) => setEditForm({ ...editForm, allergies: e.target.value })}
                   placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
+                  rows={2}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Major Diseases</Label>
+                <Textarea
+                  value={editForm.major_diseases}
+                  onChange={(e) => setEditForm({ ...editForm, major_diseases: e.target.value })}
+                  placeholder="List any major diseases"
                   rows={2}
                 />
               </div>
@@ -1429,11 +1527,38 @@ const DoctorPatients = () => {
             </div>
             <div>
               <Label>Date</Label>
-              <Input
-                type="date"
-                value={newHistoryDate}
-                onChange={(e) => setNewHistoryDate(e.target.value)}
-              />
+              <Popover open={newHistoryDatePopoverOpen} onOpenChange={setNewHistoryDatePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newHistoryDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newHistoryDate ? format(new Date(newHistoryDate), "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newHistoryDateObj}
+                    onSelect={(date) => {
+                      if (date) {
+                        setNewHistoryDateObj(date);
+                        setNewHistoryDate(format(date, "yyyy-MM-dd"));
+                        setNewHistoryDatePopoverOpen(false);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                    captionLayout="dropdown-buttons"
+                    fromYear={1900}
+                    toYear={new Date().getFullYear()}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <DialogFooter>
@@ -1443,6 +1568,7 @@ const DoctorPatients = () => {
               setNewHistoryTitle("");
               setNewHistoryDescription("");
               setNewHistoryDate("");
+              setNewHistoryDateObj(undefined);
             }}>
               Cancel
             </Button>
