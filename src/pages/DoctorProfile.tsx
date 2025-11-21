@@ -31,14 +31,9 @@ const DoctorProfile = () => {
     newPassword: "",
     confirmPassword: "",
   });
-  const [letterheadData, setLetterheadData] = useState({
-    hospitalName: "",
-    address: "",
-    phone: "",
-    email: "",
-  });
   const [letterheadFile, setLetterheadFile] = useState<File | null>(null);
   const [letterheadUrl, setLetterheadUrl] = useState<string>("");
+  const [uploadingLetterhead, setUploadingLetterhead] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -76,12 +71,6 @@ const DoctorProfile = () => {
         consultation_fee: doctorData.consultation_fee?.toString() || "",
         contact_number: doctorData.contact_number || "",
       });
-      
-      // Load letterhead data from localStorage
-      const savedLetterhead = localStorage.getItem(`letterhead_${user.id}`);
-      if (savedLetterhead) {
-        setLetterheadData(JSON.parse(savedLetterhead));
-      }
       
       // Load letterhead image URL
       const savedUrl = localStorage.getItem(`letterhead_url_${user.id}`);
@@ -131,37 +120,6 @@ const DoctorProfile = () => {
       return;
     }
 
-      // Upload letterhead image if provided
-      if (letterheadFile) {
-        const fileExt = letterheadFile.name.split(".").pop();
-        const fileName = `letterheads/${user.id}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from("medical-documents")
-          .upload(fileName, letterheadFile, { upsert: true });
-        
-        if (uploadError) {
-          toast({
-            title: "Error",
-            description: "Failed to upload letterhead",
-            variant: "destructive",
-          });
-          setLoading(false);
-          return;
-        }
-        
-        const { data: urlData } = supabase.storage
-          .from("medical-documents")
-          .getPublicUrl(fileName);
-        
-        const uploadedUrl = urlData.publicUrl;
-        setLetterheadUrl(uploadedUrl);
-        localStorage.setItem(`letterhead_url_${user.id}`, uploadedUrl);
-      }
-      
-      // Save letterhead data to localStorage
-      localStorage.setItem(`letterhead_${user.id}`, JSON.stringify(letterheadData));
-
     toast({ title: "Profile updated successfully" });
     setLoading(false);
   };
@@ -190,6 +148,46 @@ const DoctorProfile = () => {
 
     toast({ title: "Password updated successfully" });
     setPasswordData({ newPassword: "", confirmPassword: "" });
+  };
+
+  const handleLetterheadUpload = async () => {
+    if (!letterheadFile) {
+      toast({ title: "Please select a file first", variant: "destructive" });
+      return;
+    }
+
+    setUploadingLetterhead(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const fileExt = letterheadFile.name.split(".").pop();
+    const fileName = `letterheads/${user.id}.${fileExt}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from("medical-documents")
+      .upload(fileName, letterheadFile, { upsert: true });
+    
+    if (uploadError) {
+      toast({
+        title: "Error",
+        description: "Failed to upload letterhead",
+        variant: "destructive",
+      });
+      setUploadingLetterhead(false);
+      return;
+    }
+    
+    const { data: urlData } = supabase.storage
+      .from("medical-documents")
+      .getPublicUrl(fileName);
+    
+    const uploadedUrl = urlData.publicUrl;
+    setLetterheadUrl(uploadedUrl);
+    localStorage.setItem(`letterhead_url_${user.id}`, uploadedUrl);
+    
+    toast({ title: "Letterhead uploaded successfully" });
+    setUploadingLetterhead(false);
+    setLetterheadFile(null);
   };
 
   return (
@@ -358,74 +356,43 @@ const DoctorProfile = () => {
             <CardHeader className="bg-gradient-to-r from-secondary/10 to-secondary/5">
               <CardTitle className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-secondary" />
-                Letterhead Information
+                Upload Letterhead
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Hospital/Clinic Name</Label>
-                  <Input
-                    value={letterheadData.hospitalName}
-                    onChange={(e) => setLetterheadData({ ...letterheadData, hospitalName: e.target.value })}
-                    placeholder="Enter hospital/clinic name"
-                    className="border-secondary/20 focus:border-secondary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Address</Label>
-                  <Textarea
-                    value={letterheadData.address}
-                    onChange={(e) => setLetterheadData({ ...letterheadData, address: e.target.value })}
-                    placeholder="Enter complete address"
-                    rows={2}
-                    className="border-secondary/20 focus:border-secondary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input
-                    value={letterheadData.phone}
-                    onChange={(e) => setLetterheadData({ ...letterheadData, phone: e.target.value })}
-                    placeholder="Contact phone number"
-                    className="border-secondary/20 focus:border-secondary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Email</Label>
-                  <Input
-                    value={letterheadData.email}
-                    onChange={(e) => setLetterheadData({ ...letterheadData, email: e.target.value })}
-                    placeholder="Contact email"
-                    className="border-secondary/20 focus:border-secondary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Upload Letterhead Image</Label>
+                  <Label>Select Letterhead Image</Label>
                   <Input
                     type="file"
                     accept="image/*"
                     onChange={(e) => setLetterheadFile(e.target.files?.[0] || null)}
                     className="border-secondary/20 focus:border-secondary"
                   />
-                  {letterheadUrl && (
-                    <div className="mt-2">
-                      <p className="text-sm text-muted-foreground mb-2">Current Letterhead:</p>
-                      <img 
-                        src={letterheadUrl} 
-                        alt="Letterhead" 
-                        className="max-h-32 border rounded"
-                      />
-                    </div>
-                  )}
                 </div>
 
+                <Button 
+                  onClick={handleLetterheadUpload} 
+                  disabled={uploadingLetterhead || !letterheadFile}
+                  className="w-full"
+                  variant="secondary"
+                >
+                  {uploadingLetterhead ? "Uploading..." : "Upload Letterhead"}
+                </Button>
+
+                {letterheadUrl && (
+                  <div className="mt-4">
+                    <p className="text-sm text-muted-foreground mb-2">Current Letterhead:</p>
+                    <img 
+                      src={letterheadUrl} 
+                      alt="Letterhead" 
+                      className="w-full border rounded"
+                    />
+                  </div>
+                )}
+
                 <p className="text-sm text-muted-foreground">
-                  This information will appear on printed prescriptions
+                  This letterhead will appear on printed visit records
                 </p>
               </div>
             </CardContent>
