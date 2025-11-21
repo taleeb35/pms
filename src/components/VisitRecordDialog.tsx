@@ -114,92 +114,230 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     
     const letterheadUrl = localStorage.getItem(`letterhead_url_${user.id}`);
     
-    // Create print-specific container
-    const printContainer = document.createElement("div");
-    printContainer.id = "print-container";
-    printContainer.style.display = "none";
+    // Create a clean print document
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    // Get patient info
+    const patientName = appointment?.patients?.full_name || '';
+    const patientId = appointment?.patients?.patient_id || '';
+    const patientAge = appointment?.patients?.date_of_birth ? calculateAge(appointment.patients.date_of_birth) : '';
+    
+    // Build HTML content for print
+    let printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Patient Visit Record</title>
+        <style>
+          @page { 
+            margin: 0.5cm; 
+            size: A4;
+          }
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #000;
+          }
+          .letterhead {
+            width: 100%;
+            margin-bottom: 20px;
+          }
+          .letterhead img {
+            width: 100%;
+            height: auto;
+            display: block;
+          }
+          .patient-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+          }
+          .patient-info div {
+            display: flex;
+            flex-direction: column;
+          }
+          .patient-info label {
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 3px;
+          }
+          .patient-info span {
+            font-weight: bold;
+            font-size: 12pt;
+          }
+          .section {
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+          }
+          .section h3 {
+            font-size: 13pt;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+          }
+          .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+          }
+          .vital-item {
+            display: flex;
+            flex-direction: column;
+          }
+          .vital-item label {
+            font-size: 10pt;
+            color: #666;
+            margin-bottom: 3px;
+          }
+          .vital-item span {
+            font-size: 11pt;
+            padding: 5px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+          }
+          .text-content {
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            min-height: 60px;
+            white-space: pre-wrap;
+          }
+          .prescription-content {
+            font-family: 'Courier New', monospace;
+            min-height: 150px;
+          }
+        </style>
+      </head>
+      <body>
+    `;
     
     // Add letterhead
     if (letterheadUrl) {
-      printContainer.innerHTML = `
-        <div style="width: 100%; margin-bottom: 30px;">
-          <img src="${letterheadUrl}" style="width: 100%; height: auto; display: block;" />
+      printContent += `
+        <div class="letterhead">
+          <img src="${letterheadUrl}" alt="Letterhead" />
         </div>
       `;
     }
     
-    // Clone the patient info and form content
-    const patientInfo = document.querySelector('.bg-muted.p-4.rounded-lg.mb-4')?.cloneNode(true) as HTMLElement;
-    const formContent = document.querySelector('form.space-y-6')?.cloneNode(true) as HTMLElement;
-    
-    if (patientInfo) {
-      patientInfo.style.cssText = "background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 16px;";
-      printContainer.appendChild(patientInfo);
-    }
-    
-    if (formContent) {
-      // Remove buttons and visit history from print
-      const buttons = formContent.querySelectorAll('button');
-      buttons.forEach(btn => btn.remove());
-      
-      const visitHistory = formContent.querySelector('.border.rounded-lg.p-4 h3');
-      if (visitHistory && visitHistory.textContent?.includes('Visit History')) {
-        visitHistory.closest('.border.rounded-lg.p-4')?.remove();
-      }
-      
-      printContainer.appendChild(formContent);
-    }
-    
-    document.body.appendChild(printContainer);
-    
-    // Add comprehensive print styles
-    const styleSheet = document.createElement("style");
-    styleSheet.id = "print-styles";
-    styleSheet.textContent = `
-      @media print {
-        @page {
-          margin: 1cm;
-          size: A4;
-        }
-        
-        body * {
-          visibility: hidden;
-        }
-        
-        #print-container,
-        #print-container * {
-          visibility: visible;
-        }
-        
-        #print-container {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          display: block !important;
-        }
-        
-        /* Hide all dialog chrome */
-        [role="dialog"],
-        .fixed,
-        header,
-        nav,
-        .print\\:hidden {
-          display: none !important;
-        }
-      }
+    // Add patient info
+    printContent += `
+      <div class="patient-info">
+        <div>
+          <label>Patient Name</label>
+          <span>${patientName}</span>
+        </div>
+        <div>
+          <label>Patient ID</label>
+          <span>${patientId}</span>
+        </div>
+        <div>
+          <label>Age</label>
+          <span>${patientAge} years</span>
+        </div>
+      </div>
     `;
     
-    document.head.appendChild(styleSheet);
+    // Add vitals section
+    printContent += `
+      <div class="section">
+        <h3>Vitals</h3>
+        <div class="vitals-grid">
+          <div class="vital-item">
+            <label>Blood Pressure</label>
+            <span>${formData.blood_pressure || '-'}</span>
+          </div>
+          <div class="vital-item">
+            <label>Temperature</label>
+            <span>${formData.temperature || '-'}</span>
+          </div>
+          <div class="vital-item">
+            <label>Pulse</label>
+            <span>${formData.pulse || '-'}</span>
+          </div>
+          <div class="vital-item">
+            <label>Weight</label>
+            <span>${formData.weight || '-'}</span>
+          </div>
+        </div>
+      </div>
+    `;
     
-    // Print
-    window.print();
+    // Add chief complaint
+    if (formData.chief_complaint) {
+      printContent += `
+        <div class="section">
+          <h3>Chief Complaint</h3>
+          <div class="text-content">${formData.chief_complaint}</div>
+        </div>
+      `;
+    }
     
-    // Cleanup
-    setTimeout(() => {
-      printContainer.remove();
-      styleSheet.remove();
-    }, 1000);
+    // Add current prescription
+    if (formData.current_prescription) {
+      printContent += `
+        <div class="section">
+          <h3>Current Prescription</h3>
+          <div class="text-content prescription-content">${formData.current_prescription}</div>
+        </div>
+      `;
+    }
+    
+    // Add test reports
+    if (formData.test_reports) {
+      printContent += `
+        <div class="section">
+          <h3>Test Reports</h3>
+          <div class="text-content">${formData.test_reports}</div>
+        </div>
+      `;
+    }
+    
+    // Add next visit info
+    if (nextVisitDate || formData.next_visit_notes) {
+      printContent += `
+        <div class="section">
+          <h3>Next Visit</h3>
+      `;
+      if (nextVisitDate) {
+        printContent += `<p><strong>Date:</strong> ${format(nextVisitDate, "PPP")}</p>`;
+      }
+      if (formData.next_visit_notes) {
+        printContent += `<div class="text-content">${formData.next_visit_notes}</div>`;
+      }
+      printContent += `</div>`;
+    }
+    
+    printContent += `
+      </body>
+      </html>
+    `;
+    
+    // Write content to new window and print
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    
+    // Wait for images to load before printing
+    printWindow.onload = () => {
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 250);
+    };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
