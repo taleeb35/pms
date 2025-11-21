@@ -14,6 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { WaitListManagement } from "@/components/WaitListManagement";
 
 interface Patient {
   id: string;
@@ -76,63 +78,83 @@ const Patients = () => {
         </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, ID, or phone..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <p className="text-center text-muted-foreground">Loading patients...</p>
-          ) : filteredPatients.length === 0 ? (
-            <p className="text-center text-muted-foreground">No patients found</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Patient ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Gender</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Date of Birth</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredPatients.map((patient) => (
-                  <TableRow key={patient.id}>
-                    <TableCell className="font-medium">{patient.patient_id}</TableCell>
-                    <TableCell>{patient.full_name}</TableCell>
-                    <TableCell className="capitalize">{patient.gender}</TableCell>
-                    <TableCell>{patient.phone}</TableCell>
-                    <TableCell>{patient.email || "N/A"}</TableCell>
-                    <TableCell>{new Date(patient.date_of_birth).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate(`/patients/${patient.id}`)}
-                      >
-                        View
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="all" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="all">All Patients</TabsTrigger>
+          <TabsTrigger value="waitlist">Wait List</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name, ID, or phone..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <p className="text-center text-muted-foreground">Loading patients...</p>
+              ) : filteredPatients.length === 0 ? (
+                <p className="text-center text-muted-foreground">No patients found</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Patient ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Gender</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Date of Birth</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPatients.map((patient) => (
+                      <TableRow key={patient.id}>
+                        <TableCell className="font-medium">{patient.patient_id}</TableCell>
+                        <TableCell>{patient.full_name}</TableCell>
+                        <TableCell className="capitalize">{patient.gender}</TableCell>
+                        <TableCell>{patient.phone}</TableCell>
+                        <TableCell>{patient.email || "N/A"}</TableCell>
+                        <TableCell>{new Date(patient.date_of_birth).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/patients/${patient.id}`)}
+                          >
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="waitlist">
+          <Card>
+            <CardHeader>
+              <CardTitle>Wait List Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <WaitListManagement />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
