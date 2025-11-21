@@ -384,6 +384,7 @@ export type Database = {
           email: string | null
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
+          father_name: string | null
           full_name: string
           gender: Database["public"]["Enums"]["gender"]
           id: string
@@ -404,6 +405,7 @@ export type Database = {
           email?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
+          father_name?: string | null
           full_name: string
           gender: Database["public"]["Enums"]["gender"]
           id?: string
@@ -424,6 +426,7 @@ export type Database = {
           email?: string | null
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
+          father_name?: string | null
           full_name?: string
           gender?: Database["public"]["Enums"]["gender"]
           id?: string
