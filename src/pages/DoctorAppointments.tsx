@@ -40,6 +40,7 @@ const DoctorAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [waitlistPatientIds, setWaitlistPatientIds] = useState<Set<string>>(new Set());
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showVisitDialog, setShowVisitDialog] = useState(false);
@@ -63,6 +64,7 @@ const DoctorAppointments = () => {
   useEffect(() => {
     fetchAppointments();
     fetchPatients();
+    fetchWaitlistPatients();
   }, [dateFilter]);
 
   const fetchAppointments = async () => {
@@ -82,6 +84,25 @@ const DoctorAppointments = () => {
   const fetchPatients = async () => {
     const { data } = await supabase.from("patients").select("id, patient_id, full_name").order("full_name");
     setPatients(data || []);
+  };
+
+  const fetchWaitlistPatients = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("wait_list")
+        .select("patient_id")
+        .eq("doctor_id", user.id)
+        .eq("status", "active");
+
+      if (error) throw error;
+      const ids = new Set((data || []).map(item => item.patient_id));
+      setWaitlistPatientIds(ids);
+    } catch (error: any) {
+      console.error("Error fetching waitlist:", error);
+    }
   };
 
   const handleAddAppointment = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,6 +136,7 @@ const DoctorAppointments = () => {
       setShowAddDialog(false);
       setSelectedDate(undefined);
       fetchAppointments();
+      fetchWaitlistPatients();
       (e.target as HTMLFormElement).reset();
     } catch (error: any) {
       toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });
@@ -210,7 +232,7 @@ const DoctorAppointments = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader><DialogTitle>Schedule New Appointment</DialogTitle><DialogDescription>Create a new appointment for a patient</DialogDescription></DialogHeader>
             <form onSubmit={handleAddAppointment} className="space-y-4">
-              <div className="space-y-2"><Label htmlFor="patient_id">Patient</Label><Select name="patient_id" required><SelectTrigger><SelectValue placeholder="Select a patient" /></SelectTrigger><SelectContent>{patients.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name} ({p.patient_id})</SelectItem>)}</SelectContent></Select></div>
+              <div className="space-y-2"><Label htmlFor="patient_id">Patient</Label><Select name="patient_id" required><SelectTrigger><SelectValue placeholder="Select a patient" /></SelectTrigger><SelectContent>{patients.map((p) => <SelectItem key={p.id} value={p.id}><div className="flex items-center gap-2"><span>{p.full_name} ({p.patient_id})</span>{waitlistPatientIds.has(p.id) && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Waitlist</span>}</div></SelectItem>)}</SelectContent></Select></div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
                 <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><Select name="appointment_time" required><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
