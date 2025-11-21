@@ -94,6 +94,20 @@ const DoctorPatients = () => {
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [editDobDate, setEditDobDate] = useState<Date>();
   const [editDobPopoverOpen, setEditDobPopoverOpen] = useState(false);
+  
+  // Sync dobDate with addForm.date_of_birth
+  useEffect(() => {
+    if (dobDate) {
+      setAddForm(prev => ({ ...prev, date_of_birth: format(dobDate, 'yyyy-MM-dd') }));
+    }
+  }, [dobDate]);
+  
+  // Sync editDobDate with editForm.date_of_birth
+  useEffect(() => {
+    if (editDobDate) {
+      setEditForm(prev => ({ ...prev, date_of_birth: format(editDobDate, 'yyyy-MM-dd') }));
+    }
+  }, [editDobDate]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [totalCount, setTotalCount] = useState(0);

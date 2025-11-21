@@ -141,7 +141,7 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
 
-      <div className="container flex gap-6 py-6">
+      <div className="w-full px-4 flex gap-6 py-6">
         {/* Sidebar */}
         <aside
           className={`${
@@ -171,7 +171,7 @@ const Layout = ({ children }: LayoutProps) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-hidden bg-muted/30 rounded-lg p-6">{children}</main>
+        <main className="flex-1 w-full overflow-hidden bg-gradient-to-br from-card via-card/50 to-primary/5 rounded-lg p-6 shadow-sm border">{children}</main>
       </div>
     </div>
   );

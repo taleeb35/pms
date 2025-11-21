@@ -243,10 +243,10 @@ const DoctorAppointments = () => {
                   <TableCell>{getStatusBadge(apt.status)}</TableCell>
                   <TableCell><div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => openVisitDialog(apt)} title="Record Visit"><Edit className="h-4 w-4" /></Button>
-                    {apt.status === "scheduled" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "confirmed")}><Check className="h-4 w-4" /></Button>}
-                    {apt.status === "confirmed" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "in_progress")}><Clock className="h-4 w-4" /></Button>}
-                    {apt.status === "in_progress" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "completed")}><Check className="h-4 w-4" /></Button>}
-                    {(apt.status === "scheduled" || apt.status === "confirmed") && <Button size="sm" variant="destructive" onClick={() => handleUpdateStatus(apt.id, "cancelled")}><X className="h-4 w-4" /></Button>}
+                    {apt.status === "scheduled" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "confirmed")}>Confirm</Button>}
+                    {apt.status === "confirmed" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "in_progress")}>Start</Button>}
+                    {apt.status === "in_progress" && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "completed")}>Complete</Button>}
+                    {(apt.status === "scheduled" || apt.status === "confirmed") && <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(apt.id, "cancelled")}>Cancel</Button>}
                   </div></TableCell>
                 </TableRow>
               ))}</TableBody></Table>
