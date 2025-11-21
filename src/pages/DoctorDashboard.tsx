@@ -12,6 +12,7 @@ const DoctorDashboard = () => {
     totalAppointments: 0,
     pendingAppointments: 0,
     totalRecords: 0,
+    waitlistPatients: 0,
   });
 
   useEffect(() => {
@@ -21,10 +22,11 @@ const DoctorDashboard = () => {
 
       const today = new Date().toISOString().split('T')[0];
 
-      const [patientsRes, totalAppointmentsRes, todayAppointmentsRes] = await Promise.all([
+      const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes] = await Promise.all([
         supabase.from("patients").select("id", { count: "exact", head: true }),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
+        supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
       ]);
 
       setStats({
@@ -33,6 +35,7 @@ const DoctorDashboard = () => {
         totalAppointments: totalAppointmentsRes.count || 0,
         pendingAppointments: 0,
         totalRecords: 0,
+        waitlistPatients: waitlistRes.count || 0,
       });
     };
 
@@ -46,7 +49,7 @@ const DoctorDashboard = () => {
         <p className="text-muted-foreground">Manage your patients and appointments</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/patients")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
@@ -74,6 +77,16 @@ const DoctorDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.todayAppointments}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/waitlist")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Waitlist Patients</CardTitle>
+            <Clock className="h-4 w-4 text-amber-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.waitlistPatients}</div>
           </CardContent>
         </Card>
       </div>

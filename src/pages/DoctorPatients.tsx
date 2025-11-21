@@ -15,9 +15,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
+import { Badge } from "@/components/ui/badge";
 
 interface Patient {
   id: string;
@@ -63,6 +64,7 @@ const DoctorPatients = () => {
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
   const [isEditHistoryDialogOpen, setIsEditHistoryDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [waitlistPatientIds, setWaitlistPatientIds] = useState<Set<string>>(new Set());
   const [addForm, setAddForm] = useState<{
     full_name: string;
     father_name: string;
@@ -161,7 +163,23 @@ const DoctorPatients = () => {
 
   useEffect(() => {
     fetchPatients();
+    fetchWaitlistPatients();
   }, [currentPage, pageSize, filterAge, filterGender, filterCity]);
+
+  const fetchWaitlistPatients = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from("wait_list")
+      .select("patient_id")
+      .eq("doctor_id", user.id)
+      .eq("status", "active");
+
+    if (!error && data) {
+      setWaitlistPatientIds(new Set(data.map(w => w.patient_id)));
+    }
+  };
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -817,7 +835,16 @@ const DoctorPatients = () => {
                         onClick={(e) => handleRowClick(patient, e)}
                       >
                         <TableCell className="font-medium">{patient.patient_id}</TableCell>
-                        <TableCell>{patient.full_name}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {patient.full_name}
+                            {waitlistPatientIds.has(patient.id) && (
+                              <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-200">
+                                Waitlist
+                              </Badge>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>{patient.email || "N/A"}</TableCell>
                         <TableCell>{patient.phone}</TableCell>
                         <TableCell className="capitalize">{patient.gender}</TableCell>
