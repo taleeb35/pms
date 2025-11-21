@@ -18,17 +18,19 @@ interface CitySelectProps {
   onValueChange: (value: string) => void;
   label?: string;
   required?: boolean;
+  showAllOption?: boolean;
 }
 
-export const CitySelect = ({ value, onValueChange, label = "City", required = false }: CitySelectProps) => {
+export const CitySelect = ({ value, onValueChange, label = "City", required = false, showAllOption = false }: CitySelectProps) => {
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
       <Select value={value} onValueChange={onValueChange} required={required}>
         <SelectTrigger>
           <SelectValue placeholder="Select a city" />
         </SelectTrigger>
         <SelectContent className="max-h-[300px]">
+          {showAllOption && <SelectItem value="all">All Cities</SelectItem>}
           {pakistanCities.map((city) => (
             <SelectItem key={city} value={city}>
               {city}
