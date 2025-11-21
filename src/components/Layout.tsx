@@ -14,6 +14,7 @@ import {
   Stethoscope,
   CreditCard,
   Building2,
+  Clock,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 
@@ -96,6 +97,7 @@ const Layout = ({ children }: LayoutProps) => {
   const doctorMenuItems = [
     { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/doctor/patients", icon: Users, label: "Patients" },
+    { path: "/doctor/waitlist", icon: Clock, label: "Waitlist Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
   ];

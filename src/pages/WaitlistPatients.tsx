@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -31,6 +30,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Patient {
   id: string;
@@ -50,7 +50,7 @@ interface WaitListEntry {
   };
 }
 
-export const WaitListManagement = () => {
+const WaitlistPatients = () => {
   const [waitList, setWaitList] = useState<WaitListEntry[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,6 +58,8 @@ export const WaitListManagement = () => {
   const [selectedPatient, setSelectedPatient] = useState("");
   const [scheduledDate, setScheduledDate] = useState<Date>();
   const [notes, setNotes] = useState("");
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -177,22 +179,35 @@ export const WaitListManagement = () => {
     }
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(waitList.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedWaitList = waitList.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage]);
+
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <p className="text-muted-foreground">
-          Patients scheduled for future follow-up
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold">Waitlist Patients</h2>
+          <p className="text-muted-foreground">
+            Patients scheduled for future follow-up
+          </p>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Add to Wait List
+              Add to Waitlist
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add Patient to Wait List</DialogTitle>
+              <DialogTitle>Add Patient to Waitlist</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <div>
@@ -265,7 +280,7 @@ export const WaitListManagement = () => {
                   Cancel
                 </Button>
                 <Button onClick={handleAddToWaitList}>
-                  Add to Wait List
+                  Add to Waitlist
                 </Button>
               </div>
             </div>
@@ -273,50 +288,113 @@ export const WaitListManagement = () => {
         </Dialog>
       </div>
 
-      {loading ? (
-        <p className="text-center text-muted-foreground py-8">
-          Loading wait list...
-        </p>
-      ) : waitList.length === 0 ? (
-        <p className="text-center text-muted-foreground py-8">
-          No patients in wait list
-        </p>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Patient ID</TableHead>
-              <TableHead>Patient Name</TableHead>
-              <TableHead>Scheduled Date</TableHead>
-              <TableHead>Notes</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {waitList.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell className="font-medium">
-                  {entry.patients.patient_id}
-                </TableCell>
-                <TableCell>{entry.patients.full_name}</TableCell>
-                <TableCell>
-                  {format(new Date(entry.scheduled_date), "PPP")}
-                </TableCell>
-                <TableCell>{entry.notes || "—"}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveFromWaitList(entry.id)}
-                  >
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Waitlist</CardTitle>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Show:</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => setItemsPerPage(Number(value))}
+              >
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="75">75</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <p className="text-center text-muted-foreground py-8">
+              Loading waitlist...
+            </p>
+          ) : waitList.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">
+              No patients in waitlist
+            </p>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Patient ID</TableHead>
+                    <TableHead>Patient Name</TableHead>
+                    <TableHead>Scheduled Date</TableHead>
+                    <TableHead>Notes</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedWaitList.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell className="font-medium">
+                        {entry.patients.patient_id}
+                      </TableCell>
+                      <TableCell>{entry.patients.full_name}</TableCell>
+                      <TableCell>
+                        {format(new Date(entry.scheduled_date), "PPP")}
+                      </TableCell>
+                      <TableCell>{entry.notes || "—"}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveFromWaitList(entry.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {Math.min(endIndex, waitList.length)} of{" "}
+                    {waitList.length} entries
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="flex items-center px-4 text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
+
+export default WaitlistPatients;
