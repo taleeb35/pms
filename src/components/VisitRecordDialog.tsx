@@ -110,61 +110,95 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
   const handlePrint = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const letterheadUrl = localStorage.getItem(`letterhead_url_${user.id}`);
-      
-      // Create letterhead element for print
-      const letterheadElement = document.createElement("div");
-      letterheadElement.id = "print-letterhead";
-      letterheadElement.style.display = "none";
-      
-      if (letterheadUrl) {
-        letterheadElement.innerHTML = `
-          <img src="${letterheadUrl}" style="width: 100%; height: auto; display: block; margin-bottom: 20px;" />
-        `;
-      }
-      
-      document.body.appendChild(letterheadElement);
-      
-      // Add print styles
-      const printStyles = `
-        @media print {
-          body > *:not(#print-letterhead):not(.dialog-content-for-print) {
-            display: none !important;
-          }
-          
-          #print-letterhead {
-            display: block !important;
-            page-break-after: avoid;
-          }
-          
-          .dialog-content-for-print {
-            display: block !important;
-          }
-          
-          .print\\:hidden {
-            display: none !important;
-          }
-        }
+    if (!user) return;
+    
+    const letterheadUrl = localStorage.getItem(`letterhead_url_${user.id}`);
+    
+    // Create print-specific container
+    const printContainer = document.createElement("div");
+    printContainer.id = "print-container";
+    printContainer.style.display = "none";
+    
+    // Add letterhead
+    if (letterheadUrl) {
+      printContainer.innerHTML = `
+        <div style="width: 100%; margin-bottom: 30px;">
+          <img src="${letterheadUrl}" style="width: 100%; height: auto; display: block;" />
+        </div>
       `;
-      
-      const styleSheet = document.createElement("style");
-      styleSheet.innerText = printStyles;
-      document.head.appendChild(styleSheet);
-      
-      // Mark dialog content for printing
-      const dialogContent = document.querySelector('[role="dialog"]');
-      dialogContent?.classList.add("dialog-content-for-print");
     }
     
+    // Clone the patient info and form content
+    const patientInfo = document.querySelector('.bg-muted.p-4.rounded-lg.mb-4')?.cloneNode(true) as HTMLElement;
+    const formContent = document.querySelector('form.space-y-6')?.cloneNode(true) as HTMLElement;
+    
+    if (patientInfo) {
+      patientInfo.style.cssText = "background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 16px;";
+      printContainer.appendChild(patientInfo);
+    }
+    
+    if (formContent) {
+      // Remove buttons and visit history from print
+      const buttons = formContent.querySelectorAll('button');
+      buttons.forEach(btn => btn.remove());
+      
+      const visitHistory = formContent.querySelector('.border.rounded-lg.p-4 h3');
+      if (visitHistory && visitHistory.textContent?.includes('Visit History')) {
+        visitHistory.closest('.border.rounded-lg.p-4')?.remove();
+      }
+      
+      printContainer.appendChild(formContent);
+    }
+    
+    document.body.appendChild(printContainer);
+    
+    // Add comprehensive print styles
+    const styleSheet = document.createElement("style");
+    styleSheet.id = "print-styles";
+    styleSheet.textContent = `
+      @media print {
+        @page {
+          margin: 1cm;
+          size: A4;
+        }
+        
+        body * {
+          visibility: hidden;
+        }
+        
+        #print-container,
+        #print-container * {
+          visibility: visible;
+        }
+        
+        #print-container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          display: block !important;
+        }
+        
+        /* Hide all dialog chrome */
+        [role="dialog"],
+        .fixed,
+        header,
+        nav,
+        .print\\:hidden {
+          display: none !important;
+        }
+      }
+    `;
+    
+    document.head.appendChild(styleSheet);
+    
+    // Print
     window.print();
     
-    // Cleanup after print
+    // Cleanup
     setTimeout(() => {
-      const letterheadElement = document.getElementById("print-letterhead");
-      if (letterheadElement) {
-        letterheadElement.remove();
-      }
+      printContainer.remove();
+      styleSheet.remove();
     }, 1000);
   };
 
