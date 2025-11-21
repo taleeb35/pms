@@ -1232,7 +1232,6 @@ const DoctorPatients = () => {
                       onSelect={(date) => {
                         if (date) {
                           setDobDate(date);
-                          setAddForm({ ...addForm, date_of_birth: format(date, "yyyy-MM-dd") });
                           setDobPopoverOpen(false);
                         }
                       }}
@@ -1405,7 +1404,6 @@ const DoctorPatients = () => {
                       onSelect={(date) => {
                         if (date) {
                           setEditDobDate(date);
-                          setEditForm({ ...editForm, date_of_birth: format(date, "yyyy-MM-dd") });
                           setEditDobPopoverOpen(false);
                         }
                       }}

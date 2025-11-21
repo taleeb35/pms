@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { VisitHistory } from "./VisitHistory";
 
 interface Appointment {
   id: string;
@@ -107,7 +108,37 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     return age;
   };
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
+    // Load letterhead URL from localStorage
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const letterheadUrl = localStorage.getItem(`letterhead_url_${user.id}`);
+      if (letterheadUrl) {
+        // Add letterhead background to print
+        const printStyles = `
+          @media print {
+            body::before {
+              content: "";
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-image: url('${letterheadUrl}');
+              background-size: contain;
+              background-repeat: no-repeat;
+              background-position: top center;
+              opacity: 0.1;
+              z-index: -1;
+            }
+          }
+        `;
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = printStyles;
+        document.head.appendChild(styleSheet);
+      }
+    }
+    
     window.print();
   };
 
@@ -266,17 +297,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
             {/* Right Column - History & Future */}
             <div className="space-y-6">
-              {/* History */}
-              <div className="border rounded-lg p-4">
-                <h3 className="font-semibold mb-4">History</h3>
-                <Textarea
-                  placeholder="Patient history, previous conditions, medications..."
-                  value={formData.patient_history}
-                  onChange={(e) => setFormData({...formData, patient_history: e.target.value})}
-                  rows={8}
-                  className="text-sm"
-                />
-              </div>
+              {/* Visit History */}
+              {appointment && <VisitHistory patientId={appointment.patient_id} />}
 
               {/* Test Reports */}
               <div className="border rounded-lg p-4">
