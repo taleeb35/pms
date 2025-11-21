@@ -92,6 +92,7 @@ const DoctorProfile = () => {
       .update({
         full_name: profile.full_name,
         phone: profile.phone,
+        city: profile.city,
       })
       .eq("id", user.id);
 

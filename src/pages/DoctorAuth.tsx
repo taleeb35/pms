@@ -7,6 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { CitySelect } from "@/components/CitySelect";
 
@@ -20,6 +25,8 @@ const DoctorAuth = () => {
   const [city, setCity] = useState("");
   const [specialization, setSpecialization] = useState("");
   const [introduction, setIntroduction] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
+  const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -102,6 +109,7 @@ const DoctorAuth = () => {
             full_name: fullName,
             phone: contactNumber,
             city: city,
+            date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : null,
           },
           emailRedirectTo: `${window.location.origin}/`,
         },
@@ -116,6 +124,7 @@ const DoctorAuth = () => {
         .update({
           phone: contactNumber,
           city: city,
+          date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : null,
         })
         .eq("id", authData.user.id);
 
@@ -159,6 +168,7 @@ const DoctorAuth = () => {
       setCity("");
       setSpecialization("");
       setIntroduction("");
+      setDateOfBirth(undefined);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -206,6 +216,34 @@ const DoctorAuth = () => {
                   />
                 </div>
                 <CitySelect value={city} onValueChange={setCity} required />
+                <div className="space-y-2">
+                  <Label>Date of Birth</Label>
+                  <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dateOfBirth && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateOfBirth ? format(dateOfBirth, "PPP") : "Select date of birth"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateOfBirth}
+                        onSelect={(date) => {
+                          setDateOfBirth(date);
+                          if (date) setDobPopoverOpen(false);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="specialization">Doctor Type / Specialization</Label>
                   <Select value={specialization} onValueChange={setSpecialization} required>
