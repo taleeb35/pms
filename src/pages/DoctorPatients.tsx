@@ -407,7 +407,10 @@ const DoctorPatients = () => {
   const handleUpdatePatient = async () => {
     if (!selectedPatient) return;
 
-    const { error } = await supabase
+    console.log("Update Patient - Form data:", editForm);
+    console.log("Selected patient ID:", selectedPatient.id);
+
+    const { data, error } = await supabase
       .from("patients")
       .update({
         full_name: editForm.full_name,
@@ -423,16 +426,20 @@ const DoctorPatients = () => {
         city: editForm.city || null,
         major_diseases: editForm.major_diseases || null,
       })
-      .eq("id", selectedPatient.id);
+      .eq("id", selectedPatient.id)
+      .select();
 
     if (error) {
+      console.error("Error updating patient:", error);
       toast({
         title: "Error",
-        description: "Failed to update patient",
+        description: `Failed to update patient: ${error.message}`,
         variant: "destructive",
       });
       return;
     }
+
+    console.log("Patient updated successfully:", data);
 
     toast({
       title: "Success",
@@ -596,10 +603,17 @@ const DoctorPatients = () => {
   };
 
   const handleAddPatient = async () => {
+    console.log("Add Patient - Form data:", addForm);
+    
     if (!addForm.full_name || !addForm.phone || !addForm.date_of_birth) {
+      console.log("Validation failed:", { 
+        full_name: addForm.full_name, 
+        phone: addForm.phone, 
+        date_of_birth: addForm.date_of_birth 
+      });
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Please fill in all required fields (Name, Phone, Date of Birth)",
         variant: "destructive",
       });
       return;
@@ -611,7 +625,14 @@ const DoctorPatients = () => {
     // Generate patient ID
     const patientId = `PAT${Date.now().toString().slice(-8)}`;
 
-    const { error } = await supabase
+    console.log("Inserting patient with data:", {
+      full_name: addForm.full_name,
+      phone: addForm.phone,
+      date_of_birth: addForm.date_of_birth,
+      gender: addForm.gender,
+    });
+
+    const { data, error } = await supabase
       .from("patients")
       .insert([
         {
@@ -634,13 +655,16 @@ const DoctorPatients = () => {
       .select();
 
     if (error) {
+      console.error("Error adding patient:", error);
       toast({
         title: "Error",
-        description: "Failed to add patient",
+        description: `Failed to add patient: ${error.message}`,
         variant: "destructive",
       });
       return;
     }
+
+    console.log("Patient added successfully:", data);
 
     toast({
       title: "Success",
