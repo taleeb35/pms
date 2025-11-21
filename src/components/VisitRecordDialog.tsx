@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { CalendarIcon, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -107,6 +107,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     return age;
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appointment) return;
@@ -156,13 +160,17 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     }
   };
 
-  if (!appointment) return null;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Patient Visit Record</DialogTitle>
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto print:max-w-full">
+        <DialogHeader className="print:hidden">
+          <DialogTitle className="flex items-center justify-between">
+            <span>Patient Visit Record</span>
+            <Button variant="outline" size="sm" onClick={handlePrint}>
+              <Printer className="h-4 w-4 mr-2" />
+              Print
+            </Button>
+          </DialogTitle>
         </DialogHeader>
 
         {/* Patient Info Header */}
@@ -324,7 +332,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div className="flex justify-end gap-2 pt-4 border-t print:hidden">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
