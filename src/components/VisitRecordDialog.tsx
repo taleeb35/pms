@@ -163,33 +163,39 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto print:max-w-full">
-        <DialogHeader className="print:hidden">
-          <DialogTitle className="flex items-center justify-between">
-            <span>Patient Visit Record</span>
-            <Button variant="outline" size="sm" onClick={handlePrint}>
-              <Printer className="h-4 w-4 mr-2" />
-              Print
-            </Button>
-          </DialogTitle>
-        </DialogHeader>
-
-        {/* Patient Info Header */}
-        <div className="bg-muted p-4 rounded-lg mb-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Patient Name</p>
-              <p className="font-semibold">{appointment.patients.full_name}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Patient ID</p>
-              <p className="font-semibold">{appointment.patients.patient_id}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Age</p>
-              <p className="font-semibold">{calculateAge(appointment.patients.date_of_birth)} years</p>
-            </div>
+        {!appointment ? (
+          <div className="p-8 text-center text-muted-foreground">
+            No appointment selected
           </div>
-        </div>
+        ) : (
+          <>
+            <DialogHeader className="print:hidden">
+              <DialogTitle className="flex items-center justify-between">
+                <span>Patient Visit Record</span>
+                <Button variant="outline" size="sm" onClick={handlePrint}>
+                  <Printer className="h-4 w-4 mr-2" />
+                  Print
+                </Button>
+              </DialogTitle>
+            </DialogHeader>
+
+            {/* Patient Info Header */}
+            <div className="bg-muted p-4 rounded-lg mb-4">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Patient Name</p>
+                  <p className="font-semibold">{appointment.patients.full_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Patient ID</p>
+                  <p className="font-semibold">{appointment.patients.patient_id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Age</p>
+                  <p className="font-semibold">{calculateAge(appointment.patients.date_of_birth)} years</p>
+                </div>
+              </div>
+            </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-3 gap-6">
@@ -341,6 +347,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
             </Button>
           </div>
         </form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
