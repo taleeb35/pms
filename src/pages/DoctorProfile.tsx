@@ -46,20 +46,28 @@ const DoctorProfile = () => {
       return;
     }
 
-    const { data: profileData } = await supabase
+    console.log("Fetching profile data for user:", user.id);
+
+    const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .single();
 
-    const { data: doctorData } = await supabase
+    console.log("Profile data fetched:", profileData);
+    if (profileError) console.error("Profile fetch error:", profileError);
+
+    const { data: doctorData, error: doctorError } = await supabase
       .from("doctors")
       .select("*")
       .eq("id", user.id)
       .single();
 
+    console.log("Doctor data fetched:", doctorData);
+    if (doctorError) console.error("Doctor fetch error:", doctorError);
+
     if (profileData && doctorData) {
-      setProfile({
+      const newProfile = {
         full_name: profileData.full_name || "",
         email: profileData.email || "",
         phone: profileData.phone || "",
@@ -67,10 +75,13 @@ const DoctorProfile = () => {
         introduction: doctorData.introduction || "",
         specialization: doctorData.specialization || "",
         qualification: doctorData.qualification || "",
-        experience_years: doctorData.experience_years?.toString() || "",
-        consultation_fee: doctorData.consultation_fee?.toString() || "",
+        experience_years: doctorData.experience_years !== null && doctorData.experience_years !== undefined ? doctorData.experience_years.toString() : "",
+        consultation_fee: doctorData.consultation_fee !== null && doctorData.consultation_fee !== undefined ? doctorData.consultation_fee.toString() : "",
         contact_number: doctorData.contact_number || "",
-      });
+      };
+      
+      console.log("Setting profile state to:", newProfile);
+      setProfile(newProfile);
       
       // Load letterhead image URL
       const savedUrl = localStorage.getItem(`letterhead_url_${user.id}`);
@@ -146,8 +157,13 @@ const DoctorProfile = () => {
       console.log("Doctor table updated successfully");
       toast({ title: "Profile updated successfully" });
       
+      // Force a small delay to ensure database has propagated
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Refresh the data to confirm the update
+      console.log("Refreshing profile data after update...");
       await fetchProfile();
+      console.log("Profile data refreshed, new state:", profile);
     } catch (error: any) {
       console.error("Unexpected error during profile update:", error);
       toast({ 
