@@ -261,12 +261,19 @@ const DoctorSupport = () => {
       </div>
 
       {supportEmail && (
-        <Alert>
-          <Mail className="h-4 w-4" />
-          <AlertDescription>
-            <span className="font-medium">Support Email:</span> {supportEmail}
-          </AlertDescription>
-        </Alert>
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="rounded-full bg-primary/10 p-3">
+                <Mail className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Support Email</p>
+                <p className="text-lg font-semibold text-foreground">{supportEmail}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <Card>
