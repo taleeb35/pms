@@ -16,6 +16,7 @@ import {
   Building2,
   Clock,
   LifeBuoy,
+  Settings,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 
@@ -94,6 +95,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
     { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
+    { path: "/settings", icon: Settings, label: "Settings" },
   ];
 
   const doctorMenuItems = [

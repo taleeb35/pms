@@ -21,6 +21,7 @@ import PatientDetail from "./pages/PatientDetail";
 import DoctorSupport from "./pages/DoctorSupport";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
+import AdminSettings from "./pages/AdminSettings";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -145,6 +146,14 @@ const App = () => (
               element={
                 <Layout>
                   <AdminDoctorPatients />
+                </Layout>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <Layout>
+                  <AdminSettings />
                 </Layout>
               }
             />
