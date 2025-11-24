@@ -41,3 +41,14 @@ export const calculatePregnancyDuration = (startDate: string | null): string | n
     }
   }
 };
+
+export const calculateExpectedDueDate = (startDate: string | null): Date | null => {
+  if (!startDate) return null;
+  
+  const start = new Date(startDate);
+  // Pregnancy duration is typically 280 days (40 weeks)
+  const dueDate = new Date(start);
+  dueDate.setDate(dueDate.getDate() + 280);
+  
+  return dueDate;
+};
