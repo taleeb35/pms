@@ -394,6 +394,7 @@ export type Database = {
           medical_history: string | null
           patient_id: string
           phone: string
+          pregnancy_start_date: string | null
           qr_code: string | null
           updated_at: string
         }
@@ -417,6 +418,7 @@ export type Database = {
           medical_history?: string | null
           patient_id: string
           phone: string
+          pregnancy_start_date?: string | null
           qr_code?: string | null
           updated_at?: string
         }
@@ -440,6 +442,7 @@ export type Database = {
           medical_history?: string | null
           patient_id?: string
           phone?: string
+          pregnancy_start_date?: string | null
           qr_code?: string | null
           updated_at?: string
         }

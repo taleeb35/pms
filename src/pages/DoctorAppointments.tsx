@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
+import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 
 interface Appointment {
   id: string;
@@ -36,6 +37,7 @@ interface Appointment {
     date_of_birth: string;
     email: string | null;
     father_name: string | null;
+    pregnancy_start_date?: string | null;
   };
 }
 
@@ -58,6 +60,7 @@ const DoctorAppointments = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
+  const [isGynecologist, setIsGynecologist] = useState(false);
   const { toast } = useToast();
 
   const timeSlots = Array.from({ length: 48 }, (_, i) => {
@@ -70,13 +73,33 @@ const DoctorAppointments = () => {
     fetchAppointments();
     fetchPatients();
     fetchWaitlistPatients();
+    checkDoctorSpecialization();
   }, [dateFilter]);
+
+  const checkDoctorSpecialization = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("doctors")
+        .select("specialization")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      
+      setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+    } catch (error) {
+      console.error("Error checking doctor specialization:", error);
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
+      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
       if (error) throw error;
       setAppointments(data || []);
     } catch (error: any) {
@@ -318,12 +341,23 @@ const DoctorAppointments = () => {
         <TabsContent value="table" className="space-y-4">
           <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
             {paginatedAppointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
-              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Patient Phone</TableHead><TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
               <TableBody>{paginatedAppointments.map((apt) => (
                 <TableRow key={apt.id} className="hover:bg-accent/50">
                   <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
                   <TableCell>{apt.patients.patient_id}</TableCell>
                   <TableCell>{apt.patients.phone}</TableCell>
+                  {isGynecologist && (
+                    <TableCell>
+                      {apt.patients.pregnancy_start_date ? (
+                        <span className="text-primary font-medium">
+                          {calculatePregnancyDuration(apt.patients.pregnancy_start_date)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell>{format(new Date(apt.appointment_date), "PPP")}<br /><span className="text-sm text-muted-foreground">{apt.appointment_time}</span></TableCell>
                   <TableCell>{apt.reason || <span className="text-muted-foreground">-</span>}</TableCell>
                   <TableCell>{getStatusBadge(apt.status)}</TableCell>
