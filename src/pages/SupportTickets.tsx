@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -20,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { LifeBuoy, Send } from "lucide-react";
+import { LifeBuoy, Send, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -53,12 +54,20 @@ interface TicketMessage {
 const SupportTickets = () => {
   const { toast } = useToast();
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [filteredTickets, setFilteredTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<TicketMessage[]>([]);
   const [replyMessage, setReplyMessage] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  
+  // Pagination & Filters
+  const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchTickets();
@@ -106,9 +115,46 @@ const SupportTickets = () => {
       });
     } else {
       setTickets(data || []);
+      setFilteredTickets(data || []);
     }
     setLoading(false);
   };
+
+  // Filter tickets based on search, status, and date
+  useEffect(() => {
+    let filtered = [...tickets];
+
+    // Status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(ticket => ticket.status === statusFilter);
+    }
+
+    // Search filter (by doctor name or subject)
+    if (searchQuery) {
+      filtered = filtered.filter(ticket => 
+        ticket.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ticket.subject.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Date filter
+    if (dateFilter) {
+      filtered = filtered.filter(ticket => {
+        const ticketDate = new Date(ticket.created_at).toISOString().split('T')[0];
+        return ticketDate === dateFilter;
+      });
+    }
+
+    setFilteredTickets(filtered);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [tickets, statusFilter, searchQuery, dateFilter]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredTickets.length / itemsPerPage);
+  const paginatedTickets = filteredTickets.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const fetchMessages = async (ticketId: string) => {
     const { data, error } = await supabase
@@ -211,51 +257,130 @@ const SupportTickets = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LifeBuoy className="h-5 w-5" />
-            All Tickets ({tickets.length})
+            All Tickets ({filteredTickets.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by doctor or subject..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              placeholder="Filter by date"
+            />
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchQuery("");
+                setStatusFilter("all");
+                setDateFilter("");
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+
+          {/* Table */}
           {loading ? (
             <p className="text-muted-foreground text-center py-4">Loading tickets...</p>
-          ) : tickets.length === 0 ? (
+          ) : filteredTickets.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">No tickets found</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Doctor Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tickets.map((ticket) => (
-                  <TableRow key={ticket.id}>
-                    <TableCell className="font-medium">{ticket.name}</TableCell>
-                    <TableCell>{ticket.email}</TableCell>
-                    <TableCell>{ticket.subject}</TableCell>
-                    <TableCell>
-                      <Badge variant={ticket.status === "open" ? "default" : ticket.status === "in_progress" ? "secondary" : "outline"}>
-                        {ticket.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(ticket.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewDetails(ticket)}
-                      >
-                        View Thread
-                      </Button>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Doctor Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {paginatedTickets.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell className="font-medium">{ticket.name}</TableCell>
+                      <TableCell>{ticket.email}</TableCell>
+                      <TableCell>{ticket.subject}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={ticket.status === "open" ? "default" : ticket.status === "in_progress" ? "secondary" : "outline"}
+                          className="text-base capitalize"
+                        >
+                          {ticket.status.replace('_', ' ')}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{new Date(ticket.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleViewDetails(ticket)}
+                        >
+                          View Thread
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredTickets.length)} of {filteredTickets.length} tickets
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+                    <span className="text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

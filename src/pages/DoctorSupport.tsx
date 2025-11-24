@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { LifeBuoy, Send, MessageSquare } from "lucide-react";
+import { LifeBuoy, Send, MessageSquare, Mail } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -51,6 +52,7 @@ const DoctorSupport = () => {
   const [replyMessage, setReplyMessage] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [supportEmail, setSupportEmail] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -61,7 +63,20 @@ const DoctorSupport = () => {
   useEffect(() => {
     fetchDoctorProfile();
     fetchTickets();
+    fetchSupportEmail();
   }, []);
+
+  const fetchSupportEmail = async () => {
+    const { data } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "support_email")
+      .single();
+
+    if (data) {
+      setSupportEmail(data.value);
+    }
+  };
 
   useEffect(() => {
     if (selectedTicket) {
@@ -245,6 +260,15 @@ const DoctorSupport = () => {
         <p className="text-muted-foreground">Submit a support ticket or view your tickets</p>
       </div>
 
+      {supportEmail && (
+        <Alert>
+          <Mail className="h-4 w-4" />
+          <AlertDescription>
+            <span className="font-medium">Support Email:</span> {supportEmail}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -329,8 +353,11 @@ const DoctorSupport = () => {
                   <TableRow key={ticket.id}>
                     <TableCell className="font-medium">{ticket.subject}</TableCell>
                     <TableCell>
-                      <Badge variant={ticket.status === "open" ? "default" : ticket.status === "in_progress" ? "secondary" : "outline"}>
-                        {ticket.status}
+                      <Badge 
+                        variant={ticket.status === "open" ? "default" : ticket.status === "in_progress" ? "secondary" : "outline"}
+                        className="text-base capitalize"
+                      >
+                        {ticket.status.replace('_', ' ')}
                       </Badge>
                     </TableCell>
                     <TableCell>{new Date(ticket.created_at).toLocaleDateString()}</TableCell>
@@ -361,8 +388,11 @@ const DoctorSupport = () => {
             <div className="space-y-4">
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm font-medium mb-1">Status</p>
-                <Badge variant={selectedTicket.status === "open" ? "default" : selectedTicket.status === "in_progress" ? "secondary" : "outline"}>
-                  {selectedTicket.status}
+                <Badge 
+                  variant={selectedTicket.status === "open" ? "default" : selectedTicket.status === "in_progress" ? "secondary" : "outline"}
+                  className="text-base capitalize"
+                >
+                  {selectedTicket.status.replace('_', ' ')}
                 </Badge>
                 <p className="text-xs text-muted-foreground mt-2">
                   Created: {new Date(selectedTicket.created_at).toLocaleString()}
