@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon } from "lucide-react";
+import { VisitHistory } from "@/components/VisitHistory";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
@@ -894,10 +895,11 @@ const DoctorPatients = () => {
                                 </div>
                               </div>
                               <Tabs defaultValue="info" className="w-full">
-                                <TabsList className="grid w-full grid-cols-3">
+                                <TabsList className="grid w-full grid-cols-4">
                                   <TabsTrigger value="info">Information</TabsTrigger>
                                   <TabsTrigger value="history">Medical History</TabsTrigger>
                                   <TabsTrigger value="documents">Documents</TabsTrigger>
+                                  <TabsTrigger value="visits">Visit History</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="info" className="space-y-4">
                                   <div className="grid grid-cols-2 gap-4">
@@ -1164,6 +1166,9 @@ const DoctorPatients = () => {
                                       </p>
                                     )}
                                   </div>
+                                </TabsContent>
+                                <TabsContent value="visits" className="space-y-4">
+                                  <VisitHistory patientId={selectedPatient.id} />
                                 </TabsContent>
                               </Tabs>
                             </div>
