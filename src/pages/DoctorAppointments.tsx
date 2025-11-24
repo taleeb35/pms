@@ -18,6 +18,7 @@ import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fn
 import { cn } from "@/lib/utils";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
+import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 
 interface Appointment {
   id: string;
@@ -53,6 +54,7 @@ const DoctorAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [dateFilter, setDateFilter] = useState("");
+  const [selectedPatientId, setSelectedPatientId] = useState("");
   const { toast } = useToast();
 
   const timeSlots = Array.from({ length: 48 }, (_, i) => {
@@ -82,7 +84,7 @@ const DoctorAppointments = () => {
   };
 
   const fetchPatients = async () => {
-    const { data } = await supabase.from("patients").select("id, patient_id, full_name").order("full_name");
+    const { data } = await supabase.from("patients").select("id, patient_id, full_name, phone").order("full_name");
     setPatients(data || []);
   };
 
@@ -112,9 +114,13 @@ const DoctorAppointments = () => {
       toast({ title: "Error", description: "Please select an appointment date", variant: "destructive" });
       return;
     }
+    if (!selectedPatientId) {
+      toast({ title: "Error", description: "Please select a patient", variant: "destructive" });
+      return;
+    }
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const patientId = formData.get("patient_id") as string;
+      const patientId = selectedPatientId;
       
       const { error } = await supabase.from("appointments").insert({
         doctor_id: user?.id, patient_id: patientId,
@@ -135,6 +141,7 @@ const DoctorAppointments = () => {
       toast({ title: "Success", description: "Appointment created successfully" });
       setShowAddDialog(false);
       setSelectedDate(undefined);
+      setSelectedPatientId("");
       fetchAppointments();
       fetchWaitlistPatients();
       (e.target as HTMLFormElement).reset();
@@ -232,7 +239,16 @@ const DoctorAppointments = () => {
           <DialogContent className="max-w-2xl">
             <DialogHeader><DialogTitle>Schedule New Appointment</DialogTitle><DialogDescription>Create a new appointment for a patient</DialogDescription></DialogHeader>
             <form onSubmit={handleAddAppointment} className="space-y-4">
-              <div className="space-y-2"><Label htmlFor="patient_id">Patient</Label><Select name="patient_id" required><SelectTrigger><SelectValue placeholder="Select a patient" /></SelectTrigger><SelectContent>{patients.map((p) => <SelectItem key={p.id} value={p.id}><div className="flex items-center gap-2"><span>{p.full_name} ({p.patient_id})</span>{waitlistPatientIds.has(p.id) && <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Waitlist</span>}</div></SelectItem>)}</SelectContent></Select></div>
+              <div className="space-y-2">
+                <Label>Patient</Label>
+                <PatientSearchSelect
+                  patients={patients}
+                  value={selectedPatientId}
+                  onValueChange={setSelectedPatientId}
+                  placeholder="Search by name, phone, or ID..."
+                  waitlistPatientIds={waitlistPatientIds}
+                />
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
                 <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><Select name="appointment_time" required><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>

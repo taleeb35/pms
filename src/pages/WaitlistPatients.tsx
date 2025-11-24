@@ -33,11 +33,13 @@ import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CitySelect } from "@/components/CitySelect";
+import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 
 interface Patient {
   id: string;
   patient_id: string;
   full_name: string;
+  phone: string;
 }
 
 interface WaitListEntry {
@@ -155,7 +157,7 @@ const WaitlistPatients = () => {
     try {
       const { data, error } = await supabase
         .from("patients")
-        .select("id, patient_id, full_name")
+        .select("id, patient_id, full_name, phone")
         .order("full_name", { ascending: true });
 
       if (error) throw error;
@@ -267,18 +269,12 @@ const WaitlistPatients = () => {
                 <label className="text-sm font-medium mb-2 block">
                   Select Patient
                 </label>
-                <Select value={selectedPatient} onValueChange={setSelectedPatient}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choose a patient" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {patients.map((patient) => (
-                      <SelectItem key={patient.id} value={patient.id}>
-                        {patient.full_name} ({patient.patient_id})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <PatientSearchSelect
+                  patients={patients}
+                  value={selectedPatient}
+                  onValueChange={setSelectedPatient}
+                  placeholder="Search by name, phone, or ID..."
+                />
               </div>
 
               <div>
