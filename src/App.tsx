@@ -18,6 +18,8 @@ import DoctorAppointments from "./pages/DoctorAppointments";
 import DoctorProfile from "./pages/DoctorProfile";
 import WaitlistPatients from "./pages/WaitlistPatients";
 import PatientDetail from "./pages/PatientDetail";
+import DoctorSupport from "./pages/DoctorSupport";
+import SupportTickets from "./pages/SupportTickets";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -118,6 +120,22 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorProfile />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/support"
+              element={
+                <Layout>
+                  <DoctorSupport />
+                </Layout>
+              }
+            />
+            <Route
+              path="/support-tickets"
+              element={
+                <Layout>
+                  <SupportTickets />
                 </Layout>
               }
             />

@@ -15,6 +15,7 @@ import {
   CreditCard,
   Building2,
   Clock,
+  LifeBuoy,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 
@@ -92,6 +93,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
+    { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
   ];
 
   const doctorMenuItems = [
@@ -100,6 +102,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/waitlist", icon: Clock, label: "Waitlist Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
+    { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
   ];
 
   const menuItems = userRole === "doctor" ? doctorMenuItems : adminMenuItems;
