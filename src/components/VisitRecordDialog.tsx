@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VisitHistory } from "./VisitHistory";
-import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
+import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 
 interface Appointment {
   id: string;
@@ -67,6 +67,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       fetchExistingRecord();
       checkDoctorSpecialization();
       fetchPatientPregnancyDate();
+    } else if (!open) {
+      // Reset pregnancy date when dialog closes
+      setPregnancyStartDate(undefined);
     }
   }, [appointment, open]);
 
@@ -92,6 +95,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const fetchPatientPregnancyDate = async () => {
     if (!appointment) return;
 
+    // Reset first to ensure clean state for each patient
+    setPregnancyStartDate(undefined);
+
     try {
       const { data, error } = await supabase
         .from("patients")
@@ -103,9 +109,12 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       if (data?.pregnancy_start_date) {
         setPregnancyStartDate(new Date(data.pregnancy_start_date));
+      } else {
+        setPregnancyStartDate(undefined);
       }
     } catch (error) {
       console.error("Error fetching pregnancy date:", error);
+      setPregnancyStartDate(undefined);
     }
   };
 
@@ -483,11 +492,21 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                 </div>
               </div>
               {isGynecologist && pregnancyStartDate && (
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
-                  <p className="font-semibold text-primary">
-                    {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
-                  </p>
+                <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
+                    <p className="font-semibold text-primary">
+                      {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Expected Due Date</p>
+                    <p className="font-semibold text-primary">
+                      {calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd")) 
+                        ? format(calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                        : "-"}
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -568,41 +587,54 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               {isGynecologist && (
                 <div className="border rounded-lg p-4 bg-primary/5">
                   <h3 className="font-semibold mb-4">Pregnancy Tracking</h3>
-                  <div>
-                    <Label>Pregnancy Start Date</Label>
-                    <Popover open={pregnancyDatePopoverOpen} onOpenChange={setPregnancyDatePopoverOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !pregnancyStartDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {pregnancyStartDate ? format(pregnancyStartDate, "PPP") : "Select start date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={pregnancyStartDate}
-                          onSelect={(date) => {
-                            setPregnancyStartDate(date);
-                            if (date) setPregnancyDatePopoverOpen(false);
-                          }}
-                          disabled={(date) => date > new Date()}
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Pregnancy Start Date</Label>
+                      <Popover open={pregnancyDatePopoverOpen} onOpenChange={setPregnancyDatePopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !pregnancyStartDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {pregnancyStartDate ? format(pregnancyStartDate, "PPP") : "Set start date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={pregnancyStartDate}
+                            onSelect={(date) => {
+                              setPregnancyStartDate(date);
+                              if (date) setPregnancyDatePopoverOpen(false);
+                            }}
+                            disabled={(date) => date > new Date()}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
                     {pregnancyStartDate && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Duration: <span className="font-semibold text-primary">
-                          {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
-                        </span>
-                      </p>
+                      <div className="space-y-2 pt-2 border-t">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Duration:</span>
+                          <span className="font-semibold text-primary">
+                            {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Expected Due Date:</span>
+                          <span className="font-semibold text-primary">
+                            {calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd")) 
+                              ? format(calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                              : "-"}
+                          </span>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
