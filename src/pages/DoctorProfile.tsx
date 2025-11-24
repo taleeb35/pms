@@ -82,47 +82,82 @@ const DoctorProfile = () => {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form submitted - handleUpdateProfile called");
+    console.log("Profile data being submitted:", profile);
     setLoading(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error("No user found");
+        toast({ title: "Not authenticated", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
 
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({
-        full_name: profile.full_name,
-        phone: profile.phone,
-        city: profile.city,
-      })
-      .eq("id", user.id);
+      console.log("Updating profile table...");
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: profile.full_name,
+          phone: profile.phone,
+          city: profile.city,
+        })
+        .eq("id", user.id);
 
-    if (profileError) {
-      toast({ title: "Error updating profile", variant: "destructive" });
+      if (profileError) {
+        console.error("Profile update error:", profileError);
+        toast({ 
+          title: "Error updating profile", 
+          description: profileError.message,
+          variant: "destructive" 
+        });
+        setLoading(false);
+        return;
+      }
+
+      console.log("Profile table updated successfully");
+      console.log("Updating doctors table...");
+
+      const { error: doctorError } = await supabase
+        .from("doctors")
+        .update({
+          city: profile.city,
+          introduction: profile.introduction,
+          specialization: profile.specialization,
+          qualification: profile.qualification,
+          experience_years: profile.experience_years ? parseInt(profile.experience_years) : null,
+          consultation_fee: profile.consultation_fee ? parseFloat(profile.consultation_fee) : null,
+          contact_number: profile.contact_number,
+        })
+        .eq("id", user.id);
+
+      if (doctorError) {
+        console.error("Doctor table update error:", doctorError);
+        toast({ 
+          title: "Error updating doctor info", 
+          description: doctorError.message,
+          variant: "destructive" 
+        });
+        setLoading(false);
+        return;
+      }
+
+      console.log("Doctor table updated successfully");
+      toast({ title: "Profile updated successfully" });
+      
+      // Refresh the data to confirm the update
+      await fetchProfile();
+    } catch (error: any) {
+      console.error("Unexpected error during profile update:", error);
+      toast({ 
+        title: "Unexpected error", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const { error: doctorError } = await supabase
-      .from("doctors")
-      .update({
-        city: profile.city,
-        introduction: profile.introduction,
-        specialization: profile.specialization,
-        qualification: profile.qualification,
-        experience_years: profile.experience_years ? parseInt(profile.experience_years) : null,
-        consultation_fee: profile.consultation_fee ? parseFloat(profile.consultation_fee) : null,
-        contact_number: profile.contact_number,
-      })
-      .eq("id", user.id);
-
-    if (doctorError) {
-      toast({ title: "Error updating doctor info", variant: "destructive" });
-      setLoading(false);
-      return;
-    }
-
-    toast({ title: "Profile updated successfully" });
-    setLoading(false);
   };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -303,7 +338,7 @@ const DoctorProfile = () => {
                     <SelectItem value="Dermatologist">Dermatologist</SelectItem>
                     <SelectItem value="Neurologist">Neurologist</SelectItem>
                     <SelectItem value="Pediatrician">Pediatrician</SelectItem>
-                    <SelectItem value="General Physician">General Physician</SelectItem>
+                    <SelectItem value="General">General</SelectItem>
                     <SelectItem value="Orthopedic">Orthopedic</SelectItem>
                     <SelectItem value="ENT Specialist">ENT Specialist</SelectItem>
                     <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
@@ -370,7 +405,7 @@ const DoctorProfile = () => {
               </div>
 
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? "Updating..." : "Update Profile"}
+                {loading ? "Updating..." : "Update Professional Information"}
               </Button>
             </form>
           </CardContent>
