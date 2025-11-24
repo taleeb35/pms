@@ -20,6 +20,7 @@ import WaitlistPatients from "./pages/WaitlistPatients";
 import PatientDetail from "./pages/PatientDetail";
 import DoctorSupport from "./pages/DoctorSupport";
 import SupportTickets from "./pages/SupportTickets";
+import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -136,6 +137,14 @@ const App = () => (
               element={
                 <Layout>
                   <SupportTickets />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/doctor-patients/:doctorId"
+              element={
+                <Layout>
+                  <AdminDoctorPatients />
                 </Layout>
               }
             />
