@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VisitHistory } from "./VisitHistory";
+import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 
 interface Appointment {
   id: string;
@@ -22,6 +23,7 @@ interface Appointment {
     full_name: string; 
     patient_id: string;
     date_of_birth: string;
+    pregnancy_start_date?: string | null;
   };
 }
 
@@ -36,6 +38,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const [loading, setLoading] = useState(false);
   const [nextVisitDate, setNextVisitDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
+  const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
+  const [pregnancyDatePopoverOpen, setPregnancyDatePopoverOpen] = useState(false);
+  const [isGynecologist, setIsGynecologist] = useState(false);
   
   const [formData, setFormData] = useState({
     // Vitals
@@ -60,8 +65,49 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   useEffect(() => {
     if (appointment && open) {
       fetchExistingRecord();
+      checkDoctorSpecialization();
+      fetchPatientPregnancyDate();
     }
   }, [appointment, open]);
+
+  const checkDoctorSpecialization = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("doctors")
+        .select("specialization")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      
+      setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+    } catch (error) {
+      console.error("Error checking doctor specialization:", error);
+    }
+  };
+
+  const fetchPatientPregnancyDate = async () => {
+    if (!appointment) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("pregnancy_start_date")
+        .eq("id", appointment.patient_id)
+        .single();
+
+      if (error) throw error;
+
+      if (data?.pregnancy_start_date) {
+        setPregnancyStartDate(new Date(data.pregnancy_start_date));
+      }
+    } catch (error) {
+      console.error("Error fetching pregnancy date:", error);
+    }
+  };
 
   const fetchExistingRecord = async () => {
     if (!appointment) return;
@@ -372,6 +418,18 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       if (error) throw error;
 
+      // Update pregnancy start date if gynecologist
+      if (isGynecologist && pregnancyStartDate) {
+        const { error: pregnancyError } = await supabase
+          .from("patients")
+          .update({ pregnancy_start_date: format(pregnancyStartDate, "yyyy-MM-dd") })
+          .eq("id", appointment.patient_id);
+
+        if (pregnancyError) {
+          console.error("Error updating pregnancy date:", pregnancyError);
+        }
+      }
+
       toast({
         title: "Success",
         description: `Visit record ${existingRecord ? 'updated' : 'saved'} successfully`,
@@ -424,6 +482,14 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                   <p className="font-semibold">{calculateAge(appointment.patients.date_of_birth)} years</p>
                 </div>
               </div>
+              {isGynecologist && pregnancyStartDate && (
+                <div className="mt-4 pt-4 border-t">
+                  <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
+                  <p className="font-semibold text-primary">
+                    {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                  </p>
+                </div>
+              )}
             </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -497,6 +563,50 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
             <div className="space-y-6">
               {/* Visit History */}
               {appointment && <VisitHistory patientId={appointment.patient_id} />}
+
+              {/* Pregnancy Start Date - Only for Gynecologists */}
+              {isGynecologist && (
+                <div className="border rounded-lg p-4 bg-primary/5">
+                  <h3 className="font-semibold mb-4">Pregnancy Tracking</h3>
+                  <div>
+                    <Label>Pregnancy Start Date</Label>
+                    <Popover open={pregnancyDatePopoverOpen} onOpenChange={setPregnancyDatePopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !pregnancyStartDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {pregnancyStartDate ? format(pregnancyStartDate, "PPP") : "Select start date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={pregnancyStartDate}
+                          onSelect={(date) => {
+                            setPregnancyStartDate(date);
+                            if (date) setPregnancyDatePopoverOpen(false);
+                          }}
+                          disabled={(date) => date > new Date()}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {pregnancyStartDate && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Duration: <span className="font-semibold text-primary">
+                          {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Test Reports */}
               <div className="border rounded-lg p-4">
