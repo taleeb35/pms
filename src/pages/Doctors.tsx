@@ -310,14 +310,16 @@ const Doctors = () => {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/doctor-patients/${doctor.id}`)}
-                          >
-                            <Users className="h-4 w-4 mr-2" />
-                            View Patients
-                          </Button>
+                          {doctor.approved && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/admin/doctor-patients/${doctor.id}`)}
+                            >
+                              <Users className="h-4 w-4 mr-2" />
+                              View Patients
+                            </Button>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
