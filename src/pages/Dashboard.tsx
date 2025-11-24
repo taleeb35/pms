@@ -7,6 +7,7 @@ import { Stethoscope } from "lucide-react";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [totalDoctors, setTotalDoctors] = useState(0);
+  const [approvedDoctors, setApprovedDoctors] = useState(0);
   const [pendingDoctors, setPendingDoctors] = useState(0);
 
   useEffect(() => {
@@ -14,6 +15,10 @@ const Dashboard = () => {
   }, []);
 
   const fetchStats = async () => {
+    const { count: totalCount } = await supabase
+      .from("doctors")
+      .select("id", { count: "exact", head: true });
+
     const { count: approvedCount } = await supabase
       .from("doctors")
       .select("id", { count: "exact", head: true })
@@ -24,7 +29,8 @@ const Dashboard = () => {
       .select("id", { count: "exact", head: true })
       .eq("approved", false);
 
-    setTotalDoctors(approvedCount || 0);
+    setTotalDoctors(totalCount || 0);
+    setApprovedDoctors(approvedCount || 0);
     setPendingDoctors(pendingCount || 0);
   };
 
@@ -58,7 +64,7 @@ const Dashboard = () => {
             <Stethoscope className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalDoctors}</div>
+            <div className="text-2xl font-bold">{approvedDoctors}</div>
           </CardContent>
         </Card>
 
