@@ -7,18 +7,25 @@ import { Stethoscope } from "lucide-react";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [totalDoctors, setTotalDoctors] = useState(0);
+  const [pendingDoctors, setPendingDoctors] = useState(0);
 
   useEffect(() => {
     fetchStats();
   }, []);
 
   const fetchStats = async () => {
-    const { count } = await supabase
+    const { count: approvedCount } = await supabase
       .from("doctors")
       .select("id", { count: "exact", head: true })
       .eq("approved", true);
 
-    setTotalDoctors(count || 0);
+    const { count: pendingCount } = await supabase
+      .from("doctors")
+      .select("id", { count: "exact", head: true })
+      .eq("approved", false);
+
+    setTotalDoctors(approvedCount || 0);
+    setPendingDoctors(pendingCount || 0);
   };
 
   return (
@@ -39,6 +46,32 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalDoctors}</div>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:bg-accent/50 transition-colors"
+          onClick={() => navigate("/doctors")}
+        >
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Approved Doctors</CardTitle>
+            <Stethoscope className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalDoctors}</div>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:bg-accent/50 transition-colors"
+          onClick={() => navigate("/pending-doctors")}
+        >
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Pending Doctors</CardTitle>
+            <Stethoscope className="h-4 w-4 text-amber-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{pendingDoctors}</div>
           </CardContent>
         </Card>
       </div>
