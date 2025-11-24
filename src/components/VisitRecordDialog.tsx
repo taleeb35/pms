@@ -611,12 +611,20 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                               setPregnancyStartDate(date);
                               if (date) setPregnancyDatePopoverOpen(false);
                             }}
-                            disabled={(date) => date > new Date()}
+                            disabled={(date) => {
+                              const today = new Date();
+                              const maxPastDate = new Date();
+                              maxPastDate.setDate(maxPastDate.getDate() - 280); // 9 months = 280 days
+                              return date > today || date < maxPastDate;
+                            }}
                             initialFocus
                             className={cn("p-3 pointer-events-auto")}
                           />
                         </PopoverContent>
                       </Popover>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Can only select dates within the last 9 months (280 days)
+                      </p>
                     </div>
                     {pregnancyStartDate && (
                       <div className="space-y-2 pt-2 border-t">
