@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Clock, Edit } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Clock, Edit, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -34,6 +34,8 @@ interface Appointment {
     phone: string; 
     patient_id: string;
     date_of_birth: string;
+    email: string | null;
+    father_name: string | null;
   };
 }
 
@@ -54,6 +56,7 @@ const DoctorAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [dateFilter, setDateFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const { toast } = useToast();
 
@@ -73,7 +76,7 @@ const DoctorAppointments = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
+      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
       if (error) throw error;
       setAppointments(data || []);
     } catch (error: any) {
@@ -205,23 +208,43 @@ const DoctorAppointments = () => {
   };
 
   const getFilteredAppointments = () => {
-    if (!dateFilter || dateFilter === "all") return appointments;
-    const today = startOfDay(new Date());
-    switch (dateFilter) {
-      case "today":
-        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }));
-      case "tomorrow":
-        const tomorrow = addDays(today, 1);
-        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }));
-      case "day_after":
-        const dayAfter = addDays(today, 2);
-        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }));
-      case "week":
-        const weekEnd = addDays(today, 7);
-        return appointments.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }));
-      default:
-        return appointments;
+    let filtered = appointments;
+    
+    // Apply date filter
+    if (dateFilter && dateFilter !== "all") {
+      const today = startOfDay(new Date());
+      switch (dateFilter) {
+        case "today":
+          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }));
+          break;
+        case "tomorrow":
+          const tomorrow = addDays(today, 1);
+          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }));
+          break;
+        case "day_after":
+          const dayAfter = addDays(today, 2);
+          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }));
+          break;
+        case "week":
+          const weekEnd = addDays(today, 7);
+          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }));
+          break;
+      }
     }
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(apt => 
+        apt.patients.full_name?.toLowerCase().includes(query) ||
+        apt.patients.father_name?.toLowerCase().includes(query) ||
+        apt.patients.phone?.toLowerCase().includes(query) ||
+        apt.patients.email?.toLowerCase().includes(query) ||
+        apt.patients.patient_id?.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
   };
 
   const filteredAppointments = getFilteredAppointments();
@@ -263,9 +286,12 @@ const DoctorAppointments = () => {
       </div>
 
       <Tabs defaultValue="table" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2"><TabsTrigger value="table">Table View</TabsTrigger><TabsTrigger value="calendar">Calendar View</TabsTrigger></TabsList>
-        <TabsContent value="table" className="space-y-4">
-          <div className="flex gap-2 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <TabsList>
+              <TabsTrigger value="table">Table View</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+            </TabsList>
             <Select value={dateFilter || "all"} onValueChange={setDateFilter}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filter by date" />
@@ -279,6 +305,17 @@ const DoctorAppointments = () => {
               </SelectContent>
             </Select>
           </div>
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, father name, phone, email, or patient ID..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+        <TabsContent value="table" className="space-y-4">
           <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
             {paginatedAppointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
               <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Patient Phone</TableHead><TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
