@@ -128,6 +128,7 @@ export type Database = {
           id: string
           no_of_doctors: number
           phone_number: string
+          status: string
           updated_at: string
         }
         Insert: {
@@ -138,6 +139,7 @@ export type Database = {
           id: string
           no_of_doctors?: number
           phone_number: string
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -148,6 +150,7 @@ export type Database = {
           id?: string
           no_of_doctors?: number
           phone_number?: string
+          status?: string
           updated_at?: string
         }
         Relationships: [
@@ -898,6 +901,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_clinic_active: { Args: { _clinic_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:

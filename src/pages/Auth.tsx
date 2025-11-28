@@ -93,12 +93,29 @@ const Auth = () => {
         setConfirmPassword("");
       } else {
         // Clinic login
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: authData, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
+
+        // Check clinic status
+        const { data: clinicData, error: clinicError } = await supabase
+          .from("clinics")
+          .select("status")
+          .eq("id", authData.user.id)
+          .single();
+
+        if (clinicError) throw clinicError;
+
+        if (clinicData.status !== "active") {
+          // Sign out the user immediately
+          await supabase.auth.signOut();
+          throw new Error(
+            "Your clinic account is pending approval. Please wait for admin approval before logging in."
+          );
+        }
 
         toast({
           title: "Login successful",

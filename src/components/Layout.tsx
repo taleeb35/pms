@@ -106,10 +106,11 @@ const Layout = ({ children }: LayoutProps) => {
 
   const adminMenuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/admin/clinics", icon: Building2, label: "Manage Clinics" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
     { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
-    { path: "/settings", icon: Settings, label: "Settings" },
+    { path: "/admin/settings", icon: Settings, label: "Settings" },
   ];
 
   const doctorMenuItems = [

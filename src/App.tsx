@@ -23,6 +23,7 @@ import DoctorSupport from "./pages/DoctorSupport";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
+import AdminClinics from "./pages/AdminClinics";
 import ClinicDashboard from "./pages/ClinicDashboard";
 import ClinicAddDoctor from "./pages/ClinicAddDoctor";
 import ClinicSupport from "./pages/ClinicSupport";
@@ -155,10 +156,18 @@ const App = () => (
               }
             />
             <Route
-              path="/settings"
+              path="/admin/settings"
               element={
                 <Layout>
                   <AdminSettings />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/clinics"
+              element={
+                <Layout>
+                  <AdminClinics />
                 </Layout>
               }
             />
