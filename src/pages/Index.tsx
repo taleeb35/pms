@@ -58,14 +58,24 @@ const Index = () => {
               Patient Management System
             </h1>
           </div>
-          <Button 
-            onClick={() => navigate("/auth")} 
-            size="lg"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-          >
-            <Stethoscope className="mr-2 h-5 w-5" />
-            Clinic Login / Sign Up
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={() => navigate("/auth")} 
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              Clinic Login
+            </Button>
+            <Button 
+              onClick={() => navigate("/doctor-auth")} 
+              size="lg"
+              variant="outline"
+              className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Stethoscope className="mr-2 h-5 w-5" />
+              Doctor Login
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -94,8 +104,17 @@ const Index = () => {
               size="lg" 
               className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110"
             >
-              Get Started Free
+              Clinic Sign Up
               <Sparkles className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              onClick={() => navigate("/doctor-auth")} 
+              size="lg" 
+              variant="outline"
+              className="text-lg px-10 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110"
+            >
+              <Stethoscope className="mr-2 h-5 w-5" />
+              Doctor Login
             </Button>
           </div>
         </div>
@@ -159,14 +178,25 @@ const Index = () => {
             <p className="text-white/90 text-lg md:text-xl mb-10 max-w-2xl mx-auto">
               Join healthcare professionals who trust our system to manage their patients efficiently and provide better care.
             </p>
-            <Button 
-              onClick={() => navigate("/auth")} 
-              size="lg" 
-              className="text-lg px-12 py-7 bg-white text-purple-600 hover:bg-gray-50 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
-            >
-              Create Your Account Free
-              <Sparkles className="ml-2 h-5 w-5" />
-            </Button>
+            <div className="flex gap-4 justify-center">
+              <Button 
+                onClick={() => navigate("/auth")} 
+                size="lg" 
+                className="text-lg px-12 py-7 bg-white text-purple-600 hover:bg-gray-50 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
+              >
+                Clinic Sign Up
+                <Sparkles className="ml-2 h-5 w-5" />
+              </Button>
+              <Button 
+                onClick={() => navigate("/doctor-auth")} 
+                size="lg" 
+                variant="outline"
+                className="text-lg px-12 py-7 bg-white/20 backdrop-blur-sm border-2 border-white text-white hover:bg-white/30 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
+              >
+                <Stethoscope className="mr-2 h-5 w-5" />
+                Doctor Login
+              </Button>
+            </div>
             <p className="text-white/70 text-sm mt-6">No credit card required • Get started in minutes</p>
           </div>
         </div>
