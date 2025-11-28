@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Stethoscope, Building2, Users, ChevronRight, Activity } from "lucide-react";
+import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 
 interface Clinic {
   id: string;
@@ -138,62 +138,96 @@ const Dashboard = () => {
     }
   };
 
+  const today = format(new Date(), "EEEE, dd MMM yyyy");
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold">Admin Dashboard</h2>
-        <p className="text-muted-foreground">Complete system overview and clinic hierarchy</p>
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
+              <Activity className="h-3 w-3 mr-1" />
+              Admin Mode
+            </Badge>
+          </div>
+          <h2 className="text-4xl font-bold tracking-tight mb-1">Admin Dashboard</h2>
+          <p className="text-muted-foreground text-base">
+            Complete system overview and clinic hierarchy management.
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-muted-foreground">Today: <span className="font-semibold text-foreground">{today}</span></p>
+          <p className="text-sm text-muted-foreground mt-1">
+            System: <span className="font-semibold text-foreground">{totalClinics} clinics · {totalDoctors} doctors</span>
+          </p>
+        </div>
       </div>
 
-      {/* Stats Overview */}
+      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Clinics</CardTitle>
-            <Building2 className="h-4 w-4 text-primary" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalClinics}</div>
+            <div className="text-3xl font-bold mb-1">{totalClinics}</div>
+            <p className="text-xs text-muted-foreground">Registered clinics</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctors")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Doctors</CardTitle>
-            <Stethoscope className="h-4 w-4 text-blue-600" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctors")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Doctors</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-info/10 flex items-center justify-center">
+              <Stethoscope className="h-5 w-5 text-info" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalDoctors}</div>
+            <div className="text-3xl font-bold mb-1">{totalDoctors}</div>
+            <p className="text-xs text-muted-foreground">All registered doctors</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctors")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Approved</CardTitle>
-            <Stethoscope className="h-4 w-4 text-green-600" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctors")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Approved</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
+              <CheckCircle2 className="h-5 w-5 text-success" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{approvedDoctors}</div>
+            <div className="text-3xl font-bold mb-1">{approvedDoctors}</div>
+            <p className="text-xs text-muted-foreground">Active & practicing</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/pending-doctors")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Stethoscope className="h-4 w-4 text-amber-600" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/pending-doctors")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-warning" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{pendingDoctors}</div>
+            <div className="text-3xl font-bold mb-1">{pendingDoctors}</div>
+            <p className="text-xs text-muted-foreground">Awaiting approval</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
-            <Users className="h-4 w-4 text-purple-600" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalPatients}</div>
+            <div className="text-3xl font-bold mb-1">{totalPatients}</div>
+            <p className="text-xs text-muted-foreground">In the system</p>
           </CardContent>
         </Card>
       </div>
@@ -201,9 +235,9 @@ const Dashboard = () => {
       {/* Clinic Hierarchy */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Clinics List */}
-        <Card>
+        <Card className="border-border/40">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
               <Building2 className="h-5 w-5 text-primary" />
               Registered Clinics
             </CardTitle>
@@ -218,23 +252,27 @@ const Dashboard = () => {
                 {clinics.map((clinic) => (
                   <div
                     key={clinic.id}
-                    className={`p-4 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
-                      selectedClinic === clinic.id ? "bg-primary/10 border-primary" : "hover:bg-accent/50"
+                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                      selectedClinic === clinic.id 
+                        ? "bg-primary/10 border-primary shadow-sm" 
+                        : "border-border/40 hover:bg-accent/30 hover:shadow-sm"
                     }`}
                     onClick={() => setSelectedClinic(clinic.id)}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{clinic.clinic_name}</h3>
-                        <p className="text-sm text-muted-foreground">{clinic.city}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Owner: {clinic.profiles.full_name}
-                        </p>
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                          <Building2 className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-base mb-0.5">{clinic.clinic_name}</h3>
+                          <p className="text-sm text-muted-foreground">{clinic.city}</p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge variant="secondary" className="flex items-center gap-1">
                           <Stethoscope className="h-3 w-3" />
-                          {clinic.no_of_doctors} {clinic.no_of_doctors === 1 ? "Doctor" : "Doctors"}
+                          {clinic.no_of_doctors}
                         </Badge>
                         <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
@@ -247,45 +285,55 @@ const Dashboard = () => {
         </Card>
 
         {/* Doctors under selected clinic */}
-        <Card>
+        <Card className="border-border/40">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Stethoscope className="h-5 w-5 text-blue-600" />
+            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+              <Stethoscope className="h-5 w-5 text-info" />
               {selectedClinic ? "Clinic Doctors" : "Select a Clinic"}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {!selectedClinic ? (
-              <p className="text-center text-muted-foreground py-8">
-                Select a clinic to view its doctors
-              </p>
+              <div className="text-center py-12">
+                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                  <Stethoscope className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground">Select a clinic to view its doctors</p>
+              </div>
             ) : clinicDoctors.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">
-                No doctors registered in this clinic yet
-              </p>
+              <div className="text-center py-12">
+                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                  <Stethoscope className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground">No doctors registered yet</p>
+              </div>
             ) : (
               <div className="space-y-2">
                 {clinicDoctors.map((doctor) => (
                   <div
                     key={doctor.id}
-                    className="p-4 rounded-lg border hover:bg-accent/50 transition-all hover:shadow-md cursor-pointer"
+                    className="p-4 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-sm transition-all cursor-pointer"
                     onClick={() => navigate(`/admin/doctor-patients/${doctor.id}`)}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{doctor.profiles.full_name}</h4>
-                          <Badge variant={doctor.approved ? "default" : "secondary"}>
-                            {doctor.approved ? "Active" : "Inactive"}
-                          </Badge>
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="h-10 w-10 rounded-full bg-info/10 flex items-center justify-center shrink-0">
+                          <Stethoscope className="h-5 w-5 text-info" />
                         </div>
-                        <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{doctor.profiles.email}</p>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-0.5">
+                            <h4 className="font-semibold text-base">{doctor.profiles.full_name}</h4>
+                            <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
+                              {doctor.approved ? "Active" : "Pending"}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
+                        </div>
                       </div>
                       <div className="flex items-center gap-3">
                         <Badge variant="outline" className="flex items-center gap-1">
                           <Users className="h-3 w-3" />
-                          {doctor.patient_count} {doctor.patient_count === 1 ? "Patient" : "Patients"}
+                          {doctor.patient_count}
                         </Badge>
                         <ChevronRight className="h-5 w-5 text-muted-foreground" />
                       </div>
@@ -299,26 +347,64 @@ const Dashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="border-border/40">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
-            Quick Actions
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-semibold flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Quick actions
+            </CardTitle>
+            <span className="text-sm text-muted-foreground">Shortcuts</span>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 md:grid-cols-3">
-            <Button variant="outline" onClick={() => navigate("/doctors")} className="justify-start">
-              <Stethoscope className="mr-2 h-4 w-4" />
-              View All Doctors
+          <div className="space-y-3">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/doctors")} 
+              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                  <Stethoscope className="h-5 w-5 text-info" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-base">View all doctors</div>
+                  <div className="text-sm text-muted-foreground">Manage doctor records</div>
+                </div>
+              </div>
             </Button>
-            <Button variant="outline" onClick={() => navigate("/pending-doctors")} className="justify-start">
-              <Activity className="mr-2 h-4 w-4" />
-              Review Pending Doctors
+
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/pending-doctors")} 
+              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                  <Clock className="h-5 w-5 text-warning" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-base">Review pending doctors</div>
+                  <div className="text-sm text-muted-foreground">{pendingDoctors} awaiting approval</div>
+                </div>
+              </div>
             </Button>
-            <Button variant="outline" onClick={() => navigate("/support-tickets")} className="justify-start">
-              <Users className="mr-2 h-4 w-4" />
-              Support Tickets
+
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/support-tickets")} 
+              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <LifeBuoy className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-base">Support tickets</div>
+                  <div className="text-sm text-muted-foreground">Review and respond</div>
+                </div>
+              </div>
             </Button>
           </div>
         </CardContent>
