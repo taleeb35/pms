@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock } from "lucide-react";
+import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import clinicLogo from "@/assets/clinic-logo.png";
 
 interface Clinic {
   id: string;
@@ -143,24 +144,60 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
-              <Activity className="h-3 w-3 mr-1" />
-              Admin Mode
-            </Badge>
+      <div className="relative rounded-3xl bg-gradient-to-br from-primary/5 via-info/5 to-success/5 border-2 border-border/40 p-8 overflow-hidden group hover:shadow-xl transition-all duration-500">
+        {/* Animated background elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-info/5 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
+        
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            {/* Logo with hover effect */}
+            <div className="relative group/logo">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-info/20 rounded-2xl blur-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative bg-white rounded-2xl p-4 shadow-lg group-hover/logo:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-primary/10">
+                <img src={clinicLogo} alt="MedCare Pro" className="h-16 w-16" />
+                <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-warning animate-pulse opacity-0 group-hover/logo:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 mb-2">
+                <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 shadow-sm hover:shadow-md transition-shadow">
+                  <Activity className="h-3 w-3 mr-1 animate-pulse" />
+                  Admin Mode
+                </Badge>
+                <div className="h-1 w-1 rounded-full bg-border"></div>
+                <span className="text-xs font-medium text-muted-foreground">{today}</span>
+              </div>
+              <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text">
+                Admin Dashboard
+              </h2>
+              <p className="text-muted-foreground text-base max-w-2xl">
+                Complete system overview and clinic hierarchy management
+              </p>
+            </div>
           </div>
-          <h2 className="text-4xl font-bold tracking-tight mb-1">Admin Dashboard</h2>
-          <p className="text-muted-foreground text-base">
-            Complete system overview and clinic hierarchy management.
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-sm text-muted-foreground">Today: <span className="font-semibold text-foreground">{today}</span></p>
-          <p className="text-sm text-muted-foreground mt-1">
-            System: <span className="font-semibold text-foreground">{totalClinics} clinics · {totalDoctors} doctors</span>
-          </p>
+          
+          <div className="text-right space-y-3">
+            <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 border border-border/40 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="text-2xl font-bold bg-gradient-to-r from-primary to-info bg-clip-text text-transparent">
+                    {totalClinics}
+                  </span>
+                  <span className="text-xs text-muted-foreground">clinics</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Stethoscope className="h-4 w-4 text-info" />
+                  <span className="text-2xl font-bold bg-gradient-to-r from-info to-success bg-clip-text text-transparent">
+                    {totalDoctors}
+                  </span>
+                  <span className="text-xs text-muted-foreground">doctors</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
