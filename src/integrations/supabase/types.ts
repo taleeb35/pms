@@ -119,12 +119,54 @@ export type Database = {
           },
         ]
       }
+      clinics: {
+        Row: {
+          address: string
+          city: string
+          clinic_name: string
+          created_at: string
+          id: string
+          no_of_doctors: number
+          phone_number: string
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city: string
+          clinic_name: string
+          created_at?: string
+          id: string
+          no_of_doctors?: number
+          phone_number: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          clinic_name?: string
+          created_at?: string
+          id?: string
+          no_of_doctors?: number
+          phone_number?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinics_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           approved: boolean
           available_days: string[] | null
           available_hours: string | null
           city: string | null
+          clinic_id: string | null
           consultation_fee: number | null
           contact_number: string | null
           created_at: string
@@ -141,6 +183,7 @@ export type Database = {
           available_days?: string[] | null
           available_hours?: string | null
           city?: string | null
+          clinic_id?: string | null
           consultation_fee?: number | null
           contact_number?: string | null
           created_at?: string
@@ -157,6 +200,7 @@ export type Database = {
           available_days?: string[] | null
           available_hours?: string | null
           city?: string | null
+          clinic_id?: string | null
           consultation_fee?: number | null
           contact_number?: string | null
           created_at?: string
@@ -169,6 +213,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "doctors_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "doctors_id_fkey"
             columns: ["id"]
@@ -839,7 +890,13 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "doctor" | "nurse" | "receptionist" | "patient"
+      app_role:
+        | "admin"
+        | "doctor"
+        | "nurse"
+        | "receptionist"
+        | "patient"
+        | "clinic"
       appointment_status:
         | "scheduled"
         | "confirmed"
@@ -976,7 +1033,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "doctor", "nurse", "receptionist", "patient"],
+      app_role: [
+        "admin",
+        "doctor",
+        "nurse",
+        "receptionist",
+        "patient",
+        "clinic",
+      ],
       appointment_status: [
         "scheduled",
         "confirmed",

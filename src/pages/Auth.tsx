@@ -8,15 +8,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { CitySelect } from "@/components/CitySelect";
 
 const Auth = () => {
-  const [authType, setAuthType] = useState<"admin" | "doctor">("admin");
+  const [authType, setAuthType] = useState<"admin" | "clinic">("admin");
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
+  const [clinicName, setClinicName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [noOfDoctors, setNoOfDoctors] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -83,19 +88,24 @@ const Auth = () => {
     }
   };
 
-  const handleDoctorAuth = async (e: React.FormEvent) => {
+  const handleClinicAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       if (isSignup) {
-        // Doctor signup - awaits admin approval
+        // Validate passwords match
+        if (password !== confirmPassword) {
+          throw new Error("Passwords do not match");
+        }
+
+        // Clinic signup
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
-              full_name: fullName,
+              full_name: clinicName,
             },
             emailRedirectTo: `${window.location.origin}/dashboard`,
           },
@@ -104,61 +114,54 @@ const Auth = () => {
         if (error) throw error;
         if (!data.user) throw new Error("User creation failed");
 
-        // Update profile with contact info
+        // Update profile with clinic info
         const { error: profileError } = await supabase
           .from("profiles")
           .update({
-            phone: contactNumber,
+            phone: phoneNumber,
             city: city,
+            address: address,
           })
           .eq("id", data.user.id);
 
         if (profileError) throw profileError;
 
-        // Create doctor record (not approved yet)
-        const { error: doctorError } = await supabase.from("doctors").insert({
+        // Create clinic record
+        const { error: clinicError } = await supabase.from("clinics").insert({
           id: data.user.id,
-          specialization: "Pending",
-          qualification: "Pending",
+          clinic_name: clinicName,
           city: city,
-          contact_number: contactNumber,
-          approved: false,
+          phone_number: phoneNumber,
+          address: address,
+          no_of_doctors: parseInt(noOfDoctors) || 0,
         });
 
-        if (doctorError) throw doctorError;
+        if (clinicError) throw clinicError;
+
+        // Assign clinic role
+        const { error: roleError } = await supabase.from("user_roles").insert({
+          user_id: data.user.id,
+          role: "clinic",
+        });
+
+        if (roleError) throw roleError;
 
         toast({
           title: "Signup successful!",
-          description: "Your account is pending admin approval. You'll be notified once approved.",
+          description: "Your clinic account has been created. You can now log in.",
         });
 
         setIsSignup(false);
         setPassword("");
+        setConfirmPassword("");
       } else {
-        // Doctor login
-        const { data, error } = await supabase.auth.signInWithPassword({
+        // Clinic login
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
-
-        // Check if doctor is approved
-        const { data: doctorData, error: doctorError } = await supabase
-          .from("doctors")
-          .select("approved")
-          .eq("id", data.user.id)
-          .single();
-
-        if (doctorError || !doctorData) {
-          await supabase.auth.signOut();
-          throw new Error("Doctor profile not found. Please contact admin.");
-        }
-
-        if (!doctorData.approved) {
-          await supabase.auth.signOut();
-          throw new Error("Your account is pending admin approval. Please wait for approval.");
-        }
 
         toast({
           title: "Login successful",
@@ -190,15 +193,15 @@ const Auth = () => {
                 ? "Create your clinic admin account"
                 : "Admin login to manage your clinic"
               : isSignup
-              ? "Doctor signup - Awaiting admin approval"
-              : "Doctor login to access the system"}
+              ? "Register your clinic with us"
+              : "Clinic login to access the system"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={authType} onValueChange={(v) => setAuthType(v as "admin" | "doctor")} className="mb-4">
+          <Tabs value={authType} onValueChange={(v) => setAuthType(v as "admin" | "clinic")} className="mb-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="admin">Admin</TabsTrigger>
-              <TabsTrigger value="doctor">Doctor</TabsTrigger>
+              <TabsTrigger value="clinic">Clinic</TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -246,59 +249,79 @@ const Auth = () => {
               </Button>
             </form>
           ) : (
-            <form onSubmit={handleDoctorAuth} className="space-y-4">
+            <form onSubmit={handleClinicAuth} className="space-y-4">
               {isSignup && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="doctorFullName">Full Name</Label>
+                    <Label htmlFor="clinicName">Clinic Name</Label>
                     <Input
-                      id="doctorFullName"
+                      id="clinicName"
                       type="text"
-                      placeholder="Dr. John Doe"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="City Medical Center"
+                      value={clinicName}
+                      onChange={(e) => setClinicName(e.target.value)}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contactNumber">Contact Number</Label>
+                    <Label htmlFor="phoneNumber">Phone Number</Label>
                     <Input
-                      id="contactNumber"
+                      id="phoneNumber"
                       type="tel"
-                      placeholder="+1234567890"
-                      value={contactNumber}
-                      onChange={(e) => setContactNumber(e.target.value)}
+                      placeholder="+92 300 1234567"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                       required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      type="text"
-                      placeholder="New York"
+                    <CitySelect
+                      label="City"
                       value={city}
-                      onChange={(e) => setCity(e.target.value)}
+                      onValueChange={setCity}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      type="text"
+                      placeholder="123 Main Street"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="noOfDoctors">Number of Doctors</Label>
+                    <Input
+                      id="noOfDoctors"
+                      type="number"
+                      placeholder="5"
+                      min="0"
+                      value={noOfDoctors}
+                      onChange={(e) => setNoOfDoctors(e.target.value)}
                       required
                     />
                   </div>
                 </>
               )}
               <div className="space-y-2">
-                <Label htmlFor="doctorEmail">Email</Label>
+                <Label htmlFor="clinicEmail">Email</Label>
                 <Input
-                  id="doctorEmail"
+                  id="clinicEmail"
                   type="email"
-                  placeholder="doctor@example.com"
+                  placeholder="clinic@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="doctorPassword">Password</Label>
+                <Label htmlFor="clinicPassword">Password</Label>
                 <Input
-                  id="doctorPassword"
+                  id="clinicPassword"
                   type="password"
                   placeholder="••••••••"
                   value={password}
@@ -307,9 +330,23 @@ const Auth = () => {
                   minLength={6}
                 />
               </div>
+              {isSignup && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={6}
+                  />
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isSignup ? "Submit for Approval" : "Sign In as Doctor"}
+                {isSignup ? "Create Clinic Account" : "Sign In as Clinic"}
               </Button>
             </form>
           )}
@@ -321,16 +358,20 @@ const Auth = () => {
                 setIsSignup(!isSignup);
                 setEmail("");
                 setPassword("");
+                setConfirmPassword("");
                 setFullName("");
-                setContactNumber("");
+                setClinicName("");
+                setPhoneNumber("");
                 setCity("");
+                setAddress("");
+                setNoOfDoctors("");
               }}
               className="text-primary hover:underline"
             >
               {isSignup
                 ? "Already have an account? Sign in"
-                : authType === "doctor"
-                ? "New doctor? Sign up here"
+                : authType === "clinic"
+                ? "New clinic? Sign up here"
                 : "Don't have an account? Sign up"}
             </button>
           </div>
