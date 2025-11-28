@@ -4,29 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { CitySelect } from "@/components/CitySelect";
 
 const DoctorAuth = () => {
-  const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
-  const [city, setCity] = useState("");
-  const [specialization, setSpecialization] = useState("");
-  const [introduction, setIntroduction] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(undefined);
-  const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -52,12 +35,12 @@ const DoctorAuth = () => {
 
       if (doctorError || !doctorData) {
         await supabase.auth.signOut();
-        throw new Error("Doctor profile not found");
+        throw new Error("Doctor profile not found. Please contact your clinic.");
       }
 
       if (!doctorData.approved) {
         await supabase.auth.signOut();
-        throw new Error("Your account is pending approval. Please wait for admin verification.");
+        throw new Error("Your account is pending approval. Please contact your clinic.");
       }
 
       toast({
@@ -77,210 +60,17 @@ const DoctorAuth = () => {
     }
   };
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (password !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (password.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            phone: contactNumber,
-            city: city,
-            date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : null,
-          },
-          emailRedirectTo: `${window.location.origin}/`,
-        },
-      });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("Signup failed");
-
-      // Update profile (trigger already created it)
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({
-          phone: contactNumber,
-          city: city,
-          date_of_birth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : null,
-        })
-        .eq("id", authData.user.id);
-
-      if (profileError) throw profileError;
-
-      // Create doctor record
-      const { error: doctorError } = await supabase.from("doctors").insert({
-        id: authData.user.id,
-        contact_number: contactNumber,
-        city: city,
-        introduction: introduction,
-        approved: false,
-        specialization: specialization || "General",
-        qualification: "MBBS",
-      });
-
-      if (doctorError) throw doctorError;
-
-      // Create doctor role
-      const { error: roleError } = await supabase.from("user_roles").insert({
-        user_id: authData.user.id,
-        role: "doctor",
-      });
-
-      if (roleError) throw roleError;
-
-      toast({
-        title: "Success",
-        description: "Signup successful! Your account is pending approval.",
-      });
-
-      // Sign out immediately after signup
-      await supabase.auth.signOut();
-      
-      setIsSignup(false);
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      setFullName("");
-      setContactNumber("");
-      setCity("");
-      setSpecialization("");
-      setIntroduction("");
-      setDateOfBirth(undefined);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{isSignup ? "Doctor Signup" : "Doctor Login"}</CardTitle>
+          <CardTitle>Doctor Login</CardTitle>
           <CardDescription>
-            {isSignup
-              ? "Create your account and wait for admin approval"
-              : "Sign in to access your dashboard"}
+            Sign in to access your dashboard. Contact your clinic to create an account.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={isSignup ? handleSignup : handleLogin} className="space-y-4">
-            {isSignup && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contactNumber">Contact Number</Label>
-                  <Input
-                    id="contactNumber"
-                    type="tel"
-                    value={contactNumber}
-                    onChange={(e) => setContactNumber(e.target.value)}
-                    required
-                  />
-                </div>
-                <CitySelect value={city} onValueChange={setCity} required />
-                <div className="space-y-2">
-                  <Label>Date of Birth</Label>
-                  <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !dateOfBirth && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateOfBirth ? format(dateOfBirth, "PPP") : "Select date of birth"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={dateOfBirth}
-                        onSelect={(date) => {
-                          setDateOfBirth(date);
-                          if (date) setDobPopoverOpen(false);
-                        }}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="specialization">Doctor Type / Specialization</Label>
-                  <Select value={specialization} onValueChange={setSpecialization} required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select specialization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="General Practitioner">General Practitioner</SelectItem>
-                      <SelectItem value="Gynecologist">Gynecologist</SelectItem>
-                      <SelectItem value="Cardiologist">Cardiologist</SelectItem>
-                      <SelectItem value="Dermatologist">Dermatologist</SelectItem>
-                      <SelectItem value="Neurologist">Neurologist</SelectItem>
-                      <SelectItem value="Pediatrician">Pediatrician</SelectItem>
-                      <SelectItem value="Orthopedic">Orthopedic</SelectItem>
-                      <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
-                      <SelectItem value="ENT Specialist">ENT Specialist</SelectItem>
-                      <SelectItem value="Ophthalmologist">Ophthalmologist</SelectItem>
-                      <SelectItem value="Urologist">Urologist</SelectItem>
-                      <SelectItem value="Oncologist">Oncologist</SelectItem>
-                      <SelectItem value="Pulmonologist">Pulmonologist</SelectItem>
-                      <SelectItem value="Gastroenterologist">Gastroenterologist</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="introduction">Introduction</Label>
-                  <Textarea
-                    id="introduction"
-                    value={introduction}
-                    onChange={(e) => setIntroduction(e.target.value)}
-                    placeholder="Tell us about yourself, your experience, and specialization..."
-                    rows={4}
-                    required
-                  />
-                </div>
-              </>
-            )}
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -302,28 +92,8 @@ const DoctorAuth = () => {
                 required
               />
             </div>
-            {isSignup && (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-            )}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (isSignup ? "Signing up..." : "Signing in...") : (isSignup ? "Sign Up" : "Sign In")}
-            </Button>
-            <Button
-              type="button"
-              variant="link"
-              className="w-full"
-              onClick={() => setIsSignup(!isSignup)}
-            >
-              {isSignup ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
+              {loading ? "Signing in..." : "Sign In"}
             </Button>
           </form>
         </CardContent>
