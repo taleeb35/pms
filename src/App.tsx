@@ -27,6 +27,8 @@ import AdminClinics from "./pages/AdminClinics";
 import ClinicDashboard from "./pages/ClinicDashboard";
 import ClinicAddDoctor from "./pages/ClinicAddDoctor";
 import ClinicSupport from "./pages/ClinicSupport";
+import AdminProfile from "./pages/AdminProfile";
+import ClinicProfile from "./pages/ClinicProfile";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -192,6 +194,22 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicSupport />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/profile"
+              element={
+                <Layout>
+                  <AdminProfile />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/profile"
+              element={
+                <Layout>
+                  <ClinicProfile />
                 </Layout>
               }
             />

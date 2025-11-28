@@ -6,19 +6,19 @@ import {
   LayoutDashboard,
   Users,
   Calendar,
-  FileText,
-  UserCog,
   LogOut,
   Menu,
   X,
   Stethoscope,
-  CreditCard,
   Building2,
   Clock,
   LifeBuoy,
   Settings,
+  UserCog,
+  Sparkles,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
+import clinicLogo from "@/assets/clinic-logo.png";
 
 interface LayoutProps {
   children: ReactNode;
@@ -110,6 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
     { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
+    { path: "/admin/profile", icon: UserCog, label: "Profile" },
     { path: "/admin/settings", icon: Settings, label: "Settings" },
   ];
 
@@ -125,6 +126,7 @@ const Layout = ({ children }: LayoutProps) => {
   const clinicMenuItems = [
     { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/clinic/add-doctor", icon: Stethoscope, label: "Add Doctor" },
+    { path: "/clinic/profile", icon: UserCog, label: "Profile" },
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
   ];
 
@@ -138,8 +140,8 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+      {/* Enhanced Header with Logo and Graphics */}
+      <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-card via-card/95 to-primary/5 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
@@ -150,23 +152,36 @@ const Layout = ({ children }: LayoutProps) => {
             >
               {mobileMenuOpen ? <X /> : <Menu />}
             </Button>
-            <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <img 
+                  src={clinicLogo} 
+                  alt="MedCare Pro" 
+                  className="h-10 w-10 object-contain hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute -top-1 -right-1 h-3 w-3 bg-success rounded-full animate-pulse" />
+              </div>
               <div>
-                <h1 className="text-sm font-bold text-primary">
-                  Patient Management System
+                <h1 className="text-base font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  MedCare Pro
                 </h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">
-                  Healthcare Management
+                <p className="text-xs text-muted-foreground hidden sm:block flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  Patient Management System
                 </p>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-muted-foreground sm:inline">
+            <span className="hidden text-sm text-muted-foreground sm:inline px-3 py-1 rounded-full bg-accent/50">
               {user.email}
             </span>
-            <Button variant="ghost" size="icon" onClick={handleLogout}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleLogout}
+              className="hover:bg-destructive/10 hover:text-destructive transition-colors"
+            >
               <LogOut className="h-5 w-5" />
             </Button>
           </div>

@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Users, Building2, Plus, AlertCircle, LifeBuoy, Activity, UserPlus } from "lucide-react";
+import { Stethoscope, Users, Building2, Plus, AlertCircle, LifeBuoy, Activity, UserPlus, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { format } from "date-fns";
+import clinicLogo from "@/assets/clinic-logo.png";
 
 interface Clinic {
   clinic_name: string;
@@ -87,25 +88,47 @@ const ClinicDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className="bg-info/10 text-info border-info/20">
-              <Activity className="h-3 w-3 mr-1" />
-              Clinic Mode
-            </Badge>
+      {/* Enhanced Header with Graphics */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-info/10 via-info/5 to-background p-8 border border-info/20">
+        {/* Background Graphics */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-info/5 rounded-full blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -z-10" />
+        
+        <div className="flex items-start justify-between relative z-10">
+          <div className="flex items-start gap-4">
+            <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-info/20 to-info/5 flex items-center justify-center hover:scale-110 transition-transform duration-300 shadow-lg">
+              <img 
+                src={clinicLogo} 
+                alt="MedCare Pro" 
+                className="h-16 w-16 object-contain"
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-info/10 to-primary/10 border border-info/20">
+                  <Activity className="h-4 w-4 text-info animate-pulse" />
+                  <span className="text-sm font-semibold text-info">Clinic Mode</span>
+                </div>
+                <Sparkles className="h-5 w-5 text-warning animate-pulse" />
+              </div>
+              <h2 className="text-4xl font-bold tracking-tight mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                Clinic Dashboard
+              </h2>
+              <p className="text-muted-foreground text-base max-w-2xl">
+                Manage your clinic and registered doctors efficiently
+              </p>
+            </div>
           </div>
-          <h2 className="text-4xl font-bold tracking-tight mb-1">Clinic Dashboard</h2>
-          <p className="text-muted-foreground text-base">
-            Manage your clinic and registered doctors efficiently.
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-sm text-muted-foreground">Today: <span className="font-semibold text-foreground">{today}</span></p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Capacity: <span className="font-semibold text-foreground">{doctors.length}/{DOCTOR_LIMIT} doctors</span>
-          </p>
+          <div className="text-right bg-card/50 backdrop-blur-sm rounded-xl p-4 border border-border/40">
+            <p className="text-sm text-muted-foreground mb-1">Today</p>
+            <p className="font-semibold text-lg">{today}</p>
+            <div className="mt-3 pt-3 border-t border-border/40">
+              <p className="text-xs text-muted-foreground mb-1">Doctor Capacity</p>
+              <p className="text-2xl font-bold bg-gradient-to-r from-info to-primary bg-clip-text text-transparent">
+                {doctors.length}/{DOCTOR_LIMIT}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

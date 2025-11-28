@@ -1,4 +1,4 @@
-import { Building2, Users, Stethoscope, LifeBuoy, Settings, LayoutDashboard, Clock } from "lucide-react";
+import { Building2, Users, Stethoscope, LifeBuoy, Settings, LayoutDashboard, Clock, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -11,6 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import clinicLogo from "@/assets/clinic-logo.png";
 
 const adminMenuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const adminMenuItems = [
   { title: "All Doctors", url: "/doctors", icon: Stethoscope },
   { title: "Pending Doctors", url: "/pending-doctors", icon: Clock },
   { title: "Support Tickets", url: "/support-tickets", icon: LifeBuoy },
+  { title: "Profile", url: "/admin/profile", icon: User },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 
@@ -36,9 +38,36 @@ export function AdminSidebar() {
       collapsible="icon"
     >
       <SidebarContent>
+        {/* Logo Section */}
+        {!collapsed && (
+          <div className="p-6 border-b border-border/40">
+            <div className="flex items-center gap-3">
+              <img 
+                src={clinicLogo} 
+                alt="MedCare Pro" 
+                className="h-12 w-12 object-contain hover:scale-110 transition-transform duration-300"
+              />
+              <div>
+                <h3 className="font-bold text-lg">MedCare Pro</h3>
+                <p className="text-xs text-muted-foreground">Admin Panel</p>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {collapsed && (
+          <div className="p-2 border-b border-border/40 flex justify-center">
+            <img 
+              src={clinicLogo} 
+              alt="MedCare Pro" 
+              className="h-8 w-8 object-contain hover:scale-110 transition-transform duration-300"
+            />
+          </div>
+        )}
+
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? "hidden" : ""}>
-            Admin Panel
+            Navigation
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
