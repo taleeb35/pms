@@ -103,23 +103,42 @@ const Auth = () => {
         // Check clinic status
         const { data: clinicData, error: clinicError } = await supabase
           .from("clinics")
-          .select("status")
+          .select("status, clinic_name")
           .eq("id", authData.user.id)
-          .single();
+          .maybeSingle();
 
-        if (clinicError) throw clinicError;
+        if (clinicError) {
+          await supabase.auth.signOut();
+          throw clinicError;
+        }
 
+        // Check if clinic record exists
+        if (!clinicData) {
+          await supabase.auth.signOut();
+          throw new Error(
+            "Clinic account not found. Please contact support for assistance."
+          );
+        }
+
+        // Check if clinic is active
         if (clinicData.status !== "active") {
           // Sign out the user immediately
           await supabase.auth.signOut();
-          throw new Error(
-            "Your clinic account is pending approval. Please wait for admin approval before logging in."
-          );
+          
+          if (clinicData.status === "draft") {
+            throw new Error(
+              "Your clinic account is pending approval. An administrator needs to activate your account before you can log in. Please contact support if you've been waiting for more than 24 hours."
+            );
+          } else {
+            throw new Error(
+              `Your clinic account status is "${clinicData.status}". Please contact support for assistance.`
+            );
+          }
         }
 
         toast({
           title: "Login successful",
-          description: "Welcome back!",
+          description: `Welcome back, ${clinicData.clinic_name}!`,
         });
         navigate("/clinic/dashboard");
       }
