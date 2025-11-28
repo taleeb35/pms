@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Building2, MapPin, Phone, Mail, Clock, CheckCircle2, XCircle, Ban } from "lucide-react";
+import { Building2, Clock, CheckCircle2, Ban } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -13,6 +12,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface Clinic {
   id: string;
@@ -33,6 +48,8 @@ const AdminClinics = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -88,39 +105,26 @@ const AdminClinics = () => {
     setUpdating(null);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "active":
-        return (
-          <Badge className="bg-success/10 text-success border-success/20">
-            <CheckCircle2 className="h-3 w-3 mr-1" />
-            Active
-          </Badge>
-        );
-      case "draft":
-        return (
-          <Badge className="bg-warning/10 text-warning border-warning/20">
-            <Clock className="h-3 w-3 mr-1" />
-            Draft
-          </Badge>
-        );
-      case "suspended":
-        return (
-          <Badge className="bg-destructive/10 text-destructive border-destructive/20">
-            <Ban className="h-3 w-3 mr-1" />
-            Suspended
-          </Badge>
-        );
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
   const stats = {
     total: clinics.length,
     active: clinics.filter(c => c.status === 'active').length,
     draft: clinics.filter(c => c.status === 'draft').length,
     suspended: clinics.filter(c => c.status === 'suspended').length,
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(clinics.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentClinics = clinics.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(Number(value));
+    setCurrentPage(1);
   };
 
   return (
@@ -176,13 +180,27 @@ const AdminClinics = () => {
         </Card>
       </div>
 
-      {/* Clinics List */}
+      {/* Clinics Table */}
       <Card className="border-border/40">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-xl font-semibold">
             <Building2 className="h-5 w-5 text-primary" />
             All Clinics
           </CardTitle>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Show:</span>
+            <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
+              <SelectTrigger className="w-[100px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="45">45</SelectItem>
+                <SelectItem value="60">60</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -190,67 +208,151 @@ const AdminClinics = () => {
           ) : clinics.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">No clinics registered yet</p>
           ) : (
-            <div className="space-y-4">
-              {clinics.map((clinic) => (
-                <div
-                  key={clinic.id}
-                  className="p-6 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-lg transition-all"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                        <Building2 className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-lg mb-1">{clinic.clinic_name}</h3>
-                        <p className="text-sm text-muted-foreground">{clinic.profiles.full_name}</p>
-                      </div>
-                    </div>
-                    {getStatusBadge(clinic.status)}
-                  </div>
+            <>
+              <div className="rounded-md border border-border/40">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="font-semibold">Clinic Name</TableHead>
+                      <TableHead className="font-semibold">Email</TableHead>
+                      <TableHead className="font-semibold">Phone</TableHead>
+                      <TableHead className="font-semibold">Address</TableHead>
+                      <TableHead className="font-semibold text-center">Doctors</TableHead>
+                      <TableHead className="font-semibold">Status</TableHead>
+                      <TableHead className="font-semibold">Registered</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentClinics.map((clinic) => (
+                      <TableRow key={clinic.id} className="hover:bg-accent/50">
+                        <TableCell>
+                          <div>
+                            <p className="font-medium">{clinic.clinic_name}</p>
+                            <p className="text-xs text-muted-foreground">{clinic.profiles.full_name}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm">{clinic.profiles.email}</TableCell>
+                        <TableCell className="text-sm">{clinic.phone_number}</TableCell>
+                        <TableCell className="text-sm">
+                          <div className="max-w-[200px]">
+                            <p>{clinic.address}</p>
+                            <p className="text-xs text-muted-foreground">{clinic.city}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="secondary" className="font-semibold">
+                            {clinic.no_of_doctors}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Select
+                            value={clinic.status}
+                            onValueChange={(value) => updateClinicStatus(clinic.id, value)}
+                            disabled={updating === clinic.id}
+                          >
+                            <SelectTrigger className="w-[130px] h-8">
+                              <SelectValue>
+                                {clinic.status === "active" && (
+                                  <span className="flex items-center gap-1 text-success">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Active
+                                  </span>
+                                )}
+                                {clinic.status === "draft" && (
+                                  <span className="flex items-center gap-1 text-warning">
+                                    <Clock className="h-3 w-3" />
+                                    Draft
+                                  </span>
+                                )}
+                                {clinic.status === "suspended" && (
+                                  <span className="flex items-center gap-1 text-destructive">
+                                    <Ban className="h-3 w-3" />
+                                    Suspended
+                                  </span>
+                                )}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="draft">
+                                <span className="flex items-center gap-2">
+                                  <Clock className="h-4 w-4 text-warning" />
+                                  Draft
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="active">
+                                <span className="flex items-center gap-2">
+                                  <CheckCircle2 className="h-4 w-4 text-success" />
+                                  Active
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="suspended">
+                                <span className="flex items-center gap-2">
+                                  <Ban className="h-4 w-4 text-destructive" />
+                                  Suspended
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {format(new Date(clinic.created_at), "MMM dd, yyyy")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
-                  <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{clinic.profiles.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{clinic.phone_number}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{clinic.city}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <span>{clinic.no_of_doctors} doctors</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-4 border-t border-border/40">
-                    <span className="text-sm text-muted-foreground">Change Status:</span>
-                    <Select
-                      value={clinic.status}
-                      onValueChange={(value) => updateClinicStatus(clinic.id, value)}
-                      disabled={updating === clinic.id}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="suspended">Suspended</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      Registered: {format(new Date(clinic.created_at), "MMM dd, yyyy")}
-                    </span>
-                  </div>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {startIndex + 1} to {Math.min(endIndex, clinics.length)} of {clinics.length} clinics
+                  </p>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      
+                      {[...Array(totalPages)].map((_, index) => {
+                        const page = index + 1;
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => handlePageChange(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          );
+                        } else if (page === currentPage - 2 || page === currentPage + 2) {
+                          return <PaginationItem key={page}>...</PaginationItem>;
+                        }
+                        return null;
+                      })}
+                      
+                      <PaginationItem>
+                        <PaginationNext
+                          onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
