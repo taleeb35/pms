@@ -59,12 +59,12 @@ const Index = () => {
             </h1>
           </div>
           <Button 
-            onClick={() => navigate("/doctor-auth")} 
+            onClick={() => navigate("/auth")} 
             size="lg"
             className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
           >
             <Stethoscope className="mr-2 h-5 w-5" />
-            Doctor Login / Sign Up
+            Clinic Login / Sign Up
           </Button>
         </div>
       </header>
@@ -90,7 +90,7 @@ const Index = () => {
           </p>
           <div className="flex gap-4 justify-center pt-6">
             <Button 
-              onClick={() => navigate("/doctor-auth")} 
+              onClick={() => navigate("/auth")} 
               size="lg" 
               className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110"
             >
@@ -160,7 +160,7 @@ const Index = () => {
               Join healthcare professionals who trust our system to manage their patients efficiently and provide better care.
             </p>
             <Button 
-              onClick={() => navigate("/doctor-auth")} 
+              onClick={() => navigate("/auth")} 
               size="lg" 
               className="text-lg px-12 py-7 bg-white text-purple-600 hover:bg-gray-50 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
             >
