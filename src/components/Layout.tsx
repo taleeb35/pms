@@ -55,6 +55,8 @@ const Layout = ({ children }: LayoutProps) => {
     // Redirect based on user role
     if (userRole === "doctor") {
       navigate("/doctor-auth");
+    } else if (userRole === "clinic") {
+      navigate("/auth");
     } else {
       navigate("/admin-login");
     }
@@ -78,7 +80,19 @@ const Layout = ({ children }: LayoutProps) => {
         return;
       }
       
-      // Then check user_roles table
+      // Then check if user is a clinic
+      const { data: clinicData } = await supabase
+        .from("clinics")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      
+      if (clinicData) {
+        setUserRole("clinic");
+        return;
+      }
+      
+      // Finally check user_roles table for admin
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
@@ -107,7 +121,17 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
   ];
 
-  const menuItems = userRole === "doctor" ? doctorMenuItems : adminMenuItems;
+  const clinicMenuItems = [
+    { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/clinic/add-doctor", icon: Stethoscope, label: "Add Doctor" },
+    { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
+  ];
+
+  const menuItems = userRole === "doctor" 
+    ? doctorMenuItems 
+    : userRole === "clinic" 
+    ? clinicMenuItems 
+    : adminMenuItems;
 
   if (!user) return null;
 

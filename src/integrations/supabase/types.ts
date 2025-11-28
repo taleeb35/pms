@@ -612,8 +612,9 @@ export type Database = {
       }
       support_tickets: {
         Row: {
+          clinic_id: string | null
           created_at: string
-          doctor_id: string
+          doctor_id: string | null
           email: string
           id: string
           message: string
@@ -623,8 +624,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clinic_id?: string | null
           created_at?: string
-          doctor_id: string
+          doctor_id?: string | null
           email: string
           id?: string
           message: string
@@ -634,8 +636,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clinic_id?: string | null
           created_at?: string
-          doctor_id?: string
+          doctor_id?: string | null
           email?: string
           id?: string
           message?: string
@@ -645,6 +648,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "support_tickets_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "support_tickets_doctor_id_fkey"
             columns: ["doctor_id"]

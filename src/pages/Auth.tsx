@@ -104,7 +104,7 @@ const Auth = () => {
           title: "Login successful",
           description: "Welcome back!",
         });
-        navigate("/dashboard");
+        navigate("/clinic/dashboard");
       }
     } catch (error: any) {
       toast({

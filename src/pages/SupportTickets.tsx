@@ -38,7 +38,9 @@ interface Ticket {
   message: string;
   status: string;
   created_at: string;
-  doctor_id: string;
+  doctor_id: string | null;
+  clinic_id: string | null;
+  sender_type?: string;
 }
 
 interface TicketMessage {
@@ -114,8 +116,13 @@ const SupportTickets = () => {
         variant: "destructive",
       });
     } else {
-      setTickets(data || []);
-      setFilteredTickets(data || []);
+      // Add sender_type field for easier display
+      const ticketsWithType = (data || []).map(ticket => ({
+        ...ticket,
+        sender_type: ticket.doctor_id ? "Doctor" : ticket.clinic_id ? "Clinic" : "Unknown"
+      }));
+      setTickets(ticketsWithType);
+      setFilteredTickets(ticketsWithType);
     }
     setLoading(false);
   };
@@ -266,7 +273,7 @@ const SupportTickets = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by doctor or subject..."
+                placeholder="Search by name or subject..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -312,7 +319,8 @@ const SupportTickets = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Doctor Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Subject</TableHead>
                     <TableHead>Status</TableHead>
@@ -323,6 +331,11 @@ const SupportTickets = () => {
                 <TableBody>
                   {paginatedTickets.map((ticket) => (
                     <TableRow key={ticket.id}>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {ticket.sender_type}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="font-medium">{ticket.name}</TableCell>
                       <TableCell>{ticket.email}</TableCell>
                       <TableCell>{ticket.subject}</TableCell>
@@ -394,7 +407,11 @@ const SupportTickets = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4 p-4 bg-muted rounded-lg">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Doctor Name</p>
+                  <p className="text-sm font-medium text-muted-foreground">Sender Type</p>
+                  <Badge variant="outline">{selectedTicket.sender_type}</Badge>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Name</p>
                   <p className="text-sm">{selectedTicket.name}</p>
                 </div>
                 <div>
