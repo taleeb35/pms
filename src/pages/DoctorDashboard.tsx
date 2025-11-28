@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Calendar, FileText, Clock } from "lucide-react";
+import { Users, Calendar, Clock, UserPlus, ClipboardList, Activity } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -42,54 +45,149 @@ const DoctorDashboard = () => {
     fetchStats();
   }, []);
 
+  const today = format(new Date(), "EEEE, dd MMM yyyy");
+  
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold">Doctor Dashboard</h2>
-        <p className="text-muted-foreground">Manage your patients and appointments</p>
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+              <Activity className="h-3 w-3 mr-1" />
+              Doctor Mode
+            </Badge>
+          </div>
+          <h2 className="text-4xl font-bold tracking-tight mb-1">Doctor Dashboard</h2>
+          <p className="text-muted-foreground text-base">
+            Overview of your patients, appointments & waitlist in one glance.
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-muted-foreground">Today: <span className="font-semibold text-foreground">{today}</span></p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Next: <span className="font-semibold text-foreground">{stats.todayAppointments} appointments</span> scheduled
+          </p>
+        </div>
       </div>
 
+      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/patients")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
-            <Users className="h-4 w-4 text-primary" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctor/patients")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalPatients}</div>
+            <div className="text-3xl font-bold mb-1">{stats.totalPatients}</div>
+            <p className="text-xs text-muted-foreground">All registered patients</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/appointments")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Appointments</CardTitle>
-            <Calendar className="h-4 w-4 text-primary" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctor/appointments")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Appointments</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-info/10 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-info" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalAppointments}</div>
+            <div className="text-3xl font-bold mb-1">{stats.totalAppointments}</div>
+            <p className="text-xs text-muted-foreground">Scheduled & completed</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/appointments")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Today's Appointments</CardTitle>
-            <Clock className="h-4 w-4 text-primary" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctor/appointments")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Today's Appointments</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-destructive/10 flex items-center justify-center">
+              <Clock className="h-5 w-5 text-destructive" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.todayAppointments}</div>
+            <div className="text-3xl font-bold mb-1">{stats.todayAppointments}</div>
+            <p className="text-xs text-muted-foreground">Scheduled for today</p>
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => navigate("/doctor/waitlist")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Waitlist Patients</CardTitle>
-            <Clock className="h-4 w-4 text-amber-500" />
+        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctor/waitlist")}>
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Waitlist Patients</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center">
+              <ClipboardList className="h-5 w-5 text-warning" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.waitlistPatients}</div>
+            <div className="text-3xl font-bold mb-1">{stats.waitlistPatients}</div>
+            <p className="text-xs text-muted-foreground">Needs follow-up slot</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Actions */}
+      <Card className="border-border/40">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-semibold">Quick actions</CardTitle>
+            <span className="text-sm text-muted-foreground">Shortcuts</span>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <Button
+              variant="outline"
+              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
+              onClick={() => navigate("/doctor/appointments")}
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Calendar className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-base">New appointment</div>
+                  <div className="text-sm text-muted-foreground">Schedule patient visit</div>
+                </div>
+                <kbd className="text-xs px-2 py-1 bg-muted rounded border">⌘ + N</kbd>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
+              onClick={() => navigate("/doctor/patients")}
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                  <UserPlus className="h-5 w-5 text-success" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-base">Add new patient</div>
+                  <div className="text-sm text-muted-foreground">Register new patient</div>
+                </div>
+                <kbd className="text-xs px-2 py-1 bg-muted rounded border">⌘ + P</kbd>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
+              onClick={() => navigate("/doctor/waitlist")}
+            >
+              <div className="flex items-center gap-3 w-full">
+                <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                  <ClipboardList className="h-5 w-5 text-warning" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="font-semibold text-base">View waitlist</div>
+                  <div className="text-sm text-muted-foreground">{stats.waitlistPatients} pending</div>
+                </div>
+              </div>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
