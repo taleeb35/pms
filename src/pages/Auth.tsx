@@ -5,18 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { CitySelect } from "@/components/CitySelect";
 
 const Auth = () => {
-  const [authType, setAuthType] = useState<"admin" | "clinic">("admin");
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [clinicName, setClinicName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [city, setCity] = useState("");
@@ -26,67 +23,6 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleAdminAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (isSignup) {
-        // Admin signup
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: fullName,
-            },
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-          },
-        });
-
-        if (error) throw error;
-        if (!data.user) throw new Error("User creation failed");
-
-        // Assign admin role
-        const { error: roleError } = await supabase.from("user_roles").insert({
-          user_id: data.user.id,
-          role: "admin",
-        });
-
-        if (roleError) throw roleError;
-
-        toast({
-          title: "Success!",
-          description: "Your admin account has been created. You can now log in.",
-        });
-
-        setIsSignup(false);
-        setPassword("");
-      } else {
-        // Admin login
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-
-        toast({
-          title: "Login successful",
-          description: "Welcome back!",
-        });
-        navigate("/dashboard");
-      }
-    } catch (error: any) {
-      toast({
-        title: "Authentication error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleClinicAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,68 +124,13 @@ const Auth = () => {
             Patient Management System
           </CardTitle>
           <CardDescription className="text-center">
-            {authType === "admin"
-              ? isSignup
-                ? "Create your clinic admin account"
-                : "Admin login to manage your clinic"
-              : isSignup
+            {isSignup
               ? "Register your clinic with us"
               : "Clinic login to access the system"}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={authType} onValueChange={(v) => setAuthType(v as "admin" | "clinic")} className="mb-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="admin">Admin</TabsTrigger>
-              <TabsTrigger value="clinic">Clinic</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {authType === "admin" ? (
-            <form onSubmit={handleAdminAuth} className="space-y-4">
-              {isSignup && (
-                <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="John Doe"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
-                  />
-                </div>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isSignup ? "Create Admin Account" : "Sign In as Admin"}
-              </Button>
-            </form>
-          ) : (
-            <form onSubmit={handleClinicAuth} className="space-y-4">
+          <form onSubmit={handleClinicAuth} className="space-y-4">
               {isSignup && (
                 <>
                   <div className="space-y-2">
@@ -345,11 +226,10 @@ const Auth = () => {
                 </div>
               )}
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isSignup ? "Create Clinic Account" : "Sign In as Clinic"}
-              </Button>
-            </form>
-          )}
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSignup ? "Create Clinic Account" : "Sign In as Clinic"}
+            </Button>
+          </form>
 
           <div className="mt-4 text-center text-sm">
             <button
@@ -359,7 +239,6 @@ const Auth = () => {
                 setEmail("");
                 setPassword("");
                 setConfirmPassword("");
-                setFullName("");
                 setClinicName("");
                 setPhoneNumber("");
                 setCity("");
@@ -370,9 +249,7 @@ const Auth = () => {
             >
               {isSignup
                 ? "Already have an account? Sign in"
-                : authType === "clinic"
-                ? "New clinic? Sign up here"
-                : "Don't have an account? Sign up"}
+                : "New clinic? Sign up here"}
             </button>
           </div>
         </CardContent>
