@@ -128,6 +128,7 @@ export type Database = {
           id: string
           no_of_doctors: number
           phone_number: string
+          requested_doctors: number
           status: string
           updated_at: string
         }
@@ -139,6 +140,7 @@ export type Database = {
           id: string
           no_of_doctors?: number
           phone_number: string
+          requested_doctors?: number
           status?: string
           updated_at?: string
         }
@@ -150,6 +152,7 @@ export type Database = {
           id?: string
           no_of_doctors?: number
           phone_number?: string
+          requested_doctors?: number
           status?: string
           updated_at?: string
         }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Clock, CheckCircle2, Ban } from "lucide-react";
+import { Building2, Clock, CheckCircle2, MapPin, Phone, Mail, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -28,6 +28,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Clinic {
   id: string;
@@ -36,6 +43,7 @@ interface Clinic {
   phone_number: string;
   address: string;
   no_of_doctors: number;
+  requested_doctors: number;
   status: string;
   created_at: string;
   profiles: {
@@ -50,6 +58,7 @@ const AdminClinics = () => {
   const [updating, setUpdating] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -109,7 +118,6 @@ const AdminClinics = () => {
     total: clinics.length,
     active: clinics.filter(c => c.status === 'active').length,
     draft: clinics.filter(c => c.status === 'draft').length,
-    suspended: clinics.filter(c => c.status === 'suspended').length,
   };
 
   // Pagination logic
@@ -138,7 +146,7 @@ const AdminClinics = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
@@ -161,21 +169,11 @@ const AdminClinics = () => {
 
         <Card className="border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle>
             <Clock className="h-5 w-5 text-warning" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-warning">{stats.draft}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Suspended</CardTitle>
-            <Ban className="h-5 w-5 text-destructive" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-destructive">{stats.suspended}</div>
           </CardContent>
         </Card>
       </div>
@@ -216,15 +214,20 @@ const AdminClinics = () => {
                       <TableHead className="font-semibold">Clinic Name</TableHead>
                       <TableHead className="font-semibold">Email</TableHead>
                       <TableHead className="font-semibold">Phone</TableHead>
-                      <TableHead className="font-semibold">Address</TableHead>
-                      <TableHead className="font-semibold text-center">Doctors</TableHead>
+                      <TableHead className="font-semibold">City</TableHead>
+                      <TableHead className="font-semibold text-center">Requested</TableHead>
+                      <TableHead className="font-semibold text-center">Created</TableHead>
                       <TableHead className="font-semibold">Status</TableHead>
                       <TableHead className="font-semibold">Registered</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {currentClinics.map((clinic) => (
-                      <TableRow key={clinic.id} className="hover:bg-accent/50">
+                      <TableRow 
+                        key={clinic.id} 
+                        className="hover:bg-accent/50 cursor-pointer transition-colors"
+                        onClick={() => setSelectedClinic(clinic)}
+                      >
                         <TableCell>
                           <div>
                             <p className="font-medium">{clinic.clinic_name}</p>
@@ -233,24 +236,24 @@ const AdminClinics = () => {
                         </TableCell>
                         <TableCell className="text-sm">{clinic.profiles.email}</TableCell>
                         <TableCell className="text-sm">{clinic.phone_number}</TableCell>
-                        <TableCell className="text-sm">
-                          <div className="max-w-[200px]">
-                            <p>{clinic.address}</p>
-                            <p className="text-xs text-muted-foreground">{clinic.city}</p>
-                          </div>
+                        <TableCell className="text-sm">{clinic.city}</TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="outline" className="font-semibold text-primary border-primary/30">
+                            {clinic.requested_doctors}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="secondary" className="font-semibold">
                             {clinic.no_of_doctors}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
                           <Select
                             value={clinic.status}
                             onValueChange={(value) => updateClinicStatus(clinic.id, value)}
                             disabled={updating === clinic.id}
                           >
-                            <SelectTrigger className="w-[130px] h-8">
+                            <SelectTrigger className="w-[120px] h-8">
                               <SelectValue>
                                 {clinic.status === "active" && (
                                   <span className="flex items-center gap-1 text-success">
@@ -262,12 +265,6 @@ const AdminClinics = () => {
                                   <span className="flex items-center gap-1 text-warning">
                                     <Clock className="h-3 w-3" />
                                     Draft
-                                  </span>
-                                )}
-                                {clinic.status === "suspended" && (
-                                  <span className="flex items-center gap-1 text-destructive">
-                                    <Ban className="h-3 w-3" />
-                                    Suspended
                                   </span>
                                 )}
                               </SelectValue>
@@ -283,12 +280,6 @@ const AdminClinics = () => {
                                 <span className="flex items-center gap-2">
                                   <CheckCircle2 className="h-4 w-4 text-success" />
                                   Active
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="suspended">
-                                <span className="flex items-center gap-2">
-                                  <Ban className="h-4 w-4 text-destructive" />
-                                  Suspended
                                 </span>
                               </SelectItem>
                             </SelectContent>
@@ -356,6 +347,146 @@ const AdminClinics = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Clinic Details Modal */}
+      <Dialog open={!!selectedClinic} onOpenChange={() => setSelectedClinic(null)}>
+        <DialogContent className="max-w-3xl animate-scale-in">
+          {selectedClinic && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <Building2 className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <DialogTitle className="text-2xl font-bold mb-1">
+                      {selectedClinic.clinic_name}
+                    </DialogTitle>
+                    <DialogDescription className="text-base">
+                      Managed by {selectedClinic.profiles.full_name}
+                    </DialogDescription>
+                  </div>
+                  {selectedClinic.status === "active" ? (
+                    <Badge className="bg-success/10 text-success border-success/20 px-3 py-1">
+                      <CheckCircle2 className="h-4 w-4 mr-1" />
+                      Active
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-warning/10 text-warning border-warning/20 px-3 py-1">
+                      <Clock className="h-4 w-4 mr-1" />
+                      Pending Approval
+                    </Badge>
+                  )}
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-6 mt-6">
+                {/* Contact Information */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Phone className="h-5 w-5 text-primary" />
+                    Contact Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4 bg-accent/30 p-4 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Email</p>
+                        <p className="font-medium">{selectedClinic.profiles.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Phone</p>
+                        <p className="font-medium">{selectedClinic.phone_number}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    Location
+                  </h3>
+                  <div className="bg-accent/30 p-4 rounded-lg">
+                    <p className="font-medium mb-1">{selectedClinic.address}</p>
+                    <p className="text-sm text-muted-foreground">{selectedClinic.city}</p>
+                  </div>
+                </div>
+
+                {/* Doctor Statistics */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Users className="h-5 w-5 text-primary" />
+                    Doctor Statistics
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-transparent">
+                      <CardContent className="pt-6">
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground mb-2">Requested Doctors</p>
+                          <p className="text-4xl font-bold text-primary">{selectedClinic.requested_doctors}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-border/40 bg-gradient-to-br from-success/5 to-transparent">
+                      <CardContent className="pt-6">
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground mb-2">Doctors Created</p>
+                          <p className="text-4xl font-bold text-success">{selectedClinic.no_of_doctors}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                {/* Registration Date */}
+                <div className="bg-accent/30 p-4 rounded-lg flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Registered On</p>
+                    <p className="font-semibold">{format(new Date(selectedClinic.created_at), "MMMM dd, yyyy 'at' HH:mm")}</p>
+                  </div>
+                  <Clock className="h-8 w-8 text-muted-foreground" />
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-3 pt-4 border-t">
+                  <span className="text-sm text-muted-foreground">Change Status:</span>
+                  <Select
+                    value={selectedClinic.status}
+                    onValueChange={(value) => {
+                      updateClinicStatus(selectedClinic.id, value);
+                      setSelectedClinic({ ...selectedClinic, status: value });
+                    }}
+                    disabled={updating === selectedClinic.id}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">
+                        <span className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-warning" />
+                          Draft
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="active">
+                        <span className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-success" />
+                          Active
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
