@@ -3,32 +3,26 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
-// https://vitejs.dev/config/
-// export default defineConfig(({ mode }) => ({
-//   server: {
-//     host: "::",
-//     port: 8080,
-//   },
-//   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
-//   resolve: {
-//     alias: {
-//       "@": path.resolve(__dirname, "./src"),
-//     },
-//   },
-// }));
-
 export default defineConfig(({ mode }) => ({
+  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+
+  // dev server (local)
   server: {
     host: "::",
     port: 8080,
   },
+
+  // production preview (what PM2 runs)
   preview: {
-    host: "0.0.0.0", // listen on all interfaces for nginx/proxy
-    port: 3000,      // must match your pm2-start.sh and health check
+    host: "0.0.0.0",
+    port: 3000,
     strictPort: true,
-    allowedHosts: [
-      "myclinichq.com",
-      "www.myclinichq.com", // keep or remove if you don't use www
-    ],
+    allowedHosts: ["myclinichq.com", "www.myclinichq.com"],
   },
 }));
