@@ -2,14 +2,16 @@ name: Deploy myclinichq
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Upload files to server
         uses: appleboy/scp-action@v0.1.7
@@ -17,9 +19,9 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.VPS_PORT }}
+          port: 22
           source: "."
-          target: ${{ secrets.VPS_PATH }}
+          target: "/home/theannualreports/htdocs/theannualreports.com"
           overwrite: true
           rm: true
 
@@ -29,34 +31,48 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.VPS_PORT }}
+          port: 22
           script: |
             set -e
-            cd ${{ secrets.VPS_PATH }}
 
-            echo "Check package.json exists"
-            test -f package.json || (echo "ERROR: package.json missing" && ls -la && exit 1)
+            echo "cd to project"
+            cd /home/theannualreports/htdocs/theannualreports.com
 
+            echo "Load NVM / Node"
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             nvm use 22 >/dev/null 2>&1 || nvm install 22
 
-            echo "Start/reload PM2"
-            if pm2 describe myclinichq > /dev/null 2>&1; then
-              pm2 reload myclinichq --update-env
+            echo "Install deps & build (with devDependencies)"
+            unset NODE_ENV
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+            npm run build
+
+            echo "Start or reload PM2 from ecosystem.config.cjs"
+            export NODE_ENV=production
+            export PORT=3000
+
+            if pm2 describe theannualreports > /dev/null 2>&1; then
+              pm2 reload theannualreports --update-env
             else
               pm2 start ecosystem.config.cjs
               pm2 save
             fi
 
-            echo "Health check"
-            for i in {1..30}; do
+            echo "Health probe"
+            for i in {1..40}; do
               if curl -fsS http://127.0.0.1:3000/ > /dev/null; then
                 echo "Health OK"
                 exit 0
               fi
+              echo "Waiting for app (try $i/40)..."
               sleep 2
             done
 
-            pm2 logs myclinichq --lines 100 --nostream || true
+            echo "Health check FAILED"
+            pm2 logs theannualreports --lines 100 --nostream || true
             exit 1
