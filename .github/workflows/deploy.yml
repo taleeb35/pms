@@ -1,0 +1,62 @@
+name: Deploy myclinichq
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "."
+          target: ${{ secrets.VPS_PATH }}
+          overwrite: true
+          rm: true
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_PATH }}
+
+            echo "Check package.json exists"
+            test -f package.json || (echo "ERROR: package.json missing" && ls -la && exit 1)
+
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm use 22 >/dev/null 2>&1 || nvm install 22
+
+            echo "Start/reload PM2"
+            if pm2 describe myclinichq > /dev/null 2>&1; then
+              pm2 reload myclinichq --update-env
+            else
+              pm2 start ecosystem.config.cjs
+              pm2 save
+            fi
+
+            echo "Health check"
+            for i in {1..30}; do
+              if curl -fsS http://127.0.0.1:3000/ > /dev/null; then
+                echo "Health OK"
+                exit 0
+              fi
+              sleep 2
+            done
+
+            pm2 logs myclinichq --lines 100 --nostream || true
+            exit 1
