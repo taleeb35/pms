@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "."
-          target: "/home/theannualreports/htdocs/theannualreports.com"
+          target: "/home/myclinichq/htdocs/myclinichq.com"
           overwrite: true
           rm: true
 
@@ -31,12 +31,12 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
+          port: ${{ secrets.VPS_PORT }}
           script: |
             set -e
 
             echo "cd to project"
-            cd /home/theannualreports/htdocs/theannualreports.com
+            cd /home/myclinichq/htdocs/myclinichq.com
 
             echo "Load NVM / Node"
             export NVM_DIR="$HOME/.nvm"
@@ -56,8 +56,8 @@ jobs:
             export NODE_ENV=production
             export PORT=3000
 
-            if pm2 describe theannualreports > /dev/null 2>&1; then
-              pm2 reload theannualreports --update-env
+            if pm2 describe myclinichq > /dev/null 2>&1; then
+              pm2 reload myclinichq --update-env
             else
               pm2 start ecosystem.config.cjs
               pm2 save
@@ -74,5 +74,5 @@ jobs:
             done
 
             echo "Health check FAILED"
-            pm2 logs theannualreports --lines 100 --nostream || true
+            pm2 logs myclinichq --lines 100 --nostream || true
             exit 1
