@@ -24,8 +24,9 @@ const ClinicAddDoctor = () => {
   const [checkingLimit, setCheckingLimit] = useState(true);
   const [canAddDoctor, setCanAddDoctor] = useState(false);
   const [currentCount, setCurrentCount] = useState(0);
+  const [requestedDoctors, setRequestedDoctors] = useState(0);
   
-  const DOCTOR_LIMIT = 5;
+  const DOCTOR_LIMIT = requestedDoctors; // Dynamic limit based on clinic's requested doctors
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -69,6 +70,19 @@ const ClinicAddDoctor = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Fetch clinic's requested doctor limit
+      const { data: clinicData, error: clinicError } = await supabase
+        .from("clinics")
+        .select("requested_doctors")
+        .eq("id", user.id)
+        .single();
+
+      if (clinicError) throw clinicError;
+      
+      const requestedLimit = clinicData.requested_doctors || 0;
+      setRequestedDoctors(requestedLimit);
+
+      // Count current doctors
       const { count, error } = await supabase
         .from("doctors")
         .select("id", { count: "exact", head: true })
@@ -77,7 +91,7 @@ const ClinicAddDoctor = () => {
       if (error) throw error;
 
       setCurrentCount(count || 0);
-      setCanAddDoctor((count || 0) < DOCTOR_LIMIT);
+      setCanAddDoctor((count || 0) < requestedLimit);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -95,7 +109,7 @@ const ClinicAddDoctor = () => {
     if (!canAddDoctor) {
       toast({
         title: "Doctor Limit Reached",
-        description: "You've reached the maximum limit of 5 doctors. Please contact support to increase your limit.",
+        description: `You've reached the maximum limit of ${requestedDoctors} doctors. Please contact support to increase your limit.`,
         variant: "destructive",
       });
       return;

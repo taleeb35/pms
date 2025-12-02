@@ -35,7 +35,7 @@ const ClinicDashboard = () => {
   const [requestedDoctors, setRequestedDoctors] = useState(0);
   const { toast } = useToast();
 
-  const DOCTOR_LIMIT = 5;
+  const DOCTOR_LIMIT = requestedDoctors; // Dynamic limit based on clinic's requested doctors
 
   // Calculate next due date (10th of next month or current month)
   const getNextDueDate = () => {
@@ -69,12 +69,13 @@ const ClinicDashboard = () => {
       // Fetch clinic data
       const { data: clinicData, error: clinicError } = await supabase
         .from("clinics")
-        .select("clinic_name, no_of_doctors")
+        .select("clinic_name, no_of_doctors, requested_doctors")
         .eq("id", currentUser.id)
         .single();
 
       if (clinicError) throw clinicError;
       setClinic(clinicData);
+      setRequestedDoctors(clinicData.requested_doctors || 0);
 
       // Fetch doctors
       const { data: doctorsData, error: doctorsError } = await supabase
@@ -99,16 +100,6 @@ const ClinicDashboard = () => {
 
       if (feeData) {
         setDoctorMonthlyFee(parseFloat(feeData.value) || 0);
-      }
-
-      const { data: clinicFullData } = await supabase
-        .from("clinics")
-        .select("requested_doctors")
-        .eq("id", currentUser.id)
-        .single();
-
-      if (clinicFullData) {
-        setRequestedDoctors(clinicFullData.requested_doctors || 0);
       }
     } catch (error: any) {
       toast({

@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Clock, CheckCircle2, MapPin, Phone, Mail, Users, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import {
@@ -74,6 +76,7 @@ const AdminClinics = () => {
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [clinicToDelete, setClinicToDelete] = useState<Clinic | null>(null);
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState<number>(0);
+  const [editingDoctorLimit, setEditingDoctorLimit] = useState<number | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -163,6 +166,42 @@ const AdminClinics = () => {
       fetchClinics();
     }
     setUpdating(null);
+  };
+
+  const updateDoctorLimit = async (clinicId: string, newLimit: number) => {
+    if (newLimit < 1) {
+      toast({
+        title: "Invalid Limit",
+        description: "Doctor limit must be at least 1",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUpdating(clinicId);
+    const { error } = await supabase
+      .from("clinics")
+      .update({ requested_doctors: newLimit })
+      .eq("id", clinicId);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update doctor limit",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: `Doctor limit updated to ${newLimit} successfully`,
+      });
+      fetchClinics();
+      if (selectedClinic && selectedClinic.id === clinicId) {
+        setSelectedClinic({ ...selectedClinic, requested_doctors: newLimit });
+      }
+    }
+    setUpdating(null);
+    setEditingDoctorLimit(null);
   };
 
   const deleteClinic = async () => {
@@ -502,7 +541,10 @@ const AdminClinics = () => {
       </Card>
 
       {/* Clinic Details Modal */}
-      <Dialog open={!!selectedClinic} onOpenChange={() => setSelectedClinic(null)}>
+      <Dialog open={!!selectedClinic} onOpenChange={() => {
+        setSelectedClinic(null);
+        setEditingDoctorLimit(null);
+      }}>
         <DialogContent className="max-w-3xl animate-scale-in">
           {selectedClinic && (
             <>
@@ -620,6 +662,32 @@ const AdminClinics = () => {
 
                 {/* Actions */}
                 <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground min-w-[120px]">Doctor Limit:</span>
+                    <div className="flex items-center gap-2 flex-1">
+                      <Input
+                        type="number"
+                        min="1"
+                        value={editingDoctorLimit !== null ? editingDoctorLimit : selectedClinic.requested_doctors}
+                        onChange={(e) => setEditingDoctorLimit(parseInt(e.target.value) || 1)}
+                        className="w-[120px]"
+                        disabled={updating === selectedClinic.id}
+                      />
+                      {editingDoctorLimit !== null && editingDoctorLimit !== selectedClinic.requested_doctors && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateDoctorLimit(selectedClinic.id, editingDoctorLimit)}
+                          disabled={updating === selectedClinic.id}
+                        >
+                          Update
+                        </Button>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        (Currently using {selectedClinic.no_of_doctors})
+                      </span>
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground min-w-[120px]">Change Status:</span>
                     <Select
