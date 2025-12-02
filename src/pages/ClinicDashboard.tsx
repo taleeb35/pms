@@ -166,7 +166,7 @@ const ClinicDashboard = () => {
                 <Sparkles className="h-5 w-5 text-warning animate-pulse" />
               </div>
               <h2 className="text-4xl font-bold tracking-tight mb-2 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                Clinic Dashboard
+                Welcome {clinic?.clinic_name || "Clinic"}
               </h2>
               <p className="text-muted-foreground text-base max-w-2xl">
                 Manage your clinic and registered doctors efficiently
