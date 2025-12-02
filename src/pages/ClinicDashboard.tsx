@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Users, Building2, Plus, AlertCircle, LifeBuoy, Activity, UserPlus, Sparkles } from "lucide-react";
+import { Stethoscope, Users, Building2, Plus, AlertCircle, LifeBuoy, Activity, UserPlus, Sparkles, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { format } from "date-fns";
+import { format, addMonths, startOfMonth } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
 
 interface Clinic {
@@ -31,9 +31,28 @@ const ClinicDashboard = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
+  const [requestedDoctors, setRequestedDoctors] = useState(0);
   const { toast } = useToast();
 
   const DOCTOR_LIMIT = 5;
+
+  // Calculate next due date (10th of next month or current month)
+  const getNextDueDate = () => {
+    const today = new Date();
+    const currentDay = today.getDate();
+    
+    if (currentDay < 10) {
+      // If today is before 10th, next due date is 10th of current month
+      return new Date(today.getFullYear(), today.getMonth(), 10);
+    } else {
+      // If today is on or after 10th, next due date is 10th of next month
+      const nextMonth = addMonths(today, 1);
+      return new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 10);
+    }
+  };
+
+  const nextDueDate = getNextDueDate();
 
   useEffect(() => {
     fetchClinicData();
@@ -70,6 +89,27 @@ const ClinicDashboard = () => {
 
       if (doctorsError) throw doctorsError;
       setDoctors(doctorsData || []);
+
+      // Fetch doctor monthly fee and requested doctors
+      const { data: feeData } = await supabase
+        .from("system_settings")
+        .select("value")
+        .eq("key", "doctor_monthly_fee")
+        .single();
+
+      if (feeData) {
+        setDoctorMonthlyFee(parseFloat(feeData.value) || 0);
+      }
+
+      const { data: clinicFullData } = await supabase
+        .from("clinics")
+        .select("requested_doctors")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (clinicFullData) {
+        setRequestedDoctors(clinicFullData.requested_doctors || 0);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -133,7 +173,7 @@ const ClinicDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card className="hover:shadow-md transition-all border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Clinic Name</CardTitle>
@@ -170,6 +210,19 @@ const ClinicDashboard = () => {
           <CardContent>
             <div className="text-3xl font-bold mb-1">{approvedDoctors}</div>
             <p className="text-xs text-muted-foreground">Approved & practicing</p>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-md transition-all border-border/40 bg-gradient-to-br from-warning/5 to-warning/10">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Next Due Date</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-warning" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold mb-1">{format(nextDueDate, "MMM dd, yyyy")}</div>
+            <p className="text-xs text-muted-foreground">Monthly payment due</p>
           </CardContent>
         </Card>
       </div>
