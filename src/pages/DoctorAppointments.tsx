@@ -57,7 +57,7 @@ const DoctorAppointments = () => {
   const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [dateFilter, setDateFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("scheduled");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
