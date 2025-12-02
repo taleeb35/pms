@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Plus, ArrowLeft, Mail, Phone } from "lucide-react";
+import { Stethoscope, Plus, ArrowLeft, Mail, Phone, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -136,6 +136,7 @@ const ClinicDoctors = () => {
                     <TableHead>Contact</TableHead>
                     <TableHead>Experience</TableHead>
                     <TableHead>Fee (PKR)</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -181,6 +182,17 @@ const ClinicDoctors = () => {
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/clinic/patients?doctorId=${doctor.id}`)}
+                          className="gap-2"
+                        >
+                          <Users className="h-4 w-4" />
+                          View Patients
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}

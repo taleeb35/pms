@@ -126,6 +126,7 @@ const Layout = ({ children }: LayoutProps) => {
   const clinicMenuItems = [
     { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/clinic/doctors", icon: Stethoscope, label: "Doctors" },
+    { path: "/clinic/patients", icon: Users, label: "Patients" },
     { path: "/clinic/profile", icon: UserCog, label: "Profile" },
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
   ];

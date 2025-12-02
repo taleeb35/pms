@@ -24,10 +24,16 @@ interface Doctor {
   };
 }
 
+interface ClinicStats {
+  totalDoctors: number;
+  totalPatients: number;
+}
+
 const ClinicDashboard = () => {
   const navigate = useNavigate();
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [stats, setStats] = useState<ClinicStats>({ totalDoctors: 0, totalPatients: 0 });
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
@@ -88,6 +94,26 @@ const ClinicDashboard = () => {
 
       if (doctorsError) throw doctorsError;
       setDoctors(doctorsData || []);
+
+      // Fetch total patients created by all doctors in this clinic
+      const doctorIds = doctorsData?.map(d => d.id) || [];
+      let patientCount = 0;
+      
+      if (doctorIds.length > 0) {
+        const { count, error: patientsError } = await supabase
+          .from("patients")
+          .select("*", { count: "exact", head: true })
+          .in("created_by", doctorIds);
+
+        if (!patientsError && count !== null) {
+          patientCount = count;
+        }
+      }
+
+      setStats({
+        totalDoctors: doctorsData?.length || 0,
+        totalPatients: patientCount,
+      });
 
       // Fetch doctor monthly fee and requested doctors
       const { data: feeData } = await supabase
@@ -190,14 +216,14 @@ const ClinicDashboard = () => {
 
         <Card className="hover:shadow-md transition-all border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Doctors</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
             <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
               <Users className="h-5 w-5 text-success" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold mb-1">{doctors.length}</div>
-            <p className="text-xs text-muted-foreground">Registered & active</p>
+            <div className="text-3xl font-bold mb-1">{stats.totalPatients}</div>
+            <p className="text-xs text-muted-foreground">All clinic patients</p>
           </CardContent>
         </Card>
 
