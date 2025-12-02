@@ -308,7 +308,7 @@ const ClinicDashboard = () => {
                         <Stethoscope className="h-5 w-5 text-info" />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-base mb-0.5">{doctor.profiles.full_name}</h4>
+                        <h4 className="font-semibold text-base mb-0.5">{doctor.profiles?.full_name || "Unknown Doctor"}</h4>
                         <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
                       </div>
                     </div>
