@@ -29,6 +29,7 @@ import ClinicAddDoctor from "./pages/ClinicAddDoctor";
 import ClinicDoctors from "./pages/ClinicDoctors";
 import ClinicPatients from "./pages/ClinicPatients";
 import ClinicPatientDetail from "./pages/ClinicPatientDetail";
+import ClinicAppointments from "./pages/ClinicAppointments";
 import ClinicSupport from "./pages/ClinicSupport";
 import AdminProfile from "./pages/AdminProfile";
 import ClinicProfile from "./pages/ClinicProfile";
@@ -213,6 +214,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicPatientDetail />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/appointments"
+              element={
+                <Layout>
+                  <ClinicAppointments />
                 </Layout>
               }
             />
