@@ -28,6 +28,7 @@ interface Patient {
   father_name: string | null;
   email: string | null;
   phone: string;
+  cnic: string | null;
   date_of_birth: string;
   gender: string;
   blood_group: string | null;
@@ -71,6 +72,7 @@ const DoctorPatients = () => {
     father_name: string;
     email: string;
     phone: string;
+    cnic: string;
     date_of_birth: string;
     gender: "male" | "female" | "other";
     blood_group: string;
@@ -84,6 +86,7 @@ const DoctorPatients = () => {
     father_name: "",
     email: "",
     phone: "",
+    cnic: "",
     date_of_birth: "",
     gender: "male",
     blood_group: "",
@@ -122,6 +125,7 @@ const DoctorPatients = () => {
     father_name: string;
     email: string;
     phone: string;
+    cnic: string;
     date_of_birth: string;
     gender: "male" | "female" | "other";
     blood_group: string;
@@ -135,6 +139,7 @@ const DoctorPatients = () => {
     father_name: "",
     email: "",
     phone: "",
+    cnic: "",
     date_of_birth: "",
     gender: "male",
     blood_group: "",
@@ -409,6 +414,7 @@ const DoctorPatients = () => {
       father_name: patient.father_name || "",
       email: patient.email || "",
       phone: patient.phone,
+      cnic: patient.cnic || "",
       date_of_birth: patient.date_of_birth,
       gender: patient.gender as "male" | "female" | "other",
       blood_group: patient.blood_group || "",
@@ -436,6 +442,7 @@ const DoctorPatients = () => {
         father_name: editForm.father_name || null,
         email: editForm.email || null,
         phone: editForm.phone,
+        cnic: editForm.cnic || null,
         date_of_birth: editForm.date_of_birth,
         gender: editForm.gender,
         blood_group: editForm.blood_group || null,
@@ -659,6 +666,7 @@ const DoctorPatients = () => {
           father_name: addForm.father_name || null,
           email: addForm.email || null,
           phone: addForm.phone,
+          cnic: addForm.cnic || null,
           date_of_birth: addForm.date_of_birth,
           gender: addForm.gender,
           blood_group: addForm.blood_group || null,
@@ -695,6 +703,7 @@ const DoctorPatients = () => {
       father_name: "",
       email: "",
       phone: "",
+      cnic: "",
       date_of_birth: "",
       gender: "male",
       blood_group: "",
@@ -925,6 +934,12 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Phone</p>
                                       <p className="font-medium">{selectedPatient.phone}</p>
                                     </div>
+                                    {selectedPatient.cnic && (
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">CNIC</p>
+                                        <p className="font-medium">{selectedPatient.cnic}</p>
+                                      </div>
+                                    )}
                                     <div>
                                       <p className="text-sm text-muted-foreground">Date of Birth</p>
                                       <p className="font-medium">{format(new Date(selectedPatient.date_of_birth), "PPP")}</p>
@@ -1267,6 +1282,14 @@ const DoctorPatients = () => {
                 />
               </div>
               <div>
+                <Label>CNIC</Label>
+                <Input
+                  value={addForm.cnic}
+                  onChange={(e) => setAddForm({ ...addForm, cnic: e.target.value })}
+                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                />
+              </div>
+              <div>
                 <Label>Date of Birth *</Label>
                 <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
                   <PopoverTrigger asChild>
@@ -1436,6 +1459,14 @@ const DoctorPatients = () => {
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
                   placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <Label>CNIC</Label>
+                <Input
+                  value={editForm.cnic}
+                  onChange={(e) => setEditForm({ ...editForm, cnic: e.target.value })}
+                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
                 />
               </div>
               <div>
