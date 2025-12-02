@@ -129,12 +129,12 @@ const Auth = () => {
 
         // Check if clinic is active
         if (clinicData.status !== "active") {
-          // Sign out the user immediately
-          await supabase.auth.signOut();
-          
-          // Show inactive account dialog
-          setLoading(false);
+          // Show inactive account dialog BEFORE signing out
           setShowInactiveDialog(true);
+          setLoading(false);
+          
+          // Sign out the user after dialog is set
+          await supabase.auth.signOut();
           return;
         }
 
