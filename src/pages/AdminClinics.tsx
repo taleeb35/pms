@@ -380,10 +380,10 @@ const AdminClinics = () => {
                         <TableCell>
                           <div>
                             <p className="font-medium">{clinic.clinic_name}</p>
-                            <p className="text-xs text-muted-foreground">{clinic.profiles.full_name}</p>
+                            <p className="text-xs text-muted-foreground">{clinic.profiles?.full_name || "Unknown"}</p>
                           </div>
                         </TableCell>
-                        <TableCell className="text-sm">{clinic.profiles.email}</TableCell>
+                        <TableCell className="text-sm">{clinic.profiles?.email || "N/A"}</TableCell>
                         <TableCell className="text-sm">{clinic.phone_number}</TableCell>
                         <TableCell className="text-sm">{clinic.city}</TableCell>
                         <TableCell className="text-center">
@@ -558,7 +558,7 @@ const AdminClinics = () => {
                       {selectedClinic.clinic_name}
                     </DialogTitle>
                     <DialogDescription className="text-base">
-                      Managed by {selectedClinic.profiles.full_name}
+                      Managed by {selectedClinic.profiles?.full_name || "Unknown"}
                     </DialogDescription>
                   </div>
                   {selectedClinic.status === "active" ? (

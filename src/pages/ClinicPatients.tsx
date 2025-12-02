@@ -193,7 +193,7 @@ const ClinicPatients = () => {
                   <SelectItem value="all">All Doctors</SelectItem>
                   {doctors.map((doctor) => (
                     <SelectItem key={doctor.id} value={doctor.id}>
-                      {doctor.profiles.full_name}
+                      {doctor.profiles?.full_name || "Unknown Doctor"}
                     </SelectItem>
                   ))}
                 </SelectContent>

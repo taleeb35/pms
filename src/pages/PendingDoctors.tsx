@@ -49,9 +49,9 @@ const PendingDoctors = () => {
 
       const formattedDoctors = doctors?.map((doctor: any) => ({
         id: doctor.id,
-        full_name: doctor.profiles.full_name,
-        email: doctor.profiles.email,
-        phone: doctor.contact_number || doctor.profiles.phone,
+        full_name: doctor.profiles?.full_name || "Unknown Doctor",
+        email: doctor.profiles?.email || "N/A",
+        phone: doctor.contact_number || doctor.profiles?.phone || "N/A",
         city: doctor.city,
         created_at: doctor.created_at,
       })) || [];

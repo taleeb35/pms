@@ -110,9 +110,9 @@ const ClinicDoctors = () => {
   const handleEditDoctor = (doctor: Doctor) => {
     setSelectedDoctor(doctor);
     setEditForm({
-      full_name: doctor.profiles.full_name,
-      email: doctor.profiles.email,
-      date_of_birth: doctor.profiles.date_of_birth || "",
+      full_name: doctor.profiles?.full_name || "",
+      email: doctor.profiles?.email || "",
+      date_of_birth: doctor.profiles?.date_of_birth || "",
       contact_number: doctor.contact_number || "",
       specialization: doctor.specialization,
       experience_years: doctor.experience_years?.toString() || "",
@@ -235,10 +235,10 @@ const ClinicDoctors = () => {
                             <Stethoscope className="h-5 w-5 text-info" />
                           </div>
                           <div>
-                            <div className="font-semibold">{doctor.profiles.full_name}</div>
+                            <div className="font-semibold">{doctor.profiles?.full_name || "Unknown Doctor"}</div>
                             <div className="text-sm text-muted-foreground flex items-center gap-1">
                               <Mail className="h-3 w-3" />
-                              {doctor.profiles.email}
+                              {doctor.profiles?.email || "N/A"}
                             </div>
                           </div>
                         </div>

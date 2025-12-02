@@ -340,10 +340,10 @@ const Doctors = () => {
                   return (
                     <TableRow key={doctor.id}>
                       <TableCell className="font-medium">
-                        {doctor.profiles.full_name}
+                        {doctor.profiles?.full_name || "Unknown Doctor"}
                       </TableCell>
-                      <TableCell>{doctor.profiles.email}</TableCell>
-                      <TableCell>{doctor.profiles.phone || doctor.contact_number || "N/A"}</TableCell>
+                      <TableCell>{doctor.profiles?.email || "N/A"}</TableCell>
+                      <TableCell>{doctor.profiles?.phone || doctor.contact_number || "N/A"}</TableCell>
                       <TableCell>{doctor.city || "N/A"}</TableCell>
                       <TableCell>{doctor.specialization}</TableCell>
                       <TableCell>
@@ -430,7 +430,7 @@ const Doctors = () => {
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-semibold">{selectedDoctor.profiles.full_name}</h3>
+                  <h3 className="text-xl font-semibold">{selectedDoctor.profiles?.full_name || "Unknown Doctor"}</h3>
                   <p className="text-sm text-muted-foreground">{selectedDoctor.specialization}</p>
                 </div>
                 <Badge variant={selectedDoctor.approved ? "default" : "secondary"}>
@@ -537,7 +537,7 @@ const Doctors = () => {
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-4 pt-4">
               <p className="font-semibold text-foreground">
-                Are you absolutely sure you want to delete "{doctorToDelete?.profiles.full_name}"?
+                Are you absolutely sure you want to delete "{doctorToDelete?.profiles?.full_name || "this doctor"}"?
               </p>
               
               <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-2">
