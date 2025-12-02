@@ -474,9 +474,34 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         }
       }
 
+      // Create new appointment if next visit date is set
+      if (nextVisitDate) {
+        const { error: appointmentError } = await supabase
+          .from("appointments")
+          .insert({
+            patient_id: appointment.patient_id,
+            doctor_id: user.id,
+            appointment_date: format(nextVisitDate, "yyyy-MM-dd"),
+            appointment_time: appointment.appointment_time, // Use same time as current appointment
+            duration_minutes: 30,
+            status: "scheduled",
+            reason: "Follow-up visit",
+            notes: formData.next_visit_notes || null,
+          });
+
+        if (appointmentError) {
+          console.error("Error creating follow-up appointment:", appointmentError);
+          toast({
+            title: "Warning",
+            description: "Visit record saved but failed to create follow-up appointment",
+            variant: "destructive",
+          });
+        }
+      }
+
       toast({
         title: "Success",
-        description: `Visit record ${existingRecord ? 'updated' : 'saved'} successfully`,
+        description: `Visit record ${existingRecord ? 'updated' : 'saved'} successfully${nextVisitDate ? ' and follow-up appointment created' : ''}`,
       });
 
       onOpenChange(false);
