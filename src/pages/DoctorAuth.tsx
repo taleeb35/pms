@@ -6,13 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Home, Stethoscope, Sparkles, Loader2 } from "lucide-react";
+import { Home, Stethoscope, Sparkles, Loader2, AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import clinicLogo from "@/assets/clinic-logo.png";
 
 const DoctorAuth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showInactiveDialog, setShowInactiveDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,10 +36,10 @@ const DoctorAuth = () => {
 
       if (authError) throw authError;
 
-      // Check if doctor is approved
+      // Check if doctor is approved and get clinic status
       const { data: doctorData, error: doctorError } = await supabase
         .from("doctors")
-        .select("approved")
+        .select("approved, clinic_id")
         .eq("id", authData.user.id)
         .single();
 
@@ -43,6 +51,27 @@ const DoctorAuth = () => {
       if (!doctorData.approved) {
         await supabase.auth.signOut();
         throw new Error("Your account is pending approval. Please contact your clinic.");
+      }
+
+      // Check if the doctor's clinic is active
+      if (doctorData.clinic_id) {
+        const { data: clinicData, error: clinicError } = await supabase
+          .from("clinics")
+          .select("status")
+          .eq("id", doctorData.clinic_id)
+          .single();
+
+        if (clinicError) {
+          await supabase.auth.signOut();
+          throw new Error("Unable to verify clinic status. Please contact support.");
+        }
+
+        if (clinicData.status !== "active") {
+          setShowInactiveDialog(true);
+          setLoading(false);
+          await supabase.auth.signOut();
+          return;
+        }
       }
 
       toast({
@@ -154,6 +183,36 @@ const DoctorAuth = () => {
           </form>
         </CardContent>
       </Card>
+
+      {/* Inactive Clinic Dialog */}
+      <Dialog open={showInactiveDialog} onOpenChange={setShowInactiveDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
+                <AlertCircle className="h-10 w-10 text-amber-600" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">Clinic Not Active</DialogTitle>
+            <DialogDescription className="text-center text-base space-y-3 pt-4">
+              <p className="font-semibold text-foreground">
+                Your clinic account is currently inactive.
+              </p>
+              <p className="text-muted-foreground">
+                Please contact your clinic administrator or support for assistance.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => setShowInactiveDialog(false)}
+              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700"
+            >
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
