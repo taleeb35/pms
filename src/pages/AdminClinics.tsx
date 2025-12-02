@@ -334,7 +334,7 @@ const AdminClinics = () => {
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant="default" className="font-semibold bg-success text-white">
-                            PKR {(doctorMonthlyFee * clinic.no_of_doctors).toLocaleString()}
+                            PKR {(doctorMonthlyFee * clinic.requested_doctors).toLocaleString()}
                           </Badge>
                         </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
@@ -535,10 +535,10 @@ const AdminClinics = () => {
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground mb-2">Monthly Fee</p>
                           <p className="text-3xl font-bold text-amber-600">
-                            PKR {(doctorMonthlyFee * selectedClinic.no_of_doctors).toLocaleString()}
+                            PKR {(doctorMonthlyFee * selectedClinic.requested_doctors).toLocaleString()}
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {selectedClinic.no_of_doctors} × PKR {doctorMonthlyFee.toLocaleString()}
+                            {selectedClinic.requested_doctors} × PKR {doctorMonthlyFee.toLocaleString()}
                           </p>
                         </div>
                       </CardContent>
