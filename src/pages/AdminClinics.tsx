@@ -160,20 +160,26 @@ const AdminClinics = () => {
       .eq("id", clinicToDelete.id);
 
     if (error) {
+      console.error("Clinic deletion error:", error);
       toast({
         title: "Error deleting clinic",
         description: error.message,
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Clinic deleted successfully",
-        description: `Deleted 1 clinic, ${doctorCount || 0} doctors, and ${patientCount} patients`,
-      });
-      setSelectedClinic(null);
-      fetchClinics();
+      setDeleting(false);
+      setClinicToDelete(null);
+      return;
     }
+
+    // Immediately update local state without waiting for refetch
+    setClinics(prevClinics => prevClinics.filter(c => c.id !== clinicToDelete.id));
     
+    toast({
+      title: "Clinic deleted successfully",
+      description: `Deleted 1 clinic, ${doctorCount || 0} doctors, and ${patientCount} patients`,
+    });
+    
+    setSelectedClinic(null);
     setDeleting(false);
     setClinicToDelete(null);
   };
