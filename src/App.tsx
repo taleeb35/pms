@@ -26,6 +26,7 @@ import AdminSettings from "./pages/AdminSettings";
 import AdminClinics from "./pages/AdminClinics";
 import ClinicDashboard from "./pages/ClinicDashboard";
 import ClinicAddDoctor from "./pages/ClinicAddDoctor";
+import ClinicDoctors from "./pages/ClinicDoctors";
 import ClinicSupport from "./pages/ClinicSupport";
 import AdminProfile from "./pages/AdminProfile";
 import ClinicProfile from "./pages/ClinicProfile";
@@ -186,6 +187,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicAddDoctor />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/doctors"
+              element={
+                <Layout>
+                  <ClinicDoctors />
                 </Layout>
               }
             />
