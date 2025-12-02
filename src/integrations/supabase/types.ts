@@ -125,6 +125,7 @@ export type Database = {
           city: string
           clinic_name: string
           created_at: string
+          fee_status: string
           id: string
           no_of_doctors: number
           phone_number: string
@@ -137,6 +138,7 @@ export type Database = {
           city: string
           clinic_name: string
           created_at?: string
+          fee_status?: string
           id: string
           no_of_doctors?: number
           phone_number: string
@@ -149,6 +151,7 @@ export type Database = {
           city?: string
           clinic_name?: string
           created_at?: string
+          fee_status?: string
           id?: string
           no_of_doctors?: number
           phone_number?: string
