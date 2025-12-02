@@ -26,7 +26,7 @@ const DoctorDashboard = () => {
       const today = new Date().toISOString().split('T')[0];
 
       const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes] = await Promise.all([
-        supabase.from("patients").select("id", { count: "exact", head: true }),
+        supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
         supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
