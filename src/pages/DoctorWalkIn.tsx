@@ -15,19 +15,11 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 
-interface Doctor {
-  id: string;
-  profiles: {
-    full_name: string;
-  } | null;
-  specialization: string;
-}
-
-const ClinicWalkIn = () => {
+const DoctorWalkIn = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
   
   // Patient form fields
   const [patientForm, setPatientForm] = useState({
@@ -46,14 +38,13 @@ const ClinicWalkIn = () => {
     major_diseases: "",
   });
   
-  // Appointment form fields
+  // Appointment form fields - date is always today
   const [appointmentForm, setAppointmentForm] = useState({
-    doctor_id: "",
     appointment_time: "",
     reason: "",
   });
   
-  // Date pickers
+  // Date picker for DOB only
   const [dobDate, setDobDate] = useState<Date>();
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
 
@@ -64,7 +55,7 @@ const ClinicWalkIn = () => {
   });
 
   useEffect(() => {
-    fetchDoctors();
+    fetchCurrentDoctor();
   }, []);
 
   useEffect(() => {
@@ -73,21 +64,10 @@ const ClinicWalkIn = () => {
     }
   }, [dobDate]);
 
-  const fetchDoctors = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("doctors")
-        .select("id, specialization, profiles(full_name)")
-        .eq("clinic_id", user.id)
-        .order("profiles(full_name)");
-
-      if (error) throw error;
-      setDoctors(data || []);
-    } catch (error: any) {
-      toast({ title: "Error fetching doctors", description: error.message, variant: "destructive" });
+  const fetchCurrentDoctor = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      setDoctorId(user.id);
     }
   };
 
@@ -113,12 +93,12 @@ const ClinicWalkIn = () => {
       toast({ title: "Date of birth is required", variant: "destructive" });
       return;
     }
-    if (!appointmentForm.doctor_id) {
-      toast({ title: "Please select a doctor", variant: "destructive" });
-      return;
-    }
     if (!appointmentForm.appointment_time) {
       toast({ title: "Please select appointment time", variant: "destructive" });
+      return;
+    }
+    if (!doctorId) {
+      toast({ title: "Doctor not found", variant: "destructive" });
       return;
     }
 
@@ -146,7 +126,7 @@ const ClinicWalkIn = () => {
           marital_status: patientForm.marital_status || null,
           city: patientForm.city || null,
           major_diseases: patientForm.major_diseases || null,
-          created_by: appointmentForm.doctor_id,
+          created_by: doctorId,
         })
         .select()
         .single();
@@ -158,12 +138,12 @@ const ClinicWalkIn = () => {
         .from("appointments")
         .insert({
           patient_id: patientData.id,
-          doctor_id: appointmentForm.doctor_id,
+          doctor_id: doctorId,
           appointment_date: todayDate,
           appointment_time: appointmentForm.appointment_time,
           reason: appointmentForm.reason || null,
           status: "scheduled",
-          created_by: appointmentForm.doctor_id,
+          created_by: doctorId,
         });
 
       if (appointmentError) throw appointmentError;
@@ -174,7 +154,7 @@ const ClinicWalkIn = () => {
       });
 
       // Navigate to appointments page
-      navigate("/clinic/appointments");
+      navigate("/doctor/appointments");
     } catch (error: any) {
       console.error("Error:", error);
       toast({
@@ -190,7 +170,7 @@ const ClinicWalkIn = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
+        <Button variant="ghost" onClick={() => navigate("/doctor/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
@@ -414,25 +394,6 @@ const ClinicWalkIn = () => {
               <CardDescription>Today's appointment - {format(new Date(), "MMMM d, yyyy")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Select Doctor *</Label>
-                <Select
-                  value={appointmentForm.doctor_id}
-                  onValueChange={(value) => setAppointmentForm(prev => ({ ...prev, doctor_id: value }))}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Select a doctor" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background z-50">
-                    {doctors.map((doctor) => (
-                      <SelectItem key={doctor.id} value={doctor.id}>
-                        {doctor.profiles?.full_name || "Unknown"} - {doctor.specialization}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                 <p className="text-sm font-medium">Appointment Date</p>
                 <p className="text-2xl font-bold text-primary">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
@@ -470,7 +431,7 @@ const ClinicWalkIn = () => {
 
               <div className="pt-4">
                 <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                  {loading ? "Registering..." : "Register Walk-In & Create Appointment"}
+                  {loading ? "Registering..." : "Register Walk-In Patient"}
                 </Button>
               </div>
             </CardContent>
@@ -481,4 +442,4 @@ const ClinicWalkIn = () => {
   );
 };
 
-export default ClinicWalkIn;
+export default DoctorWalkIn;

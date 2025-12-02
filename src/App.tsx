@@ -21,6 +21,7 @@ import WaitlistPatients from "./pages/WaitlistPatients";
 import PatientDetail from "./pages/PatientDetail";
 import DoctorSupport from "./pages/DoctorSupport";
 import DoctorFinance from "./pages/DoctorFinance";
+import DoctorWalkIn from "./pages/DoctorWalkIn";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
@@ -137,6 +138,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorFinance />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/walk-in"
+              element={
+                <Layout>
+                  <DoctorWalkIn />
                 </Layout>
               }
             />

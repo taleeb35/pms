@@ -120,6 +120,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/patients", icon: Users, label: "Patients" },
     { path: "/doctor/waitlist", icon: Clock, label: "Waitlist Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
+    { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
     { path: "/doctor/finance", icon: DollarSign, label: "Finance" },
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
     { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
