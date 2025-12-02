@@ -71,18 +71,29 @@ const AdminFinance = () => {
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      // First, get all active clinics
+      // First, get all active clinics with created_at
       const { data: clinics, error: clinicsError } = await supabase
         .from("clinics")
         .select(`
           id,
           clinic_name,
           requested_doctors,
+          created_at,
           profiles(email, phone)
         `)
         .eq("status", "active");
 
       if (clinicsError) throw clinicsError;
+
+      // Filter clinics: only include clinics registered on or before the selected month
+      const selectedMonthEnd = new Date(selectedMonth);
+      selectedMonthEnd.setMonth(selectedMonthEnd.getMonth() + 1);
+      selectedMonthEnd.setDate(0); // Last day of selected month
+      
+      const eligibleClinics = (clinics || []).filter(clinic => {
+        const clinicCreatedAt = new Date(clinic.created_at);
+        return clinicCreatedAt <= selectedMonthEnd;
+      });
 
       // Fetch existing payments for selected month
       const { data: existingPayments, error: paymentsError } = await supabase
@@ -97,7 +108,7 @@ const AdminFinance = () => {
       
       const allPayments: ClinicPayment[] = [];
       
-      for (const clinic of clinics || []) {
+      for (const clinic of eligibleClinics) {
         // Get actual doctor count for this clinic
         const { count: doctorCount } = await supabase
           .from("doctors")
@@ -182,6 +193,7 @@ const AdminFinance = () => {
   const totalPaid = payments.filter(p => p.status === "paid").length;
   const pendingAmount = payments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
   const paidAmount = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
+  const totalEarnings = payments.reduce((sum, p) => sum + p.amount, 0);
 
   // Pagination
   const totalPages = Math.ceil(payments.length / itemsPerPage);
@@ -205,15 +217,26 @@ const AdminFinance = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-5">
+        <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Earnings</CardTitle>
+            <Banknote className="h-5 w-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">{totalEarnings.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
+          </CardContent>
+        </Card>
+
         <Card className="border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
-            <Building2 className="h-5 w-5 text-primary" />
+            <Building2 className="h-5 w-5 text-info" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{payments.length}</div>
-            <p className="text-xs text-muted-foreground">Active clinics</p>
+            <p className="text-xs text-muted-foreground">Eligible this month</p>
           </CardContent>
         </Card>
 
@@ -224,7 +247,7 @@ const AdminFinance = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-amber-600">{totalPending}</div>
-            <p className="text-xs text-muted-foreground">{pendingAmount.toLocaleString()} total amount</p>
+            <p className="text-xs text-muted-foreground">{pendingAmount.toLocaleString()} amount</p>
           </CardContent>
         </Card>
 
@@ -242,7 +265,7 @@ const AdminFinance = () => {
         <Card className="border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Doctor Fee</CardTitle>
-            <Banknote className="h-5 w-5 text-info" />
+            <Users className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{doctorMonthlyFee.toLocaleString()}</div>
