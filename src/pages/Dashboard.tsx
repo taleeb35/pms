@@ -170,7 +170,7 @@ const Dashboard = () => {
                 <span className="text-xs font-medium text-muted-foreground">{today}</span>
               </div>
               <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text">
-                Admin Dashboard
+                Welcome Admin
               </h2>
               <p className="text-muted-foreground text-base max-w-2xl">
                 Complete system overview and clinic hierarchy management
