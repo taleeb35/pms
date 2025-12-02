@@ -79,7 +79,7 @@ const Auth = () => {
           city: city,
           phone_number: phoneNumber,
           address: address,
-          no_of_doctors: parseInt(noOfDoctors) || 0,
+          requested_doctors: parseInt(noOfDoctors) || 0,
         });
 
         if (clinicError) throw clinicError;
