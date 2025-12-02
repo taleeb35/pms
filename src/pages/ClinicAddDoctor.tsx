@@ -9,6 +9,13 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ClinicAddDoctor = () => {
   const navigate = useNavigate();
@@ -25,12 +32,33 @@ const ClinicAddDoctor = () => {
     email: "",
     password: "",
     specialization: "",
-    qualification: "",
     contactNumber: "",
     experienceYears: "",
     consultationFee: "",
     introduction: "",
   });
+
+  const specializations = [
+    "Gynecologist",
+    "Cardiologist",
+    "Dermatologist",
+    "Neurologist",
+    "Pediatrician",
+    "Orthopedic Surgeon",
+    "Psychiatrist",
+    "Ophthalmologist",
+    "ENT Specialist",
+    "Urologist",
+    "General Physician",
+    "Pulmonologist",
+    "Gastroenterologist",
+    "Endocrinologist",
+    "Rheumatologist",
+    "Oncologist",
+    "Radiologist",
+    "Anesthesiologist",
+    "Surgeon",
+  ];
 
   useEffect(() => {
     checkDoctorLimit();
@@ -97,7 +125,7 @@ const ClinicAddDoctor = () => {
       const { error: doctorError } = await supabase.from("doctors").insert({
         id: authData.user.id,
         specialization: formData.specialization,
-        qualification: formData.qualification,
+        qualification: "Medical Doctor", // Default value since qualification field is removed
         contact_number: formData.contactNumber,
         experience_years: formData.experienceYears ? parseInt(formData.experienceYears) : null,
         consultation_fee: formData.consultationFee ? parseFloat(formData.consultationFee) : null,
@@ -189,6 +217,7 @@ const ClinicAddDoctor = () => {
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   required
+                  placeholder="Dr. John Smith"
                 />
               </div>
 
@@ -200,6 +229,7 @@ const ClinicAddDoctor = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
+                  placeholder="doctor@example.com"
                 />
               </div>
 
@@ -212,59 +242,66 @@ const ClinicAddDoctor = () => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                   minLength={6}
+                  placeholder="Min 6 characters"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contactNumber">Contact Number</Label>
+                <Label htmlFor="contactNumber">Contact Number *</Label>
                 <Input
                   id="contactNumber"
                   type="tel"
                   value={formData.contactNumber}
                   onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                  required
+                  placeholder="+92 300 1234567"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="specialization">Specialization *</Label>
-                <Input
-                  id="specialization"
+                <Select
                   value={formData.specialization}
-                  onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
+                  onValueChange={(value) => setFormData({ ...formData, specialization: value })}
                   required
-                />
+                >
+                  <SelectTrigger className="bg-background">
+                    <SelectValue placeholder="Select specialization" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background z-50">
+                    {specializations.map((spec) => (
+                      <SelectItem key={spec} value={spec}>
+                        {spec}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="qualification">Qualification *</Label>
-                <Input
-                  id="qualification"
-                  value={formData.qualification}
-                  onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="experienceYears">Experience (Years)</Label>
+                <Label htmlFor="experienceYears">Experience *</Label>
                 <Input
                   id="experienceYears"
                   type="number"
                   min="0"
                   value={formData.experienceYears}
                   onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
+                  required
+                  placeholder="Years of experience"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="consultationFee">Consultation Fee</Label>
+                <Label htmlFor="consultationFee">Fee *</Label>
                 <Input
                   id="consultationFee"
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="100"
                   value={formData.consultationFee}
                   onChange={(e) => setFormData({ ...formData, consultationFee: e.target.value })}
+                  required
+                  placeholder="PKR 2000"
                 />
               </div>
             </div>
@@ -276,7 +313,7 @@ const ClinicAddDoctor = () => {
                 value={formData.introduction}
                 onChange={(e) => setFormData({ ...formData, introduction: e.target.value })}
                 rows={4}
-                placeholder="Brief introduction about the doctor..."
+                placeholder="Brief introduction about the doctor's expertise and background..."
               />
             </div>
 
