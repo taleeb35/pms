@@ -9,6 +9,7 @@ import { format } from "date-fns";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
+  const [doctorName, setDoctorName] = useState("");
   const [stats, setStats] = useState({
     totalPatients: 0,
     todayAppointments: 0,
@@ -25,12 +26,17 @@ const DoctorDashboard = () => {
 
       const today = new Date().toISOString().split('T')[0];
 
-      const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes] = await Promise.all([
+      const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes, profileRes] = await Promise.all([
         supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
         supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
+        supabase.from("profiles").select("full_name").eq("id", user.id).single(),
       ]);
+
+      if (profileRes.data) {
+        setDoctorName(profileRes.data.full_name);
+      }
 
       setStats({
         totalPatients: patientsRes.count || 0,
@@ -58,7 +64,7 @@ const DoctorDashboard = () => {
               Doctor Mode
             </Badge>
           </div>
-          <h2 className="text-4xl font-bold tracking-tight mb-1">Doctor Dashboard</h2>
+          <h2 className="text-4xl font-bold tracking-tight mb-1">Welcome Dr. {doctorName}</h2>
           <p className="text-muted-foreground text-base">
             Overview of your patients, appointments & waitlist in one glance.
           </p>

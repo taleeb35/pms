@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, DollarSign, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, Banknote, Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface AppointmentRevenue {
   id: string;
@@ -27,6 +29,8 @@ export default function DoctorFinance() {
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
 
   useEffect(() => {
     fetchRevenue();
@@ -128,7 +132,7 @@ export default function DoctorFinance() {
       <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
-            <DollarSign className="h-6 w-6" />
+            <Banknote className="h-6 w-6" />
             Total Revenue
           </CardTitle>
           <CardDescription className="text-green-100">
@@ -145,10 +149,28 @@ export default function DoctorFinance() {
       {/* Appointments Revenue Listing */}
       <Card>
         <CardHeader>
-          <CardTitle>Appointments Revenue</CardTitle>
-          <CardDescription>
-            Revenue breakdown for each appointment on {selectedDate ? format(selectedDate, "PPP") : "selected date"}
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Appointments Revenue</CardTitle>
+              <CardDescription>
+                Revenue breakdown for each appointment on {selectedDate ? format(selectedDate, "PPP") : "selected date"}
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Show:</span>
+              <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[80px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                  <SelectItem value="75">75</SelectItem>
+                  <SelectItem value="100">100</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           {appointments.length === 0 ? (
@@ -156,36 +178,76 @@ export default function DoctorFinance() {
               No completed appointments found for this date.
             </p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Patient Name</TableHead>
-                  <TableHead>Patient ID</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead className="text-right">Consultation Fee</TableHead>
-                  <TableHead className="text-right">Other Fee</TableHead>
-                  <TableHead className="text-right">Total Revenue</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {appointments.map((apt) => (
-                  <TableRow key={apt.id} className="hover:bg-accent/50">
-                    <TableCell className="font-medium">{apt.patient_name}</TableCell>
-                    <TableCell>{apt.patient_id}</TableCell>
-                    <TableCell>{apt.appointment_time}</TableCell>
-                    <TableCell className="text-right">
-                      {apt.consultation_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {apt.other_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
-                      {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Patient Name</TableHead>
+                    <TableHead>Patient ID</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead className="text-right">Consultation Fee</TableHead>
+                    <TableHead className="text-right">Other Fee</TableHead>
+                    <TableHead className="text-right">Total Revenue</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {appointments
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((apt) => (
+                    <TableRow key={apt.id} className="hover:bg-accent/50">
+                      <TableCell className="font-medium">{apt.patient_name}</TableCell>
+                      <TableCell>{apt.patient_id}</TableCell>
+                      <TableCell>{apt.appointment_time}</TableCell>
+                      <TableCell className="text-right">
+                        {apt.consultation_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {apt.other_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      </TableCell>
+                      <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
+                        {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              {/* Pagination */}
+              {appointments.length > itemsPerPage && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, appointments.length)} of {appointments.length} entries
+                  </p>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      {Array.from({ length: Math.ceil(appointments.length / itemsPerPage) }, (_, i) => i + 1).map((page) => (
+                        <PaginationItem key={page}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(page)}
+                            isActive={currentPage === page}
+                            className="cursor-pointer"
+                          >
+                            {page}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(p => Math.min(Math.ceil(appointments.length / itemsPerPage), p + 1))}
+                          className={currentPage === Math.ceil(appointments.length / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
