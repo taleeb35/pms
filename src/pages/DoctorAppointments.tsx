@@ -149,18 +149,11 @@ const DoctorAppointments = () => {
       const { data: { user } } = await supabase.auth.getUser();
       const patientId = selectedPatientId;
       
-      const consultationFee = parseFloat(formData.get("consultation_fee") as string) || 0;
-      const otherFee = parseFloat(formData.get("other_fee") as string) || 0;
-      const totalFee = consultationFee + otherFee;
-      
       const { error } = await supabase.from("appointments").insert({
         doctor_id: user?.id, patient_id: patientId,
         appointment_date: format(selectedDate, "yyyy-MM-dd"), appointment_time: formData.get("appointment_time") as string,
         duration_minutes: parseInt(formData.get("duration_minutes") as string), reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null, 
-        consultation_fee: consultationFee,
-        other_fee: otherFee,
-        total_fee: totalFee,
         status: "scheduled" as const,
       });
       if (error) throw error;
@@ -190,17 +183,10 @@ const DoctorAppointments = () => {
     if (!editingAppointment || !editDate) return;
     const formData = new FormData(e.currentTarget);
     try {
-      const consultationFee = parseFloat(formData.get("consultation_fee") as string) || 0;
-      const otherFee = parseFloat(formData.get("other_fee") as string) || 0;
-      const totalFee = consultationFee + otherFee;
-      
       const { error } = await supabase.from("appointments").update({
         appointment_date: format(editDate, "yyyy-MM-dd"), appointment_time: formData.get("appointment_time") as string,
         duration_minutes: parseInt(formData.get("duration_minutes") as string), reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,
-        consultation_fee: consultationFee,
-        other_fee: otherFee,
-        total_fee: totalFee,
       }).eq("id", editingAppointment.id);
       if (error) throw error;
       toast({ title: "Success", description: "Appointment updated successfully" });
@@ -322,16 +308,6 @@ const DoctorAppointments = () => {
               </div>
               <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
               <div className="space-y-2"><Label htmlFor="reason">Reason for Visit</Label><Input id="reason" name="reason" placeholder="e.g., Regular checkup" /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="consultation_fee">Consultation Fee</Label>
-                  <Input id="consultation_fee" name="consultation_fee" type="number" defaultValue={0} min={0} step="0.01" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="other_fee">Other Fee</Label>
-                  <Input id="other_fee" name="other_fee" type="number" defaultValue={0} min={0} step="0.01" />
-                </div>
-              </div>
               <div className="space-y-2"><Label htmlFor="notes">Notes</Label><Textarea id="notes" name="notes" placeholder="Additional notes..." rows={3} /></div>
               <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button><Button type="submit">Create Appointment</Button></div>
             </form>
@@ -468,16 +444,6 @@ const DoctorAppointments = () => {
               </div>
               <div className="space-y-2"><Label htmlFor="edit_duration_minutes">Duration (minutes)</Label><Input id="edit_duration_minutes" name="duration_minutes" type="number" defaultValue={editingAppointment.duration_minutes || 30} min={15} step={15} required /></div>
               <div className="space-y-2"><Label htmlFor="edit_reason">Reason for Visit</Label><Input id="edit_reason" name="reason" defaultValue={editingAppointment.reason || ""} placeholder="e.g., Regular checkup" /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit_consultation_fee">Consultation Fee</Label>
-                  <Input id="edit_consultation_fee" name="consultation_fee" type="number" defaultValue={(editingAppointment as any).consultation_fee || 0} min={0} step="0.01" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit_other_fee">Other Fee</Label>
-                  <Input id="edit_other_fee" name="other_fee" type="number" defaultValue={(editingAppointment as any).other_fee || 0} min={0} step="0.01" />
-                </div>
-              </div>
               <div className="space-y-2"><Label htmlFor="edit_notes">Notes</Label><Textarea id="edit_notes" name="notes" defaultValue={editingAppointment.notes || ""} placeholder="Additional notes..." rows={3} /></div>
               <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => { setShowEditDialog(false); setEditingAppointment(null); setEditDate(undefined); }}>Cancel</Button><Button type="submit">Update Appointment</Button></div>
             </form>
