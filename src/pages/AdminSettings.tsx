@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail } from "lucide-react";
+import { Mail, DollarSign } from "lucide-react";
 
 const AdminSettings = () => {
   const [supportEmail, setSupportEmail] = useState("");
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState("");
   const [loading, setLoading] = useState(false);
+  const [savingFee, setSavingFee] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -17,19 +19,26 @@ const AdminSettings = () => {
   }, []);
 
   const fetchSettings = async () => {
-    const { data, error } = await supabase
+    // Fetch support email
+    const { data: emailData } = await supabase
       .from("system_settings")
       .select("value")
       .eq("key", "support_email")
-      .single();
+      .maybeSingle();
 
-    if (error) {
-      console.error("Error fetching settings:", error);
-      return;
+    if (emailData) {
+      setSupportEmail(emailData.value);
     }
 
-    if (data) {
-      setSupportEmail(data.value);
+    // Fetch doctor monthly fee
+    const { data: feeData } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "doctor_monthly_fee")
+      .maybeSingle();
+
+    if (feeData) {
+      setDoctorMonthlyFee(feeData.value);
     }
   };
 
@@ -60,12 +69,80 @@ const AdminSettings = () => {
     });
   };
 
+  const handleSaveFee = async () => {
+    if (!doctorMonthlyFee || isNaN(Number(doctorMonthlyFee))) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid fee amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavingFee(true);
+    const { error } = await supabase
+      .from("system_settings")
+      .upsert({
+        key: "doctor_monthly_fee",
+        value: doctorMonthlyFee,
+        updated_at: new Date().toISOString(),
+      });
+
+    setSavingFee(false);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update doctor monthly fee",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Doctor monthly fee updated successfully",
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold">Settings</h2>
         <p className="text-muted-foreground">Manage system configuration</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Doctor Monthly Fee
+          </CardTitle>
+          <CardDescription>
+            Set the monthly fee per doctor. Clinics will be charged based on their number of doctors.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="doctor-fee">Monthly Fee Per Doctor (PKR)</Label>
+            <Input
+              id="doctor-fee"
+              type="number"
+              placeholder="10000"
+              value={doctorMonthlyFee}
+              onChange={(e) => setDoctorMonthlyFee(e.target.value)}
+            />
+            {doctorMonthlyFee && !isNaN(Number(doctorMonthlyFee)) && (
+              <p className="text-sm text-muted-foreground">
+                Example: A clinic with 5 doctors will pay PKR {(Number(doctorMonthlyFee) * 5).toLocaleString()} per month
+              </p>
+            )}
+          </div>
+          <Button onClick={handleSaveFee} disabled={savingFee}>
+            {savingFee ? "Saving..." : "Save Fee"}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
