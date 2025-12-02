@@ -58,6 +58,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     
     // Follow-up
     next_visit_notes: "",
+    
+    // Financial
+    consultation_fee: "",
+    other_fee: "",
   });
 
   const [existingRecord, setExistingRecord] = useState<any>(null);
@@ -134,6 +138,14 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
     if (data) {
       setExistingRecord(data);
+      
+      // Fetch appointment fees
+      const { data: appointmentData } = await supabase
+        .from("appointments")
+        .select("consultation_fee, other_fee")
+        .eq("id", appointment.id)
+        .single();
+      
       setFormData({
         blood_pressure: data.blood_pressure || "",
         temperature: data.temperature || "",
@@ -145,6 +157,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         current_prescription: data.current_prescription || "",
         test_reports: data.test_reports || "",
         next_visit_notes: data.next_visit_notes || "",
+        consultation_fee: appointmentData?.consultation_fee?.toString() || "",
+        other_fee: appointmentData?.other_fee?.toString() || "",
       });
       if (data.next_visit_date) {
         setNextVisitDate(new Date(data.next_visit_date));
@@ -409,7 +423,16 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         appointment_id: appointment.id,
         patient_id: appointment.patient_id,
         doctor_id: user.id,
-        ...formData,
+        blood_pressure: formData.blood_pressure,
+        temperature: formData.temperature,
+        pulse: formData.pulse,
+        weight: formData.weight,
+        height: formData.height,
+        chief_complaint: formData.chief_complaint,
+        patient_history: formData.patient_history,
+        current_prescription: formData.current_prescription,
+        test_reports: formData.test_reports,
+        next_visit_notes: formData.next_visit_notes,
         next_visit_date: nextVisitDate ? format(nextVisitDate, "yyyy-MM-dd") : null,
       };
 
@@ -426,6 +449,18 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       }
 
       if (error) throw error;
+
+      // Update appointment fees
+      const { error: feeError } = await supabase
+        .from("appointments")
+        .update({
+          consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0,
+          other_fee: formData.other_fee ? parseFloat(formData.other_fee) : 0,
+          status: 'completed'
+        })
+        .eq("id", appointment.id);
+
+      if (feeError) throw feeError;
 
       // Update pregnancy start date if gynecologist
       if (isGynecologist && pregnancyStartDate) {
@@ -703,6 +738,45 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                       className="text-sm"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Financial Section */}
+              <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-950">
+                <h3 className="font-semibold mb-4">Financial Details</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label>Consultation Fee</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={formData.consultation_fee}
+                      onChange={(e) => setFormData({...formData, consultation_fee: e.target.value})}
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <Label>Other Fee</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={formData.other_fee}
+                      onChange={(e) => setFormData({...formData, other_fee: e.target.value})}
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  {(formData.consultation_fee || formData.other_fee) && (
+                    <div className="pt-2 border-t">
+                      <div className="flex justify-between text-sm font-semibold">
+                        <span>Total Fee:</span>
+                        <span className="text-lg text-green-600 dark:text-green-400">
+                          {((parseFloat(formData.consultation_fee) || 0) + (parseFloat(formData.other_fee) || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

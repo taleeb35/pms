@@ -16,6 +16,7 @@ import {
   Settings,
   UserCog,
   Sparkles,
+  DollarSign,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -128,6 +129,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/clinic/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/clinic/patients", icon: Users, label: "Patients" },
     { path: "/clinic/appointments", icon: Calendar, label: "Appointments" },
+    { path: "/clinic/finance", icon: DollarSign, label: "Finance" },
     { path: "/clinic/profile", icon: UserCog, label: "Profile" },
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
   ];

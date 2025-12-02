@@ -56,43 +56,52 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          consultation_fee: number | null
           created_at: string
           created_by: string | null
           doctor_id: string
           duration_minutes: number | null
           id: string
           notes: string | null
+          other_fee: number | null
           patient_id: string
           reason: string | null
           status: Database["public"]["Enums"]["appointment_status"] | null
+          total_fee: number | null
           updated_at: string
         }
         Insert: {
           appointment_date: string
           appointment_time: string
+          consultation_fee?: number | null
           created_at?: string
           created_by?: string | null
           doctor_id: string
           duration_minutes?: number | null
           id?: string
           notes?: string | null
+          other_fee?: number | null
           patient_id: string
           reason?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
+          total_fee?: number | null
           updated_at?: string
         }
         Update: {
           appointment_date?: string
           appointment_time?: string
+          consultation_fee?: number | null
           created_at?: string
           created_by?: string | null
           doctor_id?: string
           duration_minutes?: number | null
           id?: string
           notes?: string | null
+          other_fee?: number | null
           patient_id?: string
           reason?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
+          total_fee?: number | null
           updated_at?: string
         }
         Relationships: [
