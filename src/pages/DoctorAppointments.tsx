@@ -75,7 +75,7 @@ const DoctorAppointments = () => {
     fetchPatients();
     fetchWaitlistPatients();
     checkDoctorSpecialization();
-  }, [dateFilter]);
+  }, []);
 
   const checkDoctorSpecialization = async () => {
     try {

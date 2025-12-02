@@ -88,11 +88,16 @@ const ClinicAppointments = () => {
   });
 
   useEffect(() => {
-    fetchAppointments();
     fetchDoctors();
     fetchPatients();
     fetchWaitlistPatients();
-  }, [dateFilter]);
+  }, []);
+
+  useEffect(() => {
+    if (doctors.length > 0) {
+      fetchAppointments();
+    }
+  }, [doctors]);
 
   const fetchDoctors = async () => {
     try {
