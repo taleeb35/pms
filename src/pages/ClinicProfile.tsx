@@ -82,11 +82,15 @@ const ClinicProfile = () => {
       });
 
       // Fetch doctor monthly fee from system settings
-      const { data: feeData } = await supabase
+      const { data: feeData, error: feeError } = await supabase
         .from("system_settings")
         .select("value")
         .eq("key", "doctor_monthly_fee")
         .single();
+
+      if (feeError) {
+        console.error("Error fetching doctor fee:", feeError);
+      }
 
       if (feeData) {
         setDoctorMonthlyFee(parseFloat(feeData.value) || 0);
