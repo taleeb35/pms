@@ -56,6 +56,7 @@ interface Clinic {
   no_of_doctors: number;
   requested_doctors: number;
   status: string;
+  fee_status: string;
   created_at: string;
   profiles: {
     full_name: string;
@@ -135,6 +136,29 @@ const AdminClinics = () => {
       toast({
         title: "Status updated",
         description: `Clinic status changed to ${newStatus}`,
+      });
+      fetchClinics();
+    }
+    setUpdating(null);
+  };
+
+  const updateFeeStatus = async (clinicId: string, newFeeStatus: string) => {
+    setUpdating(clinicId);
+    const { error } = await supabase
+      .from("clinics")
+      .update({ fee_status: newFeeStatus })
+      .eq("id", clinicId);
+
+    if (error) {
+      toast({
+        title: "Error updating fee status",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Fee status updated",
+        description: `Payment status changed to ${newFeeStatus}`,
       });
       fetchClinics();
     }
@@ -302,6 +326,7 @@ const AdminClinics = () => {
                       <TableHead className="font-semibold text-center">Requested</TableHead>
                       <TableHead className="font-semibold text-center">Created</TableHead>
                       <TableHead className="font-semibold text-center">Monthly Fee</TableHead>
+                      <TableHead className="font-semibold">Fee Status</TableHead>
                       <TableHead className="font-semibold">Status</TableHead>
                       <TableHead className="font-semibold">Registered</TableHead>
                     </TableRow>
@@ -336,6 +361,44 @@ const AdminClinics = () => {
                           <Badge variant="default" className="font-semibold bg-success text-white">
                             PKR {(doctorMonthlyFee * clinic.requested_doctors).toLocaleString()}
                           </Badge>
+                        </TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Select
+                            value={clinic.fee_status}
+                            onValueChange={(value) => updateFeeStatus(clinic.id, value)}
+                            disabled={updating === clinic.id}
+                          >
+                            <SelectTrigger className="w-[120px] h-8">
+                              <SelectValue>
+                                {clinic.fee_status === "paid" && (
+                                  <span className="flex items-center gap-1 text-success">
+                                    <CheckCircle2 className="h-3 w-3" />
+                                    Paid
+                                  </span>
+                                )}
+                                {clinic.fee_status === "unpaid" && (
+                                  <span className="flex items-center gap-1 text-destructive">
+                                    <Clock className="h-3 w-3" />
+                                    Unpaid
+                                  </span>
+                                )}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unpaid">
+                                <span className="flex items-center gap-2">
+                                  <Clock className="h-4 w-4 text-destructive" />
+                                  Unpaid
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="paid">
+                                <span className="flex items-center gap-2">
+                                  <CheckCircle2 className="h-4 w-4 text-success" />
+                                  Paid
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <Select
@@ -556,34 +619,66 @@ const AdminClinics = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-3 pt-4 border-t">
-                  <span className="text-sm text-muted-foreground">Change Status:</span>
-                  <Select
-                    value={selectedClinic.status}
-                    onValueChange={(value) => {
-                      updateClinicStatus(selectedClinic.id, value);
-                      setSelectedClinic({ ...selectedClinic, status: value });
-                    }}
-                    disabled={updating === selectedClinic.id}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">
-                        <span className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-warning" />
-                          Draft
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="active">
-                        <span className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                          Active
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground min-w-[120px]">Change Status:</span>
+                    <Select
+                      value={selectedClinic.status}
+                      onValueChange={(value) => {
+                        updateClinicStatus(selectedClinic.id, value);
+                        setSelectedClinic({ ...selectedClinic, status: value });
+                      }}
+                      disabled={updating === selectedClinic.id}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">
+                          <span className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-warning" />
+                            Draft
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="active">
+                          <span className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-success" />
+                            Active
+                          </span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground min-w-[120px]">Fee Status:</span>
+                    <Select
+                      value={selectedClinic.fee_status}
+                      onValueChange={(value) => {
+                        updateFeeStatus(selectedClinic.id, value);
+                        setSelectedClinic({ ...selectedClinic, fee_status: value });
+                      }}
+                      disabled={updating === selectedClinic.id}
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unpaid">
+                          <span className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-destructive" />
+                            Unpaid
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="paid">
+                          <span className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-success" />
+                            Paid
+                          </span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Delete Clinic Button */}
