@@ -201,10 +201,6 @@ const ClinicAppointments = () => {
     }
 
     try {
-      const consultationFee = parseFloat(formData.get("consultation_fee") as string) || 0;
-      const otherFee = parseFloat(formData.get("other_fee") as string) || 0;
-      const totalFee = consultationFee + otherFee;
-      
       const { error } = await supabase.from("appointments").insert({
         doctor_id: selectedDoctorId,
         patient_id: selectedPatientId,
@@ -213,9 +209,6 @@ const ClinicAppointments = () => {
         duration_minutes: parseInt(formData.get("duration_minutes") as string),
         reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,
-        consultation_fee: consultationFee,
-        other_fee: otherFee,
-        total_fee: totalFee,
         status: "scheduled" as const,
       });
 
@@ -248,19 +241,12 @@ const ClinicAppointments = () => {
     const formData = new FormData(e.currentTarget);
     
     try {
-      const consultationFee = parseFloat(formData.get("consultation_fee") as string) || 0;
-      const otherFee = parseFloat(formData.get("other_fee") as string) || 0;
-      const totalFee = consultationFee + otherFee;
-      
       const { error } = await supabase.from("appointments").update({
         appointment_date: format(editDate, "yyyy-MM-dd"), 
         appointment_time: formData.get("appointment_time") as string,
         duration_minutes: parseInt(formData.get("duration_minutes") as string), 
         reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,
-        consultation_fee: consultationFee,
-        other_fee: otherFee,
-        total_fee: totalFee,
       }).eq("id", editingAppointment.id);
 
       if (error) throw error;
@@ -432,16 +418,6 @@ const ClinicAppointments = () => {
               <div className="space-y-2">
                 <Label htmlFor="reason">Reason for Visit</Label>
                 <Input id="reason" name="reason" placeholder="e.g., Regular checkup" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="consultation_fee">Consultation Fee</Label>
-                  <Input id="consultation_fee" name="consultation_fee" type="number" defaultValue={0} min={0} step="0.01" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="other_fee">Other Fee</Label>
-                  <Input id="other_fee" name="other_fee" type="number" defaultValue={0} min={0} step="0.01" />
-                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>
@@ -621,16 +597,6 @@ const ClinicAppointments = () => {
               <div className="space-y-2">
                 <Label htmlFor="edit_reason">Reason for Visit</Label>
                 <Input id="edit_reason" name="reason" defaultValue={editingAppointment.reason || ""} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit_consultation_fee">Consultation Fee</Label>
-                  <Input id="edit_consultation_fee" name="consultation_fee" type="number" defaultValue={editingAppointment.consultation_fee || 0} min={0} step="0.01" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit_other_fee">Other Fee</Label>
-                  <Input id="edit_other_fee" name="other_fee" type="number" defaultValue={editingAppointment.other_fee || 0} min={0} step="0.01" />
-                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit_notes">Notes</Label>
