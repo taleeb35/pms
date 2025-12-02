@@ -112,7 +112,7 @@ const Appointments = () => {
                   </div>
                   <div>
                     <span className="text-muted-foreground">Doctor: </span>
-                    <span>{appointment.doctors.profiles.full_name}</span>
+                    <span>{appointment.doctors?.profiles?.full_name || "Unknown Doctor"}</span>
                   </div>
                   {appointment.reason && (
                     <div>

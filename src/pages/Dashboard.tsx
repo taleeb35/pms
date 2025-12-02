@@ -359,7 +359,7 @@ const Dashboard = () => {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-semibold text-base">{doctor.profiles.full_name}</h4>
+                            <h4 className="font-semibold text-base">{doctor.profiles?.full_name || "Unknown Doctor"}</h4>
                             <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
                               {doctor.approved ? "Active" : "Pending"}
                             </Badge>
