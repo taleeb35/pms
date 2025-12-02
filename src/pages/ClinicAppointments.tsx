@@ -525,10 +525,20 @@ const ClinicAppointments = () => {
                         <TableCell>{getStatusBadge(apt.status)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <Button size="sm" variant="ghost" onClick={() => openEditDialog(apt)}>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={() => openEditDialog(apt)}
+                              disabled={new Date(apt.appointment_date) > new Date(new Date().setHours(0, 0, 0, 0))}
+                            >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button size="sm" variant="ghost" onClick={() => openVisitDialog(apt)}>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={() => openVisitDialog(apt)}
+                              disabled={new Date(apt.appointment_date) > new Date(new Date().setHours(0, 0, 0, 0))}
+                            >
                               Start
                             </Button>
                           </div>
