@@ -162,11 +162,11 @@ const ClinicAddDoctor = () => {
       });
 
       toast({
-        title: "Success",
-        description: "Doctor added successfully! Waiting for admin approval.",
+        title: "✓ Doctor Added Successfully!",
+        description: "The doctor has been registered and is now awaiting admin approval. You can view all doctors in the Doctors listing.",
       });
 
-      navigate("/clinic/dashboard");
+      navigate("/clinic/doctors");
     } catch (error: any) {
       toast({
         title: "Error",
