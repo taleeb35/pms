@@ -25,6 +25,7 @@ interface Patient {
   father_name: string | null;
   email: string | null;
   phone: string;
+  cnic: string | null;
   date_of_birth: string;
   gender: string;
   blood_group: string | null;
@@ -78,6 +79,7 @@ const PatientDetail = () => {
     father_name: string;
     email: string;
     phone: string;
+    cnic: string;
     date_of_birth: string;
     gender: "male" | "female" | "other";
     blood_group: string;
@@ -91,6 +93,7 @@ const PatientDetail = () => {
     father_name: "",
     email: "",
     phone: "",
+    cnic: "",
     date_of_birth: "",
     gender: "male",
     blood_group: "",
@@ -271,6 +274,7 @@ const PatientDetail = () => {
       father_name: patient.father_name || "",
       email: patient.email || "",
       phone: patient.phone,
+      cnic: patient.cnic || "",
       date_of_birth: patient.date_of_birth,
       gender: patient.gender as "male" | "female" | "other",
       blood_group: patient.blood_group || "",
@@ -294,6 +298,7 @@ const PatientDetail = () => {
         father_name: editForm.father_name || null,
         email: editForm.email || null,
         phone: editForm.phone,
+        cnic: editForm.cnic || null,
         date_of_birth: editForm.date_of_birth,
         gender: editForm.gender,
         blood_group: editForm.blood_group || null,
@@ -469,6 +474,12 @@ const PatientDetail = () => {
                 <Label className="text-muted-foreground">Phone</Label>
                 <p className="font-medium">{patient.phone}</p>
               </div>
+              {patient.cnic && (
+                <div>
+                  <Label className="text-muted-foreground">CNIC</Label>
+                  <p className="font-medium">{patient.cnic}</p>
+                </div>
+              )}
               <div>
                 <Label className="text-muted-foreground">Date of Birth</Label>
                 <p className="font-medium">{format(new Date(patient.date_of_birth), "PPP")}</p>
@@ -766,6 +777,14 @@ const PatientDetail = () => {
               <Input
                 value={editForm.phone}
                 onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>CNIC</Label>
+              <Input
+                value={editForm.cnic}
+                onChange={(e) => setEditForm({ ...editForm, cnic: e.target.value })}
+                placeholder="Enter CNIC (e.g., 12345-1234567-1)"
               />
             </div>
             <div>

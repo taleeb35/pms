@@ -439,6 +439,7 @@ export type Database = {
           allergies: string | null
           blood_group: string | null
           city: string | null
+          cnic: string | null
           created_at: string
           created_by: string | null
           date_of_birth: string
@@ -463,6 +464,7 @@ export type Database = {
           allergies?: string | null
           blood_group?: string | null
           city?: string | null
+          cnic?: string | null
           created_at?: string
           created_by?: string | null
           date_of_birth: string
@@ -487,6 +489,7 @@ export type Database = {
           allergies?: string | null
           blood_group?: string | null
           city?: string | null
+          cnic?: string | null
           created_at?: string
           created_by?: string | null
           date_of_birth?: string

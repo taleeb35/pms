@@ -14,6 +14,7 @@ interface Patient {
   full_name: string;
   email: string | null;
   phone: string;
+  cnic: string | null;
   gender: string;
   date_of_birth: string;
   blood_group: string | null;
@@ -130,6 +131,13 @@ const ClinicPatientDetail = () => {
                     </div>
                     <p className="font-medium">{patient.email || "Not provided"}</p>
                   </div>
+
+                  {patient.cnic && (
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">CNIC</p>
+                      <p className="font-medium">{patient.cnic}</p>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
