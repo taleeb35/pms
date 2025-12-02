@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, TrendingUp, DollarSign, Calendar as CalendarIcon, User } from "lucide-react";
+import { Loader2, TrendingUp, Calendar as CalendarIcon, User, Banknote } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -130,7 +130,7 @@ export default function ClinicFinance() {
       <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
-            <DollarSign className="h-6 w-6" />
+            <Banknote className="h-6 w-6" />
             Total Revenue
           </CardTitle>
           <CardDescription className="text-green-100">
