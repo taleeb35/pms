@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Plus, ArrowLeft, Mail, Phone, Users } from "lucide-react";
+import { Stethoscope, Plus, ArrowLeft, Mail, Phone, Users, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,6 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CitySelect } from "@/components/CitySelect";
 
 interface Doctor {
   id: string;
@@ -21,9 +27,12 @@ interface Doctor {
   experience_years: number | null;
   consultation_fee: number | null;
   contact_number: string | null;
+  city: string | null;
+  introduction: string | null;
   profiles: {
     full_name: string;
     email: string;
+    date_of_birth: string | null;
   };
 }
 
@@ -32,6 +41,19 @@ const ClinicDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [requestedDoctors, setRequestedDoctors] = useState(0);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [editForm, setEditForm] = useState({
+    full_name: "",
+    email: "",
+    date_of_birth: "",
+    contact_number: "",
+    specialization: "",
+    experience_years: "",
+    consultation_fee: "",
+    city: "",
+    introduction: "",
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -63,7 +85,9 @@ const ClinicDoctors = () => {
           experience_years,
           consultation_fee,
           contact_number,
-          profiles(full_name, email)
+          city,
+          introduction,
+          profiles(full_name, email, date_of_birth)
         `)
         .eq("clinic_id", user.id)
         .order("created_at", { ascending: false });
@@ -82,6 +106,69 @@ const ClinicDoctors = () => {
   };
 
   const canAddMoreDoctors = doctors.length < requestedDoctors;
+
+  const handleEditDoctor = (doctor: Doctor) => {
+    setSelectedDoctor(doctor);
+    setEditForm({
+      full_name: doctor.profiles.full_name,
+      email: doctor.profiles.email,
+      date_of_birth: doctor.profiles.date_of_birth || "",
+      contact_number: doctor.contact_number || "",
+      specialization: doctor.specialization,
+      experience_years: doctor.experience_years?.toString() || "",
+      consultation_fee: doctor.consultation_fee?.toString() || "",
+      city: doctor.city || "",
+      introduction: doctor.introduction || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdateDoctor = async () => {
+    if (!selectedDoctor) return;
+
+    try {
+      // Update doctor table
+      const { error: doctorError } = await supabase
+        .from("doctors")
+        .update({
+          specialization: editForm.specialization,
+          experience_years: editForm.experience_years ? parseInt(editForm.experience_years) : null,
+          consultation_fee: editForm.consultation_fee ? parseFloat(editForm.consultation_fee) : null,
+          contact_number: editForm.contact_number || null,
+          city: editForm.city || null,
+          introduction: editForm.introduction || null,
+        })
+        .eq("id", selectedDoctor.id);
+
+      if (doctorError) throw doctorError;
+
+      // Update profile table
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: editForm.full_name,
+          email: editForm.email,
+          date_of_birth: editForm.date_of_birth || null,
+        })
+        .eq("id", selectedDoctor.id);
+
+      if (profileError) throw profileError;
+
+      toast({
+        title: "Success",
+        description: "Doctor details updated successfully",
+      });
+
+      setIsEditDialogOpen(false);
+      fetchDoctors();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -184,15 +271,26 @@ const ClinicDoctors = () => {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate(`/clinic/patients?doctorId=${doctor.id}`)}
-                          className="gap-2"
-                        >
-                          <Users className="h-4 w-4" />
-                          View Patients
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditDoctor(doctor)}
+                            className="gap-2"
+                          >
+                            <Edit className="h-4 w-4" />
+                            Edit
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => navigate(`/clinic/patients?doctorId=${doctor.id}`)}
+                            className="gap-2"
+                          >
+                            <Users className="h-4 w-4" />
+                            View Patients
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -202,6 +300,117 @@ const ClinicDoctors = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Doctor Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Doctor Details</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Full Name *</Label>
+                <Input
+                  value={editForm.full_name}
+                  onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div>
+                <Label>Email *</Label>
+                <Input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  placeholder="Enter email"
+                />
+              </div>
+              <div>
+                <Label>Date of Birth</Label>
+                <Input
+                  type="date"
+                  value={editForm.date_of_birth}
+                  onChange={(e) => setEditForm({ ...editForm, date_of_birth: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label>Contact Number *</Label>
+                <Input
+                  value={editForm.contact_number}
+                  onChange={(e) => setEditForm({ ...editForm, contact_number: e.target.value })}
+                  placeholder="Enter contact number"
+                />
+              </div>
+              <div>
+                <Label>Specialization *</Label>
+                <Select
+                  value={editForm.specialization}
+                  onValueChange={(value) => setEditForm({ ...editForm, specialization: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select specialization" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Gynecologist">Gynecologist</SelectItem>
+                    <SelectItem value="Cardiologist">Cardiologist</SelectItem>
+                    <SelectItem value="Dermatologist">Dermatologist</SelectItem>
+                    <SelectItem value="Neurologist">Neurologist</SelectItem>
+                    <SelectItem value="Pediatrician">Pediatrician</SelectItem>
+                    <SelectItem value="Orthopedic">Orthopedic</SelectItem>
+                    <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
+                    <SelectItem value="General Physician">General Physician</SelectItem>
+                    <SelectItem value="ENT Specialist">ENT Specialist</SelectItem>
+                    <SelectItem value="Ophthalmologist">Ophthalmologist</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Experience (Years) *</Label>
+                <Input
+                  type="number"
+                  value={editForm.experience_years}
+                  onChange={(e) => setEditForm({ ...editForm, experience_years: e.target.value })}
+                  placeholder="Years of experience"
+                />
+              </div>
+              <div>
+                <Label>Consultation Fee (PKR) *</Label>
+                <Input
+                  type="number"
+                  value={editForm.consultation_fee}
+                  onChange={(e) => setEditForm({ ...editForm, consultation_fee: e.target.value })}
+                  placeholder="Fee amount"
+                />
+              </div>
+              <div>
+                <CitySelect
+                  value={editForm.city}
+                  onValueChange={(value) => setEditForm({ ...editForm, city: value })}
+                  label="City"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Introduction</Label>
+                <Textarea
+                  value={editForm.introduction}
+                  onChange={(e) => setEditForm({ ...editForm, introduction: e.target.value })}
+                  placeholder="Brief introduction about the doctor"
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateDoctor}>
+                Update Doctor
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
