@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Eye, Users } from "lucide-react";
+import { Eye, Users, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -12,6 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -52,6 +62,8 @@ const Doctors = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [doctorToDelete, setDoctorToDelete] = useState<Doctor | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { toast } = useToast();
   
   // Pagination
@@ -164,6 +176,50 @@ const Doctors = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const deleteDoctor = async () => {
+    if (!doctorToDelete) return;
+    
+    setDeleting(true);
+    
+    // Get count of patients that will be deleted
+    const { count: patientCount } = await supabase
+      .from("patients")
+      .select("id", { count: "exact", head: true })
+      .eq("created_by", doctorToDelete.id);
+
+    // Delete the doctor (cascade will handle patients and appointments)
+    const { error } = await supabase
+      .from("doctors")
+      .delete()
+      .eq("id", doctorToDelete.id);
+
+    if (error) {
+      console.error("Doctor deletion error:", error);
+      toast({
+        title: "Error deleting doctor",
+        description: error.message,
+        variant: "destructive",
+      });
+      setDeleting(false);
+      setDoctorToDelete(null);
+      return;
+    }
+
+    // Immediately update local state
+    setDoctors(prevDoctors => prevDoctors.filter(d => d.id !== doctorToDelete.id));
+    setFilteredDoctors(prevDoctors => prevDoctors.filter(d => d.id !== doctorToDelete.id));
+    
+    toast({
+      title: "Doctor deleted successfully",
+      description: `Deleted 1 doctor and ${patientCount || 0} associated patients`,
+    });
+    
+    setDialogOpen(false);
+    setSelectedDoctor(null);
+    setDeleting(false);
+    setDoctorToDelete(null);
   };
 
   // Pagination calculations
@@ -438,18 +494,83 @@ const Doctors = () => {
                 )}
               </div>
 
-              <div className="flex gap-2 justify-end">
-                <Button
-                  variant={selectedDoctor.approved ? "destructive" : "default"}
-                  onClick={() => handleToggleStatus(selectedDoctor.id, selectedDoctor.approved)}
-                >
-                  {selectedDoctor.approved ? "Deactivate" : "Activate"}
-                </Button>
+              <div className="flex flex-col gap-4 pt-4 border-t border-border/40">
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant={selectedDoctor.approved ? "destructive" : "default"}
+                    onClick={() => handleToggleStatus(selectedDoctor.id, selectedDoctor.approved)}
+                  >
+                    {selectedDoctor.approved ? "Deactivate" : "Activate"}
+                  </Button>
+                </div>
+
+                {/* Delete Doctor Button */}
+                <div className="pt-4 border-t border-border/40">
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDoctorToDelete(selectedDoctor);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Doctor Permanently
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    ⚠️ This will delete all patients created by this doctor
+                  </p>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!doctorToDelete} onOpenChange={() => setDoctorToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Delete Doctor - Permanent Action
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 pt-4">
+              <p className="font-semibold text-foreground">
+                Are you absolutely sure you want to delete "{doctorToDelete?.profiles.full_name}"?
+              </p>
+              
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-2">
+                <p className="font-semibold text-destructive flex items-center gap-2">
+                  ⚠️ Warning: Cascade Deletion
+                </p>
+                <p className="text-sm">This action will permanently delete:</p>
+                <ul className="text-sm space-y-1 ml-4 list-disc">
+                  <li>The doctor's account and profile</li>
+                  <li>All patients created by this doctor</li>
+                  <li>All appointments for those patients</li>
+                  <li>All medical records, visit records, and prescriptions</li>
+                  <li>All medical documents uploaded for those patients</li>
+                </ul>
+              </div>
+
+              <p className="text-sm font-semibold">
+                This action cannot be undone. All data will be permanently lost.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteDoctor}
+              disabled={deleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Yes, Delete Everything"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
