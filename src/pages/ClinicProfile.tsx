@@ -30,7 +30,10 @@ const ClinicProfile = () => {
     city: "",
     status: "",
     no_of_doctors: 0,
+    requested_doctors: 0,
   });
+
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -75,7 +78,19 @@ const ClinicProfile = () => {
         city: clinicData.city || "",
         status: clinicData.status || "",
         no_of_doctors: clinicData.no_of_doctors || 0,
+        requested_doctors: clinicData.requested_doctors || 0,
       });
+
+      // Fetch doctor monthly fee from system settings
+      const { data: feeData } = await supabase
+        .from("system_settings")
+        .select("value")
+        .eq("key", "doctor_monthly_fee")
+        .single();
+
+      if (feeData) {
+        setDoctorMonthlyFee(parseFloat(feeData.value) || 0);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -295,15 +310,31 @@ const ClinicProfile = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Member Since</p>
-              <p className="font-semibold">
-                {format(new Date(profile.created_at), "MMMM dd, yyyy")}
-              </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Member Since</p>
+                <p className="font-semibold">
+                  {format(new Date(profile.created_at), "MMMM dd, yyyy")}
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Building2 className="h-6 w-6 text-primary" />
+              </div>
             </div>
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-primary" />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Monthly Fee</p>
+                <p className="font-semibold text-2xl text-success">
+                  PKR {(doctorMonthlyFee * clinic.requested_doctors).toLocaleString()}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {doctorMonthlyFee.toLocaleString()} × {clinic.requested_doctors} doctors
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-success" />
+              </div>
             </div>
           </div>
         </CardContent>
