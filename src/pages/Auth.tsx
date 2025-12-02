@@ -6,8 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Home, Building2, Sparkles } from "lucide-react";
+import { Loader2, Home, Building2, Sparkles, CheckCircle, AlertCircle } from "lucide-react";
 import { CitySelect } from "@/components/CitySelect";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import clinicLogo from "@/assets/clinic-logo.png";
 
 const Auth = () => {
@@ -21,6 +28,8 @@ const Auth = () => {
   const [address, setAddress] = useState("");
   const [noOfDoctors, setNoOfDoctors] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showInactiveDialog, setShowInactiveDialog] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -83,12 +92,10 @@ const Auth = () => {
 
         if (roleError) throw roleError;
 
-        toast({
-          title: "Signup successful!",
-          description: "Your clinic account has been created. You can now log in.",
-        });
-
-        setIsSignup(false);
+        // Show success dialog
+        setShowSuccessDialog(true);
+        
+        // Reset form but keep in signup mode until they close the dialog
         setPassword("");
         setConfirmPassword("");
       } else {
@@ -125,15 +132,10 @@ const Auth = () => {
           // Sign out the user immediately
           await supabase.auth.signOut();
           
-          if (clinicData.status === "draft") {
-            throw new Error(
-              "Your clinic account is pending approval. An administrator needs to activate your account before you can log in. Please contact support if you've been waiting for more than 24 hours."
-            );
-          } else {
-            throw new Error(
-              `Your clinic account status is "${clinicData.status}". Please contact support for assistance.`
-            );
-          }
+          // Show inactive account dialog
+          setLoading(false);
+          setShowInactiveDialog(true);
+          return;
         }
 
         toast({
@@ -358,6 +360,82 @@ const Auth = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Success Dialog after Signup */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">Registration Successful!</DialogTitle>
+            <DialogDescription className="text-center text-base space-y-3 pt-4">
+              <p className="font-semibold text-foreground">
+                Your clinic is registered successfully.
+              </p>
+              <p className="text-muted-foreground">
+                You will receive an email notification when your account is activated by our admin team.
+              </p>
+              <p className="text-sm text-muted-foreground italic">
+                Typically, this takes 1-2 business days.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false);
+                setIsSignup(false);
+                // Clear all form fields
+                setEmail("");
+                setClinicName("");
+                setPhoneNumber("");
+                setCity("");
+                setAddress("");
+                setNoOfDoctors("");
+              }}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              Got it, Thanks!
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Inactive Account Dialog */}
+      <Dialog open={showInactiveDialog} onOpenChange={setShowInactiveDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
+                <AlertCircle className="h-10 w-10 text-amber-600" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">Account Not Active</DialogTitle>
+            <DialogDescription className="text-center text-base space-y-3 pt-4">
+              <p className="font-semibold text-foreground">
+                Your account is still not active.
+              </p>
+              <p className="text-muted-foreground">
+                Your clinic registration is pending approval from our admin team.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Please contact support if you've been waiting for more than 2 business days.
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => setShowInactiveDialog(false)}
+              className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
+            >
+              Contact Support
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
