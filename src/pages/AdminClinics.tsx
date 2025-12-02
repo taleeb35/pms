@@ -72,11 +72,25 @@ const AdminClinics = () => {
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
   const [clinicToDelete, setClinicToDelete] = useState<Clinic | null>(null);
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState<number>(0);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchClinics();
+    fetchDoctorFee();
   }, []);
+
+  const fetchDoctorFee = async () => {
+    const { data } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "doctor_monthly_fee")
+      .maybeSingle();
+
+    if (data) {
+      setDoctorMonthlyFee(Number(data.value) || 0);
+    }
+  };
 
   const fetchClinics = async () => {
     setLoading(true);
@@ -287,6 +301,7 @@ const AdminClinics = () => {
                       <TableHead className="font-semibold">City</TableHead>
                       <TableHead className="font-semibold text-center">Requested</TableHead>
                       <TableHead className="font-semibold text-center">Created</TableHead>
+                      <TableHead className="font-semibold text-center">Monthly Fee</TableHead>
                       <TableHead className="font-semibold">Status</TableHead>
                       <TableHead className="font-semibold">Registered</TableHead>
                     </TableRow>
@@ -315,6 +330,11 @@ const AdminClinics = () => {
                         <TableCell className="text-center">
                           <Badge variant="secondary" className="font-semibold">
                             {clinic.no_of_doctors}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge variant="default" className="font-semibold bg-success text-white">
+                            PKR {(doctorMonthlyFee * clinic.no_of_doctors).toLocaleString()}
                           </Badge>
                         </TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
@@ -491,9 +511,9 @@ const AdminClinics = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Users className="h-5 w-5 text-primary" />
-                    Doctor Statistics
+                    Doctor Statistics & Billing
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-transparent">
                       <CardContent className="pt-6">
                         <div className="text-center">
@@ -507,6 +527,19 @@ const AdminClinics = () => {
                         <div className="text-center">
                           <p className="text-sm text-muted-foreground mb-2">Doctors Created</p>
                           <p className="text-4xl font-bold text-success">{selectedClinic.no_of_doctors}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-border/40 bg-gradient-to-br from-amber-500/5 to-transparent">
+                      <CardContent className="pt-6">
+                        <div className="text-center">
+                          <p className="text-sm text-muted-foreground mb-2">Monthly Fee</p>
+                          <p className="text-3xl font-bold text-amber-600">
+                            PKR {(doctorMonthlyFee * selectedClinic.no_of_doctors).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {selectedClinic.no_of_doctors} × PKR {doctorMonthlyFee.toLocaleString()}
+                          </p>
                         </div>
                       </CardContent>
                     </Card>
