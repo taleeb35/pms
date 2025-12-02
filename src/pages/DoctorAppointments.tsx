@@ -58,6 +58,7 @@ const DoctorAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [dateFilter, setDateFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("scheduled");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [isGynecologist, setIsGynecologist] = useState(false);
@@ -233,6 +234,11 @@ const DoctorAppointments = () => {
   const getFilteredAppointments = () => {
     let filtered = appointments;
     
+    // Apply status filter
+    if (statusFilter && statusFilter !== "all") {
+      filtered = filtered.filter(apt => apt.status === statusFilter);
+    }
+    
     // Apply date filter
     if (dateFilter && dateFilter !== "all") {
       const today = startOfDay(new Date());
@@ -309,32 +315,55 @@ const DoctorAppointments = () => {
       </div>
 
       <Tabs defaultValue="table" className="w-full">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <TabsList>
-              <TabsTrigger value="table">Table View</TabsTrigger>
-              <TabsTrigger value="calendar">Calendar View</TabsTrigger>
-            </TabsList>
-            <Select value={dateFilter || "all"} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Filter by date" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Appointments</SelectItem>
-                <SelectItem value="today">Today</SelectItem>
-                <SelectItem value="tomorrow">Tomorrow</SelectItem>
-                <SelectItem value="day_after">Day After Tomorrow</SelectItem>
-                <SelectItem value="week">Within 7 Days</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="relative w-80">
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <TabsList className="bg-accent/50 p-1 rounded-lg shadow-sm">
+            <TabsTrigger 
+              value="table" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            >
+              Table View
+            </TabsTrigger>
+            <TabsTrigger 
+              value="calendar"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+            >
+              Calendar View
+            </TabsTrigger>
+          </TabsList>
+          
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50">
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={dateFilter || "all"} onValueChange={setDateFilter}>
+            <SelectTrigger className="w-[180px] bg-background">
+              <SelectValue placeholder="Filter by date" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50">
+              <SelectItem value="all">All Dates</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="tomorrow">Tomorrow</SelectItem>
+              <SelectItem value="day_after">Day After Tomorrow</SelectItem>
+              <SelectItem value="week">Within 7 Days</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <div className="relative flex-1 min-w-[300px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, father name, phone, email, or patient ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-background"
             />
           </div>
         </div>
