@@ -118,8 +118,12 @@ const ClinicAddDoctor = () => {
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+      const user = session.user;
+
+      // Store clinic owner's session
+      const clinicSession = session;
 
       // Create auth user for the doctor
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -149,6 +153,13 @@ const ClinicAddDoctor = () => {
       });
 
       if (doctorError) throw doctorError;
+
+      // Sign out the newly created doctor and restore clinic owner's session
+      await supabase.auth.signOut();
+      await supabase.auth.setSession({
+        access_token: clinicSession.access_token,
+        refresh_token: clinicSession.refresh_token,
+      });
 
       toast({
         title: "Success",
