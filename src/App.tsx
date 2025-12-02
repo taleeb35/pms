@@ -20,6 +20,7 @@ import DoctorProfile from "./pages/DoctorProfile";
 import WaitlistPatients from "./pages/WaitlistPatients";
 import PatientDetail from "./pages/PatientDetail";
 import DoctorSupport from "./pages/DoctorSupport";
+import DoctorFinance from "./pages/DoctorFinance";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
@@ -127,6 +128,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorAppointments />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/finance"
+              element={
+                <Layout>
+                  <DoctorFinance />
                 </Layout>
               }
             />
