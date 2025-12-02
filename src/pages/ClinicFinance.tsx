@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, TrendingUp, DollarSign, Calendar, User } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format, startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
+import { Loader2, TrendingUp, DollarSign, Calendar as CalendarIcon, User } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface DoctorRevenue {
   doctor_id: string;
@@ -19,30 +22,18 @@ export default function ClinicFinance() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [revenues, setRevenues] = useState<DoctorRevenue[]>([]);
-  const [dateRange, setDateRange] = useState<"month" | "year" | "all">("month");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [totalRevenue, setTotalRevenue] = useState(0);
 
   useEffect(() => {
     fetchRevenue();
-  }, [dateRange]);
+  }, [selectedDate]);
 
   const fetchRevenue = async () => {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
-      // Get date range
-      let startDate: Date | null = null;
-      let endDate: Date | null = null;
-
-      if (dateRange === "month") {
-        startDate = startOfMonth(new Date());
-        endDate = endOfMonth(new Date());
-      } else if (dateRange === "year") {
-        startDate = startOfYear(new Date());
-        endDate = endOfYear(new Date());
-      }
 
       // Fetch doctors from this clinic
       const { data: doctors, error: doctorsError } = await supabase
@@ -62,10 +53,8 @@ export default function ClinicFinance() {
           .eq("doctor_id", doctor.id)
           .eq("status", "completed");
 
-        if (startDate && endDate) {
-          query = query
-            .gte("appointment_date", format(startDate, "yyyy-MM-dd"))
-            .lte("appointment_date", format(endDate, "yyyy-MM-dd"));
+        if (selectedDate) {
+          query = query.eq("appointment_date", format(selectedDate, "yyyy-MM-dd"));
         }
 
         const { data: appointments, error: appointmentsError } = await query;
@@ -98,19 +87,6 @@ export default function ClinicFinance() {
     }
   };
 
-  const getDateRangeLabel = () => {
-    switch (dateRange) {
-      case "month":
-        return format(new Date(), "MMMM yyyy");
-      case "year":
-        return format(new Date(), "yyyy");
-      case "all":
-        return "All Time";
-      default:
-        return "";
-    }
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -124,18 +100,30 @@ export default function ClinicFinance() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Finance Management</h1>
-          <p className="text-muted-foreground">Track revenue across all doctors</p>
+          <p className="text-muted-foreground">Track revenue by date for each doctor</p>
         </div>
-        <Select value={dateRange} onValueChange={(value: any) => setDateRange(value)}>
-          <SelectTrigger className="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="month">This Month</SelectItem>
-            <SelectItem value="year">This Year</SelectItem>
-            <SelectItem value="all">All Time</SelectItem>
-          </SelectContent>
-        </Select>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-[240px] justify-start text-left font-normal",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {selectedDate ? format(selectedDate, "PPP") : <span>Select date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="end">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Total Revenue Card */}
@@ -146,12 +134,12 @@ export default function ClinicFinance() {
             Total Revenue
           </CardTitle>
           <CardDescription className="text-green-100">
-            {getDateRangeLabel()}
+            {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select a date"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-4xl font-bold">
-            PKR {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
         </CardContent>
       </Card>
@@ -173,19 +161,19 @@ export default function ClinicFinance() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Consultation Fees:</span>
                 <span className="font-semibold">
-                  PKR {revenue.consultation_fees.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                  {revenue.consultation_fees.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Other Fees:</span>
                 <span className="font-semibold">
-                  PKR {revenue.other_fees.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                  {revenue.other_fees.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="pt-3 border-t flex justify-between">
                 <span className="font-semibold text-base">Total Revenue:</span>
                 <span className="font-bold text-lg text-green-600 dark:text-green-400">
-                  PKR {revenue.total_revenue.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                  {revenue.total_revenue.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </CardContent>
