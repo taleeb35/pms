@@ -16,7 +16,7 @@ import {
   Settings,
   UserCog,
   Sparkles,
-  DollarSign,
+  Banknote,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -110,6 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/admin/clinics", icon: Building2, label: "Manage Clinics" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
+    { path: "/admin/finance", icon: Banknote, label: "Payment Tracking" },
     { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
     { path: "/admin/profile", icon: UserCog, label: "Profile" },
     { path: "/admin/settings", icon: Settings, label: "Settings" },
@@ -121,7 +122,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/waitlist", icon: Clock, label: "Waitlist Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
-    { path: "/doctor/finance", icon: DollarSign, label: "Finance" },
+    { path: "/doctor/finance", icon: Banknote, label: "Finance" },
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
     { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
   ];
@@ -132,7 +133,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/clinic/patients", icon: Users, label: "Patients" },
     { path: "/clinic/appointments", icon: Calendar, label: "Appointments" },
     { path: "/clinic/walk-in", icon: Clock, label: "Walk-In Appointment" },
-    { path: "/clinic/finance", icon: DollarSign, label: "Finance" },
+    { path: "/clinic/finance", icon: Banknote, label: "Finance" },
     { path: "/clinic/profile", icon: UserCog, label: "Profile" },
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
   ];

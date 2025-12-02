@@ -128,6 +128,53 @@ export type Database = {
           },
         ]
       }
+      clinic_payments: {
+        Row: {
+          amount: number
+          clinic_id: string
+          created_at: string
+          doctor_count: number
+          id: string
+          month: string
+          notes: string | null
+          payment_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          clinic_id: string
+          created_at?: string
+          doctor_count?: number
+          id?: string
+          month: string
+          notes?: string | null
+          payment_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          clinic_id?: string
+          created_at?: string
+          doctor_count?: number
+          id?: string
+          month?: string
+          notes?: string | null
+          payment_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinics: {
         Row: {
           address: string
