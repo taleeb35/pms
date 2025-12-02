@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Clock, CheckCircle2, MapPin, Phone, Mail, Users } from "lucide-react";
+import { Building2, Clock, CheckCircle2, MapPin, Phone, Mail, Users, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Select,
   SelectContent,
@@ -56,9 +67,11 @@ const AdminClinics = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
+  const [clinicToDelete, setClinicToDelete] = useState<Clinic | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -112,6 +125,57 @@ const AdminClinics = () => {
       fetchClinics();
     }
     setUpdating(null);
+  };
+
+  const deleteClinic = async () => {
+    if (!clinicToDelete) return;
+    
+    setDeleting(true);
+    
+    // First get the count of doctors and patients that will be deleted
+    const { count: doctorCount } = await supabase
+      .from("doctors")
+      .select("id", { count: "exact", head: true })
+      .eq("clinic_id", clinicToDelete.id);
+
+    const { data: doctors } = await supabase
+      .from("doctors")
+      .select("id")
+      .eq("clinic_id", clinicToDelete.id);
+
+    let patientCount = 0;
+    if (doctors && doctors.length > 0) {
+      const doctorIds = doctors.map(d => d.id);
+      const { count } = await supabase
+        .from("patients")
+        .select("id", { count: "exact", head: true })
+        .in("created_by", doctorIds);
+      patientCount = count || 0;
+    }
+
+    // Delete the clinic (cascade will handle doctors and patients)
+    const { error } = await supabase
+      .from("clinics")
+      .delete()
+      .eq("id", clinicToDelete.id);
+
+    if (error) {
+      toast({
+        title: "Error deleting clinic",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Clinic deleted successfully",
+        description: `Deleted 1 clinic, ${doctorCount || 0} doctors, and ${patientCount} patients`,
+      });
+      setSelectedClinic(null);
+      fetchClinics();
+    }
+    
+    setDeleting(false);
+    setClinicToDelete(null);
   };
 
   const stats = {
@@ -482,11 +546,74 @@ const AdminClinics = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Delete Clinic Button */}
+                <div className="pt-6 border-t border-border/40 mt-4">
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setClinicToDelete(selectedClinic);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Clinic Permanently
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    ⚠️ This will delete all doctors and patients associated with this clinic
+                  </p>
+                </div>
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!clinicToDelete} onOpenChange={() => setClinicToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Delete Clinic - Permanent Action
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4 pt-4">
+              <p className="font-semibold text-foreground">
+                Are you absolutely sure you want to delete "{clinicToDelete?.clinic_name}"?
+              </p>
+              
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-2">
+                <p className="font-semibold text-destructive flex items-center gap-2">
+                  ⚠️ Warning: Cascade Deletion
+                </p>
+                <p className="text-sm">This action will permanently delete:</p>
+                <ul className="text-sm space-y-1 ml-4 list-disc">
+                  <li>The clinic record</li>
+                  <li>All doctors associated with this clinic</li>
+                  <li>All patients created by those doctors</li>
+                  <li>All appointments for those patients</li>
+                  <li>All medical records, prescriptions, and documents</li>
+                </ul>
+              </div>
+
+              <p className="text-sm font-semibold">
+                This action cannot be undone. All data will be permanently lost.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteClinic}
+              disabled={deleting}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {deleting ? "Deleting..." : "Yes, Delete Everything"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
