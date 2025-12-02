@@ -149,7 +149,7 @@ const ClinicAddDoctor = () => {
         consultation_fee: formData.consultationFee ? parseFloat(formData.consultationFee) : null,
         introduction: formData.introduction || null,
         clinic_id: user.id,
-        approved: false, // Requires admin approval
+        approved: true, // Doctors are active by default
       });
 
       if (doctorError) throw doctorError;
@@ -163,7 +163,7 @@ const ClinicAddDoctor = () => {
 
       toast({
         title: "✓ Doctor Added Successfully!",
-        description: "The doctor has been registered and is now awaiting admin approval. You can view all doctors in the Doctors listing.",
+        description: "The doctor has been registered and can now login immediately. You can view all doctors in the Doctors listing.",
       });
 
       navigate("/clinic/doctors");

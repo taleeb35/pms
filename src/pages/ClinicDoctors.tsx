@@ -21,7 +21,6 @@ interface Doctor {
   experience_years: number | null;
   consultation_fee: number | null;
   contact_number: string | null;
-  approved: boolean;
   profiles: {
     full_name: string;
     email: string;
@@ -64,7 +63,6 @@ const ClinicDoctors = () => {
           experience_years,
           consultation_fee,
           contact_number,
-          approved,
           profiles(full_name, email)
         `)
         .eq("clinic_id", user.id)
@@ -138,7 +136,6 @@ const ClinicDoctors = () => {
                     <TableHead>Contact</TableHead>
                     <TableHead>Experience</TableHead>
                     <TableHead>Fee (PKR)</TableHead>
-                    <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -184,11 +181,6 @@ const ClinicDoctors = () => {
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={doctor.approved ? "default" : "secondary"}>
-                          {doctor.approved ? "Active" : "Pending Approval"}
-                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}

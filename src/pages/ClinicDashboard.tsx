@@ -18,7 +18,6 @@ interface Clinic {
 interface Doctor {
   id: string;
   specialization: string;
-  approved: boolean;
   profiles: {
     full_name: string;
     email: string;
@@ -83,7 +82,6 @@ const ClinicDashboard = () => {
         .select(`
           id,
           specialization,
-          approved,
           profiles(full_name, email)
         `)
         .eq("clinic_id", currentUser.id);
@@ -115,7 +113,6 @@ const ClinicDashboard = () => {
   const canAddMoreDoctors = doctors.length < DOCTOR_LIMIT;
   const isAtLimit = doctors.length >= DOCTOR_LIMIT;
   const today = format(new Date(), "EEEE, dd MMM yyyy");
-  const approvedDoctors = doctors.filter(d => d.approved).length;
 
   return (
     <div className="space-y-6">
@@ -199,8 +196,8 @@ const ClinicDashboard = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold mb-1">{approvedDoctors}</div>
-            <p className="text-xs text-muted-foreground">Approved & practicing</p>
+            <div className="text-3xl font-bold mb-1">{doctors.length}</div>
+            <p className="text-xs text-muted-foreground">Registered & active</p>
           </CardContent>
         </Card>
 
@@ -285,12 +282,7 @@ const ClinicDashboard = () => {
                         <Stethoscope className="h-5 w-5 text-info" />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <h4 className="font-semibold text-base">{doctor.profiles.full_name}</h4>
-                          <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
-                            {doctor.approved ? "Active" : "Pending"}
-                          </Badge>
-                        </div>
+                        <h4 className="font-semibold text-base mb-0.5">{doctor.profiles.full_name}</h4>
                         <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
                       </div>
                     </div>
