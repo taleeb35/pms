@@ -36,6 +36,7 @@ import ClinicWalkIn from "./pages/ClinicWalkIn";
 import ClinicFinance from "./pages/ClinicFinance";
 import ClinicSupport from "./pages/ClinicSupport";
 import AdminProfile from "./pages/AdminProfile";
+import AdminFinance from "./pages/AdminFinance";
 import ClinicProfile from "./pages/ClinicProfile";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
@@ -194,6 +195,14 @@ const App = () => (
               element={
                 <Layout>
                   <AdminClinics />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/finance"
+              element={
+                <Layout>
+                  <AdminFinance />
                 </Layout>
               }
             />
