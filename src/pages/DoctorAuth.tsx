@@ -53,20 +53,17 @@ const DoctorAuth = () => {
         throw new Error("Your account is pending approval. Please contact your clinic.");
       }
 
-      // Check if the doctor's clinic is active
+      // Check if the doctor's clinic is active using security definer function
       if (doctorData.clinic_id) {
-        const { data: clinicData, error: clinicError } = await supabase
-          .from("clinics")
-          .select("status")
-          .eq("id", doctorData.clinic_id)
-          .single();
+        const { data: isActive, error: clinicError } = await supabase
+          .rpc("is_clinic_active", { _clinic_id: doctorData.clinic_id });
 
         if (clinicError) {
           await supabase.auth.signOut();
           throw new Error("Unable to verify clinic status. Please contact support.");
         }
 
-        if (clinicData.status !== "active") {
+        if (!isActive) {
           setShowInactiveDialog(true);
           setLoading(false);
           await supabase.auth.signOut();
