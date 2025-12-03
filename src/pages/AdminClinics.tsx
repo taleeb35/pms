@@ -147,6 +147,8 @@ const AdminClinics = () => {
 
   const updateFeeStatus = async (clinicId: string, newFeeStatus: string) => {
     setUpdating(clinicId);
+    
+    // Update clinics table
     const { error } = await supabase
       .from("clinics")
       .update({ fee_status: newFeeStatus })
@@ -158,13 +160,31 @@ const AdminClinics = () => {
         description: error.message,
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Fee status updated",
-        description: `Payment status changed to ${newFeeStatus}`,
-      });
-      fetchClinics();
+      setUpdating(null);
+      return;
     }
+
+    // Also sync with clinic_payments for current month
+    const currentMonth = format(new Date(), "yyyy-MM-01");
+    const paymentStatus = newFeeStatus === "paid" ? "paid" : "pending";
+    const updateData: any = { status: paymentStatus };
+    if (paymentStatus === "paid") {
+      updateData.payment_date = new Date().toISOString();
+    } else {
+      updateData.payment_date = null;
+    }
+
+    await supabase
+      .from("clinic_payments")
+      .update(updateData)
+      .eq("clinic_id", clinicId)
+      .eq("month", currentMonth);
+
+    toast({
+      title: "Fee status updated",
+      description: `Payment status changed to ${newFeeStatus}`,
+    });
+    fetchClinics();
     setUpdating(null);
   };
 
