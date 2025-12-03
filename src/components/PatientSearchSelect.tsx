@@ -86,6 +86,7 @@ export function PatientSearchSelect({
                     setOpen(false);
                     setSearchQuery("");
                   }}
+                  className="group"
                 >
                   <Check
                     className={cn(
@@ -96,14 +97,14 @@ export function PatientSearchSelect({
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{patient.full_name}</span>
-                      <span className="text-xs text-muted-foreground">({patient.patient_id})</span>
+                      <span className="text-xs opacity-70">({patient.patient_id})</span>
                       {waitlistPatientIds?.has(patient.id) && (
                         <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
                           Waitlist
                         </span>
                       )}
                     </div>
-                    <span className="text-sm text-muted-foreground">{patient.phone}</span>
+                    <span className="text-sm opacity-70">{patient.phone}</span>
                   </div>
                 </CommandItem>
               ))}
