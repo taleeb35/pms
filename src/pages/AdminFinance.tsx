@@ -158,7 +158,7 @@ const AdminFinance = () => {
     }
   };
 
-  const updatePaymentStatus = async (paymentId: string, status: string) => {
+  const updatePaymentStatus = async (paymentId: string, clinicId: string, status: string) => {
     try {
       const updateData: any = { status };
       if (status === "paid") {
@@ -173,6 +173,16 @@ const AdminFinance = () => {
         .eq("id", paymentId);
 
       if (error) throw error;
+
+      // Also sync with clinics.fee_status for current month
+      const currentMonth = format(startOfMonth(new Date()), "yyyy-MM-dd");
+      if (selectedMonth === currentMonth) {
+        const feeStatus = status === "paid" ? "paid" : "unpaid";
+        await supabase
+          .from("clinics")
+          .update({ fee_status: feeStatus })
+          .eq("id", clinicId);
+      }
 
       toast({
         title: "Success",
@@ -379,7 +389,7 @@ const AdminFinance = () => {
                               size="sm"
                               variant="outline"
                               className="gap-1 text-success hover:text-success hover:bg-success/10"
-                              onClick={() => updatePaymentStatus(payment.id, "paid")}
+                              onClick={() => updatePaymentStatus(payment.id, payment.clinic_id, "paid")}
                             >
                               <CheckCircle2 className="h-3 w-3" />
                               Mark Paid
@@ -389,7 +399,7 @@ const AdminFinance = () => {
                               size="sm"
                               variant="outline"
                               className="gap-1 text-amber-600 hover:text-amber-600 hover:bg-amber-500/10"
-                              onClick={() => updatePaymentStatus(payment.id, "pending")}
+                              onClick={() => updatePaymentStatus(payment.id, payment.clinic_id, "pending")}
                             >
                               <Clock className="h-3 w-3" />
                               Mark Pending
