@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { format, addMonths, startOfMonth } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
+import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 
 interface Clinic {
   clinic_name: string;
@@ -319,6 +320,9 @@ const ClinicDashboard = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Analytics Charts */}
+      <ClinicAnalyticsCharts />
 
       {/* Quick Actions */}
       <Card className="border-border/40">
