@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Eye, ArrowLeft } from "lucide-react";
+import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -21,6 +21,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { CitySelect } from "@/components/CitySelect";
 
 interface Patient {
   id: string;
@@ -55,6 +63,34 @@ const ClinicPatients = () => {
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [ageFilter, setAgeFilter] = useState<string>("all");
   const { toast } = useToast();
+
+  // Add Patient Dialog State
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [dobDate, setDobDate] = useState<Date>();
+  const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
+  const [addForm, setAddForm] = useState({
+    doctor_id: "",
+    full_name: "",
+    father_name: "",
+    email: "",
+    phone: "",
+    cnic: "",
+    date_of_birth: "",
+    gender: "male" as "male" | "female" | "other",
+    blood_group: "",
+    address: "",
+    allergies: "",
+    marital_status: "",
+    city: "",
+    major_diseases: "",
+  });
+
+  // Sync dobDate with addForm.date_of_birth
+  useEffect(() => {
+    if (dobDate) {
+      setAddForm(prev => ({ ...prev, date_of_birth: format(dobDate, 'yyyy-MM-dd') }));
+    }
+  }, [dobDate]);
 
   const cities = [
     "Karachi", "Lahore", "Faisalabad", "Rawalpindi", "Multan", "Hyderabad",
@@ -164,12 +200,90 @@ const ClinicPatients = () => {
     return doctor?.profiles?.full_name || "Unknown";
   };
 
+  const handleAddPatient = async () => {
+    if (!addForm.doctor_id) {
+      toast({ title: "Please select a doctor", variant: "destructive" });
+      return;
+    }
+    if (!addForm.full_name || !addForm.phone || !addForm.date_of_birth) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (Name, Phone, Date of Birth)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Generate patient ID
+    const patientId = `PAT${Date.now().toString().slice(-8)}`;
+
+    const { error } = await supabase
+      .from("patients")
+      .insert([
+        {
+          full_name: addForm.full_name,
+          father_name: addForm.father_name || null,
+          email: addForm.email || null,
+          phone: addForm.phone,
+          cnic: addForm.cnic || null,
+          date_of_birth: addForm.date_of_birth,
+          gender: addForm.gender,
+          blood_group: addForm.blood_group || null,
+          address: addForm.address || null,
+          allergies: addForm.allergies || null,
+          marital_status: addForm.marital_status || null,
+          city: addForm.city || null,
+          major_diseases: addForm.major_diseases || null,
+          patient_id: patientId,
+          created_by: addForm.doctor_id,
+        },
+      ]);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: `Failed to add patient: ${error.message}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Patient added successfully",
+    });
+
+    setAddForm({
+      doctor_id: "",
+      full_name: "",
+      father_name: "",
+      email: "",
+      phone: "",
+      cnic: "",
+      date_of_birth: "",
+      gender: "male",
+      blood_group: "",
+      address: "",
+      allergies: "",
+      marital_status: "",
+      city: "",
+      major_diseases: "",
+    });
+    setDobDate(undefined);
+    setIsAddDialogOpen(false);
+    fetchDoctorsAndPatients();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
+        </Button>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Patient
         </Button>
       </div>
 
@@ -313,6 +427,206 @@ const ClinicPatients = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Add Patient Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Patient</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Doctor Selection */}
+              <div className="col-span-2">
+                <Label>Select Doctor *</Label>
+                <Select
+                  value={addForm.doctor_id}
+                  onValueChange={(value) => setAddForm({ ...addForm, doctor_id: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select doctor for this patient" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {doctors.map((doctor) => (
+                      <SelectItem key={doctor.id} value={doctor.id}>
+                        {doctor.profiles?.full_name || "Unknown Doctor"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label>Full Name *</Label>
+                <Input
+                  value={addForm.full_name}
+                  onChange={(e) => setAddForm({ ...addForm, full_name: e.target.value })}
+                  placeholder="Enter full name"
+                />
+              </div>
+              <div>
+                <Label>Father Name</Label>
+                <Input
+                  value={addForm.father_name}
+                  onChange={(e) => setAddForm({ ...addForm, father_name: e.target.value })}
+                  placeholder="Enter father name"
+                />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={addForm.email}
+                  onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                  placeholder="Enter email"
+                />
+              </div>
+              <div>
+                <Label>Phone *</Label>
+                <Input
+                  value={addForm.phone}
+                  onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <Label>CNIC</Label>
+                <Input
+                  value={addForm.cnic}
+                  onChange={(e) => setAddForm({ ...addForm, cnic: e.target.value })}
+                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                />
+              </div>
+              <div>
+                <Label>Date of Birth *</Label>
+                <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !addForm.date_of_birth && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {addForm.date_of_birth ? format(new Date(addForm.date_of_birth), "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={dobDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setDobDate(date);
+                          setDobPopoverOpen(false);
+                        }
+                      }}
+                      initialFocus
+                      className="pointer-events-auto"
+                      captionLayout="dropdown-buttons"
+                      fromYear={1900}
+                      toYear={new Date().getFullYear()}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label>Gender *</Label>
+                <Select
+                  value={addForm.gender}
+                  onValueChange={(value: "male" | "female" | "other") => setAddForm({ ...addForm, gender: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Blood Group</Label>
+                <Select
+                  value={addForm.blood_group}
+                  onValueChange={(value) => setAddForm({ ...addForm, blood_group: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select blood group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="A+">A+</SelectItem>
+                    <SelectItem value="A-">A-</SelectItem>
+                    <SelectItem value="B+">B+</SelectItem>
+                    <SelectItem value="B-">B-</SelectItem>
+                    <SelectItem value="O+">O+</SelectItem>
+                    <SelectItem value="O-">O-</SelectItem>
+                    <SelectItem value="AB+">AB+</SelectItem>
+                    <SelectItem value="AB-">AB-</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Marital Status</Label>
+                <Select
+                  value={addForm.marital_status}
+                  onValueChange={(value) => setAddForm({ ...addForm, marital_status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="single">Single</SelectItem>
+                    <SelectItem value="married">Married</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <CitySelect 
+                  value={addForm.city} 
+                  onValueChange={(value) => setAddForm({ ...addForm, city: value })}
+                  label="City"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Allergies</Label>
+                <Textarea
+                  value={addForm.allergies}
+                  onChange={(e) => setAddForm({ ...addForm, allergies: e.target.value })}
+                  placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
+                  rows={2}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Major Diseases</Label>
+                <Textarea
+                  value={addForm.major_diseases}
+                  onChange={(e) => setAddForm({ ...addForm, major_diseases: e.target.value })}
+                  placeholder="List any major diseases"
+                  rows={2}
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Address</Label>
+                <Textarea
+                  value={addForm.address}
+                  onChange={(e) => setAddForm({ ...addForm, address: e.target.value })}
+                  placeholder="Enter address"
+                  rows={2}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddPatient}>Add Patient</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
