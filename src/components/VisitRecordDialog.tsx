@@ -188,16 +188,15 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     const patientAge = appointment?.patients?.date_of_birth ? calculateAge(appointment.patients.date_of_birth) : '';
     const visitDate = appointment?.appointment_date ? format(new Date(appointment.appointment_date), "dd MMMM yyyy") : '';
     
-    // Build HTML content for print - professional layout for pre-printed letterhead
+    // Build HTML content for print - compact layout for single page with letterhead space
     let printContent = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>Patient Visit Record</title>
-        <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
           @page { 
-            margin: 2.5cm 2cm 2cm 2cm;
+            margin: 3.5cm 1.5cm 2.5cm 1.5cm;
             size: A4;
           }
           * {
@@ -206,139 +205,109 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
             box-sizing: border-box;
           }
           body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 11pt;
-            line-height: 1.7;
-            color: #1a1a1a;
-            padding-top: 1cm;
+            font-family: Arial, sans-serif;
+            font-size: 9pt;
+            line-height: 1.3;
+            color: #222;
           }
           
           /* Header with date */
           .print-header {
             text-align: right;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #ccc;
           }
           .print-date {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 12pt;
+            font-size: 9pt;
             color: #444;
-            font-weight: 500;
           }
           
-          /* Patient Info Card */
-          .patient-card {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 20px 25px;
-            margin-bottom: 30px;
-          }
-          .patient-card-title {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 10pt;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #64748b;
-            margin-bottom: 12px;
-            font-weight: 600;
-          }
-          .patient-details {
+          /* Patient Info - Inline */
+          .patient-info {
             display: flex;
-            justify-content: space-between;
-            gap: 30px;
+            gap: 20px;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
           }
           .patient-item {
-            flex: 1;
+            display: flex;
+            gap: 6px;
           }
           .patient-label {
-            font-size: 9pt;
-            color: #64748b;
+            font-size: 8pt;
+            color: #666;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
           }
           .patient-value {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 14pt;
+            font-size: 9pt;
             font-weight: 600;
-            color: #0f172a;
           }
           
           /* Vitals Section */
           .vitals-section {
-            margin-bottom: 28px;
+            margin-bottom: 10px;
           }
           .section-title {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 14pt;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #0f172a;
-            display: inline-block;
-          }
-          .vitals-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-          }
-          .vital-box {
-            text-align: center;
-            padding: 12px 8px;
-            background: #fafafa;
-            border: 1px solid #e5e5e5;
-            border-radius: 6px;
-          }
-          .vital-label {
-            font-size: 8pt;
+            font-size: 9pt;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: #64748b;
-            margin-bottom: 6px;
+          }
+          .vitals-grid {
+            display: flex;
+            gap: 8px;
+          }
+          .vital-box {
+            flex: 1;
+            text-align: center;
+            padding: 6px 4px;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+          }
+          .vital-label {
+            font-size: 7pt;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 2px;
           }
           .vital-value {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 15pt;
+            font-size: 10pt;
             font-weight: 600;
-            color: #0f172a;
           }
           
           /* Content Sections */
           .content-section {
-            margin-bottom: 25px;
-            page-break-inside: avoid;
+            margin-bottom: 8px;
           }
           .content-title {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 12pt;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 10px;
+            font-size: 8pt;
+            font-weight: 700;
+            color: #444;
+            margin-bottom: 3px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
           }
           .content-box {
-            padding: 15px 18px;
+            padding: 6px 8px;
             background: #fafafa;
-            border-left: 3px solid #0f172a;
-            font-size: 11pt;
-            line-height: 1.8;
+            border-left: 2px solid #333;
+            font-size: 9pt;
+            line-height: 1.4;
             white-space: pre-wrap;
           }
           
-          /* Prescription Box - Special styling */
+          /* Prescription Box */
           .prescription-box {
-            padding: 20px;
+            padding: 8px 10px;
             background: #fffbeb;
-            border: 1px solid #fcd34d;
-            border-left: 4px solid #f59e0b;
-            border-radius: 0 6px 6px 0;
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 12pt;
-            line-height: 2;
+            border-left: 3px solid #f59e0b;
+            font-size: 9pt;
+            line-height: 1.5;
             white-space: pre-wrap;
           }
           .prescription-title {
@@ -347,47 +316,44 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           
           /* Next Visit Section */
           .next-visit-section {
-            margin-top: 30px;
-            padding: 18px 22px;
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            margin-top: 10px;
+            padding: 8px 10px;
+            background: #ecfdf5;
             border: 1px solid #6ee7b7;
-            border-radius: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
           }
-          .next-visit-title {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 11pt;
-            font-weight: 600;
+          .next-visit-label {
+            font-size: 8pt;
+            font-weight: 700;
             color: #065f46;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
           }
           .next-visit-date {
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 16pt;
+            font-size: 10pt;
             font-weight: 700;
             color: #047857;
           }
           .next-visit-notes {
-            margin-top: 10px;
-            font-size: 10pt;
+            font-size: 8pt;
             color: #065f46;
           }
           
           /* Footer */
           .print-footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e5e5;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
             text-align: right;
           }
           .signature-line {
             display: inline-block;
-            width: 200px;
+            width: 150px;
             border-top: 1px solid #333;
-            padding-top: 8px;
-            font-family: 'Crimson Pro', Georgia, serif;
-            font-size: 10pt;
+            padding-top: 4px;
+            font-size: 8pt;
             color: #666;
           }
         </style>
@@ -398,22 +364,19 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           <span class="print-date">Date: ${visitDate}</span>
         </div>
         
-        <!-- Patient Information Card -->
-        <div class="patient-card">
-          <div class="patient-card-title">Patient Information</div>
-          <div class="patient-details">
-            <div class="patient-item">
-              <div class="patient-label">Name</div>
-              <div class="patient-value">${patientName}</div>
-            </div>
-            <div class="patient-item">
-              <div class="patient-label">Patient ID</div>
-              <div class="patient-value">${patientId}</div>
-            </div>
-            <div class="patient-item">
-              <div class="patient-label">Age</div>
-              <div class="patient-value">${patientAge} Years</div>
-            </div>
+        <!-- Patient Information - Compact Inline -->
+        <div class="patient-info">
+          <div class="patient-item">
+            <span class="patient-label">Name:</span>
+            <span class="patient-value">${patientName}</span>
+          </div>
+          <div class="patient-item">
+            <span class="patient-label">ID:</span>
+            <span class="patient-value">${patientId}</span>
+          </div>
+          <div class="patient-item">
+            <span class="patient-label">Age:</span>
+            <span class="patient-value">${patientAge} Yrs</span>
           </div>
         </div>
         
@@ -422,11 +385,11 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           <div class="section-title">Vitals</div>
           <div class="vitals-grid">
             <div class="vital-box">
-              <div class="vital-label">Blood Pressure</div>
+              <div class="vital-label">BP</div>
               <div class="vital-value">${formData.blood_pressure || '—'}</div>
             </div>
             <div class="vital-box">
-              <div class="vital-label">Temperature</div>
+              <div class="vital-label">Temp</div>
               <div class="vital-value">${formData.temperature || '—'}</div>
             </div>
             <div class="vital-box">
@@ -479,13 +442,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     if (nextVisitDate || formData.next_visit_notes) {
       printContent += `
         <div class="next-visit-section">
-          <div class="next-visit-title">Next Visit</div>
+          <span class="next-visit-label">Next Visit:</span>
       `;
       if (nextVisitDate) {
-        printContent += `<div class="next-visit-date">${format(nextVisitDate, "EEEE, dd MMMM yyyy")}</div>`;
+        printContent += `<span class="next-visit-date">${format(nextVisitDate, "EEEE, dd MMMM yyyy")}</span>`;
       }
       if (formData.next_visit_notes) {
-        printContent += `<div class="next-visit-notes">${formData.next_visit_notes}</div>`;
+        printContent += `<span class="next-visit-notes">${formData.next_visit_notes}</span>`;
       }
       printContent += `</div>`;
     }
