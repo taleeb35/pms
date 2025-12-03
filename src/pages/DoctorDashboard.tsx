@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -131,6 +132,9 @@ const DoctorDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Analytics Charts */}
+      <DoctorAnalyticsCharts />
 
       {/* Quick Actions */}
       <Card className="border-border/40">
