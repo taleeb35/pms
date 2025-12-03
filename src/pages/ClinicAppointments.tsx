@@ -529,7 +529,7 @@ const ClinicAppointments = () => {
                               size="sm" 
                               variant="ghost" 
                               onClick={() => openEditDialog(apt)}
-                              disabled={new Date(apt.appointment_date) > new Date(new Date().setHours(0, 0, 0, 0)) && apt.status === 'scheduled'}
+                              disabled={new Date(apt.appointment_date + 'T00:00:00') > startOfDay(new Date()) && apt.status === 'scheduled'}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -537,7 +537,7 @@ const ClinicAppointments = () => {
                               size="sm" 
                               variant="ghost" 
                               onClick={() => openVisitDialog(apt)}
-                              disabled={new Date(apt.appointment_date) > new Date(new Date().setHours(0, 0, 0, 0)) && apt.status === 'scheduled'}
+                              disabled={new Date(apt.appointment_date + 'T00:00:00') > startOfDay(new Date()) && apt.status === 'scheduled'}
                             >
                               Start
                             </Button>
