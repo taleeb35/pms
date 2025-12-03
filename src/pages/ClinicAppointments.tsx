@@ -92,13 +92,13 @@ const ClinicAppointments = () => {
 
   useEffect(() => {
     fetchDoctors();
-    fetchPatients();
-    fetchWaitlistPatients();
   }, []);
 
   useEffect(() => {
     if (doctors.length > 0) {
       fetchAppointments();
+      fetchPatients();
+      fetchWaitlistPatients();
     }
   }, [doctors]);
 
@@ -381,7 +381,7 @@ const ClinicAppointments = () => {
               <div className="space-y-2">
                 <Label>Patient</Label>
                 <PatientSearchSelect
-                  patients={patients.filter(p => !selectedDoctorId || p.created_by === selectedDoctorId)}
+                  patients={patients}
                   value={selectedPatientId}
                   onValueChange={setSelectedPatientId}
                   placeholder="Search by name, phone, or ID..."
