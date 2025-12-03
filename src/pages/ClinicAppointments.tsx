@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Clock, Edit, Search } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Clock, Edit, Search, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -268,6 +269,17 @@ const ClinicAppointments = () => {
     }
     toast({ title: "Success", description: "Appointment status updated" });
     fetchAppointments();
+  };
+
+  const handleDeleteAppointment = async (appointmentId: string) => {
+    try {
+      const { error } = await supabase.from("appointments").delete().eq("id", appointmentId);
+      if (error) throw error;
+      toast({ title: "Success", description: "Appointment deleted successfully" });
+      fetchAppointments();
+    } catch (error: any) {
+      toast({ title: "Error deleting appointment", description: error.message, variant: "destructive" });
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -541,6 +553,27 @@ const ClinicAppointments = () => {
                             >
                               Start
                             </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete this appointment for {apt.patients.full_name}? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDeleteAppointment(apt.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </TableCell>
                       </TableRow>
