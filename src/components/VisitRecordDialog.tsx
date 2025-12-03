@@ -194,6 +194,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       <html>
       <head>
         <title>Patient Visit Record</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
           @page { 
             margin: 3.5cm 1.5cm 2.5cm 1.5cm;
@@ -205,9 +208,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
             box-sizing: border-box;
           }
           body {
-            font-family: Arial, sans-serif;
+            font-family: 'Nunito', 'Segoe UI', sans-serif;
             font-size: 9pt;
-            line-height: 1.3;
+            line-height: 1.4;
             color: #222;
           }
           
