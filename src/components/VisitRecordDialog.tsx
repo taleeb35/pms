@@ -66,16 +66,67 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
   const [existingRecord, setExistingRecord] = useState<any>(null);
 
+  const [doctorFee, setDoctorFee] = useState<number | null>(null);
+
   useEffect(() => {
     if (appointment && open) {
+      fetchDoctorFee();
       fetchExistingRecord();
       checkDoctorSpecialization();
       fetchPatientPregnancyDate();
     } else if (!open) {
       // Reset pregnancy date when dialog closes
       setPregnancyStartDate(undefined);
+      // Reset form when dialog closes
+      setFormData({
+        blood_pressure: "",
+        temperature: "",
+        pulse: "",
+        weight: "",
+        height: "",
+        chief_complaint: "",
+        patient_history: "",
+        current_prescription: "",
+        test_reports: "",
+        next_visit_notes: "",
+        consultation_fee: "",
+        other_fee: "",
+      });
+      setExistingRecord(null);
+      setDoctorFee(null);
     }
   }, [appointment, open]);
+
+  const fetchDoctorFee = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("doctors")
+        .select("consultation_fee")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      
+      if (data?.consultation_fee) {
+        setDoctorFee(data.consultation_fee);
+      }
+    } catch (error) {
+      console.error("Error fetching doctor fee:", error);
+    }
+  };
+
+  // Apply doctor fee when we know there's no existing record
+  useEffect(() => {
+    if (doctorFee && !existingRecord && !formData.consultation_fee) {
+      setFormData(prev => ({
+        ...prev,
+        consultation_fee: doctorFee.toString()
+      }));
+    }
+  }, [doctorFee, existingRecord]);
 
   const checkDoctorSpecialization = async () => {
     try {
@@ -84,21 +135,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       const { data, error } = await supabase
         .from("doctors")
-        .select("specialization, consultation_fee")
+        .select("specialization")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       
       setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
-      
-      // Set default consultation fee from doctor's profile if no existing record
-      if (data?.consultation_fee && !existingRecord) {
-        setFormData(prev => ({
-          ...prev,
-          consultation_fee: prev.consultation_fee || data.consultation_fee.toString()
-        }));
-      }
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
     }
