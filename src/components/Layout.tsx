@@ -109,7 +109,6 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/admin/clinics", icon: Building2, label: "Manage Clinics" },
     { path: "/doctors", icon: Stethoscope, label: "Doctors" },
-    { path: "/pending-doctors", icon: UserCog, label: "Pending Doctors" },
     { path: "/admin/finance", icon: Banknote, label: "Payment Tracking" },
     { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
     { path: "/admin/profile", icon: UserCog, label: "Profile" },
