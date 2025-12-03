@@ -84,13 +84,21 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       const { data, error } = await supabase
         .from("doctors")
-        .select("specialization")
+        .select("specialization, consultation_fee")
         .eq("id", user.id)
         .single();
 
       if (error) throw error;
       
       setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+      
+      // Set default consultation fee from doctor's profile if no existing record
+      if (data?.consultation_fee && !existingRecord) {
+        setFormData(prev => ({
+          ...prev,
+          consultation_fee: prev.consultation_fee || data.consultation_fee.toString()
+        }));
+      }
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
     }
