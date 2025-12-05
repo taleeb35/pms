@@ -14,12 +14,16 @@ import { Calendar as CalendarIcon, UserPlus, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
+import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 
 const DoctorWalkIn = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [isGynecologist, setIsGynecologist] = useState(false);
+  const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
+  const [pregnancyStartDatePopoverOpen, setPregnancyStartDatePopoverOpen] = useState(false);
   
   // Patient form fields
   const [patientForm, setPatientForm] = useState({
@@ -68,6 +72,14 @@ const DoctorWalkIn = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setDoctorId(user.id);
+      // Check if gynecologist
+      const { data } = await supabase
+        .from("doctors")
+        .select("specialization")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
     }
   };
 
@@ -127,6 +139,9 @@ const DoctorWalkIn = () => {
           city: patientForm.city || null,
           major_diseases: patientForm.major_diseases || null,
           created_by: doctorId,
+          pregnancy_start_date: isGynecologist && patientForm.gender === "female" && pregnancyStartDate 
+            ? format(pregnancyStartDate, "yyyy-MM-dd") 
+            : null,
         })
         .select()
         .single();
@@ -381,6 +396,65 @@ const DoctorWalkIn = () => {
                   rows={2}
                 />
               </div>
+
+              {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
+              {isGynecologist && patientForm.gender === "female" && (
+                <div className="space-y-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <Label>Pregnancy Start Date (Optional)</Label>
+                  <Popover open={pregnancyStartDatePopoverOpen} onOpenChange={setPregnancyStartDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !pregnancyStartDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {pregnancyStartDate ? format(pregnancyStartDate, "PPP") : "Set pregnancy start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 pointer-events-auto z-50" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pregnancyStartDate}
+                        onSelect={(date) => {
+                          setPregnancyStartDate(date);
+                          if (date) setPregnancyStartDatePopoverOpen(false);
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          const maxPastDate = new Date();
+                          maxPastDate.setDate(maxPastDate.getDate() - 280);
+                          return date > today || date < maxPastDate;
+                        }}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground">
+                    Can only select dates within the last 9 months (280 days)
+                  </p>
+                  {pregnancyStartDate && (
+                    <div className="mt-2 p-2 bg-background rounded border">
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Duration: </span>
+                        <span className="font-semibold text-primary">
+                          {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Expected Due Date: </span>
+                        <span className="font-semibold text-primary">
+                          {calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd")) 
+                            ? format(calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                            : "-"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 

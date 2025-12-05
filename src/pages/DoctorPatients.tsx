@@ -20,6 +20,7 @@ import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
+import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 
 interface Patient {
   id: string;
@@ -38,6 +39,7 @@ interface Patient {
   medical_history: string | null;
   city: string | null;
   major_diseases: string | null;
+  pregnancy_start_date: string | null;
 }
 
 interface Document {
@@ -160,12 +162,31 @@ const DoctorPatients = () => {
   const [documentTitle, setDocumentTitle] = useState("");
   const [documentDate, setDocumentDate] = useState("");
   const [documentDatePopoverOpen, setDocumentDatePopoverOpen] = useState(false);
+  const [isGynecologist, setIsGynecologist] = useState(false);
+  const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
+  const [pregnancyStartDatePopoverOpen, setPregnancyStartDatePopoverOpen] = useState(false);
+  const [editPregnancyStartDate, setEditPregnancyStartDate] = useState<Date>();
+  const [editPregnancyStartDatePopoverOpen, setEditPregnancyStartDatePopoverOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     checkAuth();
+    checkDoctorSpecialization();
   }, []);
+
+  const checkDoctorSpecialization = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("doctors")
+      .select("specialization")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+  };
 
   useEffect(() => {
     fetchPatients();
@@ -425,6 +446,7 @@ const DoctorPatients = () => {
       major_diseases: patient.major_diseases || "",
     });
     setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
+    setEditPregnancyStartDate(patient.pregnancy_start_date ? new Date(patient.pregnancy_start_date) : undefined);
     setSelectedPatient(patient);
     setIsEditDialogOpen(true);
   };
@@ -451,6 +473,9 @@ const DoctorPatients = () => {
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
         major_diseases: editForm.major_diseases || null,
+        pregnancy_start_date: isGynecologist && editForm.gender === "female" && editPregnancyStartDate 
+          ? format(editPregnancyStartDate, "yyyy-MM-dd") 
+          : null,
       })
       .eq("id", selectedPatient.id)
       .select();
@@ -677,6 +702,9 @@ const DoctorPatients = () => {
           major_diseases: addForm.major_diseases || null,
           patient_id: patientId,
           created_by: user.id,
+          pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
+            ? format(pregnancyStartDate, "yyyy-MM-dd") 
+            : null,
         },
       ])
       .select();
@@ -714,6 +742,7 @@ const DoctorPatients = () => {
       major_diseases: "",
     });
     setDobDate(undefined);
+    setPregnancyStartDate(undefined);
     setIsAddDialogOpen(false);
     fetchPatients();
   };
@@ -1409,6 +1438,64 @@ const DoctorPatients = () => {
                   rows={2}
                 />
               </div>
+              {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
+              {isGynecologist && addForm.gender === "female" && (
+                <div className="col-span-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <Label>Pregnancy Start Date (Optional)</Label>
+                  <Popover open={pregnancyStartDatePopoverOpen} onOpenChange={setPregnancyStartDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal mt-2",
+                          !pregnancyStartDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {pregnancyStartDate ? format(pregnancyStartDate, "PPP") : "Set pregnancy start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pregnancyStartDate}
+                        onSelect={(date) => {
+                          setPregnancyStartDate(date);
+                          if (date) setPregnancyStartDatePopoverOpen(false);
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          const maxPastDate = new Date();
+                          maxPastDate.setDate(maxPastDate.getDate() - 280);
+                          return date > today || date < maxPastDate;
+                        }}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Can only select dates within the last 9 months (280 days)
+                  </p>
+                  {pregnancyStartDate && (
+                    <div className="mt-2 p-2 bg-background rounded border">
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Duration: </span>
+                        <span className="font-semibold text-primary">
+                          {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Expected Due Date: </span>
+                        <span className="font-semibold text-primary">
+                          {calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd")) 
+                            ? format(calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                            : "-"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
@@ -1589,6 +1676,64 @@ const DoctorPatients = () => {
                   rows={2}
                 />
               </div>
+              {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
+              {isGynecologist && editForm.gender === "female" && (
+                <div className="col-span-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <Label>Pregnancy Start Date (Optional)</Label>
+                  <Popover open={editPregnancyStartDatePopoverOpen} onOpenChange={setEditPregnancyStartDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal mt-2",
+                          !editPregnancyStartDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editPregnancyStartDate ? format(editPregnancyStartDate, "PPP") : "Set pregnancy start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={editPregnancyStartDate}
+                        onSelect={(date) => {
+                          setEditPregnancyStartDate(date);
+                          if (date) setEditPregnancyStartDatePopoverOpen(false);
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          const maxPastDate = new Date();
+                          maxPastDate.setDate(maxPastDate.getDate() - 280);
+                          return date > today || date < maxPastDate;
+                        }}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Can only select dates within the last 9 months (280 days)
+                  </p>
+                  {editPregnancyStartDate && (
+                    <div className="mt-2 p-2 bg-background rounded border">
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Duration: </span>
+                        <span className="font-semibold text-primary">
+                          {calculatePregnancyDuration(format(editPregnancyStartDate, "yyyy-MM-dd"))}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Expected Due Date: </span>
+                        <span className="font-semibold text-primary">
+                          {calculateExpectedDueDate(format(editPregnancyStartDate, "yyyy-MM-dd")) 
+                            ? format(calculateExpectedDueDate(format(editPregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                            : "-"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
