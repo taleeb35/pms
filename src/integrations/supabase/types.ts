@@ -65,6 +65,8 @@ export type Database = {
           notes: string | null
           other_fee: number | null
           patient_id: string
+          procedure_fee: number | null
+          procedure_id: string | null
           reason: string | null
           status: Database["public"]["Enums"]["appointment_status"] | null
           total_fee: number | null
@@ -82,6 +84,8 @@ export type Database = {
           notes?: string | null
           other_fee?: number | null
           patient_id: string
+          procedure_fee?: number | null
+          procedure_id?: string | null
           reason?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
@@ -99,6 +103,8 @@ export type Database = {
           notes?: string | null
           other_fee?: number | null
           patient_id?: string
+          procedure_fee?: number | null
+          procedure_id?: string | null
           reason?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
@@ -124,6 +130,13 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_procedure_id_fkey"
+            columns: ["procedure_id"]
+            isOneToOne: false
+            referencedRelation: "procedures"
             referencedColumns: ["id"]
           },
         ]
@@ -635,6 +648,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      procedures: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          name: string
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
