@@ -140,7 +140,6 @@ const AdminLogin = () => {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your secure password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

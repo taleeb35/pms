@@ -265,7 +265,6 @@ const ClinicAddDoctor = () => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
                   minLength={6}
-                  placeholder="Min 6 characters"
                 />
               </div>
 
