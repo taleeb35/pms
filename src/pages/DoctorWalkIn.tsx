@@ -336,6 +336,7 @@ const DoctorWalkIn = () => {
                       <SelectItem value="AB-">AB-</SelectItem>
                       <SelectItem value="O+">O+</SelectItem>
                       <SelectItem value="O-">O-</SelectItem>
+                      <SelectItem value="Don't Know">Don't Know</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

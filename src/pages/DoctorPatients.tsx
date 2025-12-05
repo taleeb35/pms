@@ -1395,6 +1395,7 @@ const DoctorPatients = () => {
                     <SelectItem value="O-">O-</SelectItem>
                     <SelectItem value="AB+">AB+</SelectItem>
                     <SelectItem value="AB-">AB-</SelectItem>
+                    <SelectItem value="Don't Know">Don't Know</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1633,6 +1634,7 @@ const DoctorPatients = () => {
                     <SelectItem value="O-">O-</SelectItem>
                     <SelectItem value="AB+">AB+</SelectItem>
                     <SelectItem value="AB-">AB-</SelectItem>
+                    <SelectItem value="Don't Know">Don't Know</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
