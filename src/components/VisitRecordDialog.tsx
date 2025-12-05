@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,12 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VisitHistory } from "./VisitHistory";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
+
+interface Procedure {
+  id: string;
+  name: string;
+  price: number;
+}
 
 interface Appointment {
   id: string;
@@ -41,6 +48,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
   const [pregnancyDatePopoverOpen, setPregnancyDatePopoverOpen] = useState(false);
   const [isGynecologist, setIsGynecologist] = useState(false);
+  const [isOphthalmologist, setIsOphthalmologist] = useState(false);
+  const [procedures, setProcedures] = useState<Procedure[]>([]);
+  const [selectedProcedure, setSelectedProcedure] = useState<string>("");
+  const [procedureFee, setProcedureFee] = useState<string>("");
   
   const [formData, setFormData] = useState({
     // Vitals
@@ -77,6 +88,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     } else if (!open) {
       // Reset pregnancy date when dialog closes
       setPregnancyStartDate(undefined);
+      // Reset procedure selection
+      setSelectedProcedure("");
+      setProcedureFee("");
       // Reset form when dialog closes
       setFormData({
         blood_pressure: "",
@@ -141,9 +155,42 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       if (error) throw error;
       
-      setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+      const spec = data?.specialization?.toLowerCase() || "";
+      setIsGynecologist(spec.includes("gynecologist"));
+      const isOphth = spec.includes("ophthalmologist");
+      setIsOphthalmologist(isOphth);
+      
+      // Fetch procedures if ophthalmologist
+      if (isOphth) {
+        fetchProcedures(user.id);
+      }
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
+    }
+  };
+
+  const fetchProcedures = async (doctorId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("procedures")
+        .select("*")
+        .eq("doctor_id", doctorId)
+        .order("name");
+
+      if (error) throw error;
+      setProcedures(data || []);
+    } catch (error) {
+      console.error("Error fetching procedures:", error);
+    }
+  };
+
+  const handleProcedureChange = (procedureId: string) => {
+    setSelectedProcedure(procedureId);
+    const procedure = procedures.find(p => p.id === procedureId);
+    if (procedure) {
+      setProcedureFee(procedure.price.toString());
+    } else {
+      setProcedureFee("");
     }
   };
 
@@ -571,13 +618,21 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       if (error) throw error;
 
       // Update appointment fees
+      const appointmentUpdate: any = {
+        consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0,
+        other_fee: formData.other_fee ? parseFloat(formData.other_fee) : 0,
+        status: 'completed'
+      };
+
+      // Add procedure info for ophthalmologists
+      if (isOphthalmologist && selectedProcedure) {
+        appointmentUpdate.procedure_id = selectedProcedure;
+        appointmentUpdate.procedure_fee = procedureFee ? parseFloat(procedureFee) : 0;
+      }
+
       const { error: feeError } = await supabase
         .from("appointments")
-        .update({
-          consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0,
-          other_fee: formData.other_fee ? parseFloat(formData.other_fee) : 0,
-          status: 'completed'
-        })
+        .update(appointmentUpdate)
         .eq("id", appointment.id);
 
       if (feeError) throw feeError;
@@ -890,6 +945,38 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-950">
                 <h3 className="font-semibold mb-4">Financial Details</h3>
                 <div className="space-y-4">
+                  {/* Procedure Selection - Only for Ophthalmologists */}
+                  {isOphthalmologist && procedures.length > 0 && (
+                    <div>
+                      <Label>Select Procedure</Label>
+                      <Select value={selectedProcedure} onValueChange={handleProcedureChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a procedure (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">No Procedure</SelectItem>
+                          {procedures.map((proc) => (
+                            <SelectItem key={proc.id} value={proc.id}>
+                              {proc.name} - {proc.price.toFixed(2)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  {isOphthalmologist && selectedProcedure && (
+                    <div>
+                      <Label>Procedure Fee</Label>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        value={procedureFee}
+                        onChange={(e) => setProcedureFee(e.target.value)}
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                  )}
                   <div>
                     <Label>Consultation Fee</Label>
                     <Input
@@ -912,12 +999,12 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                       step="0.01"
                     />
                   </div>
-                  {(formData.consultation_fee || formData.other_fee) && (
+                  {(formData.consultation_fee || formData.other_fee || procedureFee) && (
                     <div className="pt-2 border-t">
                       <div className="flex justify-between text-sm font-semibold">
                         <span>Total Fee:</span>
                         <span className="text-lg text-green-600 dark:text-green-400">
-                          {((parseFloat(formData.consultation_fee) || 0) + (parseFloat(formData.other_fee) || 0)).toFixed(2)}
+                          {((parseFloat(formData.consultation_fee) || 0) + (parseFloat(formData.other_fee) || 0) + (parseFloat(procedureFee) || 0)).toFixed(2)}
                         </span>
                       </div>
                     </div>

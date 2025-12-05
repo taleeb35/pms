@@ -115,16 +115,50 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/admin/settings", icon: Settings, label: "Settings" },
   ];
 
-  const doctorMenuItems = [
+  const [doctorSpecialization, setDoctorSpecialization] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDoctorSpecialization = async () => {
+      if (!user || userRole !== "doctor") return;
+      
+      const { data } = await supabase
+        .from("doctors")
+        .select("specialization")
+        .eq("id", user.id)
+        .maybeSingle();
+      
+      setDoctorSpecialization(data?.specialization || null);
+    };
+    
+    if (userRole === "doctor") {
+      fetchDoctorSpecialization();
+    }
+  }, [user, userRole]);
+
+  const isOphthalmologist = doctorSpecialization?.toLowerCase().includes("ophthalmologist");
+
+  const baseDoctorMenuItems = [
     { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/doctor/patients", icon: Users, label: "Patients" },
     { path: "/doctor/waitlist", icon: Clock, label: "Waitlist Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
-    { path: "/doctor/finance", icon: Banknote, label: "Finance" },
-    { path: "/doctor/profile", icon: UserCog, label: "Profile" },
-    { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
   ];
+
+  const doctorMenuItems = isOphthalmologist 
+    ? [
+        ...baseDoctorMenuItems,
+        { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
+        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
+        { path: "/doctor/profile", icon: UserCog, label: "Profile" },
+        { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
+      ]
+    : [
+        ...baseDoctorMenuItems,
+        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
+        { path: "/doctor/profile", icon: UserCog, label: "Profile" },
+        { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
+      ];
 
   const clinicMenuItems = [
     { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },

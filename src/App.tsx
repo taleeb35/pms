@@ -22,6 +22,7 @@ import PatientDetail from "./pages/PatientDetail";
 import DoctorSupport from "./pages/DoctorSupport";
 import DoctorFinance from "./pages/DoctorFinance";
 import DoctorWalkIn from "./pages/DoctorWalkIn";
+import DoctorProcedures from "./pages/DoctorProcedures";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
@@ -132,6 +133,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorAppointments />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/procedures"
+              element={
+                <Layout>
+                  <DoctorProcedures />
                 </Layout>
               }
             />
