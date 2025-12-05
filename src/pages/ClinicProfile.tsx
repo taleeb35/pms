@@ -413,7 +413,6 @@ const ClinicProfile = () => {
                 type="password"
                 value={passwords.newPassword}
                 onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
-                placeholder="Enter new password"
               />
             </div>
 
@@ -427,7 +426,6 @@ const ClinicProfile = () => {
                 type="password"
                 value={passwords.confirmPassword}
                 onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
-                placeholder="Confirm new password"
               />
             </div>
           </div>
