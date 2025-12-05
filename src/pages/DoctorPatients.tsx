@@ -185,7 +185,12 @@ const DoctorPatients = () => {
       .eq("id", user.id)
       .maybeSingle();
 
-    setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+    const isGyn = data?.specialization?.toLowerCase().includes("gynecologist") || false;
+    setIsGynecologist(isGyn);
+    // For gynecologists, default gender to female in add form
+    if (isGyn) {
+      setAddForm(prev => ({ ...prev, gender: "female" }));
+    }
   };
 
   useEffect(() => {
@@ -1354,19 +1359,23 @@ const DoctorPatients = () => {
               </div>
               <div>
                 <Label>Gender *</Label>
-                <Select
-                  value={addForm.gender}
-                  onValueChange={(value: "male" | "female" | "other") => setAddForm({ ...addForm, gender: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                {isGynecologist ? (
+                  <Input value="Female" disabled className="bg-muted" />
+                ) : (
+                  <Select
+                    value={addForm.gender}
+                    onValueChange={(value: "male" | "female" | "other") => setAddForm({ ...addForm, gender: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div>
                 <Label>Blood Group</Label>
@@ -1438,8 +1447,8 @@ const DoctorPatients = () => {
                   rows={2}
                 />
               </div>
-              {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
-              {isGynecologist && addForm.gender === "female" && (
+              {/* Pregnancy Start Date - Only for Gynecologists */}
+              {isGynecologist && (
                 <div className="col-span-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
                   <Label>Pregnancy Start Date (Optional)</Label>
                   <Popover open={pregnancyStartDatePopoverOpen} onOpenChange={setPregnancyStartDatePopoverOpen}>
