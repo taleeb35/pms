@@ -298,21 +298,25 @@ const DoctorWalkIn = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Gender *</Label>
-                  <Select
-                    value={patientForm.gender}
-                    onValueChange={(value: "male" | "female" | "other") => 
-                      setPatientForm(prev => ({ ...prev, gender: value }))
-                    }
-                  >
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background z-50">
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {isGynecologist ? (
+                    <Input value="Female" disabled className="bg-muted" />
+                  ) : (
+                    <Select
+                      value={patientForm.gender}
+                      onValueChange={(value: "male" | "female" | "other") => 
+                        setPatientForm(prev => ({ ...prev, gender: value }))
+                      }
+                    >
+                      <SelectTrigger className="bg-background">
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background z-50">
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label>Blood Group</Label>
@@ -397,8 +401,8 @@ const DoctorWalkIn = () => {
                 />
               </div>
 
-              {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
-              {isGynecologist && patientForm.gender === "female" && (
+              {/* Pregnancy Start Date - Only for Gynecologists */}
+              {isGynecologist && (
                 <div className="space-y-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
                   <Label>Pregnancy Start Date (Optional)</Label>
                   <Popover open={pregnancyStartDatePopoverOpen} onOpenChange={setPregnancyStartDatePopoverOpen}>
