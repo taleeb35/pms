@@ -25,6 +25,7 @@ const ClinicAddDoctor = () => {
   const [canAddDoctor, setCanAddDoctor] = useState(false);
   const [currentCount, setCurrentCount] = useState(0);
   const [requestedDoctors, setRequestedDoctors] = useState(0);
+  const [specializations, setSpecializations] = useState<string[]>([]);
   
   const DOCTOR_LIMIT = requestedDoctors; // Dynamic limit based on clinic's requested doctors
 
@@ -39,31 +40,28 @@ const ClinicAddDoctor = () => {
     introduction: "",
   });
 
-  const specializations = [
-    "Gynecologist",
-    "Cardiologist",
-    "Dermatologist",
-    "Neurologist",
-    "Pediatrician",
-    "Orthopedic Surgeon",
-    "Psychiatrist",
-    "Ophthalmologist",
-    "ENT Specialist",
-    "Urologist",
-    "General Physician",
-    "Pulmonologist",
-    "Gastroenterologist",
-    "Endocrinologist",
-    "Rheumatologist",
-    "Oncologist",
-    "Radiologist",
-    "Anesthesiologist",
-    "Surgeon",
-  ];
-
   useEffect(() => {
     checkDoctorLimit();
+    fetchSpecializations();
   }, []);
+
+  const fetchSpecializations = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("specializations")
+        .select("name")
+        .eq("clinic_id", user.id)
+        .order("name");
+
+      if (error) throw error;
+      setSpecializations(data?.map(s => s.name) || []);
+    } catch (error: any) {
+      console.error("Error fetching specializations:", error);
+    }
+  };
 
   const checkDoctorLimit = async () => {
     try {
@@ -289,18 +287,34 @@ const ClinicAddDoctor = () => {
                   value={formData.specialization}
                   onValueChange={(value) => setFormData({ ...formData, specialization: value })}
                   required
+                  disabled={specializations.length === 0}
                 >
                   <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Select specialization" />
+                    <SelectValue placeholder={specializations.length === 0 ? "Add specializations first" : "Select specialization"} />
                   </SelectTrigger>
                   <SelectContent className="bg-background z-50">
-                    {specializations.map((spec) => (
-                      <SelectItem key={spec} value={spec}>
-                        {spec}
-                      </SelectItem>
-                    ))}
+                    {specializations.length === 0 ? (
+                      <div className="p-2 text-sm text-muted-foreground text-center">
+                        No specializations added.
+                        <br />
+                        <a href="/clinic/specializations" className="text-primary hover:underline">
+                          Add specializations
+                        </a>
+                      </div>
+                    ) : (
+                      specializations.map((spec) => (
+                        <SelectItem key={spec} value={spec}>
+                          {spec}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
+                {specializations.length === 0 && (
+                  <p className="text-sm text-amber-600">
+                    Please <a href="/clinic/specializations" className="underline">add specializations</a> before adding a doctor.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
