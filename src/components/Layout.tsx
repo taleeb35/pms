@@ -145,6 +145,8 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/waitlist", icon: Clock, label: "Waitlist Patients" },
     { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
     { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
+    { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
+    { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
   ];
 
   const doctorMenuItems = isOphthalmologist 
