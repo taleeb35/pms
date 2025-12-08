@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
+import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 
 interface Patient {
   id: string;
@@ -167,13 +168,56 @@ const DoctorPatients = () => {
   const [pregnancyStartDatePopoverOpen, setPregnancyStartDatePopoverOpen] = useState(false);
   const [editPregnancyStartDate, setEditPregnancyStartDate] = useState<Date>();
   const [editPregnancyStartDatePopoverOpen, setEditPregnancyStartDatePopoverOpen] = useState(false);
+  const [allergyOptions, setAllergyOptions] = useState<{ value: string; label: string }[]>([]);
+  const [diseaseOptions, setDiseaseOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
+  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  const [editSelectedAllergies, setEditSelectedAllergies] = useState<string[]>([]);
+  const [editSelectedDiseases, setEditSelectedDiseases] = useState<string[]>([]);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     checkAuth();
     checkDoctorSpecialization();
+    fetchAllergyAndDiseaseOptions();
   }, []);
+
+  const fetchAllergyAndDiseaseOptions = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Get doctor's clinic_id
+    const { data: doctorData } = await supabase
+      .from("doctors")
+      .select("clinic_id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!doctorData?.clinic_id) return;
+
+    // Fetch allergies
+    const { data: allergies } = await supabase
+      .from("clinic_allergies")
+      .select("name")
+      .eq("clinic_id", doctorData.clinic_id)
+      .order("name");
+
+    if (allergies) {
+      setAllergyOptions(allergies.map(a => ({ value: a.name, label: a.name })));
+    }
+
+    // Fetch diseases
+    const { data: diseases } = await supabase
+      .from("clinic_diseases")
+      .select("name")
+      .eq("clinic_id", doctorData.clinic_id)
+      .order("name");
+
+    if (diseases) {
+      setDiseaseOptions(diseases.map(d => ({ value: d.name, label: d.name })));
+    }
+  };
 
   const checkDoctorSpecialization = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -474,10 +518,10 @@ const DoctorPatients = () => {
         gender: editForm.gender,
         blood_group: editForm.blood_group || null,
         address: editForm.address || null,
-        allergies: editForm.allergies || null,
+        allergies: editSelectedAllergies.length > 0 ? editSelectedAllergies.join(", ") : null,
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
-        major_diseases: editForm.major_diseases || null,
+        major_diseases: editSelectedDiseases.length > 0 ? editSelectedDiseases.join(", ") : null,
         pregnancy_start_date: isGynecologist && editForm.gender === "female" && editPregnancyStartDate 
           ? format(editPregnancyStartDate, "yyyy-MM-dd") 
           : null,
@@ -701,10 +745,10 @@ const DoctorPatients = () => {
           gender: addForm.gender,
           blood_group: addForm.blood_group || null,
           address: addForm.address || null,
-          allergies: addForm.allergies || null,
+          allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
           marital_status: addForm.marital_status || null,
           city: addForm.city || null,
-          major_diseases: addForm.major_diseases || null,
+          major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
           patient_id: patientId,
           created_by: user.id,
           pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
@@ -1422,21 +1466,25 @@ const DoctorPatients = () => {
                 />
               </div>
               <div className="col-span-2">
-                <Label>Allergies</Label>
-                <Textarea
-                  value={addForm.allergies}
-                  onChange={(e) => setAddForm({ ...addForm, allergies: e.target.value })}
-                  placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={selectedAllergies}
+                  onValuesChange={setSelectedAllergies}
+                  options={allergyOptions}
+                  label="Allergies"
+                  placeholder="Select allergies"
+                  searchPlaceholder="Search allergies..."
+                  emptyMessage="No allergies found. Ask clinic to add allergies."
                 />
               </div>
               <div className="col-span-2">
-                <Label>Major Diseases</Label>
-                <Textarea
-                  value={addForm.major_diseases}
-                  onChange={(e) => setAddForm({ ...addForm, major_diseases: e.target.value })}
-                  placeholder="List any major diseases"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={selectedDiseases}
+                  onValuesChange={setSelectedDiseases}
+                  options={diseaseOptions}
+                  label="Major Diseases"
+                  placeholder="Select diseases"
+                  searchPlaceholder="Search diseases..."
+                  emptyMessage="No diseases found. Ask clinic to add diseases."
                 />
               </div>
               <div className="col-span-2">
@@ -1661,21 +1709,25 @@ const DoctorPatients = () => {
                 />
               </div>
               <div className="col-span-2">
-                <Label>Allergies</Label>
-                <Textarea
-                  value={editForm.allergies}
-                  onChange={(e) => setEditForm({ ...editForm, allergies: e.target.value })}
-                  placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={editSelectedAllergies}
+                  onValuesChange={setEditSelectedAllergies}
+                  options={allergyOptions}
+                  label="Allergies"
+                  placeholder="Select allergies"
+                  searchPlaceholder="Search allergies..."
+                  emptyMessage="No allergies found. Ask clinic to add allergies."
                 />
               </div>
               <div className="col-span-2">
-                <Label>Major Diseases</Label>
-                <Textarea
-                  value={editForm.major_diseases}
-                  onChange={(e) => setEditForm({ ...editForm, major_diseases: e.target.value })}
-                  placeholder="List any major diseases"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={editSelectedDiseases}
+                  onValuesChange={setEditSelectedDiseases}
+                  options={diseaseOptions}
+                  label="Major Diseases"
+                  placeholder="Select diseases"
+                  searchPlaceholder="Search diseases..."
+                  emptyMessage="No diseases found. Ask clinic to add diseases."
                 />
               </div>
               <div className="col-span-2">
