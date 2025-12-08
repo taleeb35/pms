@@ -9,13 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SearchableSelect } from "@/components/SearchableSelect";
 
 const ClinicAddDoctor = () => {
   const navigate = useNavigate();
@@ -281,34 +275,17 @@ const ClinicAddDoctor = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="specialization">Specialization *</Label>
-                <Select
+                <SearchableSelect
                   value={formData.specialization}
                   onValueChange={(value) => setFormData({ ...formData, specialization: value })}
+                  options={specializations.map(spec => ({ value: spec, label: spec }))}
+                  label="Specialization"
                   required
                   disabled={specializations.length === 0}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder={specializations.length === 0 ? "Add specializations first" : "Select specialization"} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background z-50">
-                    {specializations.length === 0 ? (
-                      <div className="p-2 text-sm text-muted-foreground text-center">
-                        No specializations added.
-                        <br />
-                        <a href="/clinic/specializations" className="text-primary hover:underline">
-                          Add specializations
-                        </a>
-                      </div>
-                    ) : (
-                      specializations.map((spec) => (
-                        <SelectItem key={spec} value={spec}>
-                          {spec}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
+                  placeholder={specializations.length === 0 ? "Add specializations first" : "Select specialization"}
+                  searchPlaceholder="Search specialization..."
+                  emptyMessage="No specialization found."
+                />
                 {specializations.length === 0 && (
                   <p className="text-sm text-amber-600">
                     Please <a href="/clinic/specializations" className="underline">add specializations</a> before adding a doctor.
