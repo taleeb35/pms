@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,37 +17,37 @@ import {
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 
-const pakistanCities = [
-  "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",
-  "Multan", "Gujranwala", "Peshawar", "Quetta", "Sialkot",
-  "Sargodha", "Bahawalpur", "Sukkur", "Larkana", "Hyderabad",
-  "Mardan", "Mingora", "Abbottabad", "Dera Ghazi Khan", "Sahiwal",
-  "Nawabshah", "Jhang", "Rahim Yar Khan", "Kasur", "Gujrat",
-  "Sheikhupura", "Dera Ismail Khan", "Mirpur Khas", "Okara", "Chiniot",
-  "Kamoke", "Mandi Bahauddin", "Jhelum", "Sadiqabad", "Jacobabad",
-  "Shikarpur", "Khanewal", "Hafizabad", "Kohat", "Muzaffargarh",
-  "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari"
-].sort();
-
-interface CitySelectProps {
+interface SearchableSelectProps {
   value: string;
   onValueChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyMessage?: string;
   label?: string;
   required?: boolean;
-  showAllOption?: boolean;
+  disabled?: boolean;
+  className?: string;
 }
 
-export const CitySelect = ({ value, onValueChange, label = "City", required = false, showAllOption = false }: CitySelectProps) => {
+export const SearchableSelect = ({
+  value,
+  onValueChange,
+  options,
+  placeholder = "Select an option",
+  searchPlaceholder = "Search...",
+  emptyMessage = "No option found.",
+  label,
+  required = false,
+  disabled = false,
+  className,
+}: SearchableSelectProps) => {
   const [open, setOpen] = useState(false);
 
-  const allOptions = showAllOption 
-    ? [{ value: "all", label: "All Cities" }, ...pakistanCities.map(city => ({ value: city, label: city }))]
-    : pakistanCities.map(city => ({ value: city, label: city }));
-
-  const selectedCity = allOptions.find(option => option.value === value);
+  const selectedOption = options.find((option) => option.value === value);
 
   return (
-    <div className="space-y-2">
+    <div className={cn("space-y-2", className)}>
       {label && <Label>{label}{required && " *"}</Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -56,18 +56,19 @@ export const CitySelect = ({ value, onValueChange, label = "City", required = fa
             role="combobox"
             aria-expanded={open}
             className="w-full justify-between bg-background font-normal"
+            disabled={disabled}
           >
-            {selectedCity ? selectedCity.label : "Select a city"}
+            {selectedOption ? selectedOption.label : placeholder}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-background z-50" align="start">
           <Command>
-            <CommandInput placeholder="Search city..." className="h-9" />
+            <CommandInput placeholder={searchPlaceholder} className="h-9" />
             <CommandList className="max-h-[200px] overflow-y-auto">
-              <CommandEmpty>No city found.</CommandEmpty>
+              <CommandEmpty>{emptyMessage}</CommandEmpty>
               <CommandGroup>
-                {allOptions.map((option) => (
+                {options.map((option) => (
                   <CommandItem
                     key={option.value}
                     value={option.label}
