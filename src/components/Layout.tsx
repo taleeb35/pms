@@ -17,6 +17,8 @@ import {
   UserCog,
   Sparkles,
   Banknote,
+  AlertTriangle,
+  HeartPulse,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -167,6 +169,8 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/clinic/appointments", icon: Calendar, label: "Appointments" },
     { path: "/clinic/walk-in", icon: Clock, label: "Walk-In Appointment" },
     { path: "/clinic/specializations", icon: Building2, label: "Specializations" },
+    { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
+    { path: "/clinic/diseases", icon: HeartPulse, label: "Diseases" },
     { path: "/clinic/finance", icon: Banknote, label: "Finance" },
     { path: "/clinic/profile", icon: UserCog, label: "Profile" },
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
