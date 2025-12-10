@@ -16,6 +16,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import clinicLogo from "@/assets/clinic-logo.png";
+import { 
+  validateEmail, 
+  validatePassword, 
+  validatePhone, 
+  validateClinicName,
+  validateNumber,
+  handlePhoneInput,
+  handleNumberInput
+} from "@/lib/validations";
 
 const Auth = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -30,21 +39,59 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showInactiveDialog, setShowInactiveDialog] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
 
 
   const handleClinicAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+
+    // Validation for signup
+    if (isSignup) {
+      const newErrors: Record<string, string> = {};
+
+      const clinicValidation = validateClinicName(clinicName);
+      if (!clinicValidation.isValid) newErrors.clinicName = clinicValidation.message;
+
+      const phoneValidation = validatePhone(phoneNumber);
+      if (!phoneValidation.isValid) newErrors.phoneNumber = phoneValidation.message;
+
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.isValid) newErrors.email = emailValidation.message;
+
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) newErrors.password = passwordValidation.message;
+
+      if (password !== confirmPassword) {
+        newErrors.confirmPassword = "Passwords do not match";
+      }
+
+      if (!city) newErrors.city = "City is required";
+      if (!address.trim()) newErrors.address = "Address is required";
+
+      const doctorsValidation = validateNumber(noOfDoctors, 1, 100);
+      if (!doctorsValidation.isValid) newErrors.noOfDoctors = doctorsValidation.message;
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        toast({ title: "Please fix the validation errors", variant: "destructive" });
+        return;
+      }
+    } else {
+      // Validation for login
+      const emailValidation = validateEmail(email);
+      if (!emailValidation.isValid) {
+        setErrors({ email: emailValidation.message });
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       if (isSignup) {
-        // Validate passwords match
-        if (password !== confirmPassword) {
-          throw new Error("Passwords do not match");
-        }
-
         // Clinic signup
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -233,10 +280,11 @@ const Auth = () => {
                     type="tel"
                     placeholder="+92 300 1234567"
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    onChange={(e) => setPhoneNumber(handlePhoneInput(e))}
                     required
-                    className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                    className={`border-2 ${errors.phoneNumber ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
                   />
+                  {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
                 </div>
                 <div className="space-y-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
                   <CitySelect
@@ -262,14 +310,14 @@ const Auth = () => {
                   <Label htmlFor="noOfDoctors" className="text-sm font-semibold">Number of Doctors</Label>
                   <Input
                     id="noOfDoctors"
-                    type="number"
+                    type="text"
                     placeholder="5"
-                    min="0"
                     value={noOfDoctors}
-                    onChange={(e) => setNoOfDoctors(e.target.value)}
+                    onChange={(e) => setNoOfDoctors(handleNumberInput(e))}
                     required
-                    className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                    className={`border-2 ${errors.noOfDoctors ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
                   />
+                  {errors.noOfDoctors && <p className="text-sm text-destructive">{errors.noOfDoctors}</p>}
                 </div>
               </>
             )}

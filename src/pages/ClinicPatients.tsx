@@ -29,6 +29,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
+import { 
+  validateName, 
+  validatePhone, 
+  validateEmail, 
+  validateCNIC,
+  handleNameInput,
+  handlePhoneInput,
+  handleCNICInput
+} from "@/lib/validations";
 
 interface Patient {
   id: string;
@@ -84,6 +93,8 @@ const ClinicPatients = () => {
     city: "",
     major_diseases: "",
   });
+
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Sync dobDate with addForm.date_of_birth
   useEffect(() => {
@@ -201,16 +212,41 @@ const ClinicPatients = () => {
   };
 
   const handleAddPatient = async () => {
+    setFormErrors({});
+    const errors: Record<string, string> = {};
+
     if (!addForm.doctor_id) {
-      toast({ title: "Please select a doctor", variant: "destructive" });
-      return;
+      errors.doctor_id = "Please select a doctor";
     }
-    if (!addForm.full_name || !addForm.phone || !addForm.date_of_birth) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields (Name, Phone, Date of Birth)",
-        variant: "destructive",
-      });
+    
+    const nameValidation = validateName(addForm.full_name);
+    if (!nameValidation.isValid) errors.full_name = nameValidation.message;
+    
+    const phoneValidation = validatePhone(addForm.phone);
+    if (!phoneValidation.isValid) errors.phone = phoneValidation.message;
+    
+    if (addForm.email) {
+      const emailValidation = validateEmail(addForm.email, false);
+      if (!emailValidation.isValid) errors.email = emailValidation.message;
+    }
+    
+    if (addForm.cnic) {
+      const cnicValidation = validateCNIC(addForm.cnic);
+      if (!cnicValidation.isValid) errors.cnic = cnicValidation.message;
+    }
+    
+    if (addForm.father_name) {
+      const fatherNameValidation = validateName(addForm.father_name);
+      if (!fatherNameValidation.isValid) errors.father_name = fatherNameValidation.message;
+    }
+    
+    if (!addForm.date_of_birth) {
+      errors.date_of_birth = "Date of birth is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast({ title: "Please fix the validation errors", variant: "destructive" });
       return;
     }
 
@@ -460,17 +496,21 @@ const ClinicPatients = () => {
                 <Label>Full Name *</Label>
                 <Input
                   value={addForm.full_name}
-                  onChange={(e) => setAddForm({ ...addForm, full_name: e.target.value })}
+                  onChange={(e) => setAddForm({ ...addForm, full_name: handleNameInput(e) })}
                   placeholder="Enter full name"
+                  className={formErrors.full_name ? "border-destructive" : ""}
                 />
+                {formErrors.full_name && <p className="text-sm text-destructive">{formErrors.full_name}</p>}
               </div>
               <div>
                 <Label>Father Name</Label>
                 <Input
                   value={addForm.father_name}
-                  onChange={(e) => setAddForm({ ...addForm, father_name: e.target.value })}
+                  onChange={(e) => setAddForm({ ...addForm, father_name: handleNameInput(e) })}
                   placeholder="Enter father name"
+                  className={formErrors.father_name ? "border-destructive" : ""}
                 />
+                {formErrors.father_name && <p className="text-sm text-destructive">{formErrors.father_name}</p>}
               </div>
               <div>
                 <Label>Email</Label>
@@ -479,23 +519,30 @@ const ClinicPatients = () => {
                   value={addForm.email}
                   onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
                   placeholder="Enter email"
+                  className={formErrors.email ? "border-destructive" : ""}
                 />
+                {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
               </div>
               <div>
                 <Label>Phone *</Label>
                 <Input
                   value={addForm.phone}
-                  onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                  onChange={(e) => setAddForm({ ...addForm, phone: handlePhoneInput(e) })}
                   placeholder="Enter phone number"
+                  className={formErrors.phone ? "border-destructive" : ""}
                 />
+                {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
               </div>
               <div>
                 <Label>CNIC</Label>
                 <Input
                   value={addForm.cnic}
-                  onChange={(e) => setAddForm({ ...addForm, cnic: e.target.value })}
-                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  onChange={(e) => setAddForm({ ...addForm, cnic: handleCNICInput(e) })}
+                  placeholder="Enter CNIC (13 digits)"
+                  maxLength={15}
+                  className={formErrors.cnic ? "border-destructive" : ""}
                 />
+                {formErrors.cnic && <p className="text-sm text-destructive">{formErrors.cnic}</p>}
               </div>
               <div>
                 <Label>Date of Birth *</Label>

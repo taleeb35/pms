@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Send, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { validateEmail, validateText } from "@/lib/validations";
 
 interface Ticket {
   id: string;
@@ -25,6 +26,7 @@ const ClinicSupport = () => {
   const [loading, setLoading] = useState(false);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   
   const [formData, setFormData] = useState({
     name: "",
@@ -83,6 +85,33 @@ const ClinicSupport = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
+
+    // Validation
+    const errors: Record<string, string> = {};
+    
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid) errors.email = emailValidation.message;
+    
+    if (!formData.subject.trim()) {
+      errors.subject = "Subject is required";
+    } else if (formData.subject.length > 200) {
+      errors.subject = "Subject must be less than 200 characters";
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = "Message is required";
+    } else {
+      const messageValidation = validateText(formData.message, 2000);
+      if (!messageValidation.isValid) errors.message = messageValidation.message;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast({ title: "Please fix the validation errors", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -180,7 +209,9 @@ const ClinicSupport = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
+                  className={formErrors.email ? "border-destructive" : ""}
                 />
+                {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -191,7 +222,10 @@ const ClinicSupport = () => {
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                   placeholder="e.g., Request to increase doctor limit"
                   required
+                  maxLength={200}
+                  className={formErrors.subject ? "border-destructive" : ""}
                 />
+                {formErrors.subject && <p className="text-sm text-destructive">{formErrors.subject}</p>}
               </div>
 
               <div className="space-y-2">
@@ -203,7 +237,10 @@ const ClinicSupport = () => {
                   placeholder="Describe your request in detail..."
                   rows={6}
                   required
+                  maxLength={2000}
+                  className={formErrors.message ? "border-destructive" : ""}
                 />
+                {formErrors.message && <p className="text-sm text-destructive">{formErrors.message}</p>}
               </div>
 
               <Button type="submit" className="w-full gap-2" disabled={loading}>

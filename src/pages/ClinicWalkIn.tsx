@@ -14,6 +14,15 @@ import { Calendar as CalendarIcon, UserPlus, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
+import { 
+  validateName, 
+  validatePhone, 
+  validateEmail, 
+  validateCNIC,
+  handleNameInput,
+  handlePhoneInput,
+  handleCNICInput
+} from "@/lib/validations";
 
 interface Doctor {
   id: string;
@@ -56,6 +65,7 @@ const ClinicWalkIn = () => {
   // Date pickers
   const [dobDate, setDobDate] = useState<Date>();
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const timeSlots = Array.from({ length: 48 }, (_, i) => {
     const hours = Math.floor(i / 2);
@@ -99,26 +109,45 @@ const ClinicWalkIn = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
     
     // Validation
-    if (!patientForm.full_name.trim()) {
-      toast({ title: "Patient name is required", variant: "destructive" });
-      return;
+    const errors: Record<string, string> = {};
+    
+    const nameValidation = validateName(patientForm.full_name);
+    if (!nameValidation.isValid) errors.full_name = nameValidation.message;
+    
+    const phoneValidation = validatePhone(patientForm.phone);
+    if (!phoneValidation.isValid) errors.phone = phoneValidation.message;
+    
+    if (patientForm.email) {
+      const emailValidation = validateEmail(patientForm.email, false);
+      if (!emailValidation.isValid) errors.email = emailValidation.message;
     }
-    if (!patientForm.phone.trim()) {
-      toast({ title: "Phone number is required", variant: "destructive" });
-      return;
+    
+    if (patientForm.cnic) {
+      const cnicValidation = validateCNIC(patientForm.cnic);
+      if (!cnicValidation.isValid) errors.cnic = cnicValidation.message;
     }
+    
+    if (patientForm.father_name) {
+      const fatherNameValidation = validateName(patientForm.father_name);
+      if (!fatherNameValidation.isValid) errors.father_name = fatherNameValidation.message;
+    }
+    
     if (!patientForm.date_of_birth) {
-      toast({ title: "Date of birth is required", variant: "destructive" });
-      return;
+      errors.date_of_birth = "Date of birth is required";
     }
     if (!appointmentForm.doctor_id) {
-      toast({ title: "Please select a doctor", variant: "destructive" });
-      return;
+      errors.doctor_id = "Please select a doctor";
     }
     if (!appointmentForm.appointment_time) {
-      toast({ title: "Please select appointment time", variant: "destructive" });
+      errors.appointment_time = "Please select appointment time";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast({ title: "Please fix the validation errors", variant: "destructive" });
       return;
     }
 
@@ -218,19 +247,23 @@ const ClinicWalkIn = () => {
                   <Input
                     id="full_name"
                     value={patientForm.full_name}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, full_name: e.target.value }))}
+                    onChange={(e) => setPatientForm(prev => ({ ...prev, full_name: handleNameInput(e) }))}
                     placeholder="Enter patient name"
                     required
+                    className={formErrors.full_name ? "border-destructive" : ""}
                   />
+                  {formErrors.full_name && <p className="text-sm text-destructive">{formErrors.full_name}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="father_name">Father Name</Label>
                   <Input
                     id="father_name"
                     value={patientForm.father_name}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, father_name: e.target.value }))}
+                    onChange={(e) => setPatientForm(prev => ({ ...prev, father_name: handleNameInput(e) }))}
                     placeholder="Enter father name"
+                    className={formErrors.father_name ? "border-destructive" : ""}
                   />
+                  {formErrors.father_name && <p className="text-sm text-destructive">{formErrors.father_name}</p>}
                 </div>
               </div>
 
@@ -240,10 +273,12 @@ const ClinicWalkIn = () => {
                   <Input
                     id="phone"
                     value={patientForm.phone}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={(e) => setPatientForm(prev => ({ ...prev, phone: handlePhoneInput(e) }))}
                     placeholder="Enter phone number"
                     required
+                    className={formErrors.phone ? "border-destructive" : ""}
                   />
+                  {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
@@ -253,7 +288,9 @@ const ClinicWalkIn = () => {
                     value={patientForm.email}
                     onChange={(e) => setPatientForm(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="Enter email"
+                    className={formErrors.email ? "border-destructive" : ""}
                   />
+                  {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
                 </div>
               </div>
 
@@ -294,9 +331,12 @@ const ClinicWalkIn = () => {
                   <Input
                     id="cnic"
                     value={patientForm.cnic}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, cnic: e.target.value }))}
-                    placeholder="Enter CNIC"
+                    onChange={(e) => setPatientForm(prev => ({ ...prev, cnic: handleCNICInput(e) }))}
+                    placeholder="Enter CNIC (13 digits)"
+                    maxLength={15}
+                    className={formErrors.cnic ? "border-destructive" : ""}
                   />
+                  {formErrors.cnic && <p className="text-sm text-destructive">{formErrors.cnic}</p>}
                 </div>
               </div>
 

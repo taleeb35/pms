@@ -24,6 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { validateText } from "@/lib/validations";
 
 interface Ticket {
   id: string;
@@ -53,6 +54,7 @@ const DoctorSupport = () => {
   const [sendingReply, setSendingReply] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [supportEmail, setSupportEmail] = useState("");
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -205,6 +207,30 @@ const DoctorSupport = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
+
+    // Validation
+    const errors: Record<string, string> = {};
+    
+    if (!formData.subject.trim()) {
+      errors.subject = "Subject is required";
+    } else if (formData.subject.length > 200) {
+      errors.subject = "Subject must be less than 200 characters";
+    }
+    
+    if (!formData.message.trim()) {
+      errors.message = "Message is required";
+    } else {
+      const messageValidation = validateText(formData.message, 2000);
+      if (!messageValidation.isValid) errors.message = messageValidation.message;
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast({ title: "Please fix the validation errors", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
 
     const { data: { user } } = await supabase.auth.getUser();
@@ -315,7 +341,10 @@ const DoctorSupport = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                 placeholder="Brief description of your issue"
                 required
+                maxLength={200}
+                className={formErrors.subject ? "border-destructive" : ""}
               />
+              {formErrors.subject && <p className="text-sm text-destructive">{formErrors.subject}</p>}
             </div>
 
             <div className="space-y-2">
@@ -327,7 +356,10 @@ const DoctorSupport = () => {
                 placeholder="Please provide detailed information about your issue"
                 rows={6}
                 required
+                maxLength={2000}
+                className={formErrors.message ? "border-destructive" : ""}
               />
+              {formErrors.message && <p className="text-sm text-destructive">{formErrors.message}</p>}
             </div>
 
             <Button type="submit" disabled={loading}>
