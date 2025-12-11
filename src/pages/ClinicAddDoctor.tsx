@@ -10,6 +10,7 @@ import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
 import { SearchableSelect } from "@/components/SearchableSelect";
+import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput, handleNumberInput } from "@/lib/validations";
 
 const ClinicAddDoctor = () => {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const ClinicAddDoctor = () => {
     consultationFee: "",
     introduction: "",
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     checkDoctorLimit();
@@ -102,6 +104,34 @@ const ClinicAddDoctor = () => {
       toast({
         title: "Doctor Limit Reached",
         description: `You've reached the maximum limit of ${requestedDoctors} doctors. Please contact support to increase your limit.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(formData.fullName);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) errors.push(`Password: ${passwordValidation.message}`);
+    
+    const phoneValidation = validatePhone(formData.contactNumber);
+    if (!phoneValidation.isValid) errors.push(`Contact Number: ${phoneValidation.message}`);
+    
+    if (!formData.specialization) errors.push("Specialization is required");
+    if (!formData.experienceYears) errors.push("Experience is required");
+    if (!formData.consultationFee) errors.push("Consultation Fee is required");
+    
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
         variant: "destructive",
       });
       return;
@@ -232,10 +262,17 @@ const ClinicAddDoctor = () => {
                 <Input
                   id="fullName"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  onChange={(e) => {
+                    const value = handleNameInput(e);
+                    setFormData({ ...formData, fullName: value });
+                    const validation = validateName(value);
+                    setFormErrors(prev => ({ ...prev, fullName: validation.isValid ? "" : validation.message }));
+                  }}
                   required
                   placeholder="Dr. John Smith"
+                  className={formErrors.fullName ? "border-destructive" : ""}
                 />
+                {formErrors.fullName && <p className="text-sm text-destructive">{formErrors.fullName}</p>}
               </div>
 
               <div className="space-y-2">
@@ -244,10 +281,16 @@ const ClinicAddDoctor = () => {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    const validation = validateEmail(e.target.value);
+                    setFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                  }}
                   required
                   placeholder="doctor@example.com"
+                  className={formErrors.email ? "border-destructive" : ""}
                 />
+                {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -256,10 +299,16 @@ const ClinicAddDoctor = () => {
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    const validation = validatePassword(e.target.value);
+                    setFormErrors(prev => ({ ...prev, password: validation.isValid ? "" : validation.message }));
+                  }}
                   required
                   minLength={6}
+                  className={formErrors.password ? "border-destructive" : ""}
                 />
+                {formErrors.password && <p className="text-sm text-destructive">{formErrors.password}</p>}
               </div>
 
               <div className="space-y-2">
@@ -268,10 +317,17 @@ const ClinicAddDoctor = () => {
                   id="contactNumber"
                   type="tel"
                   value={formData.contactNumber}
-                  onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setFormData({ ...formData, contactNumber: value });
+                    const validation = validatePhone(value);
+                    setFormErrors(prev => ({ ...prev, contactNumber: validation.isValid ? "" : validation.message }));
+                  }}
                   required
                   placeholder="+92 300 1234567"
+                  className={formErrors.contactNumber ? "border-destructive" : ""}
                 />
+                {formErrors.contactNumber && <p className="text-sm text-destructive">{formErrors.contactNumber}</p>}
               </div>
 
               <div className="space-y-2">

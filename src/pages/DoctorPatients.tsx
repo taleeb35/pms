@@ -22,6 +22,7 @@ import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
+import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 
 interface Patient {
   id: string;
@@ -174,6 +175,8 @@ const DoctorPatients = () => {
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
   const [editSelectedAllergies, setEditSelectedAllergies] = useState<string[]>([]);
   const [editSelectedDiseases, setEditSelectedDiseases] = useState<string[]>([]);
+  const [addFormErrors, setAddFormErrors] = useState<Record<string, string>>({});
+  const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -503,6 +506,36 @@ const DoctorPatients = () => {
   const handleUpdatePatient = async () => {
     if (!selectedPatient) return;
 
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(editForm.full_name);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const phoneValidation = validatePhone(editForm.phone);
+    if (!phoneValidation.isValid) errors.push(`Phone: ${phoneValidation.message}`);
+    
+    if (!editForm.date_of_birth) errors.push("Date of Birth is required");
+    
+    if (editForm.email) {
+      const emailValidation = validateEmail(editForm.email, false);
+      if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    }
+    
+    if (editForm.cnic) {
+      const cnicValidation = validateCNIC(editForm.cnic);
+      if (!cnicValidation.isValid) errors.push(`CNIC: ${cnicValidation.message}`);
+    }
+    
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
+        variant: "destructive",
+      });
+      return;
+    }
+
     console.log("Update Patient - Form data:", editForm);
     console.log("Selected patient ID:", selectedPatient.id);
 
@@ -705,15 +738,31 @@ const DoctorPatients = () => {
   const handleAddPatient = async () => {
     console.log("Add Patient - Form data:", addForm);
     
-    if (!addForm.full_name || !addForm.phone || !addForm.date_of_birth) {
-      console.log("Validation failed:", { 
-        full_name: addForm.full_name, 
-        phone: addForm.phone, 
-        date_of_birth: addForm.date_of_birth 
-      });
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(addForm.full_name);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const phoneValidation = validatePhone(addForm.phone);
+    if (!phoneValidation.isValid) errors.push(`Phone: ${phoneValidation.message}`);
+    
+    if (!addForm.date_of_birth) errors.push("Date of Birth is required");
+    
+    if (addForm.email) {
+      const emailValidation = validateEmail(addForm.email, false);
+      if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    }
+    
+    if (addForm.cnic) {
+      const cnicValidation = validateCNIC(addForm.cnic);
+      if (!cnicValidation.isValid) errors.push(`CNIC: ${cnicValidation.message}`);
+    }
+    
+    if (errors.length > 0) {
       toast({
-        title: "Error",
-        description: "Please fill in all required fields (Name, Phone, Date of Birth)",
+        title: "Validation Error",
+        description: errors[0],
         variant: "destructive",
       });
       return;
@@ -1347,25 +1396,53 @@ const DoctorPatients = () => {
                 <Input
                   type="email"
                   value={addForm.email}
-                  onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                  onChange={(e) => {
+                    setAddForm({ ...addForm, email: e.target.value });
+                    if (e.target.value) {
+                      const validation = validateEmail(e.target.value, false);
+                      setAddFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setAddFormErrors(prev => ({ ...prev, email: "" }));
+                    }
+                  }}
                   placeholder="Enter email"
+                  className={addFormErrors.email ? "border-destructive" : ""}
                 />
+                {addFormErrors.email && <p className="text-sm text-destructive">{addFormErrors.email}</p>}
               </div>
               <div>
                 <Label>Phone *</Label>
                 <Input
                   value={addForm.phone}
-                  onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setAddForm({ ...addForm, phone: value });
+                    const validation = validatePhone(value);
+                    setAddFormErrors(prev => ({ ...prev, phone: validation.isValid ? "" : validation.message }));
+                  }}
                   placeholder="Enter phone number"
+                  className={addFormErrors.phone ? "border-destructive" : ""}
                 />
+                {addFormErrors.phone && <p className="text-sm text-destructive">{addFormErrors.phone}</p>}
               </div>
               <div>
                 <Label>CNIC</Label>
                 <Input
                   value={addForm.cnic}
-                  onChange={(e) => setAddForm({ ...addForm, cnic: e.target.value })}
+                  onChange={(e) => {
+                    const value = handleCNICInput(e);
+                    setAddForm({ ...addForm, cnic: value });
+                    if (value) {
+                      const validation = validateCNIC(value);
+                      setAddFormErrors(prev => ({ ...prev, cnic: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setAddFormErrors(prev => ({ ...prev, cnic: "" }));
+                    }
+                  }}
                   placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  className={addFormErrors.cnic ? "border-destructive" : ""}
                 />
+                {addFormErrors.cnic && <p className="text-sm text-destructive">{addFormErrors.cnic}</p>}
               </div>
               <div>
                 <Label>Date of Birth *</Label>
@@ -1594,25 +1671,53 @@ const DoctorPatients = () => {
                 <Input
                   type="email"
                   value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  onChange={(e) => {
+                    setEditForm({ ...editForm, email: e.target.value });
+                    if (e.target.value) {
+                      const validation = validateEmail(e.target.value, false);
+                      setEditFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setEditFormErrors(prev => ({ ...prev, email: "" }));
+                    }
+                  }}
                   placeholder="Enter email"
+                  className={editFormErrors.email ? "border-destructive" : ""}
                 />
+                {editFormErrors.email && <p className="text-sm text-destructive">{editFormErrors.email}</p>}
               </div>
               <div>
                 <Label>Phone *</Label>
                 <Input
                   value={editForm.phone}
-                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setEditForm({ ...editForm, phone: value });
+                    const validation = validatePhone(value);
+                    setEditFormErrors(prev => ({ ...prev, phone: validation.isValid ? "" : validation.message }));
+                  }}
                   placeholder="Enter phone number"
+                  className={editFormErrors.phone ? "border-destructive" : ""}
                 />
+                {editFormErrors.phone && <p className="text-sm text-destructive">{editFormErrors.phone}</p>}
               </div>
               <div>
                 <Label>CNIC</Label>
                 <Input
                   value={editForm.cnic}
-                  onChange={(e) => setEditForm({ ...editForm, cnic: e.target.value })}
+                  onChange={(e) => {
+                    const value = handleCNICInput(e);
+                    setEditForm({ ...editForm, cnic: value });
+                    if (value) {
+                      const validation = validateCNIC(value);
+                      setEditFormErrors(prev => ({ ...prev, cnic: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setEditFormErrors(prev => ({ ...prev, cnic: "" }));
+                    }
+                  }}
                   placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  className={editFormErrors.cnic ? "border-destructive" : ""}
                 />
+                {editFormErrors.cnic && <p className="text-sm text-destructive">{editFormErrors.cnic}</p>}
               </div>
               <div>
                 <Label>Date of Birth *</Label>
