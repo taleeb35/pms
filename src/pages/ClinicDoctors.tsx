@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
+import { validateName, validatePhone, validateEmail, handleNameInput, handlePhoneInput, handleNumberInput } from "@/lib/validations";
 
 interface Doctor {
   id: string;
@@ -54,6 +55,7 @@ const ClinicDoctors = () => {
     city: "",
     introduction: "",
   });
+  const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -125,6 +127,31 @@ const ClinicDoctors = () => {
 
   const handleUpdateDoctor = async () => {
     if (!selectedDoctor) return;
+
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(editForm.full_name);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const emailValidation = validateEmail(editForm.email);
+    if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    
+    if (editForm.contact_number) {
+      const phoneValidation = validatePhone(editForm.contact_number);
+      if (!phoneValidation.isValid) errors.push(`Contact Number: ${phoneValidation.message}`);
+    }
+    
+    if (!editForm.specialization) errors.push("Specialization is required");
+    
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
+        variant: "destructive",
+      });
+      return;
+    }
 
     try {
       // Update doctor table
@@ -313,18 +340,31 @@ const ClinicDoctors = () => {
                 <Label>Full Name *</Label>
                 <Input
                   value={editForm.full_name}
-                  onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                  onChange={(e) => {
+                    const value = handleNameInput(e);
+                    setEditForm({ ...editForm, full_name: value });
+                    const validation = validateName(value);
+                    setEditFormErrors(prev => ({ ...prev, full_name: validation.isValid ? "" : validation.message }));
+                  }}
                   placeholder="Enter full name"
+                  className={editFormErrors.full_name ? "border-destructive" : ""}
                 />
+                {editFormErrors.full_name && <p className="text-sm text-destructive">{editFormErrors.full_name}</p>}
               </div>
               <div>
                 <Label>Email *</Label>
                 <Input
                   type="email"
                   value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  onChange={(e) => {
+                    setEditForm({ ...editForm, email: e.target.value });
+                    const validation = validateEmail(e.target.value);
+                    setEditFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                  }}
                   placeholder="Enter email"
+                  className={editFormErrors.email ? "border-destructive" : ""}
                 />
+                {editFormErrors.email && <p className="text-sm text-destructive">{editFormErrors.email}</p>}
               </div>
               <div>
                 <Label>Date of Birth</Label>
@@ -338,9 +378,20 @@ const ClinicDoctors = () => {
                 <Label>Contact Number *</Label>
                 <Input
                   value={editForm.contact_number}
-                  onChange={(e) => setEditForm({ ...editForm, contact_number: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setEditForm({ ...editForm, contact_number: value });
+                    if (value) {
+                      const validation = validatePhone(value);
+                      setEditFormErrors(prev => ({ ...prev, contact_number: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setEditFormErrors(prev => ({ ...prev, contact_number: "" }));
+                    }
+                  }}
                   placeholder="Enter contact number"
+                  className={editFormErrors.contact_number ? "border-destructive" : ""}
                 />
+                {editFormErrors.contact_number && <p className="text-sm text-destructive">{editFormErrors.contact_number}</p>}
               </div>
               <div>
                 <Label>Specialization *</Label>
