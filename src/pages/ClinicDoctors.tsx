@@ -371,6 +371,7 @@ const ClinicDoctors = () => {
                 <Input
                   type="date"
                   value={editForm.date_of_birth}
+                  max={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setEditForm({ ...editForm, date_of_birth: e.target.value })}
                 />
               </div>

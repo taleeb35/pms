@@ -569,6 +569,7 @@ const ClinicPatients = () => {
                           setDobPopoverOpen(false);
                         }
                       }}
+                      disabled={(date) => date > new Date()}
                       initialFocus
                       className="pointer-events-auto"
                       captionLayout="dropdown-buttons"
