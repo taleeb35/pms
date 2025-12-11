@@ -1469,6 +1469,7 @@ const DoctorPatients = () => {
                           setDobPopoverOpen(false);
                         }
                       }}
+                      disabled={(date) => date > new Date()}
                       initialFocus
                       className="pointer-events-auto"
                       captionLayout="dropdown-buttons"
@@ -1744,6 +1745,7 @@ const DoctorPatients = () => {
                           setEditDobPopoverOpen(false);
                         }
                       }}
+                      disabled={(date) => date > new Date()}
                       initialFocus
                       className="pointer-events-auto"
                       captionLayout="dropdown-buttons"

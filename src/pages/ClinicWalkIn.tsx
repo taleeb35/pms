@@ -318,6 +318,7 @@ const ClinicWalkIn = () => {
                           setDobDate(date);
                           setDobPopoverOpen(false);
                         }}
+                        disabled={(date) => date > new Date()}
                         captionLayout="dropdown-buttons"
                         fromYear={1920}
                         toYear={new Date().getFullYear()}
