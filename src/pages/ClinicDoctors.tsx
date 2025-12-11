@@ -27,6 +27,7 @@ interface Doctor {
   specialization: string;
   experience_years: number | null;
   consultation_fee: number | null;
+  clinic_percentage: number | null;
   contact_number: string | null;
   city: string | null;
   introduction: string | null;
@@ -52,6 +53,7 @@ const ClinicDoctors = () => {
     specialization: "",
     experience_years: "",
     consultation_fee: "",
+    clinic_percentage: "",
     city: "",
     introduction: "",
   });
@@ -86,6 +88,7 @@ const ClinicDoctors = () => {
           specialization,
           experience_years,
           consultation_fee,
+          clinic_percentage,
           contact_number,
           city,
           introduction,
@@ -119,6 +122,7 @@ const ClinicDoctors = () => {
       specialization: doctor.specialization,
       experience_years: doctor.experience_years?.toString() || "",
       consultation_fee: doctor.consultation_fee?.toString() || "",
+      clinic_percentage: doctor.clinic_percentage?.toString() || "0",
       city: doctor.city || "",
       introduction: doctor.introduction || "",
     });
@@ -161,6 +165,7 @@ const ClinicDoctors = () => {
           specialization: editForm.specialization,
           experience_years: editForm.experience_years ? parseInt(editForm.experience_years) : null,
           consultation_fee: editForm.consultation_fee ? parseFloat(editForm.consultation_fee) : null,
+          clinic_percentage: editForm.clinic_percentage ? parseFloat(editForm.clinic_percentage) : 0,
           contact_number: editForm.contact_number || null,
           city: editForm.city || null,
           introduction: editForm.introduction || null,
@@ -434,6 +439,23 @@ const ClinicDoctors = () => {
                   onChange={(e) => setEditForm({ ...editForm, consultation_fee: e.target.value })}
                   placeholder="Fee amount"
                 />
+              </div>
+              <div>
+                <Label>Clinic Share (%)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={editForm.clinic_percentage}
+                  onChange={(e) => {
+                    const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                    setEditForm({ ...editForm, clinic_percentage: val.toString() });
+                  }}
+                  placeholder="e.g., 30"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  % of earnings for clinic
+                </p>
               </div>
               <div>
                 <CitySelect

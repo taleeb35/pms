@@ -309,6 +309,7 @@ export type Database = {
           available_hours: string | null
           city: string | null
           clinic_id: string | null
+          clinic_percentage: number | null
           consultation_fee: number | null
           contact_number: string | null
           created_at: string
@@ -326,6 +327,7 @@ export type Database = {
           available_hours?: string | null
           city?: string | null
           clinic_id?: string | null
+          clinic_percentage?: number | null
           consultation_fee?: number | null
           contact_number?: string | null
           created_at?: string
@@ -343,6 +345,7 @@ export type Database = {
           available_hours?: string | null
           city?: string | null
           clinic_id?: string | null
+          clinic_percentage?: number | null
           consultation_fee?: number | null
           contact_number?: string | null
           created_at?: string

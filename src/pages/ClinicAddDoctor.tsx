@@ -32,6 +32,7 @@ const ClinicAddDoctor = () => {
     contactNumber: "",
     experienceYears: "",
     consultationFee: "",
+    clinicPercentage: "",
     introduction: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -169,6 +170,7 @@ const ClinicAddDoctor = () => {
         contact_number: formData.contactNumber,
         experience_years: formData.experienceYears ? parseInt(formData.experienceYears) : null,
         consultation_fee: formData.consultationFee ? parseFloat(formData.consultationFee) : null,
+        clinic_percentage: formData.clinicPercentage ? parseFloat(formData.clinicPercentage) : 0,
         introduction: formData.introduction || null,
         clinic_id: user.id,
         approved: true, // Doctors are active by default
@@ -374,6 +376,25 @@ const ClinicAddDoctor = () => {
                   required
                   placeholder="PKR 2000"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="clinicPercentage">Clinic Share (%)</Label>
+                <Input
+                  id="clinicPercentage"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.clinicPercentage}
+                  onChange={(e) => {
+                    const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                    setFormData({ ...formData, clinicPercentage: val.toString() });
+                  }}
+                  placeholder="e.g., 30 (means 30% for clinic, 70% for doctor)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Percentage of doctor's earnings that goes to the clinic
+                </p>
               </div>
             </div>
 
