@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Banknote, Calendar as CalendarIcon, Download } from "lucide-react";
+import { Loader2, Banknote, Calendar as CalendarIcon, Download, Building2, Stethoscope } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -23,6 +23,8 @@ interface AppointmentRevenue {
   consultation_fee: number;
   other_fee: number;
   total_fee: number;
+  clinic_share: number;
+  doctor_share: number;
 }
 
 interface DoctorDetails {
@@ -33,6 +35,7 @@ interface DoctorDetails {
   clinic_name: string;
   clinic_address: string;
   clinic_phone: string;
+  clinic_percentage: number;
 }
 
 export default function DoctorFinance() {
@@ -41,6 +44,8 @@ export default function DoctorFinance() {
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [clinicShare, setClinicShare] = useState(0);
+  const [doctorShare, setDoctorShare] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [doctorDetails, setDoctorDetails] = useState<DoctorDetails | null>(null);
@@ -50,8 +55,10 @@ export default function DoctorFinance() {
   }, []);
 
   useEffect(() => {
-    fetchRevenue();
-  }, [selectedDate]);
+    if (doctorDetails) {
+      fetchRevenue();
+    }
+  }, [selectedDate, doctorDetails]);
 
   const fetchDoctorDetails = async () => {
     try {
@@ -66,7 +73,7 @@ export default function DoctorFinance() {
 
       const { data: doctorData } = await supabase
         .from("doctors")
-        .select("specialization, clinic_id")
+        .select("specialization, clinic_id, clinic_percentage")
         .eq("id", user.id)
         .maybeSingle();
 
@@ -92,6 +99,7 @@ export default function DoctorFinance() {
         email: profileData?.email || "",
         phone: profileData?.phone || "",
         specialization: doctorData?.specialization || "",
+        clinic_percentage: Number(doctorData?.clinic_percentage) || 0,
         ...clinicInfo,
       });
     } catch (error) {
@@ -128,19 +136,30 @@ export default function DoctorFinance() {
 
       if (error) throw error;
 
-      const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => ({
-        id: apt.id,
-        patient_name: apt.patients?.full_name || "Unknown",
-        patient_id: apt.patients?.patient_id || "N/A",
-        appointment_date: apt.appointment_date,
-        appointment_time: apt.appointment_time,
-        consultation_fee: Number(apt.consultation_fee) || 0,
-        other_fee: Number(apt.other_fee) || 0,
-        total_fee: Number(apt.total_fee) || 0,
-      }));
+      const clinicPct = doctorDetails?.clinic_percentage || 0;
+      const doctorPct = 100 - clinicPct;
+
+      const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => {
+        const totalFee = Number(apt.total_fee) || 0;
+        return {
+          id: apt.id,
+          patient_name: apt.patients?.full_name || "Unknown",
+          patient_id: apt.patients?.patient_id || "N/A",
+          appointment_date: apt.appointment_date,
+          appointment_time: apt.appointment_time,
+          consultation_fee: Number(apt.consultation_fee) || 0,
+          other_fee: Number(apt.other_fee) || 0,
+          total_fee: totalFee,
+          clinic_share: (totalFee * clinicPct) / 100,
+          doctor_share: (totalFee * doctorPct) / 100,
+        };
+      });
 
       setAppointments(appointmentData);
-      setTotalRevenue(appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0));
+      const total = appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0);
+      setTotalRevenue(total);
+      setClinicShare((total * clinicPct) / 100);
+      setDoctorShare((total * doctorPct) / 100);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -155,6 +174,8 @@ export default function DoctorFinance() {
   const generatePDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const clinicPct = doctorDetails?.clinic_percentage || 0;
+    const doctorPct = 100 - clinicPct;
     
     // Header with clinic/doctor details
     doc.setFillColor(59, 130, 246);
@@ -191,38 +212,55 @@ export default function DoctorFinance() {
     doc.setTextColor(100, 100, 100);
     doc.text(`Generated on: ${format(new Date(), "PPP 'at' p")}`, 14, 65);
     
-    // Summary Box
-    doc.setFillColor(240, 253, 244);
-    doc.roundedRect(14, 72, pageWidth - 28, 25, 3, 3, "F");
-    doc.setDrawColor(34, 197, 94);
-    doc.roundedRect(14, 72, pageWidth - 28, 25, 3, 3, "S");
+    // Summary Boxes
+    const boxWidth = (pageWidth - 42) / 3;
     
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Total Revenue", 24, 83);
-    doc.setFontSize(18);
-    doc.setTextColor(22, 163, 74);
-    doc.text(totalRevenue.toLocaleString("en-PK", { minimumFractionDigits: 2 }), 24, 92);
-    
-    doc.setTextColor(100, 100, 100);
+    // Total Revenue Box
+    doc.setFillColor(34, 197, 94);
+    doc.roundedRect(14, 72, boxWidth, 28, 3, 3, "F");
+    doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total Revenue", 20, 82);
+    doc.setFontSize(16);
+    doc.text(totalRevenue.toLocaleString("en-PK"), 20, 94);
+    
+    // Clinic Share Box
+    doc.setFillColor(99, 102, 241);
+    doc.roundedRect(14 + boxWidth + 7, 72, boxWidth, 28, 3, 3, "F");
+    doc.setFontSize(10);
+    doc.text("Clinic Share", 20 + boxWidth + 7, 82);
+    doc.setFontSize(8);
     doc.setFont("helvetica", "normal");
-    doc.text(`Total Appointments: ${appointments.length}`, pageWidth - 24, 87, { align: "right" });
+    doc.text(`${clinicPct}% of revenue`, 20 + boxWidth + 7, 88);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(clinicShare.toLocaleString("en-PK"), 20 + boxWidth + 7, 96);
+    
+    // Doctor Share Box
+    doc.setFillColor(6, 182, 212);
+    doc.roundedRect(14 + (boxWidth + 7) * 2, 72, boxWidth, 28, 3, 3, "F");
+    doc.setFontSize(10);
+    doc.text("Doctor Share", 20 + (boxWidth + 7) * 2, 82);
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${doctorPct}% of revenue`, 20 + (boxWidth + 7) * 2, 88);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(doctorShare.toLocaleString("en-PK"), 20 + (boxWidth + 7) * 2, 96);
     
     // Appointments Table
     const tableData = appointments.map((apt) => [
       apt.patient_name,
-      apt.patient_id,
       format(new Date(apt.appointment_date), "MMM d, yyyy"),
-      apt.consultation_fee.toLocaleString("en-PK", { minimumFractionDigits: 2 }),
-      apt.other_fee.toLocaleString("en-PK", { minimumFractionDigits: 2 }),
-      apt.total_fee.toLocaleString("en-PK", { minimumFractionDigits: 2 }),
+      apt.total_fee.toLocaleString("en-PK"),
+      apt.clinic_share.toLocaleString("en-PK"),
+      apt.doctor_share.toLocaleString("en-PK"),
     ]);
     
     autoTable(doc, {
-      startY: 105,
-      head: [["Patient Name", "Patient ID", "Date", "Consultation Fee", "Other Fee", "Total"]],
+      startY: 108,
+      head: [["Patient Name", "Date", "Total Fee", "Clinic Share", "Dr Share"]],
       body: tableData,
       theme: "striped",
       headStyles: {
@@ -234,9 +272,9 @@ export default function DoctorFinance() {
         fillColor: [248, 250, 252],
       },
       columnStyles: {
-        3: { halign: "right" },
-        4: { halign: "right" },
-        5: { halign: "right", fontStyle: "bold" },
+        2: { halign: "right" },
+        3: { halign: "right", textColor: [99, 102, 241] },
+        4: { halign: "right", textColor: [6, 182, 212], fontStyle: "bold" },
       },
       margin: { left: 14, right: 14 },
       didDrawPage: (data) => {
@@ -265,7 +303,10 @@ export default function DoctorFinance() {
     });
   };
 
-  if (loading) {
+  const clinicPct = doctorDetails?.clinic_percentage || 0;
+  const doctorPct = 100 - clinicPct;
+
+  if (loading && !doctorDetails) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -278,7 +319,7 @@ export default function DoctorFinance() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Finance Management</h1>
-          <p className="text-muted-foreground">Track your revenue</p>
+          <p className="text-muted-foreground">Track your revenue and share breakdown by date</p>
         </div>
         <div className="flex items-center gap-3">
           <Popover>
@@ -286,12 +327,12 @@ export default function DoctorFinance() {
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[240px] justify-start text-left font-normal",
+                  "w-[200px] justify-start text-left font-normal",
                   !selectedDate && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "PPP") : <span>All dates</span>}
+                {selectedDate ? format(selectedDate, "PPP") : <span>All Time</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
@@ -300,6 +341,7 @@ export default function DoctorFinance() {
                 selected={selectedDate}
                 onSelect={setSelectedDate}
                 initialFocus
+                disabled={(date) => date > new Date()}
               />
             </PopoverContent>
           </Popover>
@@ -315,23 +357,59 @@ export default function DoctorFinance() {
         </div>
       </div>
 
-      {/* Total Revenue Card */}
-      <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Banknote className="h-6 w-6" />
-            Total Revenue
-          </CardTitle>
-          <CardDescription className="text-green-100">
-            {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "All Time"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-4xl font-bold">
-            {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Revenue Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-sm font-medium">
+              <Banknote className="h-4 w-4" />
+              Total Revenue
+            </CardTitle>
+            <CardDescription className="text-green-100">
+              {selectedDate ? format(selectedDate, "PPP") : "All time"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {totalRevenue.toLocaleString('en-PK')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-sm font-medium">
+              <Building2 className="h-4 w-4" />
+              Clinic Share
+            </CardTitle>
+            <CardDescription className="text-indigo-100">
+              {clinicPct}% of revenue
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {clinicShare.toLocaleString('en-PK')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-cyan-500 to-teal-600 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-sm font-medium">
+              <Stethoscope className="h-4 w-4" />
+              Doctor Share
+            </CardTitle>
+            <CardDescription className="text-cyan-100">
+              {doctorPct}% for Dr. {doctorDetails?.full_name}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {doctorShare.toLocaleString('en-PK')}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Appointments Revenue Listing */}
       <Card>
@@ -340,7 +418,7 @@ export default function DoctorFinance() {
             <div>
               <CardTitle>Appointments Revenue</CardTitle>
               <CardDescription>
-                Revenue breakdown for {selectedDate ? format(selectedDate, "PPP") : "all completed appointments"}
+                Revenue breakdown for each appointment on selected date
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -360,7 +438,11 @@ export default function DoctorFinance() {
           </div>
         </CardHeader>
         <CardContent>
-          {appointments.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : appointments.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
               No completed appointments found{selectedDate ? " for this date" : ""}.
             </p>
@@ -370,11 +452,10 @@ export default function DoctorFinance() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Patient Name</TableHead>
-                    <TableHead>Patient ID</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Consultation Fee</TableHead>
-                    <TableHead className="text-right">Other Fee</TableHead>
-                    <TableHead className="text-right">Total Revenue</TableHead>
+                    <TableHead className="text-right">Total Fee</TableHead>
+                    <TableHead className="text-right">Clinic Share</TableHead>
+                    <TableHead className="text-right">Dr Share</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -383,16 +464,15 @@ export default function DoctorFinance() {
                     .map((apt) => (
                     <TableRow key={apt.id} className="hover:bg-accent/50">
                       <TableCell className="font-medium">{apt.patient_name}</TableCell>
-                      <TableCell>{apt.patient_id}</TableCell>
                       <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
-                      <TableCell className="text-right">
-                        {apt.consultation_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      <TableCell className="text-right font-medium">
+                        {apt.total_fee.toLocaleString('en-PK')}
                       </TableCell>
-                      <TableCell className="text-right">
-                        {apt.other_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      <TableCell className="text-right text-indigo-600 dark:text-indigo-400">
+                        {apt.clinic_share.toLocaleString('en-PK')}
                       </TableCell>
-                      <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
-                        {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
+                      <TableCell className="text-right font-bold text-cyan-600 dark:text-cyan-400">
+                        {apt.doctor_share.toLocaleString('en-PK')}
                       </TableCell>
                     </TableRow>
                   ))}
