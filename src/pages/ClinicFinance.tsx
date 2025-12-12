@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface AppointmentRevenue {
   id: string;
@@ -30,11 +32,20 @@ interface Doctor {
   clinic_percentage: number;
 }
 
+interface ClinicDetails {
+  clinic_name: string;
+  phone_number: string;
+  address: string;
+  city: string;
+  email: string;
+}
+
 export default function ClinicFinance() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [clinicDetails, setClinicDetails] = useState<ClinicDetails | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("all");
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -45,11 +56,47 @@ export default function ClinicFinance() {
 
   useEffect(() => {
     fetchDoctors();
+    fetchClinicDetails();
   }, []);
 
   useEffect(() => {
     fetchRevenue();
   }, [selectedDate, selectedDoctor, doctors]);
+
+  const fetchClinicDetails = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: clinicData, error: clinicError } = await supabase
+        .from("clinics")
+        .select("clinic_name, phone_number, address, city")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (clinicError) throw clinicError;
+
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (profileError) throw profileError;
+
+      if (clinicData) {
+        setClinicDetails({
+          clinic_name: clinicData.clinic_name,
+          phone_number: clinicData.phone_number,
+          address: clinicData.address,
+          city: clinicData.city,
+          email: profileData?.email || "",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error fetching clinic details:", error);
+    }
+  };
 
   const fetchDoctors = async () => {
     try {
@@ -188,6 +235,147 @@ export default function ClinicFinance() {
 
   const selectedDoctorInfo = getSelectedDoctorInfo();
 
+  const generatePDF = () => {
+    if (!clinicDetails) {
+      toast({
+        title: "Error",
+        description: "Clinic details not loaded",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    
+    // Header background
+    doc.setFillColor(79, 70, 229); // Indigo color
+    doc.rect(0, 0, pageWidth, 45, 'F');
+    
+    // Clinic Name
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.text(clinicDetails.clinic_name, 14, 20);
+    
+    // Clinic Contact Info
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${clinicDetails.address}, ${clinicDetails.city}`, 14, 30);
+    doc.text(`Phone: ${clinicDetails.phone_number} | Email: ${clinicDetails.email}`, 14, 37);
+    
+    // Report Title
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("Finance Report", 14, 58);
+    
+    // Report subtitle with filters
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    
+    const doctorName = selectedDoctor === "all" 
+      ? "All Doctors" 
+      : doctors.find(d => d.id === selectedDoctor)?.name || "Unknown";
+    const dateRange = selectedDate 
+      ? format(selectedDate, "MMMM d, yyyy") 
+      : "All Time";
+    
+    doc.text(`Doctor: ${doctorName} | Period: ${dateRange}`, 14, 66);
+    doc.text(`Generated on: ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`, 14, 73);
+    
+    // Summary Box
+    doc.setFillColor(249, 250, 251);
+    doc.roundedRect(14, 80, pageWidth - 28, 35, 3, 3, 'F');
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    
+    const boxY = 90;
+    const col1 = 25;
+    const col2 = pageWidth / 3 + 10;
+    const col3 = (pageWidth / 3) * 2 + 5;
+    
+    doc.text("Total Revenue", col1, boxY);
+    doc.text("Clinic Share", col2, boxY);
+    doc.text("Doctors Share", col3, boxY);
+    
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(16, 185, 129); // Green
+    doc.text(`PKR ${totalRevenue.toLocaleString()}`, col1, boxY + 10);
+    
+    doc.setTextColor(79, 70, 229); // Indigo
+    doc.text(`PKR ${clinicShare.toLocaleString()}`, col2, boxY + 10);
+    
+    doc.setTextColor(59, 130, 246); // Blue
+    doc.text(`PKR ${doctorsShare.toLocaleString()}`, col3, boxY + 10);
+    
+    // Table
+    const tableData = appointments.map((apt) => {
+      const aptClinicShare = apt.total_fee * apt.clinic_percentage / 100;
+      const aptDrShare = apt.total_fee - aptClinicShare;
+      return [
+        apt.patient_name,
+        apt.doctor_name,
+        format(new Date(apt.appointment_date), "MMM d, yyyy"),
+        `PKR ${apt.total_fee.toLocaleString()}`,
+        `PKR ${aptClinicShare.toLocaleString()}`,
+        `PKR ${aptDrShare.toLocaleString()}`,
+      ];
+    });
+
+    autoTable(doc, {
+      startY: 125,
+      head: [['Patient Name', 'Doctor', 'Date', 'Total Fee', 'Clinic Share', 'Dr Share']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [79, 70, 229],
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 10,
+      },
+      bodyStyles: {
+        fontSize: 9,
+      },
+      alternateRowStyles: {
+        fillColor: [249, 250, 251],
+      },
+      columnStyles: {
+        3: { halign: 'right', fontStyle: 'bold' },
+        4: { halign: 'right' },
+        5: { halign: 'right' },
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `Page ${i} of ${pageCount} | ${clinicDetails.clinic_name} - Finance Report`,
+        pageWidth / 2,
+        doc.internal.pageSize.getHeight() - 10,
+        { align: 'center' }
+      );
+    }
+
+    // Save the PDF
+    const fileName = `Finance_Report_${doctorName.replace(/\s+/g, '_')}_${dateRange.replace(/\s+/g, '_')}.pdf`;
+    doc.save(fileName);
+
+    toast({
+      title: "Success",
+      description: "PDF report downloaded successfully",
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -251,6 +439,14 @@ export default function ClinicFinance() {
               <X className="h-4 w-4" />
             </Button>
           )}
+          <Button
+            onClick={generatePDF}
+            disabled={appointments.length === 0}
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Download PDF
+          </Button>
         </div>
       </div>
 
