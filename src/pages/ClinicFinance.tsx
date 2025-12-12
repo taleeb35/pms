@@ -36,7 +36,7 @@ export default function ClinicFinance() {
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("all");
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
