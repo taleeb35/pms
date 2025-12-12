@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -229,7 +229,7 @@ export default function ClinicFinance() {
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "PPP") : <span>Select date</span>}
+                {selectedDate ? format(selectedDate, "PPP") : <span>All Time</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
@@ -237,11 +237,22 @@ export default function ClinicFinance() {
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
+                disabled={(date) => date > new Date()}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
           </Popover>
+          {selectedDate && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSelectedDate(undefined)}
+              title="Clear date filter"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 
