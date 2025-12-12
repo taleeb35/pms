@@ -15,9 +15,8 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 interface AppointmentRevenue {
   id: string;
   patient_name: string;
-  patient_id: string;
+  doctor_name: string;
   appointment_date: string;
-  appointment_time: string;
   consultation_fee: number;
   other_fee: number;
   total_fee: number;
@@ -114,16 +113,16 @@ export default function ClinicFinance() {
         .select(`
           id,
           appointment_date,
-          appointment_time,
           consultation_fee,
           other_fee,
           total_fee,
           doctor_id,
-          patients(full_name, patient_id)
+          patients(full_name),
+          doctors!appointments_doctor_id_fkey(profiles(full_name))
         `)
         .in("doctor_id", selectedDoctor !== "all" ? [selectedDoctor] : doctorIds)
         .eq("status", "completed")
-        .order("appointment_time", { ascending: true });
+        .order("appointment_date", { ascending: false });
 
       if (selectedDate) {
         query = query.eq("appointment_date", format(selectedDate, "yyyy-MM-dd"));
@@ -136,9 +135,8 @@ export default function ClinicFinance() {
       const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => ({
         id: apt.id,
         patient_name: apt.patients?.full_name || "Unknown",
-        patient_id: apt.patients?.patient_id || "N/A",
+        doctor_name: apt.doctors?.profiles?.full_name || "Unknown Doctor",
         appointment_date: apt.appointment_date,
-        appointment_time: apt.appointment_time,
         consultation_fee: Number(apt.consultation_fee) || 0,
         other_fee: Number(apt.other_fee) || 0,
         total_fee: Number(apt.total_fee) || 0,
@@ -356,8 +354,8 @@ export default function ClinicFinance() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Patient Name</TableHead>
-                    <TableHead>Patient ID</TableHead>
-                    <TableHead>Time</TableHead>
+                    <TableHead>Doctor</TableHead>
+                    <TableHead>Date</TableHead>
                     <TableHead className="text-right">Total Fee</TableHead>
                     <TableHead className="text-right">Clinic Share</TableHead>
                     <TableHead className="text-right">Dr Share</TableHead>
@@ -372,8 +370,8 @@ export default function ClinicFinance() {
                       return (
                         <TableRow key={apt.id} className="hover:bg-accent/50">
                           <TableCell className="font-medium">{apt.patient_name}</TableCell>
-                          <TableCell>{apt.patient_id}</TableCell>
-                          <TableCell>{apt.appointment_time}</TableCell>
+                          <TableCell>{apt.doctor_name}</TableCell>
+                          <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
                           <TableCell className="text-right font-semibold">
                             {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
                           </TableCell>
