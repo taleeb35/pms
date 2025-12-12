@@ -255,6 +255,8 @@ const ClinicDoctors = () => {
                     <TableHead>Contact</TableHead>
                     <TableHead>Experience</TableHead>
                     <TableHead>Fee (PKR)</TableHead>
+                    <TableHead>Clinic Share</TableHead>
+                    <TableHead>Dr Share</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -301,6 +303,12 @@ const ClinicDoctors = () => {
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-primary">{doctor.clinic_percentage || 0}%</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-semibold text-success">{100 - (doctor.clinic_percentage || 0)}%</span>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
