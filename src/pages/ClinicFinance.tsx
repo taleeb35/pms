@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,11 +21,14 @@ interface AppointmentRevenue {
   consultation_fee: number;
   other_fee: number;
   total_fee: number;
+  doctor_id: string;
+  clinic_percentage: number;
 }
 
 interface Doctor {
   id: string;
   name: string;
+  clinic_percentage: number;
 }
 
 export default function ClinicFinance() {
@@ -36,6 +39,8 @@ export default function ClinicFinance() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedDoctor, setSelectedDoctor] = useState<string>("all");
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [clinicShare, setClinicShare] = useState(0);
+  const [doctorsShare, setDoctorsShare] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
 
@@ -45,7 +50,7 @@ export default function ClinicFinance() {
 
   useEffect(() => {
     fetchRevenue();
-  }, [selectedDate, selectedDoctor]);
+  }, [selectedDate, selectedDoctor, doctors]);
 
   const fetchDoctors = async () => {
     try {
@@ -54,7 +59,7 @@ export default function ClinicFinance() {
 
       const { data, error } = await supabase
         .from("doctors")
-        .select("id, profiles(full_name)")
+        .select("id, clinic_percentage, profiles(full_name)")
         .eq("clinic_id", user.id);
 
       if (error) throw error;
@@ -62,6 +67,7 @@ export default function ClinicFinance() {
       const doctorList: Doctor[] = (data || []).map((doc: any) => ({
         id: doc.id,
         name: doc.profiles?.full_name || "Unknown Doctor",
+        clinic_percentage: doc.clinic_percentage || 0,
       }));
 
       setDoctors(doctorList);
@@ -83,16 +89,22 @@ export default function ClinicFinance() {
       // First get doctors from this clinic
       const { data: clinicDoctors, error: doctorsError } = await supabase
         .from("doctors")
-        .select("id")
+        .select("id, clinic_percentage")
         .eq("clinic_id", user.id);
 
       if (doctorsError) throw doctorsError;
 
       const doctorIds = clinicDoctors?.map(d => d.id) || [];
+      const doctorPercentages: Record<string, number> = {};
+      clinicDoctors?.forEach(d => {
+        doctorPercentages[d.id] = d.clinic_percentage || 0;
+      });
 
       if (doctorIds.length === 0) {
         setAppointments([]);
         setTotalRevenue(0);
+        setClinicShare(0);
+        setDoctorsShare(0);
         setLoading(false);
         return;
       }
@@ -106,6 +118,7 @@ export default function ClinicFinance() {
           consultation_fee,
           other_fee,
           total_fee,
+          doctor_id,
           patients(full_name, patient_id)
         `)
         .in("doctor_id", selectedDoctor !== "all" ? [selectedDoctor] : doctorIds)
@@ -129,10 +142,21 @@ export default function ClinicFinance() {
         consultation_fee: Number(apt.consultation_fee) || 0,
         other_fee: Number(apt.other_fee) || 0,
         total_fee: Number(apt.total_fee) || 0,
+        doctor_id: apt.doctor_id,
+        clinic_percentage: doctorPercentages[apt.doctor_id] || 0,
       }));
 
+      // Calculate totals
+      const total = appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0);
+      const clinicTotal = appointmentData.reduce((sum, apt) => {
+        return sum + (apt.total_fee * apt.clinic_percentage / 100);
+      }, 0);
+      const doctorsTotal = total - clinicTotal;
+
       setAppointments(appointmentData);
-      setTotalRevenue(appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0));
+      setTotalRevenue(total);
+      setClinicShare(clinicTotal);
+      setDoctorsShare(doctorsTotal);
       setCurrentPage(1);
     } catch (error: any) {
       toast({
@@ -144,6 +168,27 @@ export default function ClinicFinance() {
       setLoading(false);
     }
   };
+
+  // Calculate per-doctor revenue when a specific doctor is selected
+  const getSelectedDoctorInfo = () => {
+    if (selectedDoctor === "all") return null;
+    const doctor = doctors.find(d => d.id === selectedDoctor);
+    if (!doctor) return null;
+    
+    const doctorRevenue = appointments.reduce((sum, apt) => sum + apt.total_fee, 0);
+    const doctorClinicShare = doctorRevenue * doctor.clinic_percentage / 100;
+    const doctorDrShare = doctorRevenue - doctorClinicShare;
+    
+    return {
+      name: doctor.name,
+      percentage: doctor.clinic_percentage,
+      totalRevenue: doctorRevenue,
+      clinicShare: doctorClinicShare,
+      drShare: doctorDrShare,
+    };
+  };
+
+  const selectedDoctorInfo = getSelectedDoctorInfo();
 
   if (loading) {
     return (
@@ -158,7 +203,7 @@ export default function ClinicFinance() {
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-bold">Finance Management</h1>
-          <p className="text-muted-foreground">Track your revenue by date</p>
+          <p className="text-muted-foreground">Track your revenue and share breakdown by date</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
@@ -169,7 +214,7 @@ export default function ClinicFinance() {
               <SelectItem value="all">All Doctors</SelectItem>
               {doctors.map((doctor) => (
                 <SelectItem key={doctor.id} value={doctor.id}>
-                  {doctor.name}
+                  {doctor.name} ({doctor.clinic_percentage}%)
                 </SelectItem>
               ))}
             </SelectContent>
@@ -200,24 +245,68 @@ export default function ClinicFinance() {
         </div>
       </div>
 
-      {/* Total Revenue Card */}
-      <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Banknote className="h-6 w-6" />
-            Total Revenue
-          </CardTitle>
-          <CardDescription className="text-green-100">
-            {selectedDate ? format(selectedDate, "MMMM d, yyyy") : "Select a date"}
-            {selectedDoctor !== "all" && ` - ${doctors.find(d => d.id === selectedDoctor)?.name}`}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-4xl font-bold">
-            {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Revenue Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Total Revenue Card */}
+        <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-lg">
+              <Banknote className="h-5 w-5" />
+              Total Revenue
+            </CardTitle>
+            <CardDescription className="text-green-100 text-sm">
+              {selectedDate ? format(selectedDate, "MMM d, yyyy") : "All time"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Clinic Share Card */}
+        <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Building2 className="h-5 w-5" />
+              Clinic Share
+            </CardTitle>
+            <CardDescription className="text-primary-foreground/80 text-sm">
+              {selectedDoctor !== "all" && selectedDoctorInfo 
+                ? `${selectedDoctorInfo.percentage}% from ${selectedDoctorInfo.name}`
+                : "Based on each doctor's %"
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {clinicShare.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Doctors Share Card */}
+        <Card className="bg-gradient-to-br from-info to-info/80 text-info-foreground">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Stethoscope className="h-5 w-5" />
+              {selectedDoctor !== "all" ? "Doctor Share" : "All Doctors Share"}
+            </CardTitle>
+            <CardDescription className="text-info-foreground/80 text-sm">
+              {selectedDoctor !== "all" && selectedDoctorInfo 
+                ? `${100 - selectedDoctorInfo.percentage}% for ${selectedDoctorInfo.name}`
+                : "Combined doctor earnings"
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {doctorsShare.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Appointments Revenue Listing */}
       <Card>
@@ -258,30 +347,34 @@ export default function ClinicFinance() {
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Patient ID</TableHead>
                     <TableHead>Time</TableHead>
-                    <TableHead className="text-right">Consultation Fee</TableHead>
-                    <TableHead className="text-right">Other Fee</TableHead>
-                    <TableHead className="text-right">Total Revenue</TableHead>
+                    <TableHead className="text-right">Total Fee</TableHead>
+                    <TableHead className="text-right">Clinic Share</TableHead>
+                    <TableHead className="text-right">Dr Share</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {appointments
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                    .map((apt) => (
-                    <TableRow key={apt.id} className="hover:bg-accent/50">
-                      <TableCell className="font-medium">{apt.patient_name}</TableCell>
-                      <TableCell>{apt.patient_id}</TableCell>
-                      <TableCell>{apt.appointment_time}</TableCell>
-                      <TableCell className="text-right">
-                        {apt.consultation_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {apt.other_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
-                      </TableCell>
-                      <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
-                        {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 2 })}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                    .map((apt) => {
+                      const aptClinicShare = apt.total_fee * apt.clinic_percentage / 100;
+                      const aptDrShare = apt.total_fee - aptClinicShare;
+                      return (
+                        <TableRow key={apt.id} className="hover:bg-accent/50">
+                          <TableCell className="font-medium">{apt.patient_name}</TableCell>
+                          <TableCell>{apt.patient_id}</TableCell>
+                          <TableCell>{apt.appointment_time}</TableCell>
+                          <TableCell className="text-right font-semibold">
+                            {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                          </TableCell>
+                          <TableCell className="text-right text-primary font-medium">
+                            {aptClinicShare.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                          </TableCell>
+                          <TableCell className="text-right text-info font-medium">
+                            {aptDrShare.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
               </Table>
               
