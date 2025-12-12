@@ -335,28 +335,6 @@ const ClinicDoctors = () => {
                     </TableRow>
                   ))}
                 </TableBody>
-                <tfoot>
-                  <TableRow className="bg-muted/50 font-semibold">
-                    <TableCell colSpan={5} className="text-right">
-                      Total Potential Revenue Share:
-                    </TableCell>
-                    <TableCell className="text-primary">
-                      PKR {doctors.reduce((sum, doc) => {
-                        const fee = doc.consultation_fee || 0;
-                        const percentage = doc.clinic_percentage || 0;
-                        return sum + (fee * percentage / 100);
-                      }, 0).toLocaleString()} / visit
-                    </TableCell>
-                    <TableCell className="text-success">
-                      PKR {doctors.reduce((sum, doc) => {
-                        const fee = doc.consultation_fee || 0;
-                        const percentage = doc.clinic_percentage || 0;
-                        return sum + (fee * (100 - percentage) / 100);
-                      }, 0).toLocaleString()} / visit
-                    </TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </tfoot>
               </Table>
             </div>
           )}
