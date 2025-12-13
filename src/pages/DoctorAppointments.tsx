@@ -411,7 +411,6 @@ const DoctorAppointments = () => {
                       variant="outline" 
                       onClick={() => openVisitDialog(apt)} 
                       title="Record Visit"
-                      disabled={new Date(apt.appointment_date + 'T00:00:00') > startOfDay(new Date()) && apt.status === 'scheduled'}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -420,7 +419,6 @@ const DoctorAppointments = () => {
                         size="sm" 
                         variant="outline" 
                         onClick={() => handleUpdateStatus(apt.id, "confirmed")}
-                        disabled={new Date(apt.appointment_date + 'T00:00:00') > startOfDay(new Date())}
                       >
                         Confirm
                       </Button>
@@ -450,7 +448,6 @@ const DoctorAppointments = () => {
                         size="sm" 
                         variant="outline" 
                         onClick={() => handleUpdateStatus(apt.id, "cancelled")}
-                        disabled={new Date(apt.appointment_date + 'T00:00:00') > startOfDay(new Date()) && apt.status === 'scheduled'}
                       >
                         Cancel
                       </Button>
