@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Search, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, Search } from "lucide-react";
 
 interface Procedure {
   id: string;
@@ -26,25 +26,10 @@ const DoctorProcedures = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
-  const [isOphthalmologist, setIsOphthalmologist] = useState(false);
 
   useEffect(() => {
-    checkSpecialization();
     fetchProcedures();
   }, []);
-
-  const checkSpecialization = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from("doctors")
-      .select("specialization")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    setIsOphthalmologist(data?.specialization?.toLowerCase().includes("ophthalmologist") || false);
-  };
 
   const fetchProcedures = async () => {
     setLoading(true);
@@ -135,17 +120,6 @@ const DoctorProcedures = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProcedures = filteredProcedures.slice(startIndex, startIndex + itemsPerPage);
 
-  if (!isOphthalmologist) {
-    return (
-      <div className="p-8 text-center">
-        <Eye className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-        <h2 className="text-2xl font-bold mb-2">Procedures Management</h2>
-        <p className="text-muted-foreground">
-          This feature is only available for Ophthalmologists.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

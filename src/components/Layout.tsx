@@ -172,22 +172,13 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
     { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
     { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
+    { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
+    { path: "/doctor/finance", icon: Banknote, label: "Finance" },
+    { path: "/doctor/profile", icon: UserCog, label: "Profile" },
+    { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
   ];
 
-  const doctorMenuItems = isOphthalmologist 
-    ? [
-        ...baseDoctorMenuItems,
-        { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
-        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
-        { path: "/doctor/profile", icon: UserCog, label: "Profile" },
-        { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
-      ]
-    : [
-        ...baseDoctorMenuItems,
-        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
-        { path: "/doctor/profile", icon: UserCog, label: "Profile" },
-        { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
-      ];
+  const doctorMenuItems = baseDoctorMenuItems;
 
   const clinicMenuItems = [
     { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
