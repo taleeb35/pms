@@ -36,6 +36,7 @@ interface Appointment {
   total_fee: number | null;
   patient_id: string;
   doctor_id: string;
+  created_by: string | null;
   patients: { 
     full_name: string; 
     phone: string; 
@@ -50,6 +51,9 @@ interface Appointment {
       full_name: string;
     } | null;
     specialization: string;
+  } | null;
+  creator: {
+    full_name: string;
   } | null;
 }
 
@@ -130,7 +134,8 @@ const ClinicAppointments = () => {
         .select(`
           *, 
           patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date),
-          doctors(profiles(full_name), specialization)
+          doctors(profiles(full_name), specialization),
+          creator:profiles!appointments_created_by_fkey(full_name)
         `)
         .in("doctor_id", doctors.map(d => d.id))
         .order("appointment_date", { ascending: true })
@@ -514,6 +519,7 @@ const ClinicAppointments = () => {
                       <TableHead>Phone</TableHead>
                       <TableHead>Date & Time</TableHead>
                       <TableHead>Reason</TableHead>
+                      <TableHead>Created By</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -533,6 +539,7 @@ const ClinicAppointments = () => {
                           <span className="text-sm text-muted-foreground">{apt.appointment_time}</span>
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">{apt.reason || "-"}</TableCell>
+                        <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                         <TableCell>{getStatusBadge(apt.status)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
