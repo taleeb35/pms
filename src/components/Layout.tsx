@@ -72,21 +72,18 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     const fetchUserRole = async () => {
-      if (!user) return;
-      
-      // First check if user is a doctor
-      const { data: doctorData } = await supabase
-        .from("doctors")
-        .select("id")
-        .eq("id", user.id)
-        .maybeSingle();
-      
-      if (doctorData) {
-        setUserRole("doctor");
+      if (!user) {
+        setUserRole(null);
+        setClinicId(null);
         return;
       }
       
-      // Then check if user is a clinic
+      // Reset role when user changes to prevent stale data
+      setUserRole(null);
+      setClinicId(null);
+      
+      // Then check if user is a clinic FIRST (before receptionist check)
+      // This is important because clinic owner's session should show clinic menu
       const { data: clinicData } = await supabase
         .from("clinics")
         .select("id")
@@ -95,6 +92,18 @@ const Layout = ({ children }: LayoutProps) => {
       
       if (clinicData) {
         setUserRole("clinic");
+        return;
+      }
+      
+      // Check if user is a doctor
+      const { data: doctorData } = await supabase
+        .from("doctors")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      
+      if (doctorData) {
+        setUserRole("doctor");
         return;
       }
 
@@ -121,7 +130,7 @@ const Layout = ({ children }: LayoutProps) => {
       setUserRole(roleData?.role || "admin");
     };
     fetchUserRole();
-  }, [user]);
+  }, [user?.id]);
 
   const adminMenuItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
