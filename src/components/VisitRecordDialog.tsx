@@ -157,13 +157,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
-      const isOphth = spec.includes("ophthalmologist");
-      setIsOphthalmologist(isOphth);
+      setIsOphthalmologist(spec.includes("ophthalmologist"));
       
-      // Fetch procedures if ophthalmologist
-      if (isOphth) {
-        fetchProcedures(user.id);
-      }
+      // Fetch procedures for all doctors
+      fetchProcedures(user.id);
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
     }
@@ -624,8 +621,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         status: 'completed'
       };
 
-      // Add procedure info for ophthalmologists
-      if (isOphthalmologist && selectedProcedure) {
+      // Add procedure info
+      if (selectedProcedure) {
         appointmentUpdate.procedure_id = selectedProcedure;
         appointmentUpdate.procedure_fee = procedureFee ? parseFloat(procedureFee) : 0;
       }
@@ -945,8 +942,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               <div className="border rounded-lg p-4 bg-green-50 dark:bg-green-950">
                 <h3 className="font-semibold mb-4">Financial Details</h3>
                 <div className="space-y-4">
-                  {/* Procedure Selection - Only for Ophthalmologists */}
-                  {isOphthalmologist && procedures.length > 0 && (
+                  {/* Procedure Selection */}
+                  {procedures.length > 0 && (
                     <div>
                       <Label>Select Procedure</Label>
                       <Select value={selectedProcedure} onValueChange={handleProcedureChange}>
@@ -964,7 +961,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                       </Select>
                     </div>
                   )}
-                  {isOphthalmologist && selectedProcedure && (
+                  {selectedProcedure && (
                     <div>
                       <Label>Procedure Fee</Label>
                       <Input
