@@ -139,19 +139,28 @@ const ClinicReceptionists = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create receptionist account");
 
+      const newReceptionistId = authData.user.id;
+
+      // IMPORTANT: Restore clinic session FIRST before making database changes
+      // signUp automatically logs in as the new user, so we need to restore clinic session
+      await supabase.auth.setSession({
+        access_token: clinicSession.access_token,
+        refresh_token: clinicSession.refresh_token,
+      });
+
       // Update profile with phone if provided
       if (formData.phone) {
         await supabase
           .from("profiles")
           .update({ phone: formData.phone })
-          .eq("id", authData.user.id);
+          .eq("id", newReceptionistId);
       }
 
-      // Create receptionist link
+      // Create receptionist link (now auth.uid() is clinic owner again)
       const { error: receptionistError } = await supabase
         .from("clinic_receptionists")
         .insert({
-          user_id: authData.user.id,
+          user_id: newReceptionistId,
           clinic_id: clinicId,
         });
 
@@ -161,18 +170,11 @@ const ClinicReceptionists = () => {
       const { error: roleError } = await supabase
         .from("user_roles")
         .insert({
-          user_id: authData.user.id,
+          user_id: newReceptionistId,
           role: "receptionist",
         });
 
       if (roleError) throw roleError;
-
-      // Restore clinic session
-      await supabase.auth.signOut();
-      await supabase.auth.setSession({
-        access_token: clinicSession.access_token,
-        refresh_token: clinicSession.refresh_token,
-      });
 
       toast({
         title: "Receptionist Added",
