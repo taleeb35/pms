@@ -24,6 +24,7 @@ import {
   handlePhoneInput,
   handleCNICInput
 } from "@/lib/validations";
+import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 
 const DoctorWalkIn = () => {
   const navigate = useNavigate();
@@ -149,6 +150,23 @@ const DoctorWalkIn = () => {
     try {
       const patientId = generatePatientId();
       const todayDate = format(new Date(), 'yyyy-MM-dd');
+
+      // Check for double booking
+      const { available } = await isTimeSlotAvailable(
+        doctorId,
+        todayDate,
+        appointmentForm.appointment_time
+      );
+
+      if (!available) {
+        setLoading(false);
+        toast({ 
+          title: "Time Slot Unavailable", 
+          description: "You already have an appointment at this time. Please select a different time slot.", 
+          variant: "destructive" 
+        });
+        return;
+      }
 
       // Step 1: Create patient
       const { data: patientData, error: patientError } = await supabase

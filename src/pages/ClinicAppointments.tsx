@@ -22,6 +22,7 @@ import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { useClinicId } from "@/hooks/useClinicId";
+import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 
 interface Appointment {
   id: string;
@@ -207,11 +208,30 @@ const ClinicAppointments = () => {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      const appointmentDate = format(selectedDate, "yyyy-MM-dd");
+      const appointmentTime = formData.get("appointment_time") as string;
+
+      // Check for double booking
+      const { available, error: slotError } = await isTimeSlotAvailable(
+        selectedDoctorId,
+        appointmentDate,
+        appointmentTime
+      );
+
+      if (!available) {
+        toast({ 
+          title: "Time Slot Unavailable", 
+          description: "This doctor already has an appointment at this time. Please select a different time slot.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       const { error } = await supabase.from("appointments").insert({
         doctor_id: selectedDoctorId,
         patient_id: selectedPatientId,
-        appointment_date: format(selectedDate, "yyyy-MM-dd"),
-        appointment_time: formData.get("appointment_time") as string,
+        appointment_date: appointmentDate,
+        appointment_time: appointmentTime,
         duration_minutes: parseInt(formData.get("duration_minutes") as string),
         reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,
@@ -246,13 +266,33 @@ const ClinicAppointments = () => {
     e.preventDefault();
     if (!editingAppointment || !editDate) return;
     const formData = new FormData(e.currentTarget);
+    const newDoctorId = formData.get("doctor_id") as string;
+    const appointmentDate = format(editDate, "yyyy-MM-dd");
+    const appointmentTime = formData.get("appointment_time") as string;
     
     try {
+      // Check for double booking (exclude current appointment)
+      const { available } = await isTimeSlotAvailable(
+        newDoctorId,
+        appointmentDate,
+        appointmentTime,
+        editingAppointment.id
+      );
+
+      if (!available) {
+        toast({ 
+          title: "Time Slot Unavailable", 
+          description: "This doctor already has an appointment at this time. Please select a different time slot.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       const { error } = await supabase.from("appointments").update({
-        doctor_id: formData.get("doctor_id") as string,
+        doctor_id: newDoctorId,
         patient_id: formData.get("patient_id") as string,
-        appointment_date: format(editDate, "yyyy-MM-dd"), 
-        appointment_time: formData.get("appointment_time") as string,
+        appointment_date: appointmentDate, 
+        appointment_time: appointmentTime,
         duration_minutes: parseInt(formData.get("duration_minutes") as string), 
         reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,

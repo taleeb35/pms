@@ -24,6 +24,7 @@ import {
   handleCNICInput
 } from "@/lib/validations";
 import { useClinicId } from "@/hooks/useClinicId";
+import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 
 interface Doctor {
   id: string;
@@ -159,6 +160,23 @@ const ClinicWalkIn = () => {
       const patientId = generatePatientId();
       const todayDate = format(new Date(), 'yyyy-MM-dd');
       const { data: { user } } = await supabase.auth.getUser();
+
+      // Check for double booking
+      const { available } = await isTimeSlotAvailable(
+        appointmentForm.doctor_id,
+        todayDate,
+        appointmentForm.appointment_time
+      );
+
+      if (!available) {
+        setLoading(false);
+        toast({ 
+          title: "Time Slot Unavailable", 
+          description: "This doctor already has an appointment at this time. Please select a different time slot.", 
+          variant: "destructive" 
+        });
+        return;
+      }
 
       // Step 1: Create patient
       const { data: patientData, error: patientError } = await supabase

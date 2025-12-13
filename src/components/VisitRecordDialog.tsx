@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VisitHistory } from "./VisitHistory";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
+import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 
 interface Procedure {
   id: string;
@@ -648,26 +649,44 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       // Create new appointment if next visit date is set
       if (nextVisitDate) {
-        const { error: appointmentError } = await supabase
-          .from("appointments")
-          .insert({
-            patient_id: appointment.patient_id,
-            doctor_id: user.id,
-            appointment_date: format(nextVisitDate, "yyyy-MM-dd"),
-            appointment_time: appointment.appointment_time, // Use same time as current appointment
-            duration_minutes: 30,
-            status: "scheduled",
-            reason: "Follow-up visit",
-            notes: formData.next_visit_notes || null,
-          });
+        const followUpDate = format(nextVisitDate, "yyyy-MM-dd");
+        const followUpTime = appointment.appointment_time;
 
-        if (appointmentError) {
-          console.error("Error creating follow-up appointment:", appointmentError);
+        // Check for double booking for follow-up
+        const { available } = await isTimeSlotAvailable(
+          user.id,
+          followUpDate,
+          followUpTime
+        );
+
+        if (!available) {
           toast({
             title: "Warning",
-            description: "Visit record saved but failed to create follow-up appointment",
+            description: "Visit record saved but the follow-up time slot is already booked. Please schedule manually.",
             variant: "destructive",
           });
+        } else {
+          const { error: appointmentError } = await supabase
+            .from("appointments")
+            .insert({
+              patient_id: appointment.patient_id,
+              doctor_id: user.id,
+              appointment_date: followUpDate,
+              appointment_time: followUpTime,
+              duration_minutes: 30,
+              status: "scheduled",
+              reason: "Follow-up visit",
+              notes: formData.next_visit_notes || null,
+            });
+
+          if (appointmentError) {
+            console.error("Error creating follow-up appointment:", appointmentError);
+            toast({
+              title: "Warning",
+              description: "Visit record saved but failed to create follow-up appointment",
+              variant: "destructive",
+            });
+          }
         }
       }
 
