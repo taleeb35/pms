@@ -190,8 +190,11 @@ const DoctorAppointments = () => {
     const formData = new FormData(e.currentTarget);
     try {
       const { error } = await supabase.from("appointments").update({
-        appointment_date: format(editDate, "yyyy-MM-dd"), appointment_time: formData.get("appointment_time") as string,
-        duration_minutes: parseInt(formData.get("duration_minutes") as string), reason: formData.get("reason") as string || null,
+        patient_id: formData.get("patient_id") as string,
+        appointment_date: format(editDate, "yyyy-MM-dd"), 
+        appointment_time: formData.get("appointment_time") as string,
+        duration_minutes: parseInt(formData.get("duration_minutes") as string), 
+        reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,
       }).eq("id", editingAppointment.id);
       if (error) throw error;
@@ -514,13 +517,26 @@ const DoctorAppointments = () => {
       />
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Edit Appointment</DialogTitle><DialogDescription>Update appointment details for {editingAppointment?.patients.full_name}</DialogDescription></DialogHeader>
           {editingAppointment && (
             <form onSubmit={handleEditAppointment} className="space-y-4">
+              <div className="space-y-2">
+                <Label>Patient</Label>
+                <Select name="patient_id" defaultValue={editingAppointment.patient_id} required>
+                  <SelectTrigger><SelectValue placeholder="Select Patient" /></SelectTrigger>
+                  <SelectContent>
+                    {patients.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                        {patient.full_name} ({patient.patient_id})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !editDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{editDate ? format(editDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label>Time</Label><Select name="appointment_time" defaultValue={editingAppointment.appointment_time} required><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2"><Label>Time</Label><Select name="appointment_time" defaultValue={editingAppointment.appointment_time?.slice(0, 5)} required><SelectTrigger><SelectValue placeholder="Select Time" /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
               </div>
               <div className="space-y-2"><Label htmlFor="edit_duration_minutes">Duration (minutes)</Label><Input id="edit_duration_minutes" name="duration_minutes" type="number" defaultValue={editingAppointment.duration_minutes || 30} min={15} step={15} required /></div>
               <div className="space-y-2"><Label htmlFor="edit_reason">Reason for Visit</Label><Input id="edit_reason" name="reason" defaultValue={editingAppointment.reason || ""} placeholder="e.g., Regular checkup" /></div>

@@ -249,6 +249,8 @@ const ClinicAppointments = () => {
     
     try {
       const { error } = await supabase.from("appointments").update({
+        doctor_id: formData.get("doctor_id") as string,
+        patient_id: formData.get("patient_id") as string,
         appointment_date: format(editDate, "yyyy-MM-dd"), 
         appointment_time: formData.get("appointment_time") as string,
         duration_minutes: parseInt(formData.get("duration_minutes") as string), 
@@ -613,9 +615,37 @@ const ClinicAppointments = () => {
 
       {showEditDialog && editingAppointment && (
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Edit Appointment</DialogTitle></DialogHeader>
             <form onSubmit={handleEditAppointment} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Doctor</Label>
+                  <Select name="doctor_id" defaultValue={editingAppointment.doctor_id} required>
+                    <SelectTrigger><SelectValue placeholder="Select Doctor" /></SelectTrigger>
+                    <SelectContent>
+                      {doctors.map((doctor) => (
+                        <SelectItem key={doctor.id} value={doctor.id}>
+                          {doctor.profiles?.full_name || "Unknown"} - {doctor.specialization}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Patient</Label>
+                  <Select name="patient_id" defaultValue={editingAppointment.patient_id} required>
+                    <SelectTrigger><SelectValue placeholder="Select Patient" /></SelectTrigger>
+                    <SelectContent>
+                      {patients.map((patient) => (
+                        <SelectItem key={patient.id} value={patient.id}>
+                          {patient.full_name} ({patient.patient_id})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Appointment Date</Label>
@@ -633,8 +663,8 @@ const ClinicAppointments = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit_appointment_time">Time</Label>
-                  <Select name="appointment_time" defaultValue={editingAppointment.appointment_time} required>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select name="appointment_time" defaultValue={editingAppointment.appointment_time?.slice(0, 5)} required>
+                    <SelectTrigger><SelectValue placeholder="Select Time" /></SelectTrigger>
                     <SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
