@@ -206,9 +206,13 @@ const Layout = ({ children }: LayoutProps) => {
 
   const receptionistMenuItems = [
     { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/receptionist/doctors", icon: Stethoscope, label: "Doctors" },
     { path: "/receptionist/patients", icon: Users, label: "Patients" },
     { path: "/receptionist/appointments", icon: Calendar, label: "Appointments" },
     { path: "/receptionist/walk-in", icon: Clock, label: "Walk-In Appointment" },
+    { path: "/receptionist/specializations", icon: Building2, label: "Specializations" },
+    { path: "/receptionist/allergies", icon: AlertTriangle, label: "Allergies" },
+    { path: "/receptionist/diseases", icon: HeartPulse, label: "Diseases" },
     { path: "/receptionist/finance", icon: Banknote, label: "Finance" },
   ];
 
