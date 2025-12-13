@@ -77,22 +77,30 @@ const Index = () => {
               <p className="text-xs text-muted-foreground">Complete Clinic Management</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button 
               onClick={() => navigate("/auth")} 
-              size="lg"
+              size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               Clinic Login
             </Button>
             <Button 
               onClick={() => navigate("/doctor-auth")} 
-              size="lg"
+              size="sm"
               variant="outline"
               className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
-              <Stethoscope className="mr-2 h-5 w-5" />
+              <Stethoscope className="mr-2 h-4 w-4" />
               Doctor Login
+            </Button>
+            <Button 
+              onClick={() => navigate("/receptionist-auth")} 
+              size="sm"
+              variant="outline"
+              className="border-2 border-teal-600 text-teal-600 hover:bg-teal-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              Receptionist
             </Button>
           </div>
         </div>
