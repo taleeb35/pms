@@ -31,6 +31,7 @@ interface Appointment {
   notes: string | null;
   duration_minutes: number | null;
   patient_id: string;
+  created_by: string | null;
   patients: { 
     full_name: string; 
     phone: string; 
@@ -40,6 +41,9 @@ interface Appointment {
     father_name: string | null;
     pregnancy_start_date?: string | null;
   };
+  creator: {
+    full_name: string;
+  } | null;
 }
 
 const DoctorAppointments = () => {
@@ -101,7 +105,7 @@ const DoctorAppointments = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
+      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date), creator:profiles!appointments_created_by_fkey(full_name)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
       if (error) throw error;
       setAppointments(data || []);
     } catch (error: any) {
@@ -383,7 +387,7 @@ const DoctorAppointments = () => {
         <TabsContent value="table" className="space-y-4">
           <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
             {paginatedAppointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
-              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Father Name</TableHead><TableHead>DOB</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Father Name</TableHead><TableHead>DOB</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Created By</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
               <TableBody>{paginatedAppointments.map((apt) => (
                 <TableRow key={apt.id} className="hover:bg-accent/50">
                   <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
@@ -404,6 +408,7 @@ const DoctorAppointments = () => {
                   )}
                   <TableCell>{format(new Date(apt.appointment_date), "PPP")}<br /><span className="text-sm text-muted-foreground">{apt.appointment_time}</span></TableCell>
                   <TableCell>{apt.reason || <span className="text-muted-foreground">-</span>}</TableCell>
+                  <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                   <TableCell>{getStatusBadge(apt.status)}</TableCell>
                   <TableCell><div className="flex gap-2">
                     <Button 
