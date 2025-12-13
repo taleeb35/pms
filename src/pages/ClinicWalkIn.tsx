@@ -158,6 +158,7 @@ const ClinicWalkIn = () => {
     try {
       const patientId = generatePatientId();
       const todayDate = format(new Date(), 'yyyy-MM-dd');
+      const { data: { user } } = await supabase.auth.getUser();
 
       // Step 1: Create patient
       const { data: patientData, error: patientError } = await supabase
@@ -194,7 +195,7 @@ const ClinicWalkIn = () => {
           appointment_time: appointmentForm.appointment_time,
           reason: appointmentForm.reason || null,
           status: "scheduled",
-          created_by: appointmentForm.doctor_id,
+          created_by: user?.id || null,
         });
 
       if (appointmentError) throw appointmentError;

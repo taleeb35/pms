@@ -160,6 +160,7 @@ const DoctorAppointments = () => {
         duration_minutes: parseInt(formData.get("duration_minutes") as string), reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null, 
         status: "scheduled" as const,
+        created_by: user?.id || null,
       });
       if (error) throw error;
 

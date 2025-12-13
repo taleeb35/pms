@@ -206,6 +206,7 @@ const ClinicAppointments = () => {
     }
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase.from("appointments").insert({
         doctor_id: selectedDoctorId,
         patient_id: selectedPatientId,
@@ -215,6 +216,7 @@ const ClinicAppointments = () => {
         reason: formData.get("reason") as string || null,
         notes: formData.get("notes") as string || null,
         status: "scheduled" as const,
+        created_by: user?.id || null,
       });
 
       if (error) throw error;
