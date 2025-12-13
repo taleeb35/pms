@@ -23,6 +23,7 @@ import {
   handlePhoneInput,
   handleCNICInput
 } from "@/lib/validations";
+import { useClinicId } from "@/hooks/useClinicId";
 
 interface Doctor {
   id: string;
@@ -35,6 +36,7 @@ interface Doctor {
 const ClinicWalkIn = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
   
@@ -74,8 +76,10 @@ const ClinicWalkIn = () => {
   });
 
   useEffect(() => {
-    fetchDoctors();
-  }, []);
+    if (clinicId) {
+      fetchDoctors();
+    }
+  }, [clinicId]);
 
   useEffect(() => {
     if (dobDate) {
@@ -84,14 +88,12 @@ const ClinicWalkIn = () => {
   }, [dobDate]);
 
   const fetchDoctors = async () => {
+    if (!clinicId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { data, error } = await supabase
         .from("doctors")
         .select("id, specialization, profiles(full_name)")
-        .eq("clinic_id", user.id)
+        .eq("clinic_id", clinicId)
         .order("profiles(full_name)");
 
       if (error) throw error;

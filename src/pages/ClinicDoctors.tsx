@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
 import { validateName, validatePhone, validateEmail, handleNameInput, handlePhoneInput, handleNumberInput } from "@/lib/validations";
+import { useClinicId } from "@/hooks/useClinicId";
 
 interface Doctor {
   id: string;
@@ -40,6 +41,7 @@ interface Doctor {
 
 const ClinicDoctors = () => {
   const navigate = useNavigate();
+  const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [requestedDoctors, setRequestedDoctors] = useState(0);
@@ -61,20 +63,20 @@ const ClinicDoctors = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchDoctors();
-  }, []);
+    if (clinicId) {
+      fetchDoctors();
+    }
+  }, [clinicId]);
 
   const fetchDoctors = async () => {
+    if (!clinicId) return;
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       // Fetch clinic's requested doctor limit
       const { data: clinicData, error: clinicError } = await supabase
         .from("clinics")
         .select("requested_doctors")
-        .eq("id", user.id)
+        .eq("id", clinicId)
         .single();
 
       if (clinicError) throw clinicError;
@@ -94,7 +96,7 @@ const ClinicDoctors = () => {
           introduction,
           profiles(full_name, email, date_of_birth)
         `)
-        .eq("clinic_id", user.id)
+        .eq("clinic_id", clinicId)
         .order("created_at", { ascending: false });
 
       if (doctorsError) throw doctorsError;

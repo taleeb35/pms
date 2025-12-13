@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useClinicId } from "@/hooks/useClinicId";
 
 interface Specialization {
   id: string;
@@ -37,6 +38,7 @@ interface Specialization {
 
 const ClinicSpecializations = () => {
   const { toast } = useToast();
+  const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [specializations, setSpecializations] = useState<Specialization[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -52,18 +54,18 @@ const ClinicSpecializations = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    fetchSpecializations();
-  }, []);
+    if (clinicId) {
+      fetchSpecializations();
+    }
+  }, [clinicId]);
 
   const fetchSpecializations = async () => {
+    if (!clinicId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { data, error } = await supabase
         .from("specializations")
         .select("*")
-        .eq("clinic_id", user.id)
+        .eq("clinic_id", clinicId)
         .order("name");
 
       if (error) throw error;

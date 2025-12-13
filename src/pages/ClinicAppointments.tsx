@@ -21,6 +21,7 @@ import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCal
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
+import { useClinicId } from "@/hooks/useClinicId";
 
 interface Appointment {
   id: string;
@@ -61,6 +62,7 @@ interface Doctor {
 }
 
 const ClinicAppointments = () => {
+  const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
@@ -92,8 +94,10 @@ const ClinicAppointments = () => {
   });
 
   useEffect(() => {
-    fetchDoctors();
-  }, []);
+    if (clinicId) {
+      fetchDoctors();
+    }
+  }, [clinicId]);
 
   useEffect(() => {
     if (doctors.length > 0) {
@@ -104,14 +108,12 @@ const ClinicAppointments = () => {
   }, [doctors]);
 
   const fetchDoctors = async () => {
+    if (!clinicId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { data, error } = await supabase
         .from("doctors")
         .select("id, specialization, profiles(full_name)")
-        .eq("clinic_id", user.id)
+        .eq("clinic_id", clinicId)
         .order("profiles(full_name)");
 
       if (error) throw error;
@@ -123,9 +125,6 @@ const ClinicAppointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      
       const { data, error } = await supabase
         .from("appointments")
         .select(`
