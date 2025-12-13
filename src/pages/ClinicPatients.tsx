@@ -38,6 +38,7 @@ import {
   handlePhoneInput,
   handleCNICInput
 } from "@/lib/validations";
+import { useClinicId } from "@/hooks/useClinicId";
 
 interface Patient {
   id: string;
@@ -63,6 +64,7 @@ const ClinicPatients = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const doctorIdFromParams = searchParams.get("doctorId");
+  const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -109,8 +111,10 @@ const ClinicPatients = () => {
   ];
 
   useEffect(() => {
-    fetchDoctorsAndPatients();
-  }, []);
+    if (clinicId) {
+      fetchDoctorsAndPatients();
+    }
+  }, [clinicId]);
 
   useEffect(() => {
     if (doctorIdFromParams) {
@@ -119,16 +123,14 @@ const ClinicPatients = () => {
   }, [doctorIdFromParams]);
 
   const fetchDoctorsAndPatients = async () => {
+    if (!clinicId) return;
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       // Fetch doctors under this clinic
       const { data: doctorsData, error: doctorsError } = await supabase
         .from("doctors")
         .select("id, profiles(full_name)")
-        .eq("clinic_id", user.id);
+        .eq("clinic_id", clinicId);
 
       if (doctorsError) throw doctorsError;
       setDoctors(doctorsData || []);

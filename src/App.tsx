@@ -409,6 +409,38 @@ const App = () => (
                 </Layout>
               }
             />
+            <Route
+              path="/receptionist/doctors"
+              element={
+                <Layout>
+                  <ClinicDoctors />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/specializations"
+              element={
+                <Layout>
+                  <ClinicSpecializations />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/allergies"
+              element={
+                <Layout>
+                  <ClinicAllergies />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/diseases"
+              element={
+                <Layout>
+                  <ClinicDiseases />
+                </Layout>
+              }
+            />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

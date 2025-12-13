@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useClinicId } from "@/hooks/useClinicId";
 
 interface Disease {
   id: string;
@@ -37,6 +38,7 @@ interface Disease {
 
 const ClinicDiseases = () => {
   const { toast } = useToast();
+  const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [diseases, setDiseases] = useState<Disease[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,18 +55,18 @@ const ClinicDiseases = () => {
   const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => {
-    fetchDiseases();
-  }, []);
+    if (clinicId) {
+      fetchDiseases();
+    }
+  }, [clinicId]);
 
   const fetchDiseases = async () => {
+    if (!clinicId) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { data, error } = await supabase
         .from("clinic_diseases")
         .select("*")
-        .eq("clinic_id", user.id)
+        .eq("clinic_id", clinicId)
         .order("name");
 
       if (error) throw error;
