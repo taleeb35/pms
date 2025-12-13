@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Auth from "./pages/Auth";
+import ReceptionistAuth from "./pages/ReceptionistAuth";
 import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
 import Appointments from "./pages/Appointments";
@@ -41,9 +42,11 @@ import ClinicSupport from "./pages/ClinicSupport";
 import ClinicSpecializations from "./pages/ClinicSpecializations";
 import ClinicAllergies from "./pages/ClinicAllergies";
 import ClinicDiseases from "./pages/ClinicDiseases";
+import ClinicReceptionists from "./pages/ClinicReceptionists";
 import AdminProfile from "./pages/AdminProfile";
 import AdminFinance from "./pages/AdminFinance";
 import ClinicProfile from "./pages/ClinicProfile";
+import ReceptionistDashboard from "./pages/ReceptionistDashboard";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -60,6 +63,7 @@ const App = () => (
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/receptionist-auth" element={<ReceptionistAuth />} />
             <Route
               path="/dashboard"
               element={
@@ -345,6 +349,63 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicProfile />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/receptionists"
+              element={
+                <Layout>
+                  <ClinicReceptionists />
+                </Layout>
+              }
+            />
+            {/* Receptionist Routes */}
+            <Route
+              path="/receptionist/dashboard"
+              element={
+                <Layout>
+                  <ReceptionistDashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/patients"
+              element={
+                <Layout>
+                  <ClinicPatients />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/patients/:id"
+              element={
+                <Layout>
+                  <ClinicPatientDetail />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/appointments"
+              element={
+                <Layout>
+                  <ClinicAppointments />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/walk-in"
+              element={
+                <Layout>
+                  <ClinicWalkIn />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/finance"
+              element={
+                <Layout>
+                  <ClinicFinance />
                 </Layout>
               }
             />

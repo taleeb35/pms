@@ -53,7 +53,11 @@ interface RevenueData {
   total: number;
 }
 
-const ClinicAnalyticsCharts = () => {
+interface ClinicAnalyticsChartsProps {
+  clinicId?: string; // Optional: for receptionists who need to pass the clinic ID
+}
+
+const ClinicAnalyticsCharts = ({ clinicId: propClinicId }: ClinicAnalyticsChartsProps = {}) => {
   const [activeChart, setActiveChart] = useState("gender");
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -61,6 +65,7 @@ const ClinicAnalyticsCharts = () => {
   const [revenueData, setRevenueData] = useState<RevenueData[]>([]);
   const [revenuePeriod, setRevenuePeriod] = useState("7");
   const [loading, setLoading] = useState(true);
+  const [clinicId, setClinicId] = useState<string | null>(propClinicId || null);
 
   useEffect(() => {
     fetchDoctors();
@@ -83,13 +88,17 @@ const ClinicAnalyticsCharts = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Use prop clinicId if provided (for receptionists), otherwise use user.id (for clinic owners)
+      const targetClinicId = propClinicId || user.id;
+      setClinicId(targetClinicId);
+
       const { data, error } = await supabase
         .from("doctors")
         .select(`
           id,
           profiles(full_name)
         `)
-        .eq("clinic_id", user.id);
+        .eq("clinic_id", targetClinicId);
 
       if (error) throw error;
       setDoctors(data || []);

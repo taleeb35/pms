@@ -60,12 +60,15 @@ const Layout = ({ children }: LayoutProps) => {
       navigate("/doctor-auth");
     } else if (userRole === "clinic") {
       navigate("/auth");
+    } else if (userRole === "receptionist") {
+      navigate("/receptionist-auth");
     } else {
       navigate("/admin-login");
     }
   };
 
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [clinicId, setClinicId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -92,6 +95,19 @@ const Layout = ({ children }: LayoutProps) => {
       
       if (clinicData) {
         setUserRole("clinic");
+        return;
+      }
+
+      // Check if user is a receptionist
+      const { data: receptionistData } = await supabase
+        .from("clinic_receptionists")
+        .select("clinic_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      if (receptionistData) {
+        setUserRole("receptionist");
+        setClinicId(receptionistData.clinic_id);
         return;
       }
       
@@ -167,6 +183,7 @@ const Layout = ({ children }: LayoutProps) => {
   const clinicMenuItems = [
     { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/clinic/doctors", icon: Stethoscope, label: "Doctors" },
+    { path: "/clinic/receptionists", icon: UserCog, label: "Receptionists" },
     { path: "/clinic/patients", icon: Users, label: "Patients" },
     { path: "/clinic/appointments", icon: Calendar, label: "Appointments" },
     { path: "/clinic/walk-in", icon: Clock, label: "Walk-In Appointment" },
@@ -178,10 +195,20 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
   ];
 
+  const receptionistMenuItems = [
+    { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/receptionist/patients", icon: Users, label: "Patients" },
+    { path: "/receptionist/appointments", icon: Calendar, label: "Appointments" },
+    { path: "/receptionist/walk-in", icon: Clock, label: "Walk-In Appointment" },
+    { path: "/receptionist/finance", icon: Banknote, label: "Finance" },
+  ];
+
   const menuItems = userRole === "doctor" 
     ? doctorMenuItems 
     : userRole === "clinic" 
     ? clinicMenuItems 
+    : userRole === "receptionist"
+    ? receptionistMenuItems
     : adminMenuItems;
 
   if (!user) return null;
