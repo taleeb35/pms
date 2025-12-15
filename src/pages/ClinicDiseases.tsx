@@ -83,15 +83,12 @@ const ClinicDiseases = () => {
   };
 
   const handleAddDisease = async () => {
-    if (!newDiseaseName.trim()) return;
+    if (!newDiseaseName.trim() || !clinicId) return;
     setSubmitting(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       const { error } = await supabase.from("clinic_diseases").insert({
-        clinic_id: user.id,
+        clinic_id: clinicId,
         name: newDiseaseName.trim(),
       });
 

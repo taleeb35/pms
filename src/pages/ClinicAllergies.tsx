@@ -83,15 +83,12 @@ const ClinicAllergies = () => {
   };
 
   const handleAddAllergy = async () => {
-    if (!newAllergyName.trim()) return;
+    if (!newAllergyName.trim() || !clinicId) return;
     setSubmitting(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
       const { error } = await supabase.from("clinic_allergies").insert({
-        clinic_id: user.id,
+        clinic_id: clinicId,
         name: newAllergyName.trim(),
       });
 
