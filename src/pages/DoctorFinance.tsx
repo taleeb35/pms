@@ -44,6 +44,8 @@ export default function DoctorFinance() {
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
   const [doctorShare, setDoctorShare] = useState(0);
@@ -330,7 +332,7 @@ export default function DoctorFinance() {
           <p className="text-muted-foreground">Track your revenue and share breakdown by date</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Popover>
+          <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -343,19 +345,18 @@ export default function DoctorFinance() {
                 {startDate ? format(startDate, "PP") : <span>Start Date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
+            <PopoverContent className="w-auto p-0 bg-background" align="end">
               <Calendar
                 mode="single"
                 selected={startDate}
-                onSelect={setStartDate}
-                initialFocus
+                onSelect={(date) => { setStartDate(date); setStartDateOpen(false); }}
                 disabled={(date) => date > new Date() || (endDate ? date > endDate : false)}
                 className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
           </Popover>
           <span className="text-muted-foreground">to</span>
-          <Popover>
+          <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -368,12 +369,11 @@ export default function DoctorFinance() {
                 {endDate ? format(endDate, "PP") : <span>End Date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
+            <PopoverContent className="w-auto p-0 bg-background" align="end">
               <Calendar
                 mode="single"
                 selected={endDate}
-                onSelect={setEndDate}
-                initialFocus
+                onSelect={(date) => { setEndDate(date); setEndDateOpen(false); }}
                 disabled={(date) => date > new Date() || (startDate ? date < startDate : false)}
                 className={cn("p-3 pointer-events-auto")}
               />

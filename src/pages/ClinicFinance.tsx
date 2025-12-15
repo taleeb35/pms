@@ -48,6 +48,8 @@ export default function ClinicFinance() {
   const [clinicDetails, setClinicDetails] = useState<ClinicDetails | null>(null);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("all");
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
@@ -413,7 +415,7 @@ export default function ClinicFinance() {
               ))}
             </SelectContent>
           </Select>
-          <Popover>
+          <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -426,19 +428,18 @@ export default function ClinicFinance() {
                 {startDate ? format(startDate, "PP") : <span>Start Date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
+            <PopoverContent className="w-auto p-0 bg-background" align="end">
               <Calendar
                 mode="single"
                 selected={startDate}
-                onSelect={setStartDate}
+                onSelect={(date) => { setStartDate(date); setStartDateOpen(false); }}
                 disabled={(date) => date > new Date() || (endDate ? date > endDate : false)}
-                initialFocus
                 className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
           </Popover>
           <span className="text-muted-foreground">to</span>
-          <Popover>
+          <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -451,13 +452,12 @@ export default function ClinicFinance() {
                 {endDate ? format(endDate, "PP") : <span>End Date</span>}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
+            <PopoverContent className="w-auto p-0 bg-background" align="end">
               <Calendar
                 mode="single"
                 selected={endDate}
-                onSelect={setEndDate}
+                onSelect={(date) => { setEndDate(date); setEndDateOpen(false); }}
                 disabled={(date) => date > new Date() || (startDate ? date < startDate : false)}
-                initialFocus
                 className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
