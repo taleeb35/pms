@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Clock, Edit, Search, Trash2 } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -23,6 +23,7 @@ import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { useClinicId } from "@/hooks/useClinicId";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { TimeSelect } from "@/components/TimeSelect";
 
 interface Appointment {
   id: string;
@@ -90,13 +91,9 @@ const ClinicAppointments = () => {
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [selectedDoctorId, setSelectedDoctorId] = useState("");
   const [selectedGynecologist, setSelectedGynecologist] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState("");
+  const [editSelectedTime, setEditSelectedTime] = useState("");
   const { toast } = useToast();
-
-  const timeSlots = Array.from({ length: 48 }, (_, i) => {
-    const hours = Math.floor(i / 2);
-    const minutes = (i % 2) * 30;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  });
 
   useEffect(() => {
     if (clinicId) {
@@ -209,7 +206,7 @@ const ClinicAppointments = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
-      const appointmentTime = formData.get("appointment_time") as string;
+      const appointmentTime = selectedTime;
 
       // Check for double booking
       const { available, error: slotError } = await isTimeSlotAvailable(
@@ -254,6 +251,7 @@ const ClinicAppointments = () => {
       setSelectedDate(undefined);
       setSelectedPatientId("");
       setSelectedDoctorId("");
+      setSelectedTime("");
       fetchAppointments();
       fetchWaitlistPatients();
       (e.target as HTMLFormElement).reset();
@@ -268,7 +266,7 @@ const ClinicAppointments = () => {
     const formData = new FormData(e.currentTarget);
     const newDoctorId = formData.get("doctor_id") as string;
     const appointmentDate = format(editDate, "yyyy-MM-dd");
-    const appointmentTime = formData.get("appointment_time") as string;
+    const appointmentTime = editSelectedTime;
     
     try {
       // Check for double booking (exclude current appointment)
@@ -345,6 +343,7 @@ const ClinicAppointments = () => {
   const openEditDialog = (appointment: Appointment) => {
     setEditingAppointment(appointment);
     setEditDate(new Date(appointment.appointment_date));
+    setEditSelectedTime(appointment.appointment_time?.slice(0, 5) || "");
     setShowEditDialog(true);
   };
 
@@ -465,10 +464,7 @@ const ClinicAppointments = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="appointment_time">Time</Label>
-                  <Select name="appointment_time" required>
-                    <SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger>
-                    <SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <TimeSelect value={selectedTime} onValueChange={setSelectedTime} name="appointment_time" required />
                 </div>
               </div>
               <div className="space-y-2">
@@ -703,10 +699,7 @@ const ClinicAppointments = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit_appointment_time">Time</Label>
-                  <Select name="appointment_time" defaultValue={editingAppointment.appointment_time?.slice(0, 5)} required>
-                    <SelectTrigger><SelectValue placeholder="Select Time" /></SelectTrigger>
-                    <SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent>
-                  </Select>
+                  <TimeSelect value={editSelectedTime} onValueChange={setEditSelectedTime} name="appointment_time" required />
                 </div>
               </div>
               <div className="space-y-2">
