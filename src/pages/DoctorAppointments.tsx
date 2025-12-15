@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Clock, Edit, Search, Trash2 } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2 } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -22,6 +22,7 @@ import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { TimeSelect } from "@/components/TimeSelect";
 
 interface Appointment {
   id: string;
@@ -68,13 +69,9 @@ const DoctorAppointments = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [isGynecologist, setIsGynecologist] = useState(false);
+  const [selectedTime, setSelectedTime] = useState("");
+  const [editSelectedTime, setEditSelectedTime] = useState("");
   const { toast } = useToast();
-
-  const timeSlots = Array.from({ length: 48 }, (_, i) => {
-    const hours = Math.floor(i / 2);
-    const minutes = (i % 2) * 30;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  });
 
   useEffect(() => {
     fetchAppointments();
@@ -155,7 +152,7 @@ const DoctorAppointments = () => {
       const { data: { user } } = await supabase.auth.getUser();
       const patientId = selectedPatientId;
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
-      const appointmentTime = formData.get("appointment_time") as string;
+      const appointmentTime = selectedTime;
 
       // Check for double booking
       const { available } = await isTimeSlotAvailable(
@@ -198,6 +195,7 @@ const DoctorAppointments = () => {
       setShowAddDialog(false);
       setSelectedDate(undefined);
       setSelectedPatientId("");
+      setSelectedTime("");
       fetchAppointments();
       fetchWaitlistPatients();
       (e.target as HTMLFormElement).reset();
@@ -212,7 +210,7 @@ const DoctorAppointments = () => {
     const formData = new FormData(e.currentTarget);
     const { data: { user } } = await supabase.auth.getUser();
     const appointmentDate = format(editDate, "yyyy-MM-dd");
-    const appointmentTime = formData.get("appointment_time") as string;
+    const appointmentTime = editSelectedTime;
 
     try {
       // Check for double booking (exclude current appointment)
@@ -287,6 +285,7 @@ const DoctorAppointments = () => {
   const openEditDialog = (appointment: Appointment) => {
     setEditingAppointment(appointment);
     setEditDate(new Date(appointment.appointment_date));
+    setEditSelectedTime(appointment.appointment_time?.slice(0, 5) || "");
     setShowEditDialog(true);
   };
 
@@ -367,7 +366,7 @@ const DoctorAppointments = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><Select name="appointment_time" required><SelectTrigger><SelectValue placeholder="Select time" /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><TimeSelect value={selectedTime} onValueChange={setSelectedTime} name="appointment_time" required /></div>
               </div>
               <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
               <div className="space-y-2"><Label htmlFor="reason">Reason for Visit</Label><Input id="reason" name="reason" placeholder="e.g., Regular checkup" /></div>
@@ -579,7 +578,7 @@ const DoctorAppointments = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !editDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{editDate ? format(editDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label>Time</Label><Select name="appointment_time" defaultValue={editingAppointment.appointment_time?.slice(0, 5)} required><SelectTrigger><SelectValue placeholder="Select Time" /></SelectTrigger><SelectContent>{timeSlots.map((time) => <SelectItem key={time} value={time}>{time}</SelectItem>)}</SelectContent></Select></div>
+                <div className="space-y-2"><Label>Time</Label><TimeSelect value={editSelectedTime} onValueChange={setEditSelectedTime} name="appointment_time" required /></div>
               </div>
               <div className="space-y-2"><Label htmlFor="edit_duration_minutes">Duration (minutes)</Label><Input id="edit_duration_minutes" name="duration_minutes" type="number" defaultValue={editingAppointment.duration_minutes || 30} min={15} step={15} required /></div>
               <div className="space-y-2"><Label htmlFor="edit_reason">Reason for Visit</Label><Input id="edit_reason" name="reason" defaultValue={editingAppointment.reason || ""} placeholder="e.g., Regular checkup" /></div>

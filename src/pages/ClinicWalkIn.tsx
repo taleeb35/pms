@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar as CalendarIcon, UserPlus, ArrowLeft } from "lucide-react";
+import { UserPlus, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
@@ -25,6 +25,8 @@ import {
 } from "@/lib/validations";
 import { useClinicId } from "@/hooks/useClinicId";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { TimeSelect } from "@/components/TimeSelect";
+import { Calendar as CalendarIcon } from "lucide-react";
 
 interface Doctor {
   id: string;
@@ -69,12 +71,6 @@ const ClinicWalkIn = () => {
   const [dobDate, setDobDate] = useState<Date>();
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  const timeSlots = Array.from({ length: 48 }, (_, i) => {
-    const hours = Math.floor(i / 2);
-    const minutes = (i % 2) * 30;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  });
 
   useEffect(() => {
     if (clinicId) {
@@ -502,21 +498,10 @@ const ClinicWalkIn = () => {
 
               <div className="space-y-2">
                 <Label>Appointment Time *</Label>
-                <Select
+                <TimeSelect
                   value={appointmentForm.appointment_time}
                   onValueChange={(value) => setAppointmentForm(prev => ({ ...prev, appointment_time: value }))}
-                >
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background z-50 max-h-60">
-                    {timeSlots.map((time) => (
-                      <SelectItem key={time} value={time}>
-                        {time}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </div>
 
               <div className="space-y-2">
