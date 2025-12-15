@@ -124,6 +124,7 @@ const DoctorPatients = () => {
   const [filterAge, setFilterAge] = useState("");
   const [filterGender, setFilterGender] = useState("");
   const [filterCity, setFilterCity] = useState("");
+  const [filterDelivery, setFilterDelivery] = useState("");
   const [editForm, setEditForm] = useState<{
     full_name: string;
     father_name: string;
@@ -243,7 +244,7 @@ const DoctorPatients = () => {
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery]);
 
   const fetchWaitlistPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -337,6 +338,27 @@ const DoctorPatients = () => {
           if (filterAge === "19-40") return age >= 19 && age <= 40;
           if (filterAge === "41-60") return age >= 41 && age <= 60;
           if (filterAge === "60+") return age > 60;
+          return true;
+        });
+      }
+
+      // Apply delivery date filter for gynecologists
+      if (filterDelivery && filterDelivery !== "all") {
+        filteredData = filteredData.filter(patient => {
+          if (!patient.pregnancy_start_date) return false;
+          
+          const pregnancyStart = new Date(patient.pregnancy_start_date);
+          const expectedDelivery = new Date(pregnancyStart);
+          expectedDelivery.setDate(expectedDelivery.getDate() + 280); // 40 weeks
+          
+          const today = new Date();
+          const daysUntilDelivery = Math.ceil((expectedDelivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (filterDelivery === "7") return daysUntilDelivery >= 0 && daysUntilDelivery <= 7;
+          if (filterDelivery === "14") return daysUntilDelivery >= 0 && daysUntilDelivery <= 14;
+          if (filterDelivery === "30") return daysUntilDelivery >= 0 && daysUntilDelivery <= 30;
+          if (filterDelivery === "60") return daysUntilDelivery >= 0 && daysUntilDelivery <= 60;
+          if (filterDelivery === "90") return daysUntilDelivery >= 0 && daysUntilDelivery <= 90;
           return true;
         });
       }
@@ -935,6 +957,21 @@ const DoctorPatients = () => {
                 label=""
                 showAllOption={true}
               />
+              {isGynecologist && (
+                <Select value={filterDelivery} onValueChange={setFilterDelivery}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Delivery Due" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Patients</SelectItem>
+                    <SelectItem value="7">Delivery in 7 days</SelectItem>
+                    <SelectItem value="14">Delivery in 14 days</SelectItem>
+                    <SelectItem value="30">Delivery in 30 days</SelectItem>
+                    <SelectItem value="60">Delivery in 2 months</SelectItem>
+                    <SelectItem value="90">Delivery in 3 months</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           </div>
         </CardHeader>
