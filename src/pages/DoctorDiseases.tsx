@@ -296,8 +296,7 @@ const DoctorDiseases = () => {
             </Table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Rows per page:</span>
                 <Select
@@ -338,9 +337,8 @@ const DoctorDiseases = () => {
                 >
                   Next
                 </Button>
-              </div>
             </div>
-          )}
+          </div>
         </CardContent>
       </Card>
 
