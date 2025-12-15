@@ -1095,6 +1095,22 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Allergies</p>
                                       <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
                                     </div>
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && (
+                                      <>
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
+                                          <p className="font-medium text-primary">{calculatePregnancyDuration(selectedPatient.pregnancy_start_date)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Expected Delivery Date</p>
+                                          <p className="font-medium text-primary">
+                                            {calculateExpectedDueDate(selectedPatient.pregnancy_start_date) 
+                                              ? format(calculateExpectedDueDate(selectedPatient.pregnancy_start_date)!, "PPP")
+                                              : "N/A"}
+                                          </p>
+                                        </div>
+                                      </>
+                                    )}
                                   </div>
                                 </TabsContent>
                                 <TabsContent value="history" className="space-y-4">
