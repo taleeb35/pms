@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { VisitHistory } from "./VisitHistory";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { TimeSelect } from "./TimeSelect";
 
 interface Procedure {
   id: string;
@@ -45,6 +46,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [nextVisitDate, setNextVisitDate] = useState<Date>();
+  const [nextVisitTime, setNextVisitTime] = useState<string>("");
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
   const [pregnancyDatePopoverOpen, setPregnancyDatePopoverOpen] = useState(false);
@@ -92,6 +94,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Reset procedure selection
       setSelectedProcedure("");
       setProcedureFee("");
+      // Reset next visit
+      setNextVisitDate(undefined);
+      setNextVisitTime("");
       // Reset form when dialog closes
       setFormData({
         blood_pressure: "",
@@ -657,7 +662,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Create new appointment if next visit date is set
       if (nextVisitDate) {
         const followUpDate = format(nextVisitDate, "yyyy-MM-dd");
-        const followUpTime = appointment.appointment_time;
+        const followUpTime = nextVisitTime || appointment.appointment_time;
 
         // Check for double booking for follow-up
         const { available } = await isTimeSlotAvailable(
@@ -950,6 +955,14 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                         />
                       </PopoverContent>
                     </Popover>
+                  </div>
+                  <div>
+                    <Label>Next Visit Time</Label>
+                    <TimeSelect
+                      value={nextVisitTime}
+                      onValueChange={setNextVisitTime}
+                      placeholder="Select time"
+                    />
                   </div>
                   <div>
                     <Label>Notes</Label>
