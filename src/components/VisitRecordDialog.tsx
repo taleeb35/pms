@@ -235,10 +235,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     if (data) {
       setExistingRecord(data);
       
-      // Fetch appointment fees
+      // Fetch appointment fees and procedure
       const { data: appointmentData } = await supabase
         .from("appointments")
-        .select("consultation_fee, other_fee")
+        .select("consultation_fee, other_fee, procedure_id, procedure_fee")
         .eq("id", appointment.id)
         .single();
       
@@ -256,6 +256,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
       });
+      
+      // Load saved procedure if exists
+      if (appointmentData?.procedure_id) {
+        setSelectedProcedure(appointmentData.procedure_id);
+        setProcedureFee(appointmentData.procedure_fee?.toString() || "");
+      }
+      
       if (data.next_visit_date) {
         setNextVisitDate(new Date(data.next_visit_date));
       }
@@ -965,12 +972,12 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                   {procedures.length > 0 && (
                     <div>
                       <Label>Select Procedure</Label>
-                      <Select value={selectedProcedure} onValueChange={handleProcedureChange}>
+                      <Select value={selectedProcedure || "none"} onValueChange={(val) => handleProcedureChange(val === "none" ? "" : val)}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a procedure (optional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">No Procedure</SelectItem>
+                          <SelectItem value="none">No Procedure</SelectItem>
                           {procedures.map((proc) => (
                             <SelectItem key={proc.id} value={proc.id}>
                               {proc.name} - {proc.price.toFixed(2)}
