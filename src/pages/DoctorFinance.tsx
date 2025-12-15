@@ -42,7 +42,8 @@ export default function DoctorFinance() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
   const [doctorShare, setDoctorShare] = useState(0);
@@ -58,7 +59,7 @@ export default function DoctorFinance() {
     if (doctorDetails) {
       fetchRevenue();
     }
-  }, [selectedDate, doctorDetails]);
+  }, [startDate, endDate, doctorDetails]);
 
   const fetchDoctorDetails = async () => {
     try {
@@ -128,8 +129,11 @@ export default function DoctorFinance() {
         .eq("status", "completed")
         .order("appointment_date", { ascending: false });
 
-      if (selectedDate) {
-        query = query.eq("appointment_date", format(selectedDate, "yyyy-MM-dd"));
+      if (startDate) {
+        query = query.gte("appointment_date", format(startDate, "yyyy-MM-dd"));
+      }
+      if (endDate) {
+        query = query.lte("appointment_date", format(endDate, "yyyy-MM-dd"));
       }
 
       const { data, error } = await query;
@@ -201,9 +205,13 @@ export default function DoctorFinance() {
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    const reportTitle = selectedDate 
-      ? `Revenue Report - ${format(selectedDate, "MMMM d, yyyy")}`
-      : "Revenue Report - All Time";
+    const reportTitle = startDate && endDate 
+      ? `Revenue Report - ${format(startDate, "MMM d, yyyy")} to ${format(endDate, "MMM d, yyyy")}`
+      : startDate 
+        ? `Revenue Report - From ${format(startDate, "MMM d, yyyy")}`
+        : endDate 
+          ? `Revenue Report - Until ${format(endDate, "MMM d, yyyy")}`
+          : "Revenue Report - All Time";
     doc.text(reportTitle, 14, 58);
     
     // Generated date
@@ -292,8 +300,8 @@ export default function DoctorFinance() {
     });
     
     // Save
-    const fileName = selectedDate 
-      ? `Revenue_Report_${format(selectedDate, "yyyy-MM-dd")}.pdf`
+    const fileName = startDate && endDate 
+      ? `Revenue_Report_${format(startDate, "yyyy-MM-dd")}_to_${format(endDate, "yyyy-MM-dd")}.pdf`
       : `Revenue_Report_All_Time.pdf`;
     doc.save(fileName);
     
@@ -321,33 +329,59 @@ export default function DoctorFinance() {
           <h1 className="text-3xl font-bold">Finance Management</h1>
           <p className="text-muted-foreground">Track your revenue and share breakdown by date</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[200px] justify-start text-left font-normal",
-                  !selectedDate && "text-muted-foreground"
+                  "w-[160px] justify-start text-left font-normal",
+                  !startDate && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "PPP") : <span>All Time</span>}
+                {startDate ? format(startDate, "PP") : <span>Start Date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
               <Calendar
                 mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
+                selected={startDate}
+                onSelect={setStartDate}
                 initialFocus
-                disabled={(date) => date > new Date()}
+                disabled={(date) => date > new Date() || (endDate ? date > endDate : false)}
+                className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
           </Popover>
-          {selectedDate && (
-            <Button variant="ghost" size="sm" onClick={() => setSelectedDate(undefined)}>
-              Clear Date
+          <span className="text-muted-foreground">to</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[160px] justify-start text-left font-normal",
+                  !endDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {endDate ? format(endDate, "PP") : <span>End Date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={setEndDate}
+                initialFocus
+                disabled={(date) => date > new Date() || (startDate ? date < startDate : false)}
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          {(startDate || endDate) && (
+            <Button variant="ghost" size="sm" onClick={() => { setStartDate(undefined); setEndDate(undefined); }}>
+              Clear
             </Button>
           )}
           <Button onClick={generatePDF} className="gap-2">
@@ -366,7 +400,13 @@ export default function DoctorFinance() {
               Total Revenue
             </CardTitle>
             <CardDescription className="text-green-100">
-              {selectedDate ? format(selectedDate, "PPP") : "All time"}
+              {startDate && endDate 
+                ? `${format(startDate, "PP")} - ${format(endDate, "PP")}` 
+                : startDate 
+                  ? `From ${format(startDate, "PP")}` 
+                  : endDate 
+                    ? `Until ${format(endDate, "PP")}` 
+                    : "All time"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -444,7 +484,7 @@ export default function DoctorFinance() {
             </div>
           ) : appointments.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              No completed appointments found{selectedDate ? " for this date" : ""}.
+              No completed appointments found{(startDate || endDate) ? " for selected date range" : ""}.
             </p>
           ) : (
             <>

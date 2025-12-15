@@ -46,7 +46,8 @@ export default function ClinicFinance() {
   const [appointments, setAppointments] = useState<AppointmentRevenue[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [clinicDetails, setClinicDetails] = useState<ClinicDetails | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("all");
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
@@ -61,7 +62,7 @@ export default function ClinicFinance() {
 
   useEffect(() => {
     fetchRevenue();
-  }, [selectedDate, selectedDoctor, doctors]);
+  }, [startDate, endDate, selectedDoctor, doctors]);
 
   const fetchClinicDetails = async () => {
     try {
@@ -171,8 +172,11 @@ export default function ClinicFinance() {
         .eq("status", "completed")
         .order("appointment_date", { ascending: false });
 
-      if (selectedDate) {
-        query = query.eq("appointment_date", format(selectedDate, "yyyy-MM-dd"));
+      if (startDate) {
+        query = query.gte("appointment_date", format(startDate, "yyyy-MM-dd"));
+      }
+      if (endDate) {
+        query = query.lte("appointment_date", format(endDate, "yyyy-MM-dd"));
       }
 
       const { data, error } = await query;
@@ -278,9 +282,13 @@ export default function ClinicFinance() {
     const doctorName = selectedDoctor === "all" 
       ? "All Doctors" 
       : doctors.find(d => d.id === selectedDoctor)?.name || "Unknown";
-    const dateRange = selectedDate 
-      ? format(selectedDate, "MMMM d, yyyy") 
-      : "All Time";
+    const dateRange = startDate && endDate 
+      ? `${format(startDate, "MMM d, yyyy")} to ${format(endDate, "MMM d, yyyy")}`
+      : startDate 
+        ? `From ${format(startDate, "MMM d, yyyy")}`
+        : endDate 
+          ? `Until ${format(endDate, "MMM d, yyyy")}`
+          : "All Time";
     
     doc.text(`Doctor: ${doctorName} | Period: ${dateRange}`, 14, 66);
     doc.text(`Generated on: ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`, 14, 73);
@@ -410,30 +418,55 @@ export default function ClinicFinance() {
               <Button
                 variant="outline"
                 className={cn(
-                  "w-[200px] justify-start text-left font-normal",
-                  !selectedDate && "text-muted-foreground"
+                  "w-[160px] justify-start text-left font-normal",
+                  !startDate && "text-muted-foreground"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "PPP") : <span>All Time</span>}
+                {startDate ? format(startDate, "PP") : <span>Start Date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
               <Calendar
                 mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                disabled={(date) => date > new Date()}
+                selected={startDate}
+                onSelect={setStartDate}
+                disabled={(date) => date > new Date() || (endDate ? date > endDate : false)}
                 initialFocus
                 className={cn("p-3 pointer-events-auto")}
               />
             </PopoverContent>
           </Popover>
-          {selectedDate && (
+          <span className="text-muted-foreground">to</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[160px] justify-start text-left font-normal",
+                  !endDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {endDate ? format(endDate, "PP") : <span>End Date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={setEndDate}
+                disabled={(date) => date > new Date() || (startDate ? date < startDate : false)}
+                initialFocus
+                className={cn("p-3 pointer-events-auto")}
+              />
+            </PopoverContent>
+          </Popover>
+          {(startDate || endDate) && (
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setSelectedDate(undefined)}
+              onClick={() => { setStartDate(undefined); setEndDate(undefined); }}
               title="Clear date filter"
             >
               <X className="h-4 w-4" />
@@ -460,7 +493,13 @@ export default function ClinicFinance() {
               Total Revenue
             </CardTitle>
             <CardDescription className="text-green-100 text-sm">
-              {selectedDate ? format(selectedDate, "MMM d, yyyy") : "All time"}
+              {startDate && endDate 
+                ? `${format(startDate, "PP")} - ${format(endDate, "PP")}` 
+                : startDate 
+                  ? `From ${format(startDate, "PP")}` 
+                  : endDate 
+                    ? `Until ${format(endDate, "PP")}` 
+                    : "All time"}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -520,7 +559,7 @@ export default function ClinicFinance() {
             <div>
               <CardTitle>Appointments Revenue</CardTitle>
               <CardDescription>
-                Revenue breakdown for each appointment on {selectedDate ? format(selectedDate, "PPP") : "selected date"}
+                Revenue breakdown for each appointment {(startDate || endDate) ? "in selected date range" : ""}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
@@ -542,7 +581,7 @@ export default function ClinicFinance() {
         <CardContent>
           {appointments.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              No completed appointments found for this date.
+              No completed appointments found{(startDate || endDate) ? " for selected date range" : ""}.
             </p>
           ) : (
             <>
