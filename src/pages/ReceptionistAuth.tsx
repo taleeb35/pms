@@ -18,6 +18,7 @@ const ReceptionistAuth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [clinicInactiveDialog, setClinicInactiveDialog] = useState(false);
+  const [accountInactiveDialog, setAccountInactiveDialog] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +46,7 @@ const ReceptionistAuth = () => {
       // Check if user is a receptionist
       const { data: receptionistData, error: receptionistError } = await supabase
         .from("clinic_receptionists")
-        .select("clinic_id")
+        .select("clinic_id, status")
         .eq("user_id", data.user.id)
         .maybeSingle();
 
@@ -54,6 +55,13 @@ const ReceptionistAuth = () => {
       if (!receptionistData) {
         await supabase.auth.signOut();
         throw new Error("This account is not registered as a receptionist");
+      }
+
+      // Check if receptionist account is active
+      if (receptionistData.status !== "active") {
+        await supabase.auth.signOut();
+        setAccountInactiveDialog(true);
+        return;
       }
 
       // Check if clinic is active
@@ -177,6 +185,19 @@ const ReceptionistAuth = () => {
             </DialogDescription>
           </DialogHeader>
           <Button onClick={() => setClinicInactiveDialog(false)}>Close</Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Account Inactive Dialog */}
+      <Dialog open={accountInactiveDialog} onOpenChange={setAccountInactiveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Account Not Active</DialogTitle>
+            <DialogDescription>
+              Your receptionist account is currently inactive (draft). Please contact your clinic administrator to activate your account.
+            </DialogDescription>
+          </DialogHeader>
+          <Button onClick={() => setAccountInactiveDialog(false)}>Close</Button>
         </DialogContent>
       </Dialog>
     </div>
