@@ -36,6 +36,7 @@ interface Appointment {
   patient_id: string;
   doctor_id: string;
   created_by: string | null;
+  icd_code_id: string | null;
   patients: { 
     full_name: string; 
     phone: string; 
@@ -48,6 +49,17 @@ interface Appointment {
   creator: {
     full_name: string;
   } | null;
+  icd_code: {
+    id: string;
+    code: string;
+    description: string;
+  } | null;
+}
+
+interface ICDCode {
+  id: string;
+  code: string;
+  description: string;
 }
 
 const DoctorAppointments = () => {
@@ -73,6 +85,8 @@ const DoctorAppointments = () => {
   const [isGynecologist, setIsGynecologist] = useState(false);
   const [selectedTime, setSelectedTime] = useState("");
   const [editSelectedTime, setEditSelectedTime] = useState("");
+  const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
+  const [icdCodeFilter, setIcdCodeFilter] = useState("all");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -80,6 +94,7 @@ const DoctorAppointments = () => {
     fetchPatients();
     fetchWaitlistPatients();
     checkDoctorSpecialization();
+    fetchICDCodes();
   }, []);
 
   const checkDoctorSpecialization = async () => {
@@ -105,13 +120,40 @@ const DoctorAppointments = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date), creator:profiles!appointments_created_by_fkey(full_name)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
+      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date), creator:profiles!appointments_created_by_fkey(full_name), icd_code:clinic_icd_codes(id, code, description)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
       if (error) throw error;
       setAppointments(data || []);
     } catch (error: any) {
       toast({ title: "Error fetching appointments", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchICDCodes = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get doctor's clinic_id first
+      const { data: doctorData } = await supabase
+        .from("doctors")
+        .select("clinic_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (doctorData?.clinic_id) {
+        const { data, error } = await supabase
+          .from("clinic_icd_codes")
+          .select("id, code, description")
+          .eq("clinic_id", doctorData.clinic_id)
+          .order("code");
+
+        if (error) throw error;
+        setIcdCodes(data || []);
+      }
+    } catch (error: any) {
+      console.error("Error fetching ICD codes:", error);
     }
   };
 
@@ -337,6 +379,11 @@ const DoctorAppointments = () => {
         apt.patients.patient_id?.toLowerCase().includes(query)
       );
     }
+
+    // Apply ICD code filter
+    if (icdCodeFilter && icdCodeFilter !== "all") {
+      filtered = filtered.filter(apt => apt.icd_code_id === icdCodeFilter);
+    }
     
     return filtered;
   };
@@ -419,6 +466,20 @@ const DoctorAppointments = () => {
               <SelectItem value="tomorrow">Tomorrow</SelectItem>
               <SelectItem value="day_after">Day After Tomorrow</SelectItem>
               <SelectItem value="week">Within 7 Days</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={icdCodeFilter} onValueChange={setIcdCodeFilter}>
+            <SelectTrigger className="w-[200px] bg-background">
+              <SelectValue placeholder="Filter by ICD Code" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50 max-h-[300px]">
+              <SelectItem value="all">All ICD Codes</SelectItem>
+              {icdCodes.map((code) => (
+                <SelectItem key={code.id} value={code.id}>
+                  {code.code} - {code.description}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           
