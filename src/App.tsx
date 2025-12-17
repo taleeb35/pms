@@ -43,6 +43,7 @@ import ClinicSpecializations from "./pages/ClinicSpecializations";
 import ClinicAllergies from "./pages/ClinicAllergies";
 import ClinicDiseases from "./pages/ClinicDiseases";
 import ClinicReceptionists from "./pages/ClinicReceptionists";
+import ClinicProcedures from "./pages/ClinicProcedures";
 import AdminProfile from "./pages/AdminProfile";
 import AdminFinance from "./pages/AdminFinance";
 import ClinicProfile from "./pages/ClinicProfile";
@@ -337,6 +338,14 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/procedures"
+              element={
+                <Layout>
+                  <ClinicProcedures />
+                </Layout>
+              }
+            />
+            <Route
               path="/admin/profile"
               element={
                 <Layout>
@@ -438,6 +447,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicDiseases />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/procedures"
+              element={
+                <Layout>
+                  <ClinicProcedures />
                 </Layout>
               }
             />
