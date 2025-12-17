@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2 } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -582,80 +583,70 @@ const ClinicAppointments = () => {
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                         <TableCell>{getStatusBadge(apt.status)}</TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => openEditDialog(apt)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              onClick={() => openVisitDialog(apt)}
-                            >
-                              Record Visit
-                            </Button>
-                            {apt.status === "scheduled" && (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => handleUpdateStatus(apt.id, "confirmed")}
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                Confirm
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreVertical className="h-4 w-4" />
                               </Button>
-                            )}
-                            {apt.status === "confirmed" && (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => handleUpdateStatus(apt.id, "in_progress")}
-                              >
-                                Start
-                              </Button>
-                            )}
-                            {apt.status === "in_progress" && (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => handleUpdateStatus(apt.id, "completed")}
-                              >
-                                Complete
-                              </Button>
-                            )}
-                            {(apt.status === "scheduled" || apt.status === "confirmed") && (
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => handleUpdateStatus(apt.id, "cancelled")}
-                              >
-                                Cancel
-                              </Button>
-                            )}
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button size="sm" variant="outline" className="text-destructive hover:text-destructive">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete this appointment for {apt.patients.full_name}? This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction onClick={() => handleDeleteAppointment(apt.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-background z-50">
+                              <DropdownMenuItem onClick={() => openEditDialog(apt)}>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => openVisitDialog(apt)}>
+                                <FileText className="h-4 w-4 mr-2" />
+                                Record Visit
+                              </DropdownMenuItem>
+                              {apt.status === "scheduled" && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
+                                  <Check className="h-4 w-4 mr-2" />
+                                  Confirm
+                                </DropdownMenuItem>
+                              )}
+                              {apt.status === "confirmed" && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "in_progress")}>
+                                  <Play className="h-4 w-4 mr-2" />
+                                  Start
+                                </DropdownMenuItem>
+                              )}
+                              {apt.status === "in_progress" && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "completed")}>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Complete
+                                </DropdownMenuItem>
+                              )}
+                              {(apt.status === "scheduled" || apt.status === "confirmed") && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "cancelled")}>
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Cancel
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
+                                    <Trash2 className="h-4 w-4 mr-2" />
                                     Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete this appointment for {apt.patients.full_name}? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteAppointment(apt.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
