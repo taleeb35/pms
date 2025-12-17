@@ -62,6 +62,7 @@ export type Database = {
           created_by: string | null
           doctor_id: string
           duration_minutes: number | null
+          icd_code_id: string | null
           id: string
           notes: string | null
           other_fee: number | null
@@ -82,6 +83,7 @@ export type Database = {
           created_by?: string | null
           doctor_id: string
           duration_minutes?: number | null
+          icd_code_id?: string | null
           id?: string
           notes?: string | null
           other_fee?: number | null
@@ -102,6 +104,7 @@ export type Database = {
           created_by?: string | null
           doctor_id?: string
           duration_minutes?: number | null
+          icd_code_id?: string | null
           id?: string
           notes?: string | null
           other_fee?: number | null
@@ -126,6 +129,13 @@ export type Database = {
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_icd_code_id_fkey"
+            columns: ["icd_code_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_icd_codes"
             referencedColumns: ["id"]
           },
           {
@@ -201,6 +211,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "clinic_diseases_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_icd_codes: {
+        Row: {
+          clinic_id: string
+          code: string
+          created_at: string
+          description: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          code: string
+          created_at?: string
+          description: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_icd_codes_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
