@@ -56,6 +56,7 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          appointment_type: string | null
           confidential_notes: string | null
           consultation_fee: number | null
           created_at: string
@@ -77,6 +78,7 @@ export type Database = {
         Insert: {
           appointment_date: string
           appointment_time: string
+          appointment_type?: string | null
           confidential_notes?: string | null
           consultation_fee?: number | null
           created_at?: string
@@ -98,6 +100,7 @@ export type Database = {
         Update: {
           appointment_date?: string
           appointment_time?: string
+          appointment_type?: string | null
           confidential_notes?: string | null
           consultation_fee?: number | null
           created_at?: string

@@ -87,6 +87,7 @@ const DoctorAppointments = () => {
   const [editSelectedTime, setEditSelectedTime] = useState("");
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
   const [icdCodeFilter, setIcdCodeFilter] = useState("all");
+  const [selectedAppointmentType, setSelectedAppointmentType] = useState("new");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -224,6 +225,7 @@ const DoctorAppointments = () => {
         notes: formData.get("notes") as string || null, 
         status: "scheduled" as const,
         created_by: user?.id || null,
+        appointment_type: selectedAppointmentType,
       });
       if (error) throw error;
 
@@ -239,6 +241,8 @@ const DoctorAppointments = () => {
       setShowAddDialog(false);
       setSelectedDate(undefined);
       setSelectedPatientId("");
+      setSelectedTime("");
+      setSelectedAppointmentType("new");
       setSelectedTime("");
       fetchAppointments();
       fetchWaitlistPatients();
@@ -417,7 +421,20 @@ const DoctorAppointments = () => {
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
                 <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><TimeSelect value={selectedTime} onValueChange={setSelectedTime} name="appointment_time" required /></div>
               </div>
-              <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
+                <div className="space-y-2">
+                  <Label>Appointment Type</Label>
+                  <Select value={selectedAppointmentType} onValueChange={setSelectedAppointmentType}>
+                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="follow_up">Follow Up</SelectItem>
+                      <SelectItem value="report_check">Report Check</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               <div className="space-y-2"><Label htmlFor="reason">Reason for Visit</Label><Input id="reason" name="reason" placeholder="e.g., Regular checkup" /></div>
               <div className="space-y-2"><Label htmlFor="notes">Notes</Label><Textarea id="notes" name="notes" placeholder="Additional notes..." rows={3} /></div>
               <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button><Button type="submit">Create Appointment</Button></div>
