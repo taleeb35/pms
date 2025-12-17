@@ -40,6 +40,7 @@ interface Appointment {
   patient_id: string;
   doctor_id: string;
   created_by: string | null;
+  icd_code_id: string | null;
   patients: { 
     full_name: string; 
     phone: string; 
@@ -58,6 +59,11 @@ interface Appointment {
   creator: {
     full_name: string;
   } | null;
+  icd_code: {
+    id: string;
+    code: string;
+    description: string;
+  } | null;
 }
 
 interface Doctor {
@@ -66,6 +72,12 @@ interface Doctor {
     full_name: string;
   } | null;
   specialization: string;
+}
+
+interface ICDCode {
+  id: string;
+  code: string;
+  description: string;
 }
 
 const ClinicAppointments = () => {
@@ -94,11 +106,14 @@ const ClinicAppointments = () => {
   const [selectedGynecologist, setSelectedGynecologist] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState("");
   const [editSelectedTime, setEditSelectedTime] = useState("");
+  const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
+  const [icdCodeFilter, setIcdCodeFilter] = useState("all");
   const { toast } = useToast();
 
   useEffect(() => {
     if (clinicId) {
       fetchDoctors();
+      fetchICDCodes();
     }
   }, [clinicId]);
 
@@ -134,7 +149,8 @@ const ClinicAppointments = () => {
           *, 
           patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date),
           doctors(profiles(full_name), specialization),
-          creator:profiles!appointments_created_by_fkey(full_name)
+          creator:profiles!appointments_created_by_fkey(full_name),
+          icd_code:clinic_icd_codes(id, code, description)
         `)
         .in("doctor_id", doctors.map(d => d.id))
         .order("appointment_date", { ascending: true })
@@ -146,6 +162,22 @@ const ClinicAppointments = () => {
       toast({ title: "Error fetching appointments", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchICDCodes = async () => {
+    if (!clinicId) return;
+    try {
+      const { data, error } = await supabase
+        .from("clinic_icd_codes")
+        .select("id, code, description")
+        .eq("clinic_id", clinicId)
+        .order("code");
+
+      if (error) throw error;
+      setIcdCodes(data || []);
+    } catch (error: any) {
+      console.error("Error fetching ICD codes:", error);
     }
   };
 
@@ -395,6 +427,11 @@ const ClinicAppointments = () => {
         apt.doctors?.profiles?.full_name?.toLowerCase().includes(query)
       );
     }
+
+    // Apply ICD code filter
+    if (icdCodeFilter && icdCodeFilter !== "all") {
+      filtered = filtered.filter(apt => apt.icd_code_id === icdCodeFilter);
+    }
     
     return filtered;
   };
@@ -529,6 +566,20 @@ const ClinicAppointments = () => {
               <SelectItem value="tomorrow">Tomorrow</SelectItem>
               <SelectItem value="day_after">Day After Tomorrow</SelectItem>
               <SelectItem value="week">Within 7 Days</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={icdCodeFilter} onValueChange={setIcdCodeFilter}>
+            <SelectTrigger className="w-[200px] bg-background">
+              <SelectValue placeholder="Filter by ICD Code" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-50 max-h-[300px]">
+              <SelectItem value="all">All ICD Codes</SelectItem>
+              {icdCodes.map((code) => (
+                <SelectItem key={code.id} value={code.id}>
+                  {code.code} - {code.description}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           
