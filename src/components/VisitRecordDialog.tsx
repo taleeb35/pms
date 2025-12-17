@@ -23,6 +23,12 @@ interface Procedure {
   price: number;
 }
 
+interface ICDCode {
+  id: string;
+  code: string;
+  description: string;
+}
+
 interface Appointment {
   id: string;
   patient_id: string;
@@ -56,6 +62,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const [procedures, setProcedures] = useState<Procedure[]>([]);
   const [selectedProcedure, setSelectedProcedure] = useState<string>("");
   const [procedureFee, setProcedureFee] = useState<string>("");
+  const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
+  const [selectedICDCode, setSelectedICDCode] = useState<string>("");
   
   const [formData, setFormData] = useState({
     // Vitals
@@ -98,6 +106,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Reset procedure selection
       setSelectedProcedure("");
       setProcedureFee("");
+      // Reset ICD code selection
+      setSelectedICDCode("");
       // Reset next visit
       setNextVisitDate(undefined);
       setNextVisitTime("");
@@ -163,7 +173,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       const { data, error } = await supabase
         .from("doctors")
-        .select("specialization, consultation_fee")
+        .select("specialization, consultation_fee, clinic_id")
         .eq("id", doctorId)
         .maybeSingle();
 
@@ -180,6 +190,11 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       
       // Fetch procedures for the appointment's doctor
       fetchProcedures(doctorId);
+      
+      // Fetch ICD codes for the clinic
+      if (data?.clinic_id) {
+        fetchICDCodes(data.clinic_id);
+      }
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
     }
@@ -197,6 +212,21 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       setProcedures(data || []);
     } catch (error) {
       console.error("Error fetching procedures:", error);
+    }
+  };
+
+  const fetchICDCodes = async (clinicId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("clinic_icd_codes")
+        .select("*")
+        .eq("clinic_id", clinicId)
+        .order("code");
+
+      if (error) throw error;
+      setIcdCodes(data || []);
+    } catch (error) {
+      console.error("Error fetching ICD codes:", error);
     }
   };
 
@@ -256,7 +286,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Fetch appointment fees and procedure
       const { data: appointmentData } = await supabase
         .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes")
+        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id")
         .eq("id", appointment.id)
         .single();
       
@@ -280,6 +310,11 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       if (appointmentData?.procedure_id) {
         setSelectedProcedure(appointmentData.procedure_id);
         setProcedureFee(appointmentData.procedure_fee?.toString() || "");
+      }
+      
+      // Load saved ICD code if exists
+      if (appointmentData?.icd_code_id) {
+        setSelectedICDCode(appointmentData.icd_code_id);
       }
       
       if (data.next_visit_date) {
@@ -647,6 +682,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         other_fee: formData.other_fee ? parseFloat(formData.other_fee) : 0,
         status: 'completed',
         confidential_notes: formData.confidential_notes || null,
+        icd_code_id: selectedICDCode || null,
       };
 
       // Add procedure info
@@ -889,6 +925,31 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                   rows={3}
                 />
               </div>
+
+              {/* ICD Code Selection */}
+              {icdCodes.length > 0 && (
+                <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
+                  <h3 className="font-semibold mb-4">Diagnosis (ICD Code)</h3>
+                  <Select value={selectedICDCode || "none"} onValueChange={(val) => setSelectedICDCode(val === "none" ? "" : val)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select ICD code (optional)" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <SelectItem value="none">No ICD Code</SelectItem>
+                      {icdCodes.map((icd) => (
+                        <SelectItem key={icd.id} value={icd.id}>
+                          <span className="font-mono font-medium">{icd.code}</span> - {icd.description}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedICDCode && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Selected: {icdCodes.find(i => i.id === selectedICDCode)?.code} - {icdCodes.find(i => i.id === selectedICDCode)?.description}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Current Prescription */}
               <div className="border rounded-lg p-4">

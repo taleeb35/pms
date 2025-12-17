@@ -44,6 +44,8 @@ import ClinicAllergies from "./pages/ClinicAllergies";
 import ClinicDiseases from "./pages/ClinicDiseases";
 import ClinicReceptionists from "./pages/ClinicReceptionists";
 import ClinicProcedures from "./pages/ClinicProcedures";
+import ClinicICDCodes from "./pages/ClinicICDCodes";
+import DoctorICDCodes from "./pages/DoctorICDCodes";
 import AdminProfile from "./pages/AdminProfile";
 import AdminFinance from "./pages/AdminFinance";
 import ClinicProfile from "./pages/ClinicProfile";
@@ -166,6 +168,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorDiseases />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/icd-codes"
+              element={
+                <Layout>
+                  <DoctorICDCodes />
                 </Layout>
               }
             />
@@ -338,6 +348,14 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/icd-codes"
+              element={
+                <Layout>
+                  <ClinicICDCodes />
+                </Layout>
+              }
+            />
+            <Route
               path="/clinic/procedures"
               element={
                 <Layout>
@@ -447,6 +465,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicDiseases />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/icd-codes"
+              element={
+                <Layout>
+                  <ClinicICDCodes />
                 </Layout>
               }
             />

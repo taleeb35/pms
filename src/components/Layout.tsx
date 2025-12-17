@@ -19,6 +19,7 @@ import {
   Banknote,
   AlertTriangle,
   HeartPulse,
+  FileCode,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -172,6 +173,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
     { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
     { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
+    { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
     { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
     { path: "/doctor/finance", icon: Banknote, label: "Finance" },
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
@@ -190,6 +192,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/clinic/specializations", icon: Building2, label: "Specializations" },
     { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
     { path: "/clinic/diseases", icon: HeartPulse, label: "Diseases" },
+    { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
     { path: "/clinic/procedures", icon: Sparkles, label: "Procedures" },
     { path: "/clinic/finance", icon: Banknote, label: "Finance" },
     { path: "/clinic/profile", icon: UserCog, label: "Profile" },
@@ -205,6 +208,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/receptionist/specializations", icon: Building2, label: "Specializations" },
     { path: "/receptionist/allergies", icon: AlertTriangle, label: "Allergies" },
     { path: "/receptionist/diseases", icon: HeartPulse, label: "Diseases" },
+    { path: "/receptionist/icd-codes", icon: FileCode, label: "ICD Codes" },
     { path: "/receptionist/procedures", icon: Sparkles, label: "Procedures" },
     { path: "/receptionist/finance", icon: Banknote, label: "Finance" },
   ];
