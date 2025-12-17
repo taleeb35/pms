@@ -592,14 +592,51 @@ const ClinicAppointments = () => {
                             </Button>
                             <Button 
                               size="sm" 
-                              variant="ghost" 
+                              variant="outline" 
                               onClick={() => openVisitDialog(apt)}
                             >
-                              Start
+                              Record Visit
                             </Button>
+                            {apt.status === "scheduled" && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleUpdateStatus(apt.id, "confirmed")}
+                              >
+                                <Check className="h-4 w-4 mr-1" />
+                                Confirm
+                              </Button>
+                            )}
+                            {apt.status === "confirmed" && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleUpdateStatus(apt.id, "in_progress")}
+                              >
+                                Start
+                              </Button>
+                            )}
+                            {apt.status === "in_progress" && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleUpdateStatus(apt.id, "completed")}
+                              >
+                                Complete
+                              </Button>
+                            )}
+                            {(apt.status === "scheduled" || apt.status === "confirmed") && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleUpdateStatus(apt.id, "cancelled")}
+                              >
+                                Cancel
+                              </Button>
+                            )}
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive">
+                                <Button size="sm" variant="outline" className="text-destructive hover:text-destructive">
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </AlertDialogTrigger>
