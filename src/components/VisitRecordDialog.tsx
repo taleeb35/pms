@@ -77,6 +77,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     // Financial
     consultation_fee: "",
     other_fee: "",
+    
+    // Confidential
+    confidential_notes: "",
   });
 
   const [existingRecord, setExistingRecord] = useState<any>(null);
@@ -112,6 +115,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         next_visit_notes: "",
         consultation_fee: "",
         other_fee: "",
+        confidential_notes: "",
       });
       setExistingRecord(null);
       setDoctorFee(null);
@@ -252,7 +256,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Fetch appointment fees and procedure
       const { data: appointmentData } = await supabase
         .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee")
+        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes")
         .eq("id", appointment.id)
         .single();
       
@@ -269,6 +273,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         next_visit_notes: data.next_visit_notes || "",
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
+        confidential_notes: appointmentData?.confidential_notes || "",
       });
       
       // Load saved procedure if exists
@@ -640,7 +645,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       const appointmentUpdate: any = {
         consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0,
         other_fee: formData.other_fee ? parseFloat(formData.other_fee) : 0,
-        status: 'completed'
+        status: 'completed',
+        confidential_notes: formData.confidential_notes || null,
       };
 
       // Add procedure info
@@ -984,6 +990,18 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Confidential Notes Section - Doctor Only */}
+              <div className="border rounded-lg p-4 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
+                <h3 className="font-semibold mb-4 text-amber-800 dark:text-amber-200">Confidential Notes (Doctor Only)</h3>
+                <Textarea
+                  placeholder="Private notes visible only to doctors..."
+                  value={formData.confidential_notes}
+                  onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
+                  rows={3}
+                  className="text-sm"
+                />
               </div>
 
               {/* Financial Section */}
