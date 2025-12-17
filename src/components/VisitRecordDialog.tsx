@@ -26,6 +26,7 @@ interface Procedure {
 interface Appointment {
   id: string;
   patient_id: string;
+  doctor_id: string;
   appointment_date: string;
   appointment_time: string;
   patients: { 
@@ -150,13 +151,16 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
   const checkDoctorSpecialization = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!appointment) return;
+
+      // Use the appointment's doctor_id to fetch specialization and procedures
+      // This allows clinic owners and receptionists to see the correct procedures
+      const doctorId = appointment.doctor_id;
 
       const { data, error } = await supabase
         .from("doctors")
-        .select("specialization")
-        .eq("id", user.id)
+        .select("specialization, consultation_fee")
+        .eq("id", doctorId)
         .maybeSingle();
 
       if (error) throw error;
@@ -165,8 +169,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       setIsGynecologist(spec.includes("gynecologist"));
       setIsOphthalmologist(spec.includes("ophthalmologist"));
       
-      // Fetch procedures for all doctors
-      fetchProcedures(user.id);
+      // Set doctor fee if available and no existing record
+      if (data?.consultation_fee && !existingRecord && !formData.consultation_fee) {
+        setDoctorFee(data.consultation_fee);
+      }
+      
+      // Fetch procedures for the appointment's doctor
+      fetchProcedures(doctorId);
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
     }

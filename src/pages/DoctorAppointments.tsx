@@ -33,6 +33,7 @@ interface Appointment {
   notes: string | null;
   duration_minutes: number | null;
   patient_id: string;
+  doctor_id: string;
   created_by: string | null;
   patients: { 
     full_name: string; 
