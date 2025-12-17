@@ -796,7 +796,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               {/* Vitals Section */}
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold mb-4">Vitals</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Blood Pressure</Label>
                     <Input
@@ -822,12 +822,59 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                     />
                   </div>
                   <div>
-                    <Label>Weight</Label>
+                    <Label>Weight (kg)</Label>
                     <Input
-                      placeholder="70 kg"
+                      placeholder="70"
                       value={formData.weight}
                       onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                      type="number"
+                      step="0.1"
                     />
+                  </div>
+                  <div>
+                    <Label>Height (cm)</Label>
+                    <Input
+                      placeholder="170"
+                      value={formData.height}
+                      onChange={(e) => setFormData({...formData, height: e.target.value})}
+                      type="number"
+                      step="0.1"
+                    />
+                  </div>
+                  <div>
+                    <Label>BMI</Label>
+                    <div className="h-10 px-3 py-2 rounded-md border border-input bg-muted flex items-center">
+                      {(() => {
+                        const weight = parseFloat(formData.weight);
+                        const heightCm = parseFloat(formData.height);
+                        if (weight > 0 && heightCm > 0) {
+                          const heightM = heightCm / 100;
+                          const bmi = weight / (heightM * heightM);
+                          const bmiValue = bmi.toFixed(1);
+                          let bmiCategory = "";
+                          let bmiColor = "";
+                          if (bmi < 18.5) {
+                            bmiCategory = "Underweight";
+                            bmiColor = "text-blue-600";
+                          } else if (bmi < 25) {
+                            bmiCategory = "Normal";
+                            bmiColor = "text-green-600";
+                          } else if (bmi < 30) {
+                            bmiCategory = "Overweight";
+                            bmiColor = "text-amber-600";
+                          } else {
+                            bmiCategory = "Obese";
+                            bmiColor = "text-red-600";
+                          }
+                          return (
+                            <span className={cn("font-medium", bmiColor)}>
+                              {bmiValue} ({bmiCategory})
+                            </span>
+                          );
+                        }
+                        return <span className="text-muted-foreground">-</span>;
+                      })()}
+                    </div>
                   </div>
                 </div>
               </div>
