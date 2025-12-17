@@ -554,12 +554,8 @@ const ClinicAppointments = () => {
                     <TableRow>
                       <TableHead>Doctor</TableHead>
                       <TableHead>Patient</TableHead>
-                      <TableHead>Patient ID</TableHead>
-                      <TableHead>Father Name</TableHead>
-                      <TableHead>DOB</TableHead>
                       <TableHead>Phone</TableHead>
                       <TableHead>Date & Time</TableHead>
-                      <TableHead>Reason</TableHead>
                       <TableHead>Created By</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
@@ -570,16 +566,12 @@ const ClinicAppointments = () => {
                       <TableRow key={apt.id} className="hover:bg-accent/50">
                         <TableCell className="font-medium">{apt.doctors?.profiles?.full_name || "Unknown Doctor"}</TableCell>
                         <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
-                        <TableCell>{apt.patients.patient_id}</TableCell>
-                        <TableCell>{apt.patients.father_name || "-"}</TableCell>
-                        <TableCell>{apt.patients.date_of_birth ? format(new Date(apt.patients.date_of_birth), "PP") : "-"}</TableCell>
                         <TableCell>{apt.patients.phone}</TableCell>
                         <TableCell>
                           {format(new Date(apt.appointment_date), "PPP")}
                           <br />
                           <span className="text-sm text-muted-foreground">{apt.appointment_time}</span>
                         </TableCell>
-                        <TableCell className="max-w-[200px] truncate">{apt.reason || "-"}</TableCell>
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                         <TableCell>{getStatusBadge(apt.status)}</TableCell>
                         <TableCell>
