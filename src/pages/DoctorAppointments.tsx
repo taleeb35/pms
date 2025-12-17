@@ -435,13 +435,10 @@ const DoctorAppointments = () => {
         <TabsContent value="table" className="space-y-4">
           <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
             {paginatedAppointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
-              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient ID</TableHead><TableHead>Father Name</TableHead><TableHead>DOB</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Reason</TableHead><TableHead>Created By</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Created By</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
               <TableBody>{paginatedAppointments.map((apt) => (
                 <TableRow key={apt.id} className="hover:bg-accent/50">
                   <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
-                  <TableCell>{apt.patients.patient_id}</TableCell>
-                  <TableCell>{apt.patients.father_name || "-"}</TableCell>
-                  <TableCell>{apt.patients.date_of_birth ? format(new Date(apt.patients.date_of_birth), "PP") : "-"}</TableCell>
                   <TableCell>{apt.patients.phone}</TableCell>
                   {isGynecologist && (
                     <TableCell>
@@ -455,7 +452,6 @@ const DoctorAppointments = () => {
                     </TableCell>
                   )}
                   <TableCell>{format(new Date(apt.appointment_date), "PPP")}<br /><span className="text-sm text-muted-foreground">{apt.appointment_time}</span></TableCell>
-                  <TableCell>{apt.reason || <span className="text-muted-foreground">-</span>}</TableCell>
                   <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                   <TableCell>{getStatusBadge(apt.status)}</TableCell>
                   <TableCell>
