@@ -36,6 +36,12 @@ interface DiseaseTemplate {
   prescription_template: string;
 }
 
+interface TestTemplate {
+  id: string;
+  title: string;
+  description: string;
+}
+
 interface Appointment {
   id: string;
   patient_id: string;
@@ -73,6 +79,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const [selectedICDCode, setSelectedICDCode] = useState<string>("");
   const [diseaseTemplates, setDiseaseTemplates] = useState<DiseaseTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
+  const [selectedTestTemplate, setSelectedTestTemplate] = useState<string>("");
   
   const [formData, setFormData] = useState({
     // Vitals
@@ -111,6 +119,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       checkDoctorSpecialization();
       fetchPatientPregnancyDate();
       fetchDiseaseTemplates();
+      fetchTestTemplates();
     } else if (!open) {
       // Reset pregnancy date when dialog closes
       setPregnancyStartDate(undefined);
@@ -122,6 +131,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Reset disease template selection
       setSelectedTemplate("");
       setDiseaseTemplates([]);
+      // Reset test template selection
+      setSelectedTestTemplate("");
+      setTestTemplates([]);
       // Reset next visit
       setNextVisitDate(undefined);
       setNextVisitTime("");
@@ -261,6 +273,22 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     }
   };
 
+  const fetchTestTemplates = async () => {
+    if (!appointment) return;
+    try {
+      const { data, error } = await supabase
+        .from("doctor_test_templates")
+        .select("id, title, description")
+        .eq("doctor_id", appointment.doctor_id)
+        .order("title");
+
+      if (error) throw error;
+      setTestTemplates(data || []);
+    } catch (error) {
+      console.error("Error fetching test templates:", error);
+    }
+  };
+
   const handleTemplateChange = (templateId: string) => {
     setSelectedTemplate(templateId);
     if (templateId && templateId !== "none") {
@@ -281,6 +309,19 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       setProcedureFee(procedure.price.toString());
     } else {
       setProcedureFee("");
+    }
+  };
+
+  const handleTestTemplateChange = (templateId: string) => {
+    setSelectedTestTemplate(templateId);
+    if (templateId && templateId !== "none") {
+      const template = testTemplates.find(t => t.id === templateId);
+      if (template) {
+        setFormData(prev => ({
+          ...prev,
+          test_reports: template.description
+        }));
+      }
     }
   };
 
@@ -1133,6 +1174,24 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               {/* Test Reports */}
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold mb-4">Test Reports</h3>
+                {testTemplates.length > 0 && (
+                  <div className="mb-4">
+                    <Label className="text-sm text-muted-foreground">Load from Test Template</Label>
+                    <Select value={selectedTestTemplate || "none"} onValueChange={handleTestTemplateChange}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select a test template..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        <SelectItem value="none">-- Select Template --</SelectItem>
+                        {testTemplates.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>
+                            {template.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <Textarea
                   placeholder="Required tests, lab reports, imaging..."
                   value={formData.test_reports}

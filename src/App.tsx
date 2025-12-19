@@ -27,6 +27,7 @@ import DoctorProcedures from "./pages/DoctorProcedures";
 import DoctorAllergies from "./pages/DoctorAllergies";
 import DoctorDiseases from "./pages/DoctorDiseases";
 import DoctorDiseaseTemplates from "./pages/DoctorDiseaseTemplates";
+import DoctorTestTemplates from "./pages/DoctorTestTemplates";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
@@ -177,6 +178,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorDiseaseTemplates />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/test-templates"
+              element={
+                <Layout>
+                  <DoctorTestTemplates />
                 </Layout>
               }
             />
