@@ -244,7 +244,12 @@ const DoctorPatients = () => {
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, searchTerm]);
+  
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const fetchWaitlistPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -284,37 +289,29 @@ const DoctorPatients = () => {
     if (!user) return;
 
     try {
-      // @ts-ignore - Supabase query builder types can be overly complex
-      const baseQuery = supabase
+      // Build the query with search term
+      let query = supabase
         .from("patients")
         .select("*", { count: "exact" })
         .eq("created_by", user.id)
         .order("created_at", { ascending: false });
 
-      let result;
+      // Add search filter if search term exists
+      if (searchTerm.trim()) {
+        query = query.or(`full_name.ilike.%${searchTerm.trim()}%,patient_id.ilike.%${searchTerm.trim()}%`);
+      }
+
       const hasGenderFilter = filterGender && filterGender !== "all";
       const hasCityFilter = filterCity && filterCity !== "all";
       
-      if (hasGenderFilter && hasCityFilter) {
-        // @ts-ignore
-        result = await baseQuery
-          .eq("gender", filterGender as any)
-          .eq("city", filterCity)
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else if (hasGenderFilter) {
-        // @ts-ignore
-        result = await baseQuery
-          .eq("gender", filterGender as any)
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else if (hasCityFilter) {
-        // @ts-ignore
-        result = await baseQuery
-          .eq("city", filterCity)
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else {
-        result = await baseQuery
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      if (hasGenderFilter) {
+        query = query.eq("gender", filterGender as any);
       }
+      if (hasCityFilter) {
+        query = query.eq("city", filterCity);
+      }
+
+      const result = await query.range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
 
       if (result.error) {
         console.error("Error fetching patients:", result.error);
@@ -894,10 +891,8 @@ const DoctorPatients = () => {
     return age;
   };
 
-  const filteredPatients = patients.filter((patient) =>
-    patient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.patient_id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search is now server-side, so we just use patients directly
+  const filteredPatients = patients;
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
