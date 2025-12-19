@@ -3,7 +3,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon } from "lucide-react";
+import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -74,6 +82,9 @@ const ClinicPatients = () => {
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [ageFilter, setAgeFilter] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const { toast } = useToast();
 
   // Add Patient Dialog State
@@ -205,6 +216,16 @@ const ClinicPatients = () => {
   const getFilteredPatients = () => {
     let filtered = [...patients];
 
+    // Search by patient name
+    if (searchTerm.trim()) {
+      const search = searchTerm.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.full_name.toLowerCase().includes(search) ||
+        p.patient_id.toLowerCase().includes(search) ||
+        p.phone.includes(search)
+      );
+    }
+
     // Filter by doctor
     if (selectedDoctor !== "all") {
       filtered = filtered.filter(p => p.created_by === selectedDoctor);
@@ -238,6 +259,16 @@ const ClinicPatients = () => {
   };
 
   const filteredPatients = getFilteredPatients();
+  const totalPages = Math.ceil(filteredPatients.length / pageSize);
+  const paginatedPatients = filteredPatients.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, pageSize]);
 
   const getDoctorName = (doctorId: string | null) => {
     if (!doctorId) return "Unknown";
@@ -367,8 +398,21 @@ const ClinicPatients = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Search */}
+          <div className="mb-4">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by name, patient ID, or phone..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-background"
+              />
+            </div>
+          </div>
+
           {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="space-y-2">
               <Label>Filter by Doctor</Label>
               <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
@@ -433,6 +477,21 @@ const ClinicPatients = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>Page Size</Label>
+              <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  <SelectItem value="10">10 per page</SelectItem>
+                  <SelectItem value="25">25 per page</SelectItem>
+                  <SelectItem value="50">50 per page</SelectItem>
+                  <SelectItem value="100">100 per page</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {loading ? (
@@ -450,52 +509,102 @@ const ClinicPatients = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Patient ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Gender</TableHead>
-                    <TableHead>Age</TableHead>
-                    <TableHead>Blood Group</TableHead>
-                    <TableHead>City</TableHead>
-                    <TableHead>Doctor</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPatients.map((patient) => (
-                    <TableRow key={patient.id}>
-                      <TableCell className="font-mono text-sm">{patient.patient_id}</TableCell>
-                      <TableCell className="font-semibold">{patient.full_name}</TableCell>
-                      <TableCell>{patient.email || "-"}</TableCell>
-                      <TableCell>{patient.phone}</TableCell>
-                      <TableCell className="capitalize">{patient.gender}</TableCell>
-                      <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
-                      <TableCell>{patient.blood_group || "-"}</TableCell>
-                      <TableCell>{patient.city || "-"}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {getDoctorName(patient.created_by)}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => navigate(`/clinic/patients/${patient.id}`)}
-                          className="gap-2"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View
-                        </Button>
-                      </TableCell>
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Patient ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Gender</TableHead>
+                      <TableHead>Age</TableHead>
+                      <TableHead>Blood Group</TableHead>
+                      <TableHead>City</TableHead>
+                      <TableHead>Doctor</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedPatients.map((patient) => (
+                      <TableRow key={patient.id}>
+                        <TableCell className="font-mono text-sm">{patient.patient_id}</TableCell>
+                        <TableCell className="font-semibold">{patient.full_name}</TableCell>
+                        <TableCell>{patient.email || "-"}</TableCell>
+                        <TableCell>{patient.phone}</TableCell>
+                        <TableCell className="capitalize">{patient.gender}</TableCell>
+                        <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
+                        <TableCell>{patient.blood_group || "-"}</TableCell>
+                        <TableCell>{patient.city || "-"}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {getDoctorName(patient.created_by)}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate(`/clinic/patients/${patient.id}`)}
+                            className="gap-2"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredPatients.length)} of {filteredPatients.length} patients
+                  </p>
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <PaginationItem key={pageNum}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(pageNum)}
+                              isActive={currentPage === pageNum}
+                              className="cursor-pointer"
+                            >
+                              {pageNum}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
