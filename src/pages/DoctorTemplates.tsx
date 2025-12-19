@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Search, FileText, FlaskConical } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
 interface DiseaseTemplate {
@@ -32,18 +32,28 @@ interface TestTemplate {
   updated_at: string;
 }
 
-type TemplateType = "disease" | "test";
+interface ReportTemplate {
+  id: string;
+  doctor_id: string;
+  title: string;
+  value: string;
+  created_at: string;
+  updated_at: string;
+}
+
+type TemplateType = "disease" | "test" | "report";
 
 const DoctorTemplates = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TemplateType>("disease");
   const [diseaseTemplates, setDiseaseTemplates] = useState<DiseaseTemplate[]>([]);
   const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
+  const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<DiseaseTemplate | TestTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<DiseaseTemplate | TestTemplate | ReportTemplate | null>(null);
   const [templateType, setTemplateType] = useState<TemplateType>("disease");
   const [formData, setFormData] = useState({ 
     name: "", 
@@ -95,19 +105,35 @@ const DoctorTemplates = () => {
       setTestTemplates(testData || []);
     }
 
+    // Fetch report templates
+    const { data: reportData, error: reportError } = await supabase
+      .from("doctor_report_templates")
+      .select("*")
+      .eq("doctor_id", session.user.id)
+      .order("created_at", { ascending: false });
+
+    if (reportError) {
+      console.error("Error fetching report templates:", reportError);
+    } else {
+      setReportTemplates(reportData || []);
+    }
+
     setLoading(false);
   };
 
-  const handleOpenDialog = (template?: DiseaseTemplate | TestTemplate, type?: TemplateType) => {
+  const handleOpenDialog = (template?: DiseaseTemplate | TestTemplate | ReportTemplate, type?: TemplateType) => {
     if (template && type) {
       setEditingTemplate(template);
       setTemplateType(type);
       if (type === "disease") {
         const t = template as DiseaseTemplate;
         setFormData({ name: t.disease_name, content: t.prescription_template });
-      } else {
+      } else if (type === "test") {
         const t = template as TestTemplate;
         setFormData({ name: t.title, content: t.description });
+      } else {
+        const t = template as ReportTemplate;
+        setFormData({ name: t.title, content: t.value });
       }
     } else {
       setEditingTemplate(null);
@@ -168,7 +194,7 @@ const DoctorTemplates = () => {
           handleCloseDialog();
         }
       }
-    } else {
+    } else if (templateType === "test") {
       if (editingTemplate) {
         const { error } = await supabase
           .from("doctor_test_templates")
@@ -200,6 +226,43 @@ const DoctorTemplates = () => {
           console.error(error);
         } else {
           toast.success("Test template created successfully");
+          fetchAllTemplates();
+          handleCloseDialog();
+        }
+      }
+    } else {
+      // Report template
+      if (editingTemplate) {
+        const { error } = await supabase
+          .from("doctor_report_templates")
+          .update({
+            title: formData.name,
+            value: formData.content,
+          })
+          .eq("id", editingTemplate.id);
+
+        if (error) {
+          toast.error("Failed to update template");
+          console.error(error);
+        } else {
+          toast.success("Report template updated successfully");
+          fetchAllTemplates();
+          handleCloseDialog();
+        }
+      } else {
+        const { error } = await supabase
+          .from("doctor_report_templates")
+          .insert({
+            doctor_id: session.user.id,
+            title: formData.name,
+            value: formData.content,
+          });
+
+        if (error) {
+          toast.error("Failed to create template");
+          console.error(error);
+        } else {
+          toast.success("Report template created successfully");
           fetchAllTemplates();
           handleCloseDialog();
         }
@@ -241,6 +304,23 @@ const DoctorTemplates = () => {
     }
   };
 
+  const handleDeleteReport = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this template?")) return;
+
+    const { error } = await supabase
+      .from("doctor_report_templates")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to delete template");
+      console.error(error);
+    } else {
+      toast.success("Template deleted successfully");
+      fetchAllTemplates();
+    }
+  };
+
   const filteredDiseaseTemplates = diseaseTemplates.filter(
     (t) =>
       t.disease_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -253,8 +333,15 @@ const DoctorTemplates = () => {
       t.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredReportTemplates = reportTemplates.filter(
+    (t) =>
+      t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.value.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const totalDiseasePages = Math.ceil(filteredDiseaseTemplates.length / pageSize);
   const totalTestPages = Math.ceil(filteredTestTemplates.length / pageSize);
+  const totalReportPages = Math.ceil(filteredReportTemplates.length / pageSize);
 
   const paginatedDiseaseTemplates = filteredDiseaseTemplates.slice(
     (currentPage - 1) * pageSize,
@@ -266,16 +353,34 @@ const DoctorTemplates = () => {
     currentPage * pageSize
   );
 
+  const paginatedReportTemplates = filteredReportTemplates.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, activeTab]);
+
+  const getFieldLabels = () => {
+    switch (templateType) {
+      case "disease":
+        return { name: "Disease Name", content: "Prescription Template", namePlaceholder: "e.g., Common Cold", contentPlaceholder: "Enter medications, dosage, instructions..." };
+      case "test":
+        return { name: "Test Title", content: "Description / Instructions", namePlaceholder: "e.g., Complete Blood Count", contentPlaceholder: "Enter test description, instructions, or default values..." };
+      case "report":
+        return { name: "Report Title", content: "Value", namePlaceholder: "e.g., Blood Pressure", contentPlaceholder: "Enter the value or default content..." };
+    }
+  };
+
+  const labels = getFieldLabels();
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Templates</h1>
-          <p className="text-muted-foreground">Manage your prescription and test templates</p>
+          <p className="text-muted-foreground">Manage your prescription, test, and report templates</p>
         </div>
         <Button onClick={() => handleOpenDialog()}>
           <Plus className="h-4 w-4 mr-2" />
@@ -308,6 +413,10 @@ const DoctorTemplates = () => {
               <TabsTrigger value="test" className="flex items-center gap-2">
                 <FlaskConical className="h-4 w-4" />
                 Test Templates ({filteredTestTemplates.length})
+              </TabsTrigger>
+              <TabsTrigger value="report" className="flex items-center gap-2">
+                <ClipboardList className="h-4 w-4" />
+                Report Templates ({filteredReportTemplates.length})
               </TabsTrigger>
             </TabsList>
 
@@ -476,6 +585,89 @@ const DoctorTemplates = () => {
                 </>
               )}
             </TabsContent>
+
+            <TabsContent value="report">
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              ) : paginatedReportTemplates.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {searchTerm ? "No templates found matching your search" : "No report templates yet. Create your first one!"}
+                </div>
+              ) : (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Value</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedReportTemplates.map((template) => (
+                        <TableRow key={template.id}>
+                          <TableCell className="font-medium">{template.title}</TableCell>
+                          <TableCell className="max-w-md">
+                            <div className="truncate">{template.value}</div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDialog(template, "report")}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteReport(template.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  {totalReportPages > 1 && (
+                    <div className="mt-4">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                          {Array.from({ length: totalReportPages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={() => setCurrentPage((p) => Math.min(totalReportPages, p + 1))}
+                              className={currentPage === totalReportPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
+              )}
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
@@ -511,31 +703,31 @@ const DoctorTemplates = () => {
                       Test Template
                     </span>
                   </SelectItem>
+                  <SelectItem value="report">
+                    <span className="flex items-center gap-2">
+                      <ClipboardList className="h-4 w-4" />
+                      Report Template
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="name">
-                {templateType === "disease" ? "Disease Name" : "Test Title"}
-              </Label>
+              <Label htmlFor="name">{labels.name}</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder={templateType === "disease" ? "e.g., Common Cold" : "e.g., Complete Blood Count"}
+                placeholder={labels.namePlaceholder}
               />
             </div>
             <div>
-              <Label htmlFor="content">
-                {templateType === "disease" ? "Prescription Template" : "Description / Instructions"}
-              </Label>
+              <Label htmlFor="content">{labels.content}</Label>
               <Textarea
                 id="content"
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder={templateType === "disease" 
-                  ? "Enter medications, dosage, instructions..." 
-                  : "Enter test description, instructions, or default values..."}
+                placeholder={labels.contentPlaceholder}
                 rows={6}
               />
             </div>
