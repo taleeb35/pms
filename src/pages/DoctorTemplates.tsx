@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X, HeartPulse, Briefcase } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -47,7 +47,16 @@ interface ReportTemplate {
   updated_at: string;
 }
 
-type TemplateType = "disease" | "test" | "report";
+interface LeaveTemplate {
+  id: string;
+  doctor_id: string;
+  template_name: string;
+  template_content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+type TemplateType = "disease" | "test" | "report" | "sick_leave" | "work_leave";
 
 const DoctorTemplates = () => {
   const navigate = useNavigate();
@@ -55,11 +64,13 @@ const DoctorTemplates = () => {
   const [diseaseTemplates, setDiseaseTemplates] = useState<DiseaseTemplate[]>([]);
   const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
+  const [sickLeaveTemplates, setSickLeaveTemplates] = useState<LeaveTemplate[]>([]);
+  const [workLeaveTemplates, setWorkLeaveTemplates] = useState<LeaveTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingTemplate, setEditingTemplate] = useState<DiseaseTemplate | TestTemplate | ReportTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<DiseaseTemplate | TestTemplate | ReportTemplate | LeaveTemplate | null>(null);
   const [templateType, setTemplateType] = useState<TemplateType>("disease");
   const [formData, setFormData] = useState({ 
     name: "", 
@@ -132,10 +143,36 @@ const DoctorTemplates = () => {
       setReportTemplates(transformedData);
     }
 
+    // Fetch sick leave templates
+    const { data: sickLeaveData, error: sickLeaveError } = await supabase
+      .from("doctor_sick_leave_templates")
+      .select("*")
+      .eq("doctor_id", session.user.id)
+      .order("created_at", { ascending: false });
+
+    if (sickLeaveError) {
+      console.error("Error fetching sick leave templates:", sickLeaveError);
+    } else {
+      setSickLeaveTemplates(sickLeaveData || []);
+    }
+
+    // Fetch work leave templates
+    const { data: workLeaveData, error: workLeaveError } = await supabase
+      .from("doctor_work_leave_templates")
+      .select("*")
+      .eq("doctor_id", session.user.id)
+      .order("created_at", { ascending: false });
+
+    if (workLeaveError) {
+      console.error("Error fetching work leave templates:", workLeaveError);
+    } else {
+      setWorkLeaveTemplates(workLeaveData || []);
+    }
+
     setLoading(false);
   };
 
-  const handleOpenDialog = (template?: DiseaseTemplate | TestTemplate | ReportTemplate, type?: TemplateType) => {
+  const handleOpenDialog = (template?: DiseaseTemplate | TestTemplate | ReportTemplate | LeaveTemplate, type?: TemplateType) => {
     if (template && type) {
       setEditingTemplate(template);
       setTemplateType(type);
@@ -145,6 +182,9 @@ const DoctorTemplates = () => {
       } else if (type === "test") {
         const t = template as TestTemplate;
         setFormData({ name: t.title, content: t.description });
+      } else if (type === "sick_leave" || type === "work_leave") {
+        const t = template as LeaveTemplate;
+        setFormData({ name: t.template_name, content: t.template_content });
       } else {
         const t = template as ReportTemplate;
         setReportFormData({
@@ -277,7 +317,51 @@ const DoctorTemplates = () => {
           handleCloseDialog();
         }
       }
-    } else {
+    } else if (templateType === "sick_leave" || templateType === "work_leave") {
+      if (!formData.name.trim() || !formData.content.trim()) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
+      const tableName = templateType === "sick_leave" ? "doctor_sick_leave_templates" : "doctor_work_leave_templates";
+      const typeLabel = templateType === "sick_leave" ? "Sick Leave" : "Work Leave";
+
+      if (editingTemplate) {
+        const { error } = await supabase
+          .from(tableName)
+          .update({
+            template_name: formData.name,
+            template_content: formData.content,
+          })
+          .eq("id", editingTemplate.id);
+
+        if (error) {
+          toast.error("Failed to update template");
+          console.error(error);
+        } else {
+          toast.success(`${typeLabel} template updated successfully`);
+          fetchAllTemplates();
+          handleCloseDialog();
+        }
+      } else {
+        const { error } = await supabase
+          .from(tableName)
+          .insert({
+            doctor_id: session.user.id,
+            template_name: formData.name,
+            template_content: formData.content,
+          });
+
+        if (error) {
+          toast.error("Failed to create template");
+          console.error(error);
+        } else {
+          toast.success(`${typeLabel} template created successfully`);
+          fetchAllTemplates();
+          handleCloseDialog();
+        }
+      }
+    } else if (templateType === "report") {
       // Report template
       if (!reportFormData.template_name.trim()) {
         toast.error("Please enter a template name");
@@ -379,6 +463,40 @@ const DoctorTemplates = () => {
     }
   };
 
+  const handleDeleteSickLeave = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this template?")) return;
+
+    const { error } = await supabase
+      .from("doctor_sick_leave_templates")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to delete template");
+      console.error(error);
+    } else {
+      toast.success("Template deleted successfully");
+      fetchAllTemplates();
+    }
+  };
+
+  const handleDeleteWorkLeave = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this template?")) return;
+
+    const { error } = await supabase
+      .from("doctor_work_leave_templates")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to delete template");
+      console.error(error);
+    } else {
+      toast.success("Template deleted successfully");
+      fetchAllTemplates();
+    }
+  };
+
   const filteredDiseaseTemplates = diseaseTemplates.filter(
     (t) =>
       t.disease_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -400,9 +518,23 @@ const DoctorTemplates = () => {
       )
   );
 
+  const filteredSickLeaveTemplates = sickLeaveTemplates.filter(
+    (t) =>
+      t.template_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.template_content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredWorkLeaveTemplates = workLeaveTemplates.filter(
+    (t) =>
+      t.template_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.template_content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const totalDiseasePages = Math.ceil(filteredDiseaseTemplates.length / pageSize);
   const totalTestPages = Math.ceil(filteredTestTemplates.length / pageSize);
   const totalReportPages = Math.ceil(filteredReportTemplates.length / pageSize);
+  const totalSickLeavePages = Math.ceil(filteredSickLeaveTemplates.length / pageSize);
+  const totalWorkLeavePages = Math.ceil(filteredWorkLeaveTemplates.length / pageSize);
 
   const paginatedDiseaseTemplates = filteredDiseaseTemplates.slice(
     (currentPage - 1) * pageSize,
@@ -419,6 +551,16 @@ const DoctorTemplates = () => {
     currentPage * pageSize
   );
 
+  const paginatedSickLeaveTemplates = filteredSickLeaveTemplates.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const paginatedWorkLeaveTemplates = filteredWorkLeaveTemplates.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, activeTab]);
@@ -431,6 +573,10 @@ const DoctorTemplates = () => {
         return { name: "Test Title", content: "Description / Instructions", namePlaceholder: "e.g., Complete Blood Count", contentPlaceholder: "Enter test description, instructions, or default values..." };
       case "report":
         return { name: "Template Name", content: "", namePlaceholder: "e.g., Blood Test Report", contentPlaceholder: "" };
+      case "sick_leave":
+        return { name: "Template Name", content: "Template Content", namePlaceholder: "e.g., General Sick Leave", contentPlaceholder: "Enter the sick leave certificate text. Use placeholders like [Patient Name], [Date], etc." };
+      case "work_leave":
+        return { name: "Template Name", content: "Template Content", namePlaceholder: "e.g., Work Absence Letter", contentPlaceholder: "Enter the work leave certificate text. Use placeholders like [Patient Name], [Date], etc." };
     }
   };
 
@@ -466,18 +612,26 @@ const DoctorTemplates = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TemplateType)}>
-            <TabsList className="mb-4">
+            <TabsList className="mb-4 flex-wrap">
               <TabsTrigger value="disease" className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Disease Templates ({filteredDiseaseTemplates.length})
+                Disease ({filteredDiseaseTemplates.length})
               </TabsTrigger>
               <TabsTrigger value="test" className="flex items-center gap-2">
                 <FlaskConical className="h-4 w-4" />
-                Test Templates ({filteredTestTemplates.length})
+                Test ({filteredTestTemplates.length})
               </TabsTrigger>
               <TabsTrigger value="report" className="flex items-center gap-2">
                 <ClipboardList className="h-4 w-4" />
-                Report Templates ({filteredReportTemplates.length})
+                Report ({filteredReportTemplates.length})
+              </TabsTrigger>
+              <TabsTrigger value="sick_leave" className="flex items-center gap-2">
+                <HeartPulse className="h-4 w-4" />
+                Sick Leave ({filteredSickLeaveTemplates.length})
+              </TabsTrigger>
+              <TabsTrigger value="work_leave" className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Work Leave ({filteredWorkLeaveTemplates.length})
               </TabsTrigger>
             </TabsList>
 
@@ -732,6 +886,172 @@ const DoctorTemplates = () => {
                 </>
               )}
             </TabsContent>
+
+            <TabsContent value="sick_leave">
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              ) : paginatedSickLeaveTemplates.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {searchTerm ? "No templates found matching your search" : "No sick leave templates yet. Create your first one!"}
+                </div>
+              ) : (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Template Name</TableHead>
+                        <TableHead>Content Preview</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedSickLeaveTemplates.map((template) => (
+                        <TableRow key={template.id}>
+                          <TableCell className="font-medium">{template.template_name}</TableCell>
+                          <TableCell className="max-w-md">
+                            <div className="truncate">{template.template_content}</div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDialog(template, "sick_leave")}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteSickLeave(template.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  {totalSickLeavePages > 1 && (
+                    <div className="mt-4">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                          {Array.from({ length: totalSickLeavePages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={() => setCurrentPage((p) => Math.min(totalSickLeavePages, p + 1))}
+                              className={currentPage === totalSickLeavePages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
+              )}
+            </TabsContent>
+
+            <TabsContent value="work_leave">
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+              ) : paginatedWorkLeaveTemplates.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {searchTerm ? "No templates found matching your search" : "No work leave templates yet. Create your first one!"}
+                </div>
+              ) : (
+                <>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Template Name</TableHead>
+                        <TableHead>Content Preview</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedWorkLeaveTemplates.map((template) => (
+                        <TableRow key={template.id}>
+                          <TableCell className="font-medium">{template.template_name}</TableCell>
+                          <TableCell className="max-w-md">
+                            <div className="truncate">{template.template_content}</div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenDialog(template, "work_leave")}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteWorkLeave(template.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+
+                  {totalWorkLeavePages > 1 && (
+                    <div className="mt-4">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                          {Array.from({ length: totalWorkLeavePages }, (_, i) => i + 1).map((page) => (
+                            <PaginationItem key={page}>
+                              <PaginationLink
+                                onClick={() => setCurrentPage(page)}
+                                isActive={currentPage === page}
+                                className="cursor-pointer"
+                              >
+                                {page}
+                              </PaginationLink>
+                            </PaginationItem>
+                          ))}
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={() => setCurrentPage((p) => Math.min(totalWorkLeavePages, p + 1))}
+                              className={currentPage === totalWorkLeavePages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
+              )}
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
@@ -759,6 +1079,8 @@ const DoctorTemplates = () => {
                   <SelectItem value="disease">Disease Template</SelectItem>
                   <SelectItem value="test">Test Template</SelectItem>
                   <SelectItem value="report">Report Template</SelectItem>
+                  <SelectItem value="sick_leave">Sick Leave Template</SelectItem>
+                  <SelectItem value="work_leave">Work Leave Template</SelectItem>
                 </SelectContent>
               </Select>
             </div>

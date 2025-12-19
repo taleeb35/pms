@@ -458,6 +458,41 @@ export type Database = {
           },
         ]
       }
+      doctor_sick_leave_templates: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          template_content: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          template_content: string
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          template_content?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_sick_leave_templates_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_test_templates: {
         Row: {
           created_at: string
@@ -486,6 +521,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "doctor_test_templates_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_work_leave_templates: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          template_content: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          template_content: string
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          template_content?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_work_leave_templates_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
