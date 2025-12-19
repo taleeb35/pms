@@ -71,6 +71,7 @@ export type Database = {
           procedure_fee: number | null
           procedure_id: string | null
           reason: string | null
+          refund: number | null
           status: Database["public"]["Enums"]["appointment_status"] | null
           total_fee: number | null
           updated_at: string
@@ -93,6 +94,7 @@ export type Database = {
           procedure_fee?: number | null
           procedure_id?: string | null
           reason?: string | null
+          refund?: number | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
           updated_at?: string
@@ -115,6 +117,7 @@ export type Database = {
           procedure_fee?: number | null
           procedure_id?: string | null
           reason?: string | null
+          refund?: number | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
           updated_at?: string

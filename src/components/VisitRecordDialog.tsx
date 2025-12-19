@@ -103,6 +103,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     // Financial
     consultation_fee: "",
     other_fee: "",
+    refund: "",
     
     // Confidential
     confidential_notes: "",
@@ -152,6 +153,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         next_visit_notes: "",
         consultation_fee: "",
         other_fee: "",
+        refund: "",
         confidential_notes: "",
       });
       setExistingRecord(null);
@@ -371,7 +373,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       // Fetch appointment fees and procedure
       const { data: appointmentData } = await supabase
         .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id")
+        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id, refund")
         .eq("id", appointment.id)
         .single();
       
@@ -389,6 +391,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         next_visit_notes: data.next_visit_notes || "",
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
+        refund: appointmentData?.refund?.toString() || "",
         confidential_notes: appointmentData?.confidential_notes || "",
       });
       
@@ -768,9 +771,17 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       if (error) throw error;
 
       // Update appointment fees
+      const consultationFee = formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0;
+      const otherFee = formData.other_fee ? parseFloat(formData.other_fee) : 0;
+      const procFee = procedureFee ? parseFloat(procedureFee) : 0;
+      const refundAmount = formData.refund ? parseFloat(formData.refund) : 0;
+      const totalFee = consultationFee + otherFee + procFee - refundAmount;
+
       const appointmentUpdate: any = {
-        consultation_fee: formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0,
-        other_fee: formData.other_fee ? parseFloat(formData.other_fee) : 0,
+        consultation_fee: consultationFee,
+        other_fee: otherFee,
+        refund: refundAmount,
+        total_fee: totalFee,
         status: 'completed',
         confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
@@ -1325,12 +1336,23 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                       step="0.01"
                     />
                   </div>
-                  {(formData.consultation_fee || formData.other_fee || procedureFee) && (
+                  <div>
+                    <Label>Refund</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={formData.refund}
+                      onChange={(e) => setFormData({...formData, refund: e.target.value})}
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  {(formData.consultation_fee || formData.other_fee || procedureFee || formData.refund) && (
                     <div className="pt-2 border-t">
                       <div className="flex justify-between text-sm font-semibold">
                         <span>Total Fee:</span>
                         <span className="text-lg text-green-600 dark:text-green-400">
-                          {((parseFloat(formData.consultation_fee) || 0) + (parseFloat(formData.other_fee) || 0) + (parseFloat(procedureFee) || 0)).toFixed(2)}
+                          {((parseFloat(formData.consultation_fee) || 0) + (parseFloat(formData.other_fee) || 0) + (parseFloat(procedureFee) || 0) - (parseFloat(formData.refund) || 0)).toFixed(2)}
                         </span>
                       </div>
                     </div>
