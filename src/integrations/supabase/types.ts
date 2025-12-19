@@ -390,6 +390,7 @@ export type Database = {
       }
       doctor_disease_templates: {
         Row: {
+          clinic_id: string | null
           created_at: string
           disease_name: string
           doctor_id: string
@@ -398,6 +399,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clinic_id?: string | null
           created_at?: string
           disease_name: string
           doctor_id: string
@@ -406,6 +408,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clinic_id?: string | null
           created_at?: string
           disease_name?: string
           doctor_id?: string
@@ -414,6 +417,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "doctor_disease_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "doctor_disease_templates_doctor_id_fkey"
             columns: ["doctor_id"]
@@ -425,6 +435,7 @@ export type Database = {
       }
       doctor_report_templates: {
         Row: {
+          clinic_id: string | null
           created_at: string
           doctor_id: string
           fields: Json
@@ -433,6 +444,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clinic_id?: string | null
           created_at?: string
           doctor_id: string
           fields?: Json
@@ -441,6 +453,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clinic_id?: string | null
           created_at?: string
           doctor_id?: string
           fields?: Json
@@ -449,6 +462,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "doctor_report_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "doctor_report_templates_doctor_id_fkey"
             columns: ["doctor_id"]
@@ -495,6 +515,7 @@ export type Database = {
       }
       doctor_test_templates: {
         Row: {
+          clinic_id: string | null
           created_at: string
           description: string
           doctor_id: string
@@ -503,6 +524,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clinic_id?: string | null
           created_at?: string
           description: string
           doctor_id: string
@@ -511,6 +533,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clinic_id?: string | null
           created_at?: string
           description?: string
           doctor_id?: string
@@ -519,6 +542,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "doctor_test_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "doctor_test_templates_doctor_id_fkey"
             columns: ["doctor_id"]

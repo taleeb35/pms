@@ -50,6 +50,7 @@ import DoctorICDCodes from "./pages/DoctorICDCodes";
 import AdminProfile from "./pages/AdminProfile";
 import AdminFinance from "./pages/AdminFinance";
 import ClinicProfile from "./pages/ClinicProfile";
+import ClinicTemplates from "./pages/ClinicTemplates";
 import ReceptionistDashboard from "./pages/ReceptionistDashboard";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
@@ -396,6 +397,14 @@ const App = () => (
                 </Layout>
               }
             />
+            <Route
+              path="/clinic/templates"
+              element={
+                <Layout>
+                  <ClinicTemplates userType="clinic" />
+                </Layout>
+              }
+            />
             {/* Receptionist Routes */}
             <Route
               path="/receptionist/dashboard"
@@ -490,6 +499,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicProcedures />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/templates"
+              element={
+                <Layout>
+                  <ClinicTemplates userType="receptionist" />
                 </Layout>
               }
             />

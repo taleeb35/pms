@@ -60,6 +60,7 @@ type TemplateType = "disease" | "test" | "report" | "sick_leave" | "work_leave";
 
 const DoctorTemplates = () => {
   const navigate = useNavigate();
+  const [clinicId, setClinicId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TemplateType>("disease");
   const [diseaseTemplates, setDiseaseTemplates] = useState<DiseaseTemplate[]>([]);
   const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
@@ -92,6 +93,18 @@ const DoctorTemplates = () => {
       navigate("/doctor/auth");
       return;
     }
+    
+    // Get doctor's clinic_id
+    const { data: doctorData } = await supabase
+      .from("doctors")
+      .select("clinic_id")
+      .eq("id", session.user.id)
+      .maybeSingle();
+    
+    if (doctorData?.clinic_id) {
+      setClinicId(doctorData.clinic_id);
+    }
+    
     fetchAllTemplates();
   };
 
@@ -263,6 +276,7 @@ const DoctorTemplates = () => {
           .from("doctor_disease_templates")
           .insert({
             doctor_id: session.user.id,
+            clinic_id: clinicId,
             disease_name: formData.name,
             prescription_template: formData.content,
           });
@@ -304,6 +318,7 @@ const DoctorTemplates = () => {
           .from("doctor_test_templates")
           .insert({
             doctor_id: session.user.id,
+            clinic_id: clinicId,
             title: formData.name,
             description: formData.content,
           });
@@ -396,6 +411,7 @@ const DoctorTemplates = () => {
           .from("doctor_report_templates")
           .insert([{
             doctor_id: session.user.id,
+            clinic_id: clinicId,
             template_name: reportFormData.template_name,
             fields: validFields as unknown as Json,
           }]);
