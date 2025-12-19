@@ -11,8 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import type { Json } from "@/integrations/supabase/types";
 
 interface DiseaseTemplate {
   id: string;
@@ -32,11 +33,16 @@ interface TestTemplate {
   updated_at: string;
 }
 
+interface ReportField {
+  title: string;
+  value: string;
+}
+
 interface ReportTemplate {
   id: string;
   doctor_id: string;
-  title: string;
-  value: string;
+  template_name: string;
+  fields: ReportField[];
   created_at: string;
   updated_at: string;
 }
@@ -58,6 +64,10 @@ const DoctorTemplates = () => {
   const [formData, setFormData] = useState({ 
     name: "", 
     content: "" 
+  });
+  const [reportFormData, setReportFormData] = useState({
+    template_name: "",
+    fields: [{ title: "", value: "" }] as ReportField[]
   });
   const pageSize = 10;
 
@@ -115,7 +125,11 @@ const DoctorTemplates = () => {
     if (reportError) {
       console.error("Error fetching report templates:", reportError);
     } else {
-      setReportTemplates(reportData || []);
+      const transformedData = (reportData || []).map(item => ({
+        ...item,
+        fields: (item.fields as unknown as ReportField[]) || []
+      }));
+      setReportTemplates(transformedData);
     }
 
     setLoading(false);
@@ -133,12 +147,16 @@ const DoctorTemplates = () => {
         setFormData({ name: t.title, content: t.description });
       } else {
         const t = template as ReportTemplate;
-        setFormData({ name: t.title, content: t.value });
+        setReportFormData({
+          template_name: t.template_name,
+          fields: t.fields.length > 0 ? t.fields : [{ title: "", value: "" }]
+        });
       }
     } else {
       setEditingTemplate(null);
       setTemplateType(activeTab);
       setFormData({ name: "", content: "" });
+      setReportFormData({ template_name: "", fields: [{ title: "", value: "" }] });
     }
     setDialogOpen(true);
   };
@@ -147,18 +165,42 @@ const DoctorTemplates = () => {
     setDialogOpen(false);
     setEditingTemplate(null);
     setFormData({ name: "", content: "" });
+    setReportFormData({ template_name: "", fields: [{ title: "", value: "" }] });
+  };
+
+  const handleAddReportField = () => {
+    setReportFormData(prev => ({
+      ...prev,
+      fields: [...prev.fields, { title: "", value: "" }]
+    }));
+  };
+
+  const handleRemoveReportField = (index: number) => {
+    if (reportFormData.fields.length > 1) {
+      setReportFormData(prev => ({
+        ...prev,
+        fields: prev.fields.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const handleReportFieldChange = (index: number, field: "title" | "value", value: string) => {
+    setReportFormData(prev => ({
+      ...prev,
+      fields: prev.fields.map((f, i) => i === index ? { ...f, [field]: value } : f)
+    }));
   };
 
   const handleSave = async () => {
-    if (!formData.name.trim() || !formData.content.trim()) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
     if (templateType === "disease") {
+      if (!formData.name.trim() || !formData.content.trim()) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
       if (editingTemplate) {
         const { error } = await supabase
           .from("doctor_disease_templates")
@@ -195,6 +237,11 @@ const DoctorTemplates = () => {
         }
       }
     } else if (templateType === "test") {
+      if (!formData.name.trim() || !formData.content.trim()) {
+        toast.error("Please fill in all fields");
+        return;
+      }
+
       if (editingTemplate) {
         const { error } = await supabase
           .from("doctor_test_templates")
@@ -232,12 +279,23 @@ const DoctorTemplates = () => {
       }
     } else {
       // Report template
+      if (!reportFormData.template_name.trim()) {
+        toast.error("Please enter a template name");
+        return;
+      }
+
+      const validFields = reportFormData.fields.filter(f => f.title.trim() || f.value.trim());
+      if (validFields.length === 0) {
+        toast.error("Please add at least one field");
+        return;
+      }
+
       if (editingTemplate) {
         const { error } = await supabase
           .from("doctor_report_templates")
           .update({
-            title: formData.name,
-            value: formData.content,
+            template_name: reportFormData.template_name,
+            fields: validFields as unknown as Json,
           })
           .eq("id", editingTemplate.id);
 
@@ -252,11 +310,11 @@ const DoctorTemplates = () => {
       } else {
         const { error } = await supabase
           .from("doctor_report_templates")
-          .insert({
+          .insert([{
             doctor_id: session.user.id,
-            title: formData.name,
-            value: formData.content,
-          });
+            template_name: reportFormData.template_name,
+            fields: validFields as unknown as Json,
+          }]);
 
         if (error) {
           toast.error("Failed to create template");
@@ -335,8 +393,11 @@ const DoctorTemplates = () => {
 
   const filteredReportTemplates = reportTemplates.filter(
     (t) =>
-      t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.value.toLowerCase().includes(searchTerm.toLowerCase())
+      t.template_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.fields.some(f => 
+        f.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        f.value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
   );
 
   const totalDiseasePages = Math.ceil(filteredDiseaseTemplates.length / pageSize);
@@ -369,7 +430,7 @@ const DoctorTemplates = () => {
       case "test":
         return { name: "Test Title", content: "Description / Instructions", namePlaceholder: "e.g., Complete Blood Count", contentPlaceholder: "Enter test description, instructions, or default values..." };
       case "report":
-        return { name: "Report Title", content: "Value", namePlaceholder: "e.g., Blood Pressure", contentPlaceholder: "Enter the value or default content..." };
+        return { name: "Template Name", content: "", namePlaceholder: "e.g., Blood Test Report", contentPlaceholder: "" };
     }
   };
 
@@ -598,17 +659,20 @@ const DoctorTemplates = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Value</TableHead>
+                        <TableHead>Template Name</TableHead>
+                        <TableHead>Fields</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {paginatedReportTemplates.map((template) => (
                         <TableRow key={template.id}>
-                          <TableCell className="font-medium">{template.title}</TableCell>
+                          <TableCell className="font-medium">{template.template_name}</TableCell>
                           <TableCell className="max-w-md">
-                            <div className="truncate">{template.value}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {template.fields.length} field(s): {template.fields.slice(0, 3).map(f => f.title).join(", ")}
+                              {template.fields.length > 3 && "..."}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
@@ -673,65 +737,112 @@ const DoctorTemplates = () => {
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingTemplate ? "Edit Template" : "Add Template"}
+              {editingTemplate ? "Edit Template" : "Add New Template"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="type">Template Type</Label>
-              <Select 
-                value={templateType} 
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Template Type</Label>
+              <Select
+                value={templateType}
                 onValueChange={(v) => setTemplateType(v as TemplateType)}
                 disabled={!!editingTemplate}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="disease">
-                    <span className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Disease Template
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="test">
-                    <span className="flex items-center gap-2">
-                      <FlaskConical className="h-4 w-4" />
-                      Test Template
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="report">
-                    <span className="flex items-center gap-2">
-                      <ClipboardList className="h-4 w-4" />
-                      Report Template
-                    </span>
-                  </SelectItem>
+                  <SelectItem value="disease">Disease Template</SelectItem>
+                  <SelectItem value="test">Test Template</SelectItem>
+                  <SelectItem value="report">Report Template</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label htmlFor="name">{labels.name}</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder={labels.namePlaceholder}
-              />
-            </div>
-            <div>
-              <Label htmlFor="content">{labels.content}</Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder={labels.contentPlaceholder}
-                rows={6}
-              />
-            </div>
+
+            {templateType !== "report" ? (
+              <>
+                <div className="space-y-2">
+                  <Label>{labels.name}</Label>
+                  <Input
+                    placeholder={labels.namePlaceholder}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>{labels.content}</Label>
+                  <Textarea
+                    placeholder={labels.contentPlaceholder}
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    rows={6}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label>Template Name</Label>
+                  <Input
+                    placeholder="e.g., Blood Test Report"
+                    value={reportFormData.template_name}
+                    onChange={(e) => setReportFormData({ ...reportFormData, template_name: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <Label>Fields</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddReportField}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Field
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {reportFormData.fields.map((field, index) => (
+                      <div key={index} className="flex gap-2 items-start p-3 border rounded-lg bg-muted/30">
+                        <div className="flex-1 space-y-2">
+                          <Input
+                            placeholder="Field Title (e.g., Hemoglobin)"
+                            value={field.title}
+                            onChange={(e) => handleReportFieldChange(index, "title", e.target.value)}
+                          />
+                          <Input
+                            placeholder="Default Value (e.g., 14 g/dL)"
+                            value={field.value}
+                            onChange={(e) => handleReportFieldChange(index, "value", e.target.value)}
+                          />
+                        </div>
+                        {reportFormData.fields.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleRemoveReportField(index)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={handleCloseDialog}>
               Cancel

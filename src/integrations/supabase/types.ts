@@ -427,26 +427,26 @@ export type Database = {
         Row: {
           created_at: string
           doctor_id: string
+          fields: Json
           id: string
-          title: string
+          template_name: string
           updated_at: string
-          value: string
         }
         Insert: {
           created_at?: string
           doctor_id: string
+          fields?: Json
           id?: string
-          title: string
+          template_name: string
           updated_at?: string
-          value: string
         }
         Update: {
           created_at?: string
           doctor_id?: string
+          fields?: Json
           id?: string
-          title?: string
+          template_name?: string
           updated_at?: string
-          value?: string
         }
         Relationships: [
           {
