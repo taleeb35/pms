@@ -423,6 +423,41 @@ export type Database = {
           },
         ]
       }
+      doctor_report_templates: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          title: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          title: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_report_templates_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_test_templates: {
         Row: {
           created_at: string
