@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import { CalendarIcon, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -72,6 +73,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     pulse: "",
     weight: "",
     height: "",
+    pain_scale: null as number | null,
     
     // Medical Info
     chief_complaint: "",
@@ -118,6 +120,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         pulse: "",
         weight: "",
         height: "",
+        pain_scale: null,
         chief_complaint: "",
         patient_history: "",
         current_prescription: "",
@@ -296,6 +299,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         pulse: data.pulse || "",
         weight: data.weight || "",
         height: data.height || "",
+        pain_scale: data.pain_scale || null,
         chief_complaint: data.chief_complaint || "",
         patient_history: data.patient_history || "",
         current_prescription: data.current_prescription || "",
@@ -564,6 +568,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               <div class="vital-label">Height</div>
               <div class="vital-value">${formData.height || '—'}</div>
             </div>
+            <div class="vital-box">
+              <div class="vital-label">Pain</div>
+              <div class="vital-value">${formData.pain_scale ? formData.pain_scale + '/10' : '—'}</div>
+            </div>
           </div>
         </div>
     `;
@@ -654,6 +662,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         pulse: formData.pulse,
         weight: formData.weight,
         height: formData.height,
+        pain_scale: formData.pain_scale,
         chief_complaint: formData.chief_complaint,
         patient_history: formData.patient_history,
         current_prescription: formData.current_prescription,
@@ -910,6 +919,34 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                         }
                         return <span className="text-muted-foreground">-</span>;
                       })()}
+                    </div>
+                  </div>
+                  <div className="col-span-3">
+                    <Label>Pain Scale (1-10)</Label>
+                    <div className="flex items-center gap-4 mt-2">
+                      <Slider
+                        value={formData.pain_scale ? [formData.pain_scale] : [0]}
+                        onValueChange={(value) => setFormData({...formData, pain_scale: value[0] === 0 ? null : value[0]})}
+                        max={10}
+                        min={0}
+                        step={1}
+                        className="flex-1"
+                      />
+                      <div className={cn(
+                        "w-16 h-10 rounded-md border flex items-center justify-center font-bold text-lg",
+                        formData.pain_scale === null && "bg-muted text-muted-foreground",
+                        formData.pain_scale && formData.pain_scale <= 3 && "bg-green-100 text-green-700 border-green-300",
+                        formData.pain_scale && formData.pain_scale > 3 && formData.pain_scale <= 6 && "bg-amber-100 text-amber-700 border-amber-300",
+                        formData.pain_scale && formData.pain_scale > 6 && "bg-red-100 text-red-700 border-red-300"
+                      )}>
+                        {formData.pain_scale || "-"}
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>No Pain</span>
+                      <span>Mild</span>
+                      <span>Moderate</span>
+                      <span>Severe</span>
                     </div>
                   </div>
                 </div>

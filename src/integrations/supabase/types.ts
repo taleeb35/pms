@@ -1058,6 +1058,7 @@ export type Database = {
           id: string
           next_visit_date: string | null
           next_visit_notes: string | null
+          pain_scale: number | null
           patient_history: string | null
           patient_id: string
           pulse: string | null
@@ -1078,6 +1079,7 @@ export type Database = {
           id?: string
           next_visit_date?: string | null
           next_visit_notes?: string | null
+          pain_scale?: number | null
           patient_history?: string | null
           patient_id: string
           pulse?: string | null
@@ -1098,6 +1100,7 @@ export type Database = {
           id?: string
           next_visit_date?: string | null
           next_visit_notes?: string | null
+          pain_scale?: number | null
           patient_history?: string | null
           patient_id?: string
           pulse?: string | null
