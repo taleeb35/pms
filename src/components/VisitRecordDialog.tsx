@@ -30,6 +30,12 @@ interface ICDCode {
   description: string;
 }
 
+interface DiseaseTemplate {
+  id: string;
+  disease_name: string;
+  prescription_template: string;
+}
+
 interface Appointment {
   id: string;
   patient_id: string;
@@ -65,6 +71,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const [procedureFee, setProcedureFee] = useState<string>("");
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
   const [selectedICDCode, setSelectedICDCode] = useState<string>("");
+  const [diseaseTemplates, setDiseaseTemplates] = useState<DiseaseTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   
   const [formData, setFormData] = useState({
     // Vitals
@@ -102,6 +110,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       fetchExistingRecord();
       checkDoctorSpecialization();
       fetchPatientPregnancyDate();
+      fetchDiseaseTemplates();
     } else if (!open) {
       // Reset pregnancy date when dialog closes
       setPregnancyStartDate(undefined);
@@ -110,6 +119,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       setProcedureFee("");
       // Reset ICD code selection
       setSelectedICDCode("");
+      // Reset disease template selection
+      setSelectedTemplate("");
+      setDiseaseTemplates([]);
       // Reset next visit
       setNextVisitDate(undefined);
       setNextVisitTime("");
@@ -230,6 +242,35 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       setIcdCodes(data || []);
     } catch (error) {
       console.error("Error fetching ICD codes:", error);
+    }
+  };
+
+  const fetchDiseaseTemplates = async () => {
+    if (!appointment) return;
+    try {
+      const { data, error } = await supabase
+        .from("doctor_disease_templates")
+        .select("id, disease_name, prescription_template")
+        .eq("doctor_id", appointment.doctor_id)
+        .order("disease_name");
+
+      if (error) throw error;
+      setDiseaseTemplates(data || []);
+    } catch (error) {
+      console.error("Error fetching disease templates:", error);
+    }
+  };
+
+  const handleTemplateChange = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    if (templateId && templateId !== "none") {
+      const template = diseaseTemplates.find(t => t.id === templateId);
+      if (template) {
+        setFormData(prev => ({
+          ...prev,
+          current_prescription: template.prescription_template
+        }));
+      }
     }
   };
 
@@ -991,6 +1032,24 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               {/* Current Prescription */}
               <div className="border rounded-lg p-4">
                 <h3 className="font-semibold mb-4">Current Prescription</h3>
+                {diseaseTemplates.length > 0 && (
+                  <div className="mb-4">
+                    <Label className="text-sm text-muted-foreground">Load from Disease Template</Label>
+                    <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select a disease template..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        <SelectItem value="none">-- Select Template --</SelectItem>
+                        {diseaseTemplates.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>
+                            {template.disease_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <Textarea
                   placeholder="Medications, dosage, and instructions..."
                   value={formData.current_prescription}

@@ -26,6 +26,7 @@ import DoctorWalkIn from "./pages/DoctorWalkIn";
 import DoctorProcedures from "./pages/DoctorProcedures";
 import DoctorAllergies from "./pages/DoctorAllergies";
 import DoctorDiseases from "./pages/DoctorDiseases";
+import DoctorDiseaseTemplates from "./pages/DoctorDiseaseTemplates";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
@@ -168,6 +169,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorDiseases />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/disease-templates"
+              element={
+                <Layout>
+                  <DoctorDiseaseTemplates />
                 </Layout>
               }
             />

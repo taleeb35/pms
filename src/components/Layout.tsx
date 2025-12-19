@@ -20,6 +20,7 @@ import {
   AlertTriangle,
   HeartPulse,
   FileCode,
+  FileText,
 } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -173,6 +174,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
     { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
     { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
+    { path: "/doctor/disease-templates", icon: FileText, label: "Disease Templates" },
     { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
     { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
     { path: "/doctor/finance", icon: Banknote, label: "Finance" },

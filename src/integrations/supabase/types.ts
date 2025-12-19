@@ -388,6 +388,41 @@ export type Database = {
           },
         ]
       }
+      doctor_disease_templates: {
+        Row: {
+          created_at: string
+          disease_name: string
+          doctor_id: string
+          id: string
+          prescription_template: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          disease_name: string
+          doctor_id: string
+          id?: string
+          prescription_template: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          disease_name?: string
+          doctor_id?: string
+          id?: string
+          prescription_template?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_disease_templates_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctors: {
         Row: {
           approved: boolean
