@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Search, FlaskConical } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import Layout from "@/components/Layout";
 
 interface TestTemplate {
   id: string;
@@ -163,8 +162,7 @@ const DoctorTestTemplates = () => {
   }, [searchTerm]);
 
   return (
-    <Layout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Test Templates</h1>
@@ -315,9 +313,8 @@ const DoctorTestTemplates = () => {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
-      </div>
-    </Layout>
+      </Dialog>
+    </div>
   );
 };
 
