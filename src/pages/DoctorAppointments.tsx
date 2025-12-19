@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Printer } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
+import { PrintReportDialog } from "@/components/PrintReportDialog";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { TimeSelect } from "@/components/TimeSelect";
@@ -70,9 +71,11 @@ const DoctorAppointments = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showVisitDialog, setShowVisitDialog] = useState(false);
+  const [showPrintReportDialog, setShowPrintReportDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [visitAppointment, setVisitAppointment] = useState<Appointment | null>(null);
+  const [printReportAppointment, setPrintReportAppointment] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
@@ -342,6 +345,11 @@ const DoctorAppointments = () => {
     setShowVisitDialog(true);
   };
 
+  const openPrintReportDialog = (appointment: Appointment) => {
+    setPrintReportAppointment(appointment);
+    setShowPrintReportDialog(true);
+  };
+
   const getFilteredAppointments = () => {
     let filtered = appointments;
     
@@ -544,6 +552,12 @@ const DoctorAppointments = () => {
                           <FileText className="h-4 w-4 mr-2" />
                           Record Visit
                         </DropdownMenuItem>
+                        {apt.status === "completed" && (
+                          <DropdownMenuItem onClick={() => openPrintReportDialog(apt)}>
+                            <Printer className="h-4 w-4 mr-2" />
+                            Print Report
+                          </DropdownMenuItem>
+                        )}
                         {apt.status === "scheduled" && (
                           <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
                             <Check className="h-4 w-4 mr-2" />
@@ -657,6 +671,12 @@ const DoctorAppointments = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <PrintReportDialog
+        open={showPrintReportDialog}
+        onOpenChange={setShowPrintReportDialog}
+        appointment={printReportAppointment}
+      />
     </div>
   );
 };
