@@ -495,6 +495,14 @@ const App = () => (
               }
             />
             <Route
+              path="/receptionist/schedules"
+              element={
+                <Layout>
+                  <ClinicDoctorSchedules readOnly />
+                </Layout>
+              }
+            />
+            <Route
               path="/receptionist/allergies"
               element={
                 <Layout>
