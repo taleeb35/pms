@@ -157,7 +157,7 @@ export default function DoctorFinance() {
         const procedureFee = Number(apt.procedure_fee) || 0;
         const refundAmount = Number(apt.refund) || 0;
         const subTotal = consultationFee + otherFee + procedureFee;
-        const totalFee = Number(apt.total_fee) || 0;
+        const totalFee = subTotal - refundAmount; // Calculate total after discount
         return {
           id: apt.id,
           patient_name: apt.patients?.full_name || "Unknown",
@@ -178,6 +178,7 @@ export default function DoctorFinance() {
       setAppointments(appointmentData);
       const total = appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0);
       const discount = appointmentData.reduce((sum, apt) => sum + apt.refund, 0);
+      const subTotalSum = appointmentData.reduce((sum, apt) => sum + apt.sub_total, 0);
       setTotalRevenue(total);
       setTotalDiscount(discount);
       setClinicShare((total * clinicPct) / 100);
