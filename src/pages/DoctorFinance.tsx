@@ -22,6 +22,7 @@ interface AppointmentRevenue {
   appointment_time: string;
   consultation_fee: number;
   other_fee: number;
+  refund: number;
   total_fee: number;
   clinic_share: number;
   doctor_share: number;
@@ -47,6 +48,7 @@ export default function DoctorFinance() {
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
   const [doctorShare, setDoctorShare] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,6 +126,7 @@ export default function DoctorFinance() {
           appointment_time,
           consultation_fee,
           other_fee,
+          refund,
           total_fee,
           patients(full_name, patient_id)
         `)
@@ -147,6 +150,7 @@ export default function DoctorFinance() {
 
       const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => {
         const totalFee = Number(apt.total_fee) || 0;
+        const refundAmount = Number(apt.refund) || 0;
         return {
           id: apt.id,
           patient_name: apt.patients?.full_name || "Unknown",
@@ -155,6 +159,7 @@ export default function DoctorFinance() {
           appointment_time: apt.appointment_time,
           consultation_fee: Number(apt.consultation_fee) || 0,
           other_fee: Number(apt.other_fee) || 0,
+          refund: refundAmount,
           total_fee: totalFee,
           clinic_share: (totalFee * clinicPct) / 100,
           doctor_share: (totalFee * doctorPct) / 100,
@@ -163,7 +168,9 @@ export default function DoctorFinance() {
 
       setAppointments(appointmentData);
       const total = appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0);
+      const discount = appointmentData.reduce((sum, apt) => sum + apt.refund, 0);
       setTotalRevenue(total);
+      setTotalDiscount(discount);
       setClinicShare((total * clinicPct) / 100);
       setDoctorShare((total * doctorPct) / 100);
     } catch (error: any) {
@@ -392,7 +399,7 @@ export default function DoctorFinance() {
       </div>
 
       {/* Revenue Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-white text-sm font-medium">
@@ -412,6 +419,23 @@ export default function DoctorFinance() {
           <CardContent>
             <div className="text-3xl font-bold">
               {totalRevenue.toLocaleString('en-PK')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-red-500 to-rose-600 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-sm font-medium">
+              <Banknote className="h-4 w-4" />
+              Total Discount
+            </CardTitle>
+            <CardDescription className="text-red-100">
+              Refunds given
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              -{totalDiscount.toLocaleString('en-PK')}
             </div>
           </CardContent>
         </Card>
@@ -494,6 +518,7 @@ export default function DoctorFinance() {
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead className="text-right">Total Fee</TableHead>
+                    <TableHead className="text-right">Discount</TableHead>
                     <TableHead className="text-right">Clinic Share</TableHead>
                     <TableHead className="text-right">Dr Share</TableHead>
                   </TableRow>
@@ -507,6 +532,9 @@ export default function DoctorFinance() {
                       <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
                       <TableCell className="text-right font-medium">
                         {apt.total_fee.toLocaleString('en-PK')}
+                      </TableCell>
+                      <TableCell className="text-right text-red-600 dark:text-red-400">
+                        {apt.refund > 0 ? `-${apt.refund.toLocaleString('en-PK')}` : '-'}
                       </TableCell>
                       <TableCell className="text-right text-indigo-600 dark:text-indigo-400">
                         {apt.clinic_share.toLocaleString('en-PK')}
