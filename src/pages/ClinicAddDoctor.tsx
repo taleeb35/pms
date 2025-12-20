@@ -398,7 +398,9 @@ const ClinicAddDoctor = () => {
                   Percentage of doctor's earnings that goes to the clinic
                 </p>
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="pmdcNumber">PMDC Number</Label>
                 <Input
