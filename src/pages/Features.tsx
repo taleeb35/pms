@@ -1,148 +1,83 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Calendar, Users, FileText, Activity, Shield, Clock, Heart, Stethoscope, 
-  Sparkles, UserPlus, BarChart3, TrendingUp, DollarSign, Eye, ChartBar, 
-  CheckCircle2, Clipboard, PillIcon, TestTube, FileBarChart, 
-  Bell, Lock, Zap, Globe, HeadphonesIcon, ArrowRight, Play,
-  Building2, CreditCard, Receipt, ClipboardList, UserCog, CalendarCheck,
-  FilePlus, FileSearch, MessageSquare, BadgeCheck, Layers, Settings
+  Calendar, Users, FileText, Shield, 
+  Sparkles, UserPlus, BarChart3, DollarSign, 
+  CheckCircle2, ArrowRight, Play,
+  Building2, Stethoscope, HeadphonesIcon
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
-import clinicLogo from "@/assets/clinic-logo.png";
+import dashboardOverview from "@/assets/dashboard-overview.png";
+import patientManagement from "@/assets/patient-management.png";
+import appointmentCalendar from "@/assets/appointment-calendar.png";
 
 const Features = () => {
   const navigate = useNavigate();
 
-  const mainFeatures = [
+  const coreFeatures = [
     {
       icon: Building2,
-      title: "Complete Clinic Management",
-      description: "Centralized dashboard to manage your entire clinic operations. Control multiple doctors, staff, and departments from a single interface.",
-      benefits: ["Multi-location support", "Role-based access control", "Real-time overview", "Customizable settings"],
-      color: "from-blue-500 to-cyan-500",
-      bgPattern: "bg-gradient-to-br from-blue-50 to-cyan-50"
+      title: "Complete Clinic Control",
+      description: "Manage your entire clinic from a single, powerful dashboard.",
+      color: "from-blue-500 to-cyan-500"
     },
     {
       icon: UserPlus,
-      title: "Unlimited Doctor Management",
-      description: "Add and manage unlimited doctors in your clinic. Track performance, set schedules, and monitor activities for each doctor.",
-      benefits: ["No doctor limits", "Performance tracking", "Schedule management", "Activity monitoring"],
-      color: "from-purple-500 to-pink-500",
-      bgPattern: "bg-gradient-to-br from-purple-50 to-pink-50"
+      title: "Unlimited Doctors",
+      description: "Add and manage unlimited doctors with performance tracking.",
+      color: "from-purple-500 to-pink-500"
     },
     {
       icon: Users,
-      title: "Patient Management System",
-      description: "Complete patient lifecycle management from registration to follow-ups. Store medical history, allergies, and all health records securely.",
-      benefits: ["Digital health records", "Visit history tracking", "Allergy management", "Emergency contacts"],
-      color: "from-green-500 to-emerald-500",
-      bgPattern: "bg-gradient-to-br from-green-50 to-emerald-50"
+      title: "Patient Management",
+      description: "Complete patient lifecycle from registration to follow-ups.",
+      color: "from-green-500 to-emerald-500"
     },
     {
       icon: Calendar,
-      title: "Smart Appointment System",
-      description: "Intelligent appointment scheduling with conflict detection, automated reminders, and walk-in management capabilities.",
-      benefits: ["Online booking", "Automated reminders", "Walk-in support", "Calendar sync"],
-      color: "from-orange-500 to-amber-500",
-      bgPattern: "bg-gradient-to-br from-orange-50 to-amber-50"
+      title: "Smart Scheduling",
+      description: "Intelligent appointments with conflict detection.",
+      color: "from-orange-500 to-amber-500"
     },
     {
       icon: DollarSign,
-      title: "Finance & Revenue Tracking",
-      description: "Comprehensive financial management including consultation fees, procedure charges, refunds, and detailed profit analytics.",
-      benefits: ["Revenue tracking", "Expense management", "Profit reports", "Payment history"],
-      color: "from-emerald-500 to-teal-500",
-      bgPattern: "bg-gradient-to-br from-emerald-50 to-teal-50"
+      title: "Finance Tracking",
+      description: "Revenue analytics and comprehensive financial reports.",
+      color: "from-emerald-500 to-teal-500"
     },
     {
       icon: FileText,
       title: "Medical Templates",
-      description: "Pre-built templates for prescriptions, sick leaves, work leaves, test reports, and disease-specific treatments to save time.",
-      benefits: ["Prescription templates", "Leave certificates", "Report templates", "Custom templates"],
-      color: "from-indigo-500 to-purple-500",
-      bgPattern: "bg-gradient-to-br from-indigo-50 to-purple-50"
+      description: "Pre-built prescriptions, certificates, and reports.",
+      color: "from-indigo-500 to-purple-500"
     }
   ];
 
-  const detailedFeatures = [
+  const showcaseFeatures = [
     {
-      category: "Patient Management",
-      icon: Users,
-      color: "from-blue-600 to-cyan-600",
-      items: [
-        { icon: UserPlus, title: "Patient Registration", desc: "Quick registration with unique patient IDs and QR codes" },
-        { icon: FileSearch, title: "Medical History", desc: "Complete medical history tracking for each patient" },
-        { icon: Heart, title: "Allergies & Diseases", desc: "Track major diseases and allergies for safety alerts" },
-        { icon: ClipboardList, title: "Visit Records", desc: "Detailed records of each visit with vitals and notes" },
-        { icon: Calendar, title: "Pregnancy Tracking", desc: "Specialized tracking for gynecology practices" },
-        { icon: MessageSquare, title: "Patient Notes", desc: "Confidential notes only visible to treating doctors" }
-      ]
+      title: "Powerful Dashboard",
+      subtitle: "Everything at a Glance",
+      description: "Get real-time insights into your clinic performance with intuitive charts, patient statistics, and revenue tracking—all in one beautiful interface.",
+      image: dashboardOverview,
+      highlights: ["Real-time analytics", "Patient statistics", "Revenue charts", "Doctor performance"],
+      reversed: false
     },
     {
-      category: "Appointment System",
-      icon: Calendar,
-      color: "from-purple-600 to-pink-600",
-      items: [
-        { icon: CalendarCheck, title: "Smart Scheduling", desc: "Intelligent slot management with conflict detection" },
-        { icon: Clock, title: "Duration Control", desc: "Custom appointment durations for different visit types" },
-        { icon: Bell, title: "Status Updates", desc: "Track appointments: scheduled, in-progress, completed" },
-        { icon: Users, title: "Walk-in Queue", desc: "Manage walk-in patients with priority system" },
-        { icon: Activity, title: "Waitlist Management", desc: "Add patients to waitlist when fully booked" },
-        { icon: Receipt, title: "Fee Collection", desc: "Collect consultation and procedure fees at booking" }
-      ]
+      title: "Patient Management",
+      subtitle: "Complete Health Records",
+      description: "Track every patient from registration to treatment. Store medical history, allergies, visit records, and generate comprehensive health reports.",
+      image: patientManagement,
+      highlights: ["Medical history", "Visit tracking", "Allergy alerts", "Health reports"],
+      reversed: true
     },
     {
-      category: "Finance Management",
-      icon: DollarSign,
-      color: "from-green-600 to-emerald-600",
-      items: [
-        { icon: CreditCard, title: "Fee Structure", desc: "Customizable consultation and procedure fees" },
-        { icon: TrendingUp, title: "Revenue Analytics", desc: "Daily, weekly, and monthly revenue reports" },
-        { icon: BarChart3, title: "Profit Tracking", desc: "Track clinic and doctor profit sharing" },
-        { icon: Receipt, title: "Invoice Generation", desc: "Automatic invoice creation for all services" },
-        { icon: DollarSign, title: "Refund Management", desc: "Process and track refunds with notes" },
-        { icon: ChartBar, title: "Financial Reports", desc: "Exportable reports for accounting purposes" }
-      ]
-    },
-    {
-      category: "Templates & Documents",
-      icon: FileText,
-      color: "from-orange-600 to-amber-600",
-      items: [
-        { icon: PillIcon, title: "Prescription Templates", desc: "Disease-wise prescription templates for quick writing" },
-        { icon: FileBarChart, title: "Report Templates", desc: "Customizable fields for test and medical reports" },
-        { icon: FilePlus, title: "Sick Leave Certificates", desc: "Professional sick leave document generation" },
-        { icon: Clipboard, title: "Work Leave Letters", desc: "Work leave templates with customizable content" },
-        { icon: TestTube, title: "Test Templates", desc: "Frequently ordered tests as quick templates" },
-        { icon: FileText, title: "Print & Export", desc: "Print-ready documents with clinic branding" }
-      ]
-    },
-    {
-      category: "Clinical Data",
-      icon: Activity,
-      color: "from-red-600 to-pink-600",
-      items: [
-        { icon: Stethoscope, title: "ICD Codes", desc: "International disease classification codes" },
-        { icon: Layers, title: "Procedures List", desc: "Customizable procedure catalog with pricing" },
-        { icon: BadgeCheck, title: "Specializations", desc: "Manage doctor specializations for your clinic" },
-        { icon: Heart, title: "Allergy Database", desc: "Clinic-wide allergy list for quick selection" },
-        { icon: Activity, title: "Disease Catalog", desc: "Common diseases for fast diagnosis entry" },
-        { icon: FileSearch, title: "Quick Search", desc: "Search across all clinical data instantly" }
-      ]
-    },
-    {
-      category: "Staff Management",
-      icon: UserCog,
-      color: "from-indigo-600 to-purple-600",
-      items: [
-        { icon: UserPlus, title: "Doctor Onboarding", desc: "Easy doctor addition with credential verification" },
-        { icon: Users, title: "Receptionist Access", desc: "Dedicated receptionist portal with limited access" },
-        { icon: Eye, title: "Activity Logs", desc: "Track all staff actions for accountability" },
-        { icon: Settings, title: "Permission Control", desc: "Role-based access to sensitive information" },
-        { icon: BarChart3, title: "Performance Metrics", desc: "Track doctor productivity and patient load" },
-        { icon: Lock, title: "Secure Access", desc: "Individual login credentials for all staff" }
-      ]
+      title: "Smart Appointments",
+      subtitle: "Effortless Scheduling",
+      description: "Visual calendar with drag-and-drop scheduling, automated reminders, walk-in management, and conflict detection to keep your clinic running smoothly.",
+      image: appointmentCalendar,
+      highlights: ["Visual calendar", "Auto reminders", "Walk-in queue", "Conflict detection"],
+      reversed: false
     }
   ];
 
@@ -151,56 +86,20 @@ const Features = () => {
       role: "Clinic Owner",
       icon: Building2,
       color: "from-blue-500 to-purple-500",
-      features: [
-        "Full dashboard with all analytics",
-        "Add/remove doctors and staff",
-        "View all financial reports",
-        "Monitor doctor activities",
-        "Manage clinic settings",
-        "Access all patient records",
-        "Handle support tickets",
-        "Configure templates"
-      ]
+      features: ["Full dashboard access", "Doctor management", "Financial reports", "Activity monitoring"]
     },
     {
       role: "Doctor",
       icon: Stethoscope,
       color: "from-purple-500 to-pink-500",
-      features: [
-        "Personal patient list",
-        "Appointment management",
-        "Visit record creation",
-        "Prescription writing",
-        "Template management",
-        "Financial overview",
-        "Walk-in handling",
-        "Patient history access"
-      ]
+      features: ["Patient list", "Appointments", "Prescriptions", "Templates"]
     },
     {
       role: "Receptionist",
       icon: HeadphonesIcon,
       color: "from-teal-500 to-cyan-500",
-      features: [
-        "Patient registration",
-        "Appointment booking",
-        "Walk-in management",
-        "Waitlist handling",
-        "Basic patient info",
-        "Fee collection",
-        "Queue management",
-        "Doctor schedules"
-      ]
+      features: ["Patient registration", "Booking", "Walk-ins", "Queue management"]
     }
-  ];
-
-  const securityFeatures = [
-    { icon: Lock, title: "Bank-Level Encryption", desc: "All data encrypted with AES-256 encryption" },
-    { icon: Shield, title: "HIPAA Compliant", desc: "Designed following healthcare privacy standards" },
-    { icon: Eye, title: "Audit Trails", desc: "Complete logs of all system activities" },
-    { icon: UserCog, title: "Role-Based Access", desc: "Granular permissions for different user types" },
-    { icon: Globe, title: "Secure Cloud", desc: "Data hosted on secure cloud infrastructure" },
-    { icon: Zap, title: "99.9% Uptime", desc: "Reliable service with minimal downtime" }
   ];
 
   return (
@@ -212,25 +111,24 @@ const Features = () => {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400/10 via-purple-400/10 to-transparent blur-3xl"></div>
         
         <div className="max-w-4xl mx-auto space-y-6 relative">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 px-5 py-2 rounded-full border border-purple-200 shadow-md">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 px-5 py-2 rounded-full border border-purple-200 shadow-md animate-fade-in">
             <Sparkles className="h-4 w-4 text-purple-600" />
             <span className="text-sm font-semibold text-purple-800">Complete Feature Overview</span>
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
+          <h1 className="text-5xl md:text-6xl font-extrabold leading-tight animate-fade-in">
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Everything You Need to
+              Everything You Need
             </span>
             <br />
-            <span className="text-foreground">Run Your Clinic</span>
+            <span className="text-foreground">In One Platform</span>
           </h1>
           
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            From patient registration to financial reporting, discover how MedCare Pro 
-            simplifies every aspect of clinic management.
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
+            From patient registration to financial reporting—simplify every aspect of your clinic.
           </p>
           
-          <div className="flex gap-4 justify-center pt-4">
+          <div className="flex gap-4 justify-center pt-4 animate-fade-in">
             <Button 
               size="lg" 
               onClick={() => navigate("/auth")}
@@ -251,99 +149,78 @@ const Features = () => {
         </div>
       </section>
 
-      {/* Main Features Grid */}
+      {/* Core Features Grid */}
       <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Core Features
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Powerful modules designed specifically for modern healthcare practices
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {mainFeatures.map((feature, index) => (
-            <div
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {coreFeatures.map((feature, index) => (
+            <Card
               key={index}
-              className={`group relative ${feature.bgPattern} rounded-3xl p-8 border-2 border-white/50 hover:border-purple-200 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden`}
+              className="group border-2 border-white/50 hover:border-purple-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white/80 backdrop-blur"
             >
-              <div className={`absolute top-0 right-0 w-40 h-40 bg-gradient-to-br ${feature.color} opacity-10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-500`}></div>
-              
-              <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${feature.color} mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                <feature.icon className="h-8 w-8 text-white" />
-              </div>
-              
-              <h3 className="text-2xl font-bold text-foreground mb-3">
-                {feature.title}
-              </h3>
-              
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                {feature.description}
-              </p>
-              
-              <ul className="space-y-2">
-                {feature.benefits.map((benefit, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                    {benefit}
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <CardContent className="p-6">
+                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.color} mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <feature.icon className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm">{feature.description}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </section>
 
-      {/* Detailed Features by Category */}
-      <section className="py-20 bg-white/50">
+      {/* Feature Showcases with Images */}
+      <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Detailed Feature Breakdown
-              </span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Explore every capability organized by category
-            </p>
-          </div>
-
-          <div className="space-y-16 max-w-7xl mx-auto">
-            {detailedFeatures.map((category, catIndex) => (
-              <div key={catIndex} className="relative">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className={`p-4 rounded-2xl bg-gradient-to-br ${category.color} shadow-lg`}>
-                    <category.icon className="h-8 w-8 text-white" />
+          <div className="space-y-24">
+            {showcaseFeatures.map((feature, index) => (
+              <div
+                key={index}
+                className={`flex flex-col ${feature.reversed ? 'lg:flex-row-reverse' : 'lg:flex-row'} items-center gap-12 max-w-7xl mx-auto`}
+              >
+                {/* Image */}
+                <div className="flex-1 w-full">
+                  <div className="relative group">
+                    <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <img 
+                      src={feature.image} 
+                      alt={feature.title}
+                      className="w-full rounded-2xl shadow-2xl border border-purple-100 relative z-10 group-hover:scale-[1.02] transition-transform duration-500"
+                    />
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-foreground">
-                    {category.category}
-                  </h3>
                 </div>
-                
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.items.map((item, itemIndex) => (
-                    <div
-                      key={itemIndex}
-                      className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-purple-200 hover:shadow-xl transition-all duration-300 group"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className={`p-3 rounded-xl bg-gradient-to-br ${category.color} opacity-80 group-hover:opacity-100 transition-opacity`}>
-                          <item.icon className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-foreground mb-1 group-hover:text-purple-600 transition-colors">
-                            {item.title}
-                          </h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {item.desc}
-                          </p>
-                        </div>
+
+                {/* Content */}
+                <div className="flex-1 space-y-6">
+                  <div>
+                    <span className="text-sm font-semibold text-purple-600 uppercase tracking-wider">
+                      {feature.subtitle}
+                    </span>
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-2">
+                      {feature.title}
+                    </h2>
+                  </div>
+                  
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    {feature.highlights.map((highlight, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="text-sm font-medium text-foreground">{highlight}</span>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+
+                  <Button 
+                    onClick={() => navigate("/auth")}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  >
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -351,81 +228,60 @@ const Features = () => {
         </div>
       </section>
 
-      {/* Role-Based Features */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Features by User Role
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Tailored access and features for every member of your team
-          </p>
-        </div>
+      {/* User Roles */}
+      <section className="py-20 bg-white/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Built for Everyone
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg">Tailored experience for each role in your clinic</p>
+          </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {roleFeatures.map((role, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-3xl p-8 border-2 border-gray-100 hover:border-purple-200 hover:shadow-2xl transition-all duration-300"
-            >
-              <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${role.color} mb-6 shadow-lg`}>
-                <role.icon className="h-8 w-8 text-white" />
-              </div>
-              
-              <h3 className="text-2xl font-bold text-foreground mb-6">
-                {role.role}
-              </h3>
-              
-              <ul className="space-y-3">
-                {role.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-muted-foreground">
-                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {roleFeatures.map((role, index) => (
+              <Card 
+                key={index}
+                className="text-center p-8 border-2 border-white/50 hover:border-purple-200 hover:shadow-xl transition-all duration-300 bg-white/80"
+              >
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${role.color} flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                  <role.icon className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-4">{role.role}</h3>
+                <ul className="space-y-2">
+                  {role.features.map((feature, i) => (
+                    <li key={i} className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Security Section */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-white/10 px-5 py-2 rounded-full border border-white/20 mb-6">
-              <Shield className="h-4 w-4" />
-              <span className="text-sm font-semibold">Enterprise-Grade Security</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Your Data is Safe with Us
-            </h2>
-            <p className="text-white/70 text-lg max-w-2xl mx-auto">
-              We take security seriously. Your patient data is protected with industry-leading security measures.
-            </p>
+      {/* Security & Trust */}
+      <section className="py-16 container mx-auto px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-100 to-emerald-100 px-6 py-3 rounded-full mb-6">
+            <Shield className="h-5 w-5 text-green-600" />
+            <span className="font-semibold text-green-800">Bank-Level Security</span>
           </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {securityFeatures.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all duration-300"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500">
-                    <feature.icon className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white mb-1">
-                      {feature.title}
-                    </h4>
-                    <p className="text-sm text-white/60">
-                      {feature.desc}
-                    </p>
-                  </div>
-                </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+            Your Data is Safe With Us
+          </h2>
+          <p className="text-muted-foreground mb-8">
+            AES-256 encryption, HIPAA compliant design, and 99.9% uptime guarantee.
+          </p>
+          <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
+            {["256-bit Encryption", "Daily Backups", "Role-Based Access", "Audit Logs", "Secure Cloud"].map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                <span>{item}</span>
               </div>
             ))}
           </div>
@@ -433,22 +289,22 @@ const Features = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-3xl mx-auto bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl p-12 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent"></div>
-          
-          <div className="relative">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+      <section className="py-20 container mx-auto px-4">
+        <Card className="max-w-4xl mx-auto bg-gradient-to-br from-blue-600 to-purple-600 border-0 overflow-hidden relative">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzR2Nmg2di02aC02em0wIDAtNmg2djZoLTZ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+          <CardContent className="p-12 text-center relative z-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               Ready to Transform Your Clinic?
             </h2>
             <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-              Join hundreds of clinics already using MedCare Pro to streamline their operations and provide better patient care.
+              Join hundreds of clinics already using MedCare Pro. Start your 14-day free trial today.
             </p>
-            <div className="flex gap-4 justify-center flex-wrap">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 size="lg" 
+                variant="secondary"
+                className="text-lg px-8"
                 onClick={() => navigate("/auth")}
-                className="text-lg px-8 py-6 bg-white text-purple-600 hover:bg-white/90 shadow-xl"
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -456,34 +312,34 @@ const Features = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="text-lg px-8 py-6 border-2 border-white text-white hover:bg-white/10"
+                className="text-lg px-8 bg-transparent border-white/30 text-white hover:bg-white/10"
+                onClick={() => navigate("/contact")}
               >
                 Contact Sales
               </Button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-white/80 backdrop-blur py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <img src={clinicLogo} alt="Clinic Logo" className="h-10 w-10" />
-              <div>
-                <h3 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  MedCare Pro
-                </h3>
-                <p className="text-xs text-muted-foreground">Complete Clinic Management</p>
+      {/* Stats */}
+      <section className="py-16 container mx-auto px-4">
+        <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
+          {[
+            { number: "50+", label: "Clinics" },
+            { number: "500+", label: "Doctors" },
+            { number: "10K+", label: "Patients" },
+            { number: "99.9%", label: "Uptime" }
+          ].map((stat, i) => (
+            <div key={i} className="p-6">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                {stat.number}
               </div>
+              <div className="text-muted-foreground font-medium">{stat.label}</div>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © 2024 MedCare Pro. All rights reserved.
-            </p>
-          </div>
+          ))}
         </div>
-      </footer>
+      </section>
     </div>
   );
 };
