@@ -23,8 +23,8 @@ import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { useClinicId } from "@/hooks/useClinicId";
-import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
-import { TimeSelect } from "@/components/TimeSelect";
+import { isTimeSlotAvailable, checkDoctorLeave } from "@/lib/appointmentUtils";
+import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 
 interface Appointment {
   id: string;
@@ -109,6 +109,9 @@ const ClinicAppointments = () => {
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
   const [icdCodeFilter, setIcdCodeFilter] = useState("all");
   const [selectedAppointmentType, setSelectedAppointmentType] = useState("new");
+  const [isOnLeave, setIsOnLeave] = useState(false);
+  const [editSelectedDoctorId, setEditSelectedDoctorId] = useState("");
+  const [editIsOnLeave, setEditIsOnLeave] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -242,6 +245,17 @@ const ClinicAppointments = () => {
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
       const appointmentTime = selectedTime;
 
+      // Check if doctor is on leave
+      const leaveCheck = await checkDoctorLeave(selectedDoctorId, appointmentDate);
+      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+        toast({ 
+          title: "Doctor On Leave", 
+          description: "The selected doctor is on leave for this date. Please select a different date or doctor.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       // Check for double booking
       const { available, error: slotError } = await isTimeSlotAvailable(
         selectedDoctorId,
@@ -300,14 +314,24 @@ const ClinicAppointments = () => {
     e.preventDefault();
     if (!editingAppointment || !editDate) return;
     const formData = new FormData(e.currentTarget);
-    const newDoctorId = formData.get("doctor_id") as string;
     const appointmentDate = format(editDate, "yyyy-MM-dd");
     const appointmentTime = editSelectedTime;
     
     try {
+      // Check if doctor is on leave
+      const leaveCheck = await checkDoctorLeave(editSelectedDoctorId, appointmentDate);
+      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+        toast({ 
+          title: "Doctor On Leave", 
+          description: "The selected doctor is on leave for this date. Please select a different date or doctor.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       // Check for double booking (exclude current appointment)
       const { available } = await isTimeSlotAvailable(
-        newDoctorId,
+        editSelectedDoctorId,
         appointmentDate,
         appointmentTime,
         editingAppointment.id
@@ -323,7 +347,7 @@ const ClinicAppointments = () => {
       }
 
       const { error } = await supabase.from("appointments").update({
-        doctor_id: newDoctorId,
+        doctor_id: editSelectedDoctorId,
         patient_id: formData.get("patient_id") as string,
         appointment_date: appointmentDate, 
         appointment_time: appointmentTime,
@@ -337,6 +361,7 @@ const ClinicAppointments = () => {
       setShowEditDialog(false);
       setEditingAppointment(null);
       setEditDate(undefined);
+      setEditSelectedDoctorId("");
       fetchAppointments();
     } catch (error: any) {
       toast({ title: "Error updating appointment", description: error.message, variant: "destructive" });
@@ -380,6 +405,7 @@ const ClinicAppointments = () => {
     setEditingAppointment(appointment);
     setEditDate(new Date(appointment.appointment_date));
     setEditSelectedTime(appointment.appointment_time?.slice(0, 5) || "");
+    setEditSelectedDoctorId(appointment.doctor_id);
     setShowEditDialog(true);
   };
 
@@ -505,7 +531,16 @@ const ClinicAppointments = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="appointment_time">Time</Label>
-                  <TimeSelect value={selectedTime} onValueChange={setSelectedTime} name="appointment_time" required />
+                  <DoctorTimeSelect 
+                    doctorId={selectedDoctorId} 
+                    selectedDate={selectedDate} 
+                    value={selectedTime} 
+                    onValueChange={setSelectedTime} 
+                    onLeaveStatusChange={(onLeave) => setIsOnLeave(onLeave)}
+                    name="appointment_time" 
+                    required 
+                    disabled={!selectedDoctorId}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -745,7 +780,15 @@ const ClinicAppointments = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Doctor</Label>
-                  <Select name="doctor_id" defaultValue={editingAppointment.doctor_id} required>
+                  <Select 
+                    name="doctor_id" 
+                    value={editSelectedDoctorId} 
+                    onValueChange={(value) => {
+                      setEditSelectedDoctorId(value);
+                      setEditSelectedTime(""); // Clear time when doctor changes
+                    }}
+                    required
+                  >
                     <SelectTrigger><SelectValue placeholder="Select Doctor" /></SelectTrigger>
                     <SelectContent>
                       {doctors.map((doctor) => (
@@ -787,7 +830,15 @@ const ClinicAppointments = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit_appointment_time">Time</Label>
-                  <TimeSelect value={editSelectedTime} onValueChange={setEditSelectedTime} name="appointment_time" required />
+                  <DoctorTimeSelect 
+                    doctorId={editSelectedDoctorId} 
+                    selectedDate={editDate} 
+                    value={editSelectedTime} 
+                    onValueChange={setEditSelectedTime}
+                    onLeaveStatusChange={(onLeave) => setEditIsOnLeave(onLeave)}
+                    name="appointment_time" 
+                    required 
+                  />
                 </div>
               </div>
               <div className="space-y-2">
