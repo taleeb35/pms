@@ -2,3 +2,9 @@ project_id = "anqhnkcppujulkugcpee"
 
 [functions.setup-admin]
 verify_jwt = false
+
+[functions.reset-clinic-payments]
+verify_jwt = false
+
+[functions.send-clinic-welcome-email]
+verify_jwt = false
