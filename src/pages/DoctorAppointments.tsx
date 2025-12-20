@@ -23,7 +23,7 @@ import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { PrintReportDialog } from "@/components/PrintReportDialog";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
-import { isTimeSlotAvailable, checkDoctorLeave } from "@/lib/appointmentUtils";
+import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 
 interface Appointment {
@@ -213,12 +213,12 @@ const DoctorAppointments = () => {
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
       const appointmentTime = selectedTime;
 
-      // Check if doctor is on leave
-      const leaveCheck = await checkDoctorLeave(user?.id || "", appointmentDate);
-      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+      // Check if doctor is available (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(user?.id || "", appointmentDate);
+      if (!availability.available) {
         toast({ 
-          title: "Doctor On Leave", 
-          description: "You are on leave for this date. Please select a different date.", 
+          title: "Doctor Not Available", 
+          description: availability.reason || "The doctor is not available on this date. Please select a different date.", 
           variant: "destructive" 
         });
         return;
@@ -286,12 +286,12 @@ const DoctorAppointments = () => {
     const appointmentTime = editSelectedTime;
 
     try {
-      // Check if doctor is on leave
-      const leaveCheck = await checkDoctorLeave(user?.id || "", appointmentDate);
-      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+      // Check if doctor is available (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(user?.id || "", appointmentDate);
+      if (!availability.available) {
         toast({ 
-          title: "Doctor On Leave", 
-          description: "You are on leave for this date. Please select a different date.", 
+          title: "Doctor Not Available", 
+          description: availability.reason || "You are not available on this date. Please select a different date.", 
           variant: "destructive" 
         });
         return;

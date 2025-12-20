@@ -80,6 +80,62 @@ export const checkDoctorLeave = async (
 };
 
 /**
+ * Check if a doctor is available on a specific date (checks both schedule and leaves)
+ * @param doctorId - The doctor's ID
+ * @param date - The date to check (YYYY-MM-DD format)
+ * @returns Availability info
+ */
+export const checkDoctorAvailability = async (
+  doctorId: string,
+  date: string
+): Promise<{ 
+  available: boolean; 
+  reason?: string;
+  isOnLeave?: boolean;
+  leaveType?: string;
+  isDayOff?: boolean;
+  dayName?: string;
+}> => {
+  try {
+    // Check if doctor is on leave
+    const leaveInfo = await checkDoctorLeave(doctorId, date);
+    
+    if (leaveInfo.onLeave && leaveInfo.leaveType === "full_day") {
+      return { 
+        available: false, 
+        reason: leaveInfo.reason || "Doctor is on leave for this date",
+        isOnLeave: true,
+        leaveType: leaveInfo.leaveType
+      };
+    }
+
+    // Get day of week (0=Sunday)
+    const dateObj = new Date(date);
+    const dayOfWeek = dateObj.getDay();
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const dayName = dayNames[dayOfWeek];
+
+    // Get doctor's schedule for this day
+    const schedule = await getDoctorScheduleForDay(doctorId, dayOfWeek);
+
+    // If schedule exists and doctor is marked as unavailable for this day
+    if (schedule && !schedule.isAvailable) {
+      return { 
+        available: false, 
+        reason: `Doctor is not available on ${dayName}s`,
+        isDayOff: true,
+        dayName
+      };
+    }
+
+    return { available: true };
+  } catch (error: any) {
+    console.error("Error checking doctor availability:", error);
+    return { available: true }; // Default to available on error
+  }
+};
+
+/**
  * Get doctor's schedule for a specific day of week
  * @param doctorId - The doctor's ID
  * @param dayOfWeek - Day of week (0=Sunday, 6=Saturday)

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { getAvailableTimeSlots, checkDoctorLeave } from "@/lib/appointmentUtils";
+import { getAvailableTimeSlots, checkDoctorAvailability } from "@/lib/appointmentUtils";
 
 interface DoctorTimeSelectProps {
   doctorId: string;
@@ -34,8 +34,8 @@ const DoctorTimeSelect = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [timeSlots, setTimeSlots] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isOnLeave, setIsOnLeave] = useState(false);
-  const [leaveInfo, setLeaveInfo] = useState<{ leaveType?: string; reason?: string } | null>(null);
+  const [isUnavailable, setIsUnavailable] = useState(false);
+  const [unavailableReason, setUnavailableReason] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
@@ -51,8 +51,8 @@ const DoctorTimeSelect = ({
           return { value: time24, label: time12 };
         });
         setTimeSlots(defaultSlots);
-        setIsOnLeave(false);
-        setLeaveInfo(null);
+        setIsUnavailable(false);
+        setUnavailableReason(null);
         onLeaveStatusChange?.(false);
         return;
       }
@@ -61,11 +61,12 @@ const DoctorTimeSelect = ({
       try {
         const dateStr = selectedDate.toISOString().split('T')[0];
         
-        // Check leave status first
-        const leave = await checkDoctorLeave(doctorId, dateStr);
-        setIsOnLeave(leave.onLeave && leave.leaveType === "full_day");
-        setLeaveInfo(leave.onLeave ? { leaveType: leave.leaveType, reason: leave.reason } : null);
-        onLeaveStatusChange?.(leave.onLeave && leave.leaveType === "full_day", leave.onLeave ? { leaveType: leave.leaveType, reason: leave.reason } : undefined);
+        // Check availability (includes leave and schedule check)
+        const availability = await checkDoctorAvailability(doctorId, dateStr);
+        const isNotAvailable = !availability.available;
+        setIsUnavailable(isNotAvailable);
+        setUnavailableReason(isNotAvailable ? (availability.reason || "Doctor is not available") : null);
+        onLeaveStatusChange?.(isNotAvailable, isNotAvailable ? { leaveType: availability.leaveType, reason: availability.reason } : undefined);
 
         // Get available slots
         const slots = await getAvailableTimeSlots(doctorId, dateStr);
@@ -107,7 +108,7 @@ const DoctorTimeSelect = ({
     setSearchQuery("");
   };
 
-  const isDisabled = disabled || loading || (isOnLeave && timeSlots.length === 0);
+  const isDisabled = disabled || loading || (isUnavailable && timeSlots.length === 0);
 
   return (
     <>
@@ -124,16 +125,16 @@ const DoctorTimeSelect = ({
             className={cn(
               "w-full justify-between font-normal",
               !value && "text-muted-foreground",
-              isOnLeave && timeSlots.length === 0 && "border-destructive"
+              isUnavailable && timeSlots.length === 0 && "border-destructive"
             )}
           >
             <div className="flex items-center gap-2">
-              {isOnLeave && timeSlots.length === 0 ? (
+              {isUnavailable && timeSlots.length === 0 ? (
                 <AlertCircle className="h-4 w-4 text-destructive" />
               ) : (
                 <Clock className="h-4 w-4" />
               )}
-              {loading ? "Loading..." : (isOnLeave && timeSlots.length === 0) ? "Doctor is on leave" : (selectedLabel || placeholder)}
+              {loading ? "Loading..." : (isUnavailable && timeSlots.length === 0) ? (unavailableReason || "Doctor not available") : (selectedLabel || placeholder)}
             </div>
           </Button>
         </PopoverTrigger>

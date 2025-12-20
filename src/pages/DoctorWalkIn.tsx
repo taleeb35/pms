@@ -24,7 +24,7 @@ import {
   handlePhoneInput,
   handleCNICInput
 } from "@/lib/validations";
-import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { TimeSelect } from "@/components/TimeSelect";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -146,6 +146,18 @@ const DoctorWalkIn = () => {
     try {
       const patientId = generatePatientId();
       const todayDate = format(new Date(), 'yyyy-MM-dd');
+
+      // Check if doctor is available today (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(doctorId, todayDate);
+      if (!availability.available) {
+        setLoading(false);
+        toast({ 
+          title: "Not Available Today", 
+          description: availability.reason || "You are not available today. Walk-in appointments cannot be created.", 
+          variant: "destructive" 
+        });
+        return;
+      }
 
       // Check for double booking
       const { available } = await isTimeSlotAvailable(

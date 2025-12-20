@@ -24,7 +24,7 @@ import {
   handleCNICInput
 } from "@/lib/validations";
 import { useClinicId } from "@/hooks/useClinicId";
-import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { TimeSelect } from "@/components/TimeSelect";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -156,6 +156,18 @@ const ClinicWalkIn = () => {
       const patientId = generatePatientId();
       const todayDate = format(new Date(), 'yyyy-MM-dd');
       const { data: { user } } = await supabase.auth.getUser();
+
+      // Check if doctor is available today (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(appointmentForm.doctor_id, todayDate);
+      if (!availability.available) {
+        setLoading(false);
+        toast({ 
+          title: "Doctor Not Available", 
+          description: availability.reason || "The selected doctor is not available today. Please select a different doctor.", 
+          variant: "destructive" 
+        });
+        return;
+      }
 
       // Check for double booking
       const { available } = await isTimeSlotAvailable(
