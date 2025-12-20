@@ -32,6 +32,7 @@ interface Doctor {
   contact_number: string | null;
   city: string | null;
   introduction: string | null;
+  pmdc_number: string | null;
   profiles: {
     full_name: string;
     email: string;
@@ -58,6 +59,7 @@ const ClinicDoctors = () => {
     clinic_percentage: "",
     city: "",
     introduction: "",
+    pmdc_number: "",
   });
   const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
@@ -94,6 +96,7 @@ const ClinicDoctors = () => {
           contact_number,
           city,
           introduction,
+          pmdc_number,
           profiles(full_name, email, date_of_birth)
         `)
         .eq("clinic_id", clinicId)
@@ -127,6 +130,7 @@ const ClinicDoctors = () => {
       clinic_percentage: doctor.clinic_percentage?.toString() || "0",
       city: doctor.city || "",
       introduction: doctor.introduction || "",
+      pmdc_number: doctor.pmdc_number || "",
     });
     setIsEditDialogOpen(true);
   };
@@ -171,6 +175,7 @@ const ClinicDoctors = () => {
           contact_number: editForm.contact_number || null,
           city: editForm.city || null,
           introduction: editForm.introduction || null,
+          pmdc_number: editForm.pmdc_number || null,
         })
         .eq("id", selectedDoctor.id);
 
@@ -473,6 +478,17 @@ const ClinicDoctors = () => {
                   onValueChange={(value) => setEditForm({ ...editForm, city: value })}
                   label="City"
                 />
+              </div>
+              <div>
+                <Label>PMDC Number</Label>
+                <Input
+                  value={editForm.pmdc_number}
+                  onChange={(e) => setEditForm({ ...editForm, pmdc_number: e.target.value })}
+                  placeholder="e.g., 12345-P"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Pakistan Medical & Dental Council registration
+                </p>
               </div>
               <div className="col-span-2">
                 <Label>Introduction</Label>

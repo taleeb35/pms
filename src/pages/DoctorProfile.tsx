@@ -26,6 +26,7 @@ const DoctorProfile = () => {
     experience_years: "",
     consultation_fee: "",
     contact_number: "",
+    pmdc_number: "",
   });
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
@@ -78,6 +79,7 @@ const DoctorProfile = () => {
         experience_years: doctorData.experience_years !== null && doctorData.experience_years !== undefined ? doctorData.experience_years.toString() : "",
         consultation_fee: doctorData.consultation_fee !== null && doctorData.consultation_fee !== undefined ? doctorData.consultation_fee.toString() : "",
         contact_number: doctorData.contact_number || "",
+        pmdc_number: doctorData.pmdc_number || "",
       };
       
       console.log("Setting profile state to:", newProfile);
@@ -140,6 +142,7 @@ const DoctorProfile = () => {
           experience_years: profile.experience_years ? parseInt(profile.experience_years) : null,
           consultation_fee: profile.consultation_fee ? parseFloat(profile.consultation_fee) : null,
           contact_number: profile.contact_number,
+          pmdc_number: profile.pmdc_number || null,
         })
         .eq("id", user.id);
 
@@ -404,6 +407,22 @@ const DoctorProfile = () => {
                   onChange={(e) => setProfile({ ...profile, contact_number: e.target.value })}
                   className="border-primary/20 focus:border-primary"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  PMDC Number
+                </Label>
+                <Input
+                  value={profile.pmdc_number}
+                  onChange={(e) => setProfile({ ...profile, pmdc_number: e.target.value })}
+                  placeholder="e.g., 12345-P"
+                  className="border-primary/20 focus:border-primary"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pakistan Medical & Dental Council registration number
+                </p>
               </div>
 
               <div className="space-y-2">

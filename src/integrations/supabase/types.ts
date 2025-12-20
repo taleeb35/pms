@@ -611,6 +611,7 @@ export type Database = {
           id: string
           introduction: string | null
           license_number: string | null
+          pmdc_number: string | null
           qualification: string
           specialization: string
           updated_at: string
@@ -629,6 +630,7 @@ export type Database = {
           id: string
           introduction?: string | null
           license_number?: string | null
+          pmdc_number?: string | null
           qualification: string
           specialization: string
           updated_at?: string
@@ -647,6 +649,7 @@ export type Database = {
           id?: string
           introduction?: string | null
           license_number?: string | null
+          pmdc_number?: string | null
           qualification?: string
           specialization?: string
           updated_at?: string
