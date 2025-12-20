@@ -23,7 +23,7 @@ import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { useClinicId } from "@/hooks/useClinicId";
-import { isTimeSlotAvailable, checkDoctorLeave } from "@/lib/appointmentUtils";
+import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 
 interface Appointment {
@@ -245,12 +245,12 @@ const ClinicAppointments = () => {
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
       const appointmentTime = selectedTime;
 
-      // Check if doctor is on leave
-      const leaveCheck = await checkDoctorLeave(selectedDoctorId, appointmentDate);
-      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+      // Check if doctor is available (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(selectedDoctorId, appointmentDate);
+      if (!availability.available) {
         toast({ 
-          title: "Doctor On Leave", 
-          description: "The selected doctor is on leave for this date. Please select a different date or doctor.", 
+          title: "Doctor Not Available", 
+          description: availability.reason || "The selected doctor is not available on this date. Please select a different date or doctor.", 
           variant: "destructive" 
         });
         return;
@@ -318,12 +318,12 @@ const ClinicAppointments = () => {
     const appointmentTime = editSelectedTime;
     
     try {
-      // Check if doctor is on leave
-      const leaveCheck = await checkDoctorLeave(editSelectedDoctorId, appointmentDate);
-      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+      // Check if doctor is available (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(editSelectedDoctorId, appointmentDate);
+      if (!availability.available) {
         toast({ 
-          title: "Doctor On Leave", 
-          description: "The selected doctor is on leave for this date. Please select a different date or doctor.", 
+          title: "Doctor Not Available", 
+          description: availability.reason || "The selected doctor is not available on this date. Please select a different date or doctor.", 
           variant: "destructive" 
         });
         return;
