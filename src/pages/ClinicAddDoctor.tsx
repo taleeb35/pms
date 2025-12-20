@@ -34,6 +34,7 @@ const ClinicAddDoctor = () => {
     consultationFee: "",
     clinicPercentage: "",
     introduction: "",
+    pmdcNumber: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -172,6 +173,7 @@ const ClinicAddDoctor = () => {
         consultation_fee: formData.consultationFee ? parseFloat(formData.consultationFee) : null,
         clinic_percentage: formData.clinicPercentage ? parseFloat(formData.clinicPercentage) : 0,
         introduction: formData.introduction || null,
+        pmdc_number: formData.pmdcNumber || null,
         clinic_id: user.id,
         approved: true, // Doctors are active by default
       });
@@ -394,6 +396,19 @@ const ClinicAddDoctor = () => {
                 />
                 <p className="text-xs text-muted-foreground">
                   Percentage of doctor's earnings that goes to the clinic
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pmdcNumber">PMDC Number</Label>
+                <Input
+                  id="pmdcNumber"
+                  value={formData.pmdcNumber}
+                  onChange={(e) => setFormData({ ...formData, pmdcNumber: e.target.value })}
+                  placeholder="e.g., 12345-P"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pakistan Medical & Dental Council registration number
                 </p>
               </div>
             </div>
