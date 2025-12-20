@@ -436,6 +436,44 @@ export type Database = {
           },
         ]
       }
+      doctor_leaves: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          leave_date: string
+          leave_type: string
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          leave_date: string
+          leave_type?: string
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          leave_date?: string
+          leave_type?: string
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_leaves_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_report_templates: {
         Row: {
           clinic_id: string | null
@@ -474,6 +512,53 @@ export type Database = {
           },
           {
             foreignKeyName: "doctor_report_templates_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_schedules: {
+        Row: {
+          break_end: string | null
+          break_start: string | null
+          created_at: string
+          day_of_week: number
+          doctor_id: string
+          end_time: string | null
+          id: string
+          is_available: boolean
+          start_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          break_end?: string | null
+          break_start?: string | null
+          created_at?: string
+          day_of_week: number
+          doctor_id: string
+          end_time?: string | null
+          id?: string
+          is_available?: boolean
+          start_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          break_end?: string | null
+          break_start?: string | null
+          created_at?: string
+          day_of_week?: number
+          doctor_id?: string
+          end_time?: string | null
+          id?: string
+          is_available?: boolean
+          start_time?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_schedules_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
