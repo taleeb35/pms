@@ -124,6 +124,10 @@ const AdminClinics = () => {
 
   const updateClinicStatus = async (clinicId: string, newStatus: string) => {
     setUpdating(clinicId);
+    
+    // Get clinic details for email
+    const clinic = clinics.find(c => c.id === clinicId);
+    
     const { error } = await supabase
       .from("clinics")
       .update({ status: newStatus })
@@ -136,6 +140,23 @@ const AdminClinics = () => {
         variant: "destructive",
       });
     } else {
+      // Send approval email when status changes to active
+      if (newStatus === "active" && clinic) {
+        try {
+          await supabase.functions.invoke("send-clinic-approval-email", {
+            body: {
+              clinicName: clinic.clinic_name,
+              email: clinic.profiles?.email,
+              ownerName: clinic.profiles?.full_name || clinic.clinic_name,
+            },
+          });
+          console.log("Approval email sent successfully");
+        } catch (emailError) {
+          console.error("Failed to send approval email:", emailError);
+          // Don't block the status update if email fails
+        }
+      }
+      
       toast({
         title: "Status updated",
         description: `Clinic status changed to ${newStatus}`,
