@@ -160,14 +160,23 @@ const Index = () => {
               <p className="text-xs text-muted-foreground">Complete Clinic Management</p>
             </div>
           </div>
-          <Button 
-            onClick={() => setShowLoginDialog(true)} 
-            size="sm"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-          >
-            <LogIn className="mr-2 h-4 w-4" />
-            Login
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="ghost"
+              onClick={() => navigate("/features")} 
+              className="text-muted-foreground hover:text-foreground font-medium"
+            >
+              Features
+            </Button>
+            <Button 
+              onClick={() => setShowLoginDialog(true)} 
+              size="sm"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <LogIn className="mr-2 h-4 w-4" />
+              Login
+            </Button>
+          </div>
         </div>
       </header>
 
