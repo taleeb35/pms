@@ -8,6 +8,7 @@ import {
   Building2, Stethoscope, HeadphonesIcon
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import dashboardOverview from "@/assets/dashboard-overview.png";
 import patientManagement from "@/assets/patient-management.png";
 import appointmentCalendar from "@/assets/appointment-calendar.png";
@@ -340,6 +341,8 @@ const Features = () => {
           ))}
         </div>
       </section>
+
+      <PublicFooter />
     </div>
   );
 };

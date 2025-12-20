@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import clinicLogo from "@/assets/clinic-logo.png";
+import PublicFooter from "@/components/PublicFooter";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -461,22 +462,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center gap-4 mb-6">
-            <img src={clinicLogo} alt="Clinic Logo" className="h-16 w-16" />
-            <div className="text-center">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                MedCare Pro
-              </span>
-              <p className="text-sm text-muted-foreground mt-1">Complete Clinic Management Solution</p>
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="text-muted-foreground text-sm">&copy; 2025 MedCare Pro. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 };
