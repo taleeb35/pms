@@ -21,6 +21,8 @@ interface AppointmentRevenue {
   appointment_date: string;
   consultation_fee: number;
   other_fee: number;
+  procedure_fee: number;
+  sub_total: number;
   refund: number;
   total_fee: number;
   doctor_id: string;
@@ -167,6 +169,7 @@ export default function ClinicFinance() {
           appointment_date,
           consultation_fee,
           other_fee,
+          procedure_fee,
           refund,
           total_fee,
           doctor_id,
@@ -188,18 +191,26 @@ export default function ClinicFinance() {
 
       if (error) throw error;
 
-      const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => ({
-        id: apt.id,
-        patient_name: apt.patients?.full_name || "Unknown",
-        doctor_name: apt.doctors?.profiles?.full_name || "Unknown Doctor",
-        appointment_date: apt.appointment_date,
-        consultation_fee: Number(apt.consultation_fee) || 0,
-        other_fee: Number(apt.other_fee) || 0,
-        refund: Number(apt.refund) || 0,
-        total_fee: Number(apt.total_fee) || 0,
-        doctor_id: apt.doctor_id,
-        clinic_percentage: doctorPercentages[apt.doctor_id] || 0,
-      }));
+      const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => {
+        const consultationFee = Number(apt.consultation_fee) || 0;
+        const otherFee = Number(apt.other_fee) || 0;
+        const procedureFee = Number(apt.procedure_fee) || 0;
+        const subTotal = consultationFee + otherFee + procedureFee;
+        return {
+          id: apt.id,
+          patient_name: apt.patients?.full_name || "Unknown",
+          doctor_name: apt.doctors?.profiles?.full_name || "Unknown Doctor",
+          appointment_date: apt.appointment_date,
+          consultation_fee: consultationFee,
+          other_fee: otherFee,
+          procedure_fee: procedureFee,
+          sub_total: subTotal,
+          refund: Number(apt.refund) || 0,
+          total_fee: Number(apt.total_fee) || 0,
+          doctor_id: apt.doctor_id,
+          clinic_percentage: doctorPercentages[apt.doctor_id] || 0,
+        };
+      });
 
       // Calculate totals
       const total = appointmentData.reduce((sum, apt) => sum + apt.total_fee, 0);
@@ -615,8 +626,9 @@ export default function ClinicFinance() {
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Doctor</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Total Fee</TableHead>
+                    <TableHead className="text-right">Sub Total</TableHead>
                     <TableHead className="text-right">Discount</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
                     <TableHead className="text-right">Clinic Share</TableHead>
                     <TableHead className="text-right">Dr Share</TableHead>
                   </TableRow>
@@ -632,11 +644,14 @@ export default function ClinicFinance() {
                           <TableCell className="font-medium">{apt.patient_name}</TableCell>
                           <TableCell>{apt.doctor_name}</TableCell>
                           <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
-                          <TableCell className="text-right font-semibold">
-                            {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                          <TableCell className="text-right text-muted-foreground">
+                            {apt.sub_total.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
                           </TableCell>
                           <TableCell className="text-right text-red-600 dark:text-red-400">
                             {apt.refund > 0 ? `-${apt.refund.toLocaleString('en-PK', { minimumFractionDigits: 0 })}` : '-'}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold">
+                            {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
                           </TableCell>
                           <TableCell className="text-right text-primary font-medium">
                             {aptClinicShare.toLocaleString('en-PK', { minimumFractionDigits: 0 })}

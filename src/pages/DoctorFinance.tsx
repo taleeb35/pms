@@ -22,6 +22,8 @@ interface AppointmentRevenue {
   appointment_time: string;
   consultation_fee: number;
   other_fee: number;
+  procedure_fee: number;
+  sub_total: number;
   refund: number;
   total_fee: number;
   clinic_share: number;
@@ -126,6 +128,7 @@ export default function DoctorFinance() {
           appointment_time,
           consultation_fee,
           other_fee,
+          procedure_fee,
           refund,
           total_fee,
           patients(full_name, patient_id)
@@ -149,16 +152,22 @@ export default function DoctorFinance() {
       const doctorPct = 100 - clinicPct;
 
       const appointmentData: AppointmentRevenue[] = (data || []).map((apt: any) => {
-        const totalFee = Number(apt.total_fee) || 0;
+        const consultationFee = Number(apt.consultation_fee) || 0;
+        const otherFee = Number(apt.other_fee) || 0;
+        const procedureFee = Number(apt.procedure_fee) || 0;
         const refundAmount = Number(apt.refund) || 0;
+        const subTotal = consultationFee + otherFee + procedureFee;
+        const totalFee = Number(apt.total_fee) || 0;
         return {
           id: apt.id,
           patient_name: apt.patients?.full_name || "Unknown",
           patient_id: apt.patients?.patient_id || "N/A",
           appointment_date: apt.appointment_date,
           appointment_time: apt.appointment_time,
-          consultation_fee: Number(apt.consultation_fee) || 0,
-          other_fee: Number(apt.other_fee) || 0,
+          consultation_fee: consultationFee,
+          other_fee: otherFee,
+          procedure_fee: procedureFee,
+          sub_total: subTotal,
           refund: refundAmount,
           total_fee: totalFee,
           clinic_share: (totalFee * clinicPct) / 100,
@@ -517,8 +526,9 @@ export default function DoctorFinance() {
                   <TableRow>
                     <TableHead>Patient Name</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Total Fee</TableHead>
+                    <TableHead className="text-right">Sub Total</TableHead>
                     <TableHead className="text-right">Discount</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
                     <TableHead className="text-right">Clinic Share</TableHead>
                     <TableHead className="text-right">Dr Share</TableHead>
                   </TableRow>
@@ -530,11 +540,14 @@ export default function DoctorFinance() {
                     <TableRow key={apt.id} className="hover:bg-accent/50">
                       <TableCell className="font-medium">{apt.patient_name}</TableCell>
                       <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
-                      <TableCell className="text-right font-medium">
-                        {apt.total_fee.toLocaleString('en-PK')}
+                      <TableCell className="text-right text-muted-foreground">
+                        {apt.sub_total.toLocaleString('en-PK')}
                       </TableCell>
                       <TableCell className="text-right text-red-600 dark:text-red-400">
                         {apt.refund > 0 ? `-${apt.refund.toLocaleString('en-PK')}` : '-'}
+                      </TableCell>
+                      <TableCell className="text-right font-medium">
+                        {apt.total_fee.toLocaleString('en-PK')}
                       </TableCell>
                       <TableCell className="text-right text-indigo-600 dark:text-indigo-400">
                         {apt.clinic_share.toLocaleString('en-PK')}
