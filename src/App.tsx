@@ -55,6 +55,7 @@ import AdminProfile from "./pages/AdminProfile";
 import AdminFinance from "./pages/AdminFinance";
 import ClinicProfile from "./pages/ClinicProfile";
 import ClinicTemplates from "./pages/ClinicTemplates";
+import ClinicDoctorSchedules from "./pages/ClinicDoctorSchedules";
 import ReceptionistDashboard from "./pages/ReceptionistDashboard";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
@@ -417,6 +418,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicTemplates userType="clinic" />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/schedules"
+              element={
+                <Layout>
+                  <ClinicDoctorSchedules />
                 </Layout>
               }
             />
