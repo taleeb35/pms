@@ -768,7 +768,11 @@ const ClinicAppointments = () => {
           </Card>
         </TabsContent>
         <TabsContent value="calendar">
-          <ImprovedAppointmentCalendar appointments={appointments} onAppointmentClick={openVisitDialog} />
+          <ImprovedAppointmentCalendar 
+            appointments={appointments} 
+            onAppointmentClick={openVisitDialog}
+            doctors={doctors.map(d => ({ id: d.id, name: d.profiles?.full_name || 'Unknown' }))}
+          />
         </TabsContent>
       </Tabs>
 
