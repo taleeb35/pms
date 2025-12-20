@@ -23,8 +23,8 @@ import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { PrintReportDialog } from "@/components/PrintReportDialog";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
-import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
-import { TimeSelect } from "@/components/TimeSelect";
+import { isTimeSlotAvailable, checkDoctorLeave } from "@/lib/appointmentUtils";
+import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 
 interface Appointment {
   id: string;
@@ -91,6 +91,9 @@ const DoctorAppointments = () => {
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
   const [icdCodeFilter, setIcdCodeFilter] = useState("all");
   const [selectedAppointmentType, setSelectedAppointmentType] = useState("new");
+  const [doctorId, setDoctorId] = useState<string>("");
+  const [isOnLeave, setIsOnLeave] = useState(false);
+  const [editIsOnLeave, setEditIsOnLeave] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -99,7 +102,15 @@ const DoctorAppointments = () => {
     fetchWaitlistPatients();
     checkDoctorSpecialization();
     fetchICDCodes();
+    fetchDoctorId();
   }, []);
+
+  const fetchDoctorId = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      setDoctorId(user.id);
+    }
+  };
 
   const checkDoctorSpecialization = async () => {
     try {
@@ -202,6 +213,17 @@ const DoctorAppointments = () => {
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
       const appointmentTime = selectedTime;
 
+      // Check if doctor is on leave
+      const leaveCheck = await checkDoctorLeave(user?.id || "", appointmentDate);
+      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+        toast({ 
+          title: "Doctor On Leave", 
+          description: "You are on leave for this date. Please select a different date.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       // Check for double booking
       const { available } = await isTimeSlotAvailable(
         user?.id || "",
@@ -264,6 +286,17 @@ const DoctorAppointments = () => {
     const appointmentTime = editSelectedTime;
 
     try {
+      // Check if doctor is on leave
+      const leaveCheck = await checkDoctorLeave(user?.id || "", appointmentDate);
+      if (leaveCheck.onLeave && leaveCheck.leaveType === "full_day") {
+        toast({ 
+          title: "Doctor On Leave", 
+          description: "You are on leave for this date. Please select a different date.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       // Check for double booking (exclude current appointment)
       const { available } = await isTimeSlotAvailable(
         user?.id || "",
@@ -427,7 +460,7 @@ const DoctorAppointments = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><TimeSelect value={selectedTime} onValueChange={setSelectedTime} name="appointment_time" required /></div>
+                <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><DoctorTimeSelect doctorId={doctorId} selectedDate={selectedDate} value={selectedTime} onValueChange={setSelectedTime} onLeaveStatusChange={(onLeave) => setIsOnLeave(onLeave)} name="appointment_time" required /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
@@ -662,7 +695,7 @@ const DoctorAppointments = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2"><Label>Appointment Date</Label><Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !editDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{editDate ? format(editDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label>Time</Label><TimeSelect value={editSelectedTime} onValueChange={setEditSelectedTime} name="appointment_time" required /></div>
+                <div className="space-y-2"><Label>Time</Label><DoctorTimeSelect doctorId={doctorId} selectedDate={editDate} value={editSelectedTime} onValueChange={setEditSelectedTime} onLeaveStatusChange={(onLeave) => setEditIsOnLeave(onLeave)} name="appointment_time" required /></div>
               </div>
               <div className="space-y-2"><Label htmlFor="edit_duration_minutes">Duration (minutes)</Label><Input id="edit_duration_minutes" name="duration_minutes" type="number" defaultValue={editingAppointment.duration_minutes || 30} min={15} step={15} required /></div>
               <div className="space-y-2"><Label htmlFor="edit_reason">Reason for Visit</Label><Input id="edit_reason" name="reason" defaultValue={editingAppointment.reason || ""} placeholder="e.g., Regular checkup" /></div>
