@@ -250,7 +250,10 @@ const AdminClinics = () => {
       patientCount = count || 0;
     }
 
-    // Delete the clinic (cascade will handle doctors and patients)
+    // Get doctor user IDs before deleting
+    const doctorUserIds = doctors ? doctors.map(d => d.id) : [];
+
+    // Delete the clinic from database first
     const { error } = await supabase
       .from("clinics")
       .delete()
@@ -266,6 +269,27 @@ const AdminClinics = () => {
       setDeleting(false);
       setClinicToDelete(null);
       return;
+    }
+
+    // Delete the clinic user from auth.users via edge function
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // Delete clinic user
+        await supabase.functions.invoke("delete-user", {
+          body: { userId: clinicToDelete.id },
+        });
+        
+        // Delete doctor users
+        for (const doctorId of doctorUserIds) {
+          await supabase.functions.invoke("delete-user", {
+            body: { userId: doctorId },
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Error deleting auth users:", e);
+      // Continue anyway since database records are deleted
     }
 
     // Immediately update local state without waiting for refetch
