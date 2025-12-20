@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { VisitHistory } from "./VisitHistory";
+import { PatientMedicalDocsView } from "./PatientMedicalDocsView";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { TimeSelect } from "./TimeSelect";
@@ -1113,6 +1114,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
             {/* Right Column - History & Future */}
             <div className="space-y-6">
+              {/* Medical Records & Documents */}
+              {appointment && <PatientMedicalDocsView patientId={appointment.patient_id} />}
+              
               {/* Visit History */}
               {appointment && <VisitHistory patientId={appointment.patient_id} />}
 
