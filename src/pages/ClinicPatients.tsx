@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search } from "lucide-react";
+import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search, Edit, Trash2, X, Upload } from "lucide-react";
 import {
   Pagination,
   PaginationContent,
@@ -31,7 +31,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
@@ -48,17 +50,25 @@ import {
 } from "@/lib/validations";
 import { useClinicId } from "@/hooks/useClinicId";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
+import { VisitHistory } from "@/components/VisitHistory";
 
 interface Patient {
   id: string;
   patient_id: string;
   full_name: string;
+  father_name: string | null;
   email: string | null;
   phone: string;
+  cnic: string | null;
   gender: string;
   date_of_birth: string;
   blood_group: string | null;
   city: string | null;
+  address: string | null;
+  allergies: string | null;
+  marital_status: string | null;
+  major_diseases: string | null;
+  medical_history: string | null;
   created_by: string | null;
 }
 
@@ -67,6 +77,21 @@ interface Doctor {
   profiles: {
     full_name: string;
   };
+}
+
+interface Document {
+  id: string;
+  document_name: string;
+  document_type: string;
+  document_url: string;
+  created_at: string;
+}
+
+interface MedicalHistoryEntry {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
 }
 
 const ClinicPatients = () => {
@@ -86,6 +111,11 @@ const ClinicPatients = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { toast } = useToast();
+
+  // Selected patient state for expandable row
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
 
   // Add Patient Dialog State
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -108,11 +138,54 @@ const ClinicPatients = () => {
     major_diseases: "",
   });
 
+  // Edit Patient Dialog State
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editDobDate, setEditDobDate] = useState<Date>();
+  const [editDobPopoverOpen, setEditDobPopoverOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    full_name: "",
+    father_name: "",
+    email: "",
+    phone: "",
+    cnic: "",
+    date_of_birth: "",
+    gender: "male" as "male" | "female" | "other",
+    blood_group: "",
+    address: "",
+    allergies: "",
+    marital_status: "",
+    city: "",
+    major_diseases: "",
+  });
+
+  // Delete Patient Dialog State
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+
+  // Medical History Dialog States
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [isEditHistoryDialogOpen, setIsEditHistoryDialogOpen] = useState(false);
+  const [newHistoryTitle, setNewHistoryTitle] = useState("");
+  const [newHistoryDescription, setNewHistoryDescription] = useState("");
+  const [newHistoryDate, setNewHistoryDate] = useState("");
+  const [newHistoryDateObj, setNewHistoryDateObj] = useState<Date>();
+  const [newHistoryDatePopoverOpen, setNewHistoryDatePopoverOpen] = useState(false);
+  const [editingHistory, setEditingHistory] = useState<MedicalHistoryEntry | null>(null);
+
+  // Document Upload State
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+  const [documentTitle, setDocumentTitle] = useState("");
+  const [documentDate, setDocumentDate] = useState("");
+  const [documentDatePopoverOpen, setDocumentDatePopoverOpen] = useState(false);
+
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
   const [allergyOptions, setAllergyOptions] = useState<{ value: string; label: string }[]>([]);
   const [diseaseOptions, setDiseaseOptions] = useState<{ value: string; label: string }[]>([]);
   const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
   const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  const [editSelectedAllergies, setEditSelectedAllergies] = useState<string[]>([]);
+  const [editSelectedDiseases, setEditSelectedDiseases] = useState<string[]>([]);
 
   // Sync dobDate with addForm.date_of_birth
   useEffect(() => {
@@ -120,6 +193,13 @@ const ClinicPatients = () => {
       setAddForm(prev => ({ ...prev, date_of_birth: format(dobDate, 'yyyy-MM-dd') }));
     }
   }, [dobDate]);
+
+  // Sync editDobDate with editForm.date_of_birth
+  useEffect(() => {
+    if (editDobDate) {
+      setEditForm(prev => ({ ...prev, date_of_birth: format(editDobDate, 'yyyy-MM-dd') }));
+    }
+  }, [editDobDate]);
 
   const cities = [
     "Karachi", "Lahore", "Faisalabad", "Rawalpindi", "Multan", "Hyderabad",
@@ -202,6 +282,36 @@ const ClinicPatients = () => {
     }
   };
 
+  const fetchMedicalHistory = (patient: Patient) => {
+    try {
+      const history = patient.medical_history 
+        ? JSON.parse(patient.medical_history) 
+        : [];
+      setMedicalHistory(Array.isArray(history) ? history : []);
+    } catch {
+      setMedicalHistory([]);
+    }
+  };
+
+  const fetchDocuments = async (patientId: string) => {
+    const { data, error } = await supabase
+      .from("medical_documents")
+      .select("*")
+      .eq("patient_id", patientId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch documents",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDocuments(data || []);
+  };
+
   const calculateAge = (dateOfBirth: string) => {
     const today = new Date();
     const birthDate = new Date(dateOfBirth);
@@ -274,6 +384,361 @@ const ClinicPatients = () => {
     if (!doctorId) return "Unknown";
     const doctor = doctors.find(d => d.id === doctorId);
     return doctor?.profiles?.full_name || "Unknown";
+  };
+
+  const handleRowClick = (patient: Patient) => {
+    if (selectedPatient?.id === patient.id) {
+      setSelectedPatient(null);
+    } else {
+      setSelectedPatient(patient);
+      fetchMedicalHistory(patient);
+      fetchDocuments(patient.id);
+    }
+  };
+
+  const handleEditPatient = (patient: Patient) => {
+    setEditForm({
+      full_name: patient.full_name,
+      father_name: patient.father_name || "",
+      email: patient.email || "",
+      phone: patient.phone,
+      cnic: patient.cnic || "",
+      date_of_birth: patient.date_of_birth,
+      gender: patient.gender as "male" | "female" | "other",
+      blood_group: patient.blood_group || "",
+      address: patient.address || "",
+      allergies: patient.allergies || "",
+      marital_status: patient.marital_status || "",
+      city: patient.city || "",
+      major_diseases: patient.major_diseases || "",
+    });
+    setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
+    setEditSelectedAllergies(patient.allergies ? patient.allergies.split(", ") : []);
+    setEditSelectedDiseases(patient.major_diseases ? patient.major_diseases.split(", ") : []);
+    setSelectedPatient(patient);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdatePatient = async () => {
+    if (!selectedPatient) return;
+
+    setEditFormErrors({});
+    const errors: Record<string, string> = {};
+    
+    const nameValidation = validateName(editForm.full_name);
+    if (!nameValidation.isValid) errors.full_name = nameValidation.message;
+    
+    const phoneValidation = validatePhone(editForm.phone);
+    if (!phoneValidation.isValid) errors.phone = phoneValidation.message;
+    
+    if (editForm.email) {
+      const emailValidation = validateEmail(editForm.email, false);
+      if (!emailValidation.isValid) errors.email = emailValidation.message;
+    }
+    
+    if (editForm.cnic) {
+      const cnicValidation = validateCNIC(editForm.cnic);
+      if (!cnicValidation.isValid) errors.cnic = cnicValidation.message;
+    }
+    
+    if (!editForm.date_of_birth) {
+      errors.date_of_birth = "Date of birth is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setEditFormErrors(errors);
+      toast({ title: "Please fix the validation errors", variant: "destructive" });
+      return;
+    }
+
+    const { error } = await supabase
+      .from("patients")
+      .update({
+        full_name: editForm.full_name,
+        father_name: editForm.father_name || null,
+        email: editForm.email || null,
+        phone: editForm.phone,
+        cnic: editForm.cnic || null,
+        date_of_birth: editForm.date_of_birth,
+        gender: editForm.gender,
+        blood_group: editForm.blood_group || null,
+        address: editForm.address || null,
+        allergies: editSelectedAllergies.length > 0 ? editSelectedAllergies.join(", ") : null,
+        marital_status: editForm.marital_status || null,
+        city: editForm.city || null,
+        major_diseases: editSelectedDiseases.length > 0 ? editSelectedDiseases.join(", ") : null,
+      })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: `Failed to update patient: ${error.message}`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Patient updated successfully",
+    });
+
+    setIsEditDialogOpen(false);
+    setSelectedPatient(null);
+    fetchDoctorsAndPatients();
+  };
+
+  const handleDeletePatient = async () => {
+    if (!patientToDelete) return;
+
+    const { error } = await supabase
+      .from("patients")
+      .delete()
+      .eq("id", patientToDelete.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete patient",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Patient deleted successfully",
+    });
+
+    setIsDeleteDialogOpen(false);
+    setPatientToDelete(null);
+    if (selectedPatient?.id === patientToDelete.id) {
+      setSelectedPatient(null);
+    }
+    fetchDoctorsAndPatients();
+  };
+
+  const handleAddHistory = async () => {
+    if (!selectedPatient || !newHistoryTitle.trim() || !newHistoryDate) {
+      toast({
+        title: "Error",
+        description: "Please enter title and date for the medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newEntry: MedicalHistoryEntry = {
+      id: Date.now().toString(),
+      title: newHistoryTitle,
+      description: newHistoryDescription,
+      date: newHistoryDate,
+    };
+
+    const updatedHistory = [...medicalHistory, newEntry];
+
+    const { error } = await supabase
+      .from("patients")
+      .update({ medical_history: JSON.stringify(updatedHistory) })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Medical history added successfully",
+    });
+
+    setMedicalHistory(updatedHistory);
+    setNewHistoryTitle("");
+    setNewHistoryDescription("");
+    setNewHistoryDate("");
+    setNewHistoryDateObj(undefined);
+    setIsHistoryDialogOpen(false);
+    fetchDoctorsAndPatients();
+  };
+
+  const handleUpdateHistory = async () => {
+    if (!selectedPatient || !editingHistory || !newHistoryTitle.trim() || !newHistoryDate) {
+      toast({
+        title: "Error",
+        description: "Please enter title and date for the medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const updatedHistory = medicalHistory.map(entry =>
+      entry.id === editingHistory.id
+        ? { ...entry, title: newHistoryTitle, description: newHistoryDescription, date: newHistoryDate }
+        : entry
+    );
+
+    const { error } = await supabase
+      .from("patients")
+      .update({ medical_history: JSON.stringify(updatedHistory) })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setMedicalHistory(updatedHistory);
+    toast({
+      title: "Success",
+      description: "Medical history updated successfully",
+    });
+
+    setNewHistoryTitle("");
+    setNewHistoryDescription("");
+    setNewHistoryDate("");
+    setNewHistoryDateObj(undefined);
+    setEditingHistory(null);
+    setIsEditHistoryDialogOpen(false);
+    fetchDoctorsAndPatients();
+  };
+
+  const handleDeleteHistory = async (id: string) => {
+    if (!selectedPatient) return;
+
+    const updatedHistory = medicalHistory.filter(entry => entry.id !== id);
+
+    const { error } = await supabase
+      .from("patients")
+      .update({ medical_history: JSON.stringify(updatedHistory) })
+      .eq("id", selectedPatient.id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete medical history",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Medical history deleted successfully",
+    });
+
+    setMedicalHistory(updatedHistory);
+    fetchDoctorsAndPatients();
+  };
+
+  const handleViewDocument = async (documentUrl: string) => {
+    const { data, error } = await supabase.storage
+      .from("medical-documents")
+      .createSignedUrl(documentUrl, 60);
+
+    if (error || !data) {
+      toast({
+        title: "Error",
+        description: "Failed to view document",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    window.open(data.signedUrl, "_blank");
+  };
+
+  const handleDeleteDocument = async (docId: string, documentUrl: string) => {
+    try {
+      const { error: storageError } = await supabase.storage
+        .from("medical-documents")
+        .remove([documentUrl]);
+
+      if (storageError) throw storageError;
+
+      const { error: dbError } = await supabase
+        .from("medical_documents")
+        .delete()
+        .eq("id", docId);
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document deleted successfully",
+      });
+
+      if (selectedPatient) {
+        fetchDocuments(selectedPatient.id);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete document",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUploadDocument = async () => {
+    if (!documentFile || !documentTitle.trim() || !documentDate || !selectedPatient) {
+      toast({ title: "Please provide title, date and file", variant: "destructive" });
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      const fileExt = documentFile.name.split(".").pop();
+      const fileName = `${selectedPatient.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("medical-documents")
+        .upload(fileName, documentFile);
+
+      if (uploadError) throw uploadError;
+
+      const filePath = fileName;
+
+      const { error: dbError } = await supabase
+        .from("medical_documents")
+        .insert({
+          patient_id: selectedPatient.id,
+          document_name: documentTitle,
+          document_type: documentFile.type,
+          document_url: filePath,
+          uploaded_by: user.id,
+          created_at: documentDate,
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Document uploaded successfully",
+      });
+
+      setDocumentFile(null);
+      setDocumentTitle("");
+      setDocumentDate("");
+      await fetchDocuments(selectedPatient.id);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to upload document",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAddPatient = async () => {
@@ -521,37 +986,304 @@ const ClinicPatients = () => {
                       <TableHead>Gender</TableHead>
                       <TableHead>Age</TableHead>
                       <TableHead>Blood Group</TableHead>
-                      <TableHead>City</TableHead>
-                      <TableHead>Doctor</TableHead>
-                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paginatedPatients.map((patient) => (
-                      <TableRow key={patient.id}>
-                        <TableCell className="font-mono text-sm">{patient.patient_id}</TableCell>
-                        <TableCell className="font-semibold">{patient.full_name}</TableCell>
-                        <TableCell>{patient.email || "-"}</TableCell>
-                        <TableCell>{patient.phone}</TableCell>
-                        <TableCell className="capitalize">{patient.gender}</TableCell>
-                        <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
-                        <TableCell>{patient.blood_group || "-"}</TableCell>
-                        <TableCell>{patient.city || "-"}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {getDoctorName(patient.created_by)}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/clinic/patients/${patient.id}`)}
-                            className="gap-2"
-                          >
-                            <Eye className="h-4 w-4" />
-                            View
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+                      <>
+                        <TableRow
+                          key={patient.id}
+                          className={`cursor-pointer transition-colors ${
+                            selectedPatient?.id === patient.id
+                              ? "bg-primary/10 hover:bg-primary/15"
+                              : "hover:bg-muted/50"
+                          }`}
+                          onClick={() => handleRowClick(patient)}
+                        >
+                          <TableCell className="font-mono text-sm">{patient.patient_id}</TableCell>
+                          <TableCell className="font-semibold">{patient.full_name}</TableCell>
+                          <TableCell>{patient.email || "-"}</TableCell>
+                          <TableCell>{patient.phone}</TableCell>
+                          <TableCell className="capitalize">{patient.gender}</TableCell>
+                          <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
+                          <TableCell>{patient.blood_group || "-"}</TableCell>
+                        </TableRow>
+                        {selectedPatient?.id === patient.id && (
+                          <TableRow>
+                            <TableCell colSpan={7} className="p-0">
+                              <div className="border-t bg-muted/30 p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                  <h3 className="text-lg font-semibold">Patient Details</h3>
+                                  <div className="flex gap-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEditPatient(selectedPatient);
+                                      }}
+                                    >
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPatientToDelete(selectedPatient);
+                                        setIsDeleteDialogOpen(true);
+                                      }}
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Delete
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedPatient(null);
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                                <Tabs defaultValue="info" className="w-full">
+                                  <TabsList className="grid w-full grid-cols-4">
+                                    <TabsTrigger value="info">Information</TabsTrigger>
+                                    <TabsTrigger value="history">Medical History</TabsTrigger>
+                                    <TabsTrigger value="documents">Documents</TabsTrigger>
+                                    <TabsTrigger value="visits">Visit History</TabsTrigger>
+                                  </TabsList>
+                                  <TabsContent value="info" className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Patient ID</p>
+                                        <p className="font-medium">{selectedPatient.patient_id}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Full Name</p>
+                                        <p className="font-medium">{selectedPatient.full_name}</p>
+                                      </div>
+                                      {selectedPatient.father_name && (
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Father Name</p>
+                                          <p className="font-medium">{selectedPatient.father_name}</p>
+                                        </div>
+                                      )}
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Email</p>
+                                        <p className="font-medium">{selectedPatient.email || "N/A"}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Phone</p>
+                                        <p className="font-medium">{selectedPatient.phone}</p>
+                                      </div>
+                                      {selectedPatient.cnic && (
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">CNIC</p>
+                                          <p className="font-medium">{selectedPatient.cnic}</p>
+                                        </div>
+                                      )}
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Date of Birth</p>
+                                        <p className="font-medium">{format(new Date(selectedPatient.date_of_birth), "PPP")}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Age</p>
+                                        <p className="font-medium">{calculateAge(selectedPatient.date_of_birth)} years</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Gender</p>
+                                        <p className="font-medium capitalize">{selectedPatient.gender}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Blood Group</p>
+                                        <p className="font-medium">{selectedPatient.blood_group || "N/A"}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">Marital Status</p>
+                                        <p className="font-medium capitalize">{selectedPatient.marital_status || "N/A"}</p>
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">City</p>
+                                        <p className="font-medium">{selectedPatient.city || "N/A"}</p>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <p className="text-sm text-muted-foreground">Address</p>
+                                        <p className="font-medium">{selectedPatient.address || "N/A"}</p>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <p className="text-sm text-muted-foreground">Allergies</p>
+                                        <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <p className="text-sm text-muted-foreground">Major Diseases</p>
+                                        <p className="font-medium">{selectedPatient.major_diseases || "N/A"}</p>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <p className="text-sm text-muted-foreground">Assigned Doctor</p>
+                                        <p className="font-medium">{getDoctorName(selectedPatient.created_by)}</p>
+                                      </div>
+                                    </div>
+                                  </TabsContent>
+                                  <TabsContent value="history" className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                      <h4 className="font-semibold">Medical History</h4>
+                                      <Button size="sm" onClick={() => setIsHistoryDialogOpen(true)}>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add Entry
+                                      </Button>
+                                    </div>
+                                    <div className="space-y-3">
+                                      {medicalHistory.map((entry) => (
+                                        <Card key={entry.id}>
+                                          <CardContent className="p-4">
+                                            <div className="flex justify-between items-start">
+                                              <div className="flex-1">
+                                                <h5 className="font-semibold">{entry.title}</h5>
+                                                <p className="text-sm text-muted-foreground mt-1">{entry.description}</p>
+                                                <p className="text-xs text-muted-foreground mt-2">
+                                                  {format(new Date(entry.date), "PPP")}
+                                                </p>
+                                              </div>
+                                              <div className="flex gap-2">
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  onClick={() => {
+                                                    setEditingHistory(entry);
+                                                    setNewHistoryTitle(entry.title);
+                                                    setNewHistoryDescription(entry.description);
+                                                    setNewHistoryDate(entry.date);
+                                                    setNewHistoryDateObj(new Date(entry.date));
+                                                    setIsEditHistoryDialogOpen(true);
+                                                  }}
+                                                >
+                                                  <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  onClick={() => handleDeleteHistory(entry.id)}
+                                                >
+                                                  <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </CardContent>
+                                        </Card>
+                                      ))}
+                                      {medicalHistory.length === 0 && (
+                                        <p className="text-sm text-muted-foreground text-center py-4">
+                                          No medical history recorded
+                                        </p>
+                                      )}
+                                    </div>
+                                  </TabsContent>
+                                  <TabsContent value="documents" className="space-y-4">
+                                    <div className="space-y-4">
+                                      <div>
+                                        <Label>Document Title</Label>
+                                        <Input
+                                          value={documentTitle}
+                                          onChange={(e) => setDocumentTitle(e.target.value)}
+                                          placeholder="Enter document title"
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Document Date</Label>
+                                        <Popover open={documentDatePopoverOpen} onOpenChange={setDocumentDatePopoverOpen}>
+                                          <PopoverTrigger asChild>
+                                            <Button
+                                              variant="outline"
+                                              className={cn(
+                                                "w-full justify-start text-left font-normal",
+                                                !documentDate && "text-muted-foreground"
+                                              )}
+                                            >
+                                              <CalendarIcon className="mr-2 h-4 w-4" />
+                                              {documentDate ? format(new Date(documentDate), "PPP") : <span>Pick a date</span>}
+                                            </Button>
+                                          </PopoverTrigger>
+                                          <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                              mode="single"
+                                              selected={documentDate ? new Date(documentDate) : undefined}
+                                              onSelect={(date) => {
+                                                if (date) {
+                                                  setDocumentDate(format(date, "yyyy-MM-dd"));
+                                                  setDocumentDatePopoverOpen(false);
+                                                }
+                                              }}
+                                              initialFocus
+                                              className="pointer-events-auto"
+                                              captionLayout="dropdown-buttons"
+                                              fromYear={1900}
+                                              toYear={new Date().getFullYear()}
+                                            />
+                                          </PopoverContent>
+                                        </Popover>
+                                      </div>
+                                      <div>
+                                        <Label>Upload Document</Label>
+                                        <Input
+                                          type="file"
+                                          onChange={(e) => setDocumentFile(e.target.files?.[0] || null)}
+                                        />
+                                      </div>
+                                      <Button onClick={handleUploadDocument} className="w-full">
+                                        <Upload className="h-4 w-4 mr-2" />
+                                        Upload Document
+                                      </Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                      {documents.map((doc) => (
+                                        <Card key={doc.id}>
+                                          <CardContent className="p-4 flex justify-between items-center">
+                                            <div className="flex-1">
+                                              <p className="font-medium">{doc.document_name}</p>
+                                              <p className="text-xs text-muted-foreground">
+                                                {format(new Date(doc.created_at), "PPP")}
+                                              </p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleViewDocument(doc.document_url)}
+                                              >
+                                                <Eye className="h-4 w-4" />
+                                              </Button>
+                                              <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleDeleteDocument(doc.id, doc.document_url)}
+                                              >
+                                                <Trash2 className="h-4 w-4" />
+                                              </Button>
+                                            </div>
+                                          </CardContent>
+                                        </Card>
+                                      ))}
+                                      {documents.length === 0 && (
+                                        <p className="text-sm text-muted-foreground text-center py-4">
+                                          No documents uploaded
+                                        </p>
+                                      )}
+                                    </div>
+                                  </TabsContent>
+                                  <TabsContent value="visits" className="space-y-4">
+                                    <VisitHistory patientId={selectedPatient.id} />
+                                  </TabsContent>
+                                </Tabs>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </>
                     ))}
                   </TableBody>
                 </Table>
@@ -818,6 +1550,347 @@ const ClinicPatients = () => {
               <Button onClick={handleAddPatient}>Add Patient</Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Patient Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Patient</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Full Name *</Label>
+                <Input
+                  value={editForm.full_name}
+                  onChange={(e) => setEditForm({ ...editForm, full_name: handleNameInput(e) })}
+                  placeholder="Enter full name"
+                  className={editFormErrors.full_name ? "border-destructive" : ""}
+                />
+                {editFormErrors.full_name && <p className="text-sm text-destructive">{editFormErrors.full_name}</p>}
+              </div>
+              <div>
+                <Label>Father Name</Label>
+                <Input
+                  value={editForm.father_name}
+                  onChange={(e) => setEditForm({ ...editForm, father_name: handleNameInput(e) })}
+                  placeholder="Enter father name"
+                />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={editForm.email}
+                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  placeholder="Enter email"
+                  className={editFormErrors.email ? "border-destructive" : ""}
+                />
+                {editFormErrors.email && <p className="text-sm text-destructive">{editFormErrors.email}</p>}
+              </div>
+              <div>
+                <Label>Phone *</Label>
+                <Input
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: handlePhoneInput(e) })}
+                  placeholder="Enter phone number"
+                  className={editFormErrors.phone ? "border-destructive" : ""}
+                />
+                {editFormErrors.phone && <p className="text-sm text-destructive">{editFormErrors.phone}</p>}
+              </div>
+              <div>
+                <Label>CNIC</Label>
+                <Input
+                  value={editForm.cnic}
+                  onChange={(e) => setEditForm({ ...editForm, cnic: handleCNICInput(e) })}
+                  placeholder="Enter CNIC (13 digits)"
+                  maxLength={15}
+                  className={editFormErrors.cnic ? "border-destructive" : ""}
+                />
+                {editFormErrors.cnic && <p className="text-sm text-destructive">{editFormErrors.cnic}</p>}
+              </div>
+              <div>
+                <Label>Date of Birth *</Label>
+                <Popover open={editDobPopoverOpen} onOpenChange={setEditDobPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !editForm.date_of_birth && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {editForm.date_of_birth ? format(new Date(editForm.date_of_birth), "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={editDobDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setEditDobDate(date);
+                          setEditDobPopoverOpen(false);
+                        }
+                      }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                      captionLayout="dropdown-buttons"
+                      fromYear={1900}
+                      toYear={new Date().getFullYear()}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label>Gender *</Label>
+                <Select
+                  value={editForm.gender}
+                  onValueChange={(value: "male" | "female" | "other") => setEditForm({ ...editForm, gender: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Blood Group</Label>
+                <Select
+                  value={editForm.blood_group}
+                  onValueChange={(value) => setEditForm({ ...editForm, blood_group: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select blood group" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="A+">A+</SelectItem>
+                    <SelectItem value="A-">A-</SelectItem>
+                    <SelectItem value="B+">B+</SelectItem>
+                    <SelectItem value="B-">B-</SelectItem>
+                    <SelectItem value="O+">O+</SelectItem>
+                    <SelectItem value="O-">O-</SelectItem>
+                    <SelectItem value="AB+">AB+</SelectItem>
+                    <SelectItem value="AB-">AB-</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Marital Status</Label>
+                <Select
+                  value={editForm.marital_status}
+                  onValueChange={(value) => setEditForm({ ...editForm, marital_status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="single">Single</SelectItem>
+                    <SelectItem value="married">Married</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <CitySelect 
+                  value={editForm.city} 
+                  onValueChange={(value) => setEditForm({ ...editForm, city: value })}
+                  label="City"
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Allergies</Label>
+                <MultiSelectSearchable
+                  options={allergyOptions}
+                  values={editSelectedAllergies}
+                  onValuesChange={setEditSelectedAllergies}
+                  placeholder="Select allergies..."
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Major Diseases</Label>
+                <MultiSelectSearchable
+                  options={diseaseOptions}
+                  values={editSelectedDiseases}
+                  onValuesChange={setEditSelectedDiseases}
+                  placeholder="Select diseases..."
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Address</Label>
+                <Textarea
+                  value={editForm.address}
+                  onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                  placeholder="Enter address"
+                  rows={2}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-4">
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleUpdatePatient}>Update Patient</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Patient Confirmation */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the patient record
+              for {patientToDelete?.full_name}.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeletePatient} className="bg-destructive text-destructive-foreground">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Add Medical History Dialog */}
+      <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Medical History Entry</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={newHistoryTitle}
+                onChange={(e) => setNewHistoryTitle(e.target.value)}
+                placeholder="e.g., Diabetes, Hypertension"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={newHistoryDescription}
+                onChange={(e) => setNewHistoryDescription(e.target.value)}
+                placeholder="Detailed description..."
+                rows={4}
+              />
+            </div>
+            <div>
+              <Label>Date</Label>
+              <Popover open={newHistoryDatePopoverOpen} onOpenChange={setNewHistoryDatePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newHistoryDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newHistoryDate ? format(new Date(newHistoryDate), "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newHistoryDateObj}
+                    onSelect={(date) => {
+                      if (date) {
+                        setNewHistoryDateObj(date);
+                        setNewHistoryDate(format(date, "yyyy-MM-dd"));
+                        setNewHistoryDatePopoverOpen(false);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                    captionLayout="dropdown-buttons"
+                    fromYear={1900}
+                    toYear={new Date().getFullYear()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleAddHistory}>Add Entry</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Medical History Dialog */}
+      <Dialog open={isEditHistoryDialogOpen} onOpenChange={setIsEditHistoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Medical History Entry</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={newHistoryTitle}
+                onChange={(e) => setNewHistoryTitle(e.target.value)}
+                placeholder="e.g., Diabetes, Hypertension"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={newHistoryDescription}
+                onChange={(e) => setNewHistoryDescription(e.target.value)}
+                placeholder="Detailed description..."
+                rows={4}
+              />
+            </div>
+            <div>
+              <Label>Date</Label>
+              <Popover open={newHistoryDatePopoverOpen} onOpenChange={setNewHistoryDatePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newHistoryDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {newHistoryDate ? format(new Date(newHistoryDate), "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={newHistoryDateObj}
+                    onSelect={(date) => {
+                      if (date) {
+                        setNewHistoryDateObj(date);
+                        setNewHistoryDate(format(date, "yyyy-MM-dd"));
+                        setNewHistoryDatePopoverOpen(false);
+                      }
+                    }}
+                    initialFocus
+                    className="pointer-events-auto"
+                    captionLayout="dropdown-buttons"
+                    fromYear={1900}
+                    toYear={new Date().getFullYear()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleUpdateHistory}>Update Entry</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
