@@ -781,7 +781,6 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         consultation_fee: consultationFee,
         other_fee: otherFee,
         refund: refundAmount,
-        total_fee: totalFee,
         status: 'completed',
         confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
