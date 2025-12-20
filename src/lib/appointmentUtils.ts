@@ -109,8 +109,9 @@ export const checkDoctorAvailability = async (
       };
     }
 
-    // Get day of week (0=Sunday)
-    const dateObj = new Date(date);
+    // Get day of week (0=Sunday) - Parse date parts to avoid timezone issues
+    const [year, month, day] = date.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day); // month is 0-indexed
     const dayOfWeek = dateObj.getDay();
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const dayName = dayNames[dayOfWeek];
@@ -122,7 +123,7 @@ export const checkDoctorAvailability = async (
     if (schedule && !schedule.isAvailable) {
       return { 
         available: false, 
-        reason: `Doctor is not available on ${dayName}s`,
+        reason: `Doctor is not available on ${dayName}s (Day Off)`,
         isDayOff: true,
         dayName
       };
@@ -199,8 +200,9 @@ export const getAvailableTimeSlots = async (
       return []; // Doctor is on full day leave
     }
 
-    // Get day of week (0=Sunday)
-    const dateObj = new Date(date);
+    // Get day of week (0=Sunday) - Parse date parts to avoid timezone issues
+    const [year, month, day] = date.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day); // month is 0-indexed
     const dayOfWeek = dateObj.getDay();
 
     // Get doctor's schedule for this day
