@@ -208,15 +208,16 @@ const Layout = ({ children }: LayoutProps) => {
   const receptionistMenuItems = [
     { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/receptionist/doctors", icon: Stethoscope, label: "Doctors" },
+    { path: "/receptionist/schedules", icon: Clock, label: "Doctor Schedules" },
     { path: "/receptionist/patients", icon: Users, label: "Patients" },
     { path: "/receptionist/appointments", icon: Calendar, label: "Appointments" },
-    { path: "/receptionist/walk-in", icon: Clock, label: "Walk-In Appointment" },
+    { path: "/receptionist/walk-in", icon: Sparkles, label: "Walk-In Appointment" },
     { path: "/receptionist/templates", icon: Layers, label: "Templates" },
     { path: "/receptionist/specializations", icon: Building2, label: "Specializations" },
     { path: "/receptionist/allergies", icon: AlertTriangle, label: "Allergies" },
     { path: "/receptionist/diseases", icon: HeartPulse, label: "Diseases" },
     { path: "/receptionist/icd-codes", icon: FileCode, label: "ICD Codes" },
-    { path: "/receptionist/procedures", icon: Sparkles, label: "Procedures" },
+    { path: "/receptionist/procedures", icon: Settings, label: "Procedures" },
     { path: "/receptionist/finance", icon: Banknote, label: "Finance" },
   ];
 

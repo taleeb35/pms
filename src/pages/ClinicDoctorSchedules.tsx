@@ -45,13 +45,18 @@ const DAYS_OF_WEEK = [
   "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 ];
 
-const ClinicDoctorSchedules = () => {
+interface ClinicDoctorSchedulesProps {
+  readOnly?: boolean;
+}
+
+const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps) => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctorId, setSelectedDoctorId] = useState<string>("");
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [userType, setUserType] = useState<"clinic" | "receptionist">("clinic");
   
   // Leave form state
   const [leaveDate, setLeaveDate] = useState<Date | undefined>(undefined);
@@ -74,16 +79,48 @@ const ClinicDoctorSchedules = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("doctors")
-        .select("id, specialization, profiles(full_name)")
-        .eq("clinic_id", user.id)
-        .eq("approved", true);
+      // Check if user is a clinic owner
+      const { data: clinicData } = await supabase
+        .from("clinics")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (error) throw error;
-      setDoctors(data || []);
-      if (data && data.length > 0) {
-        setSelectedDoctorId(data[0].id);
+      if (clinicData) {
+        setUserType("clinic");
+        const { data, error } = await supabase
+          .from("doctors")
+          .select("id, specialization, profiles(full_name)")
+          .eq("clinic_id", user.id)
+          .eq("approved", true);
+
+        if (error) throw error;
+        setDoctors(data || []);
+        if (data && data.length > 0) {
+          setSelectedDoctorId(data[0].id);
+        }
+      } else {
+        // Check if user is a receptionist
+        const { data: receptionistData } = await supabase
+          .from("clinic_receptionists")
+          .select("clinic_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (receptionistData) {
+          setUserType("receptionist");
+          const { data, error } = await supabase
+            .from("doctors")
+            .select("id, specialization, profiles(full_name)")
+            .eq("clinic_id", receptionistData.clinic_id)
+            .eq("approved", true);
+
+          if (error) throw error;
+          setDoctors(data || []);
+          if (data && data.length > 0) {
+            setSelectedDoctorId(data[0].id);
+          }
+        }
       }
     } catch (error: any) {
       toast({
@@ -323,12 +360,21 @@ const ClinicDoctorSchedules = () => {
     );
   }
 
+  const isReadOnly = readOnly || userType === "receptionist";
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold">Doctor Schedules</h1>
-          <p className="text-muted-foreground">Manage working hours and leaves for your doctors</p>
+          <p className="text-muted-foreground">
+            {isReadOnly 
+              ? "View working hours and leaves for doctors" 
+              : "Manage working hours and leaves for your doctors"}
+          </p>
+          {isReadOnly && (
+            <Badge variant="secondary" className="mt-2">Read-only view</Badge>
+          )}
         </div>
         
         <div className="w-full sm:w-64">
@@ -392,6 +438,7 @@ const ClinicDoctorSchedules = () => {
                     <Switch
                       checked={schedule.is_available}
                       onCheckedChange={(checked) => updateSchedule(index, "is_available", checked)}
+                      disabled={isReadOnly}
                     />
                     <span className="text-sm text-muted-foreground">
                       {schedule.is_available ? "Working" : "Off"}
@@ -407,6 +454,7 @@ const ClinicDoctorSchedules = () => {
                           value={schedule.start_time || ""}
                           onChange={(e) => updateSchedule(index, "start_time", e.target.value)}
                           className="w-32"
+                          disabled={isReadOnly}
                         />
                       </div>
                       
@@ -417,6 +465,7 @@ const ClinicDoctorSchedules = () => {
                           value={schedule.end_time || ""}
                           onChange={(e) => updateSchedule(index, "end_time", e.target.value)}
                           className="w-32"
+                          disabled={isReadOnly}
                         />
                       </div>
 
@@ -428,6 +477,7 @@ const ClinicDoctorSchedules = () => {
                           onChange={(e) => updateSchedule(index, "break_start", e.target.value)}
                           className="w-28"
                           placeholder="Start"
+                          disabled={isReadOnly}
                         />
                         <span>-</span>
                         <Input
@@ -436,6 +486,7 @@ const ClinicDoctorSchedules = () => {
                           onChange={(e) => updateSchedule(index, "break_end", e.target.value)}
                           className="w-28"
                           placeholder="End"
+                          disabled={isReadOnly}
                         />
                       </div>
                     </>
@@ -443,69 +494,73 @@ const ClinicDoctorSchedules = () => {
                 </div>
               ))}
 
-              <Button onClick={saveSchedules} disabled={saving} className="w-full sm:w-auto">
-                {saving ? "Saving..." : "Save Schedule"}
-              </Button>
+              {!isReadOnly && (
+                <Button onClick={saveSchedules} disabled={saving} className="w-full sm:w-auto">
+                  {saving ? "Saving..." : "Save Schedule"}
+                </Button>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="leaves" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Add Leave / Day Off</span>
-                <Button variant="outline" size="sm" onClick={addTomorrowOff}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Off Tomorrow
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label>Date</Label>
-                  <Calendar
-                    mode="single"
-                    selected={leaveDate}
-                    onSelect={setLeaveDate}
-                    disabled={(date) => date < new Date()}
-                    className="rounded-md border"
-                  />
-                </div>
-                
-                <div className="space-y-4">
+          {!isReadOnly && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Add Leave / Day Off</span>
+                  <Button variant="outline" size="sm" onClick={addTomorrowOff}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Off Tomorrow
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Leave Type</Label>
-                    <Select value={leaveType} onValueChange={setLeaveType}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="full_day">Full Day</SelectItem>
-                        <SelectItem value="half_day_morning">Half Day (Morning Off)</SelectItem>
-                        <SelectItem value="half_day_evening">Half Day (Evening Off)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Reason (Optional)</Label>
-                    <Textarea
-                      value={leaveReason}
-                      onChange={(e) => setLeaveReason(e.target.value)}
-                      placeholder="Enter reason..."
+                    <Label>Date</Label>
+                    <Calendar
+                      mode="single"
+                      selected={leaveDate}
+                      onSelect={setLeaveDate}
+                      disabled={(date) => date < new Date()}
+                      className="rounded-md border"
                     />
                   </div>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Leave Type</Label>
+                      <Select value={leaveType} onValueChange={setLeaveType}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="full_day">Full Day</SelectItem>
+                          <SelectItem value="half_day_morning">Half Day (Morning Off)</SelectItem>
+                          <SelectItem value="half_day_evening">Half Day (Evening Off)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <Button onClick={addLeave} className="w-full">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Leave
-                  </Button>
+                    <div className="space-y-2">
+                      <Label>Reason (Optional)</Label>
+                      <Textarea
+                        value={leaveReason}
+                        onChange={(e) => setLeaveReason(e.target.value)}
+                        placeholder="Enter reason..."
+                      />
+                    </div>
+
+                    <Button onClick={addLeave} className="w-full">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Leave
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>
@@ -535,14 +590,16 @@ const ClinicDoctorSchedules = () => {
                           </div>
                         </div>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteLeave(leave.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {!isReadOnly && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteLeave(leave.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
