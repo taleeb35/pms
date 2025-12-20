@@ -169,6 +169,13 @@ const Index = () => {
               Features
             </Button>
             <Button 
+              variant="ghost"
+              onClick={() => navigate("/contact")} 
+              className="text-muted-foreground hover:text-foreground font-medium"
+            >
+              Contact
+            </Button>
+            <Button 
               onClick={() => setShowLoginDialog(true)} 
               size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
