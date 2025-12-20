@@ -170,6 +170,13 @@ const Index = () => {
             </Button>
             <Button 
               variant="ghost"
+              onClick={() => navigate("/pricing")} 
+              className="text-muted-foreground hover:text-foreground font-medium"
+            >
+              Pricing
+            </Button>
+            <Button 
+              variant="ghost"
               onClick={() => navigate("/contact")} 
               className="text-muted-foreground hover:text-foreground font-medium"
             >
