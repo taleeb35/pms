@@ -139,6 +139,23 @@ const Auth = () => {
 
         if (roleError) throw roleError;
 
+        // Send welcome email
+        try {
+          await supabase.functions.invoke('send-clinic-welcome-email', {
+            body: {
+              clinicName,
+              email,
+              phoneNumber,
+              city,
+              address,
+            },
+          });
+          console.log("Welcome email sent successfully");
+        } catch (emailError) {
+          console.error("Failed to send welcome email:", emailError);
+          // Don't throw - email failure shouldn't block signup
+        }
+
         // Show success dialog
         setShowSuccessDialog(true);
         
