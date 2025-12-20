@@ -195,7 +195,9 @@ export default function ClinicFinance() {
         const consultationFee = Number(apt.consultation_fee) || 0;
         const otherFee = Number(apt.other_fee) || 0;
         const procedureFee = Number(apt.procedure_fee) || 0;
+        const refundAmount = Number(apt.refund) || 0;
         const subTotal = consultationFee + otherFee + procedureFee;
+        const totalFee = subTotal - refundAmount; // Calculate total after discount
         return {
           id: apt.id,
           patient_name: apt.patients?.full_name || "Unknown",
@@ -205,8 +207,8 @@ export default function ClinicFinance() {
           other_fee: otherFee,
           procedure_fee: procedureFee,
           sub_total: subTotal,
-          refund: Number(apt.refund) || 0,
-          total_fee: Number(apt.total_fee) || 0,
+          refund: refundAmount,
+          total_fee: totalFee,
           doctor_id: apt.doctor_id,
           clinic_percentage: doctorPercentages[apt.doctor_id] || 0,
         };
