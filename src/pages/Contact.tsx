@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
-  ArrowLeft, 
   Send, 
   Mail, 
   Phone, 
@@ -18,6 +17,7 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
+import PublicHeader from "@/components/PublicHeader";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -51,12 +51,8 @@ const Contact = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <PublicHeader />
         <div className="container mx-auto px-4 py-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-          
           <div className="flex items-center justify-center min-h-[60vh]">
             <Card className="max-w-md w-full text-center p-8 border-primary/20 shadow-lg">
               <CardContent className="pt-6">
@@ -100,12 +96,9 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Header */}
+      <PublicHeader />
+      
       <div className="container mx-auto px-4 py-8">
-        <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
         
         {/* Hero Section */}
         <div className="text-center mb-16">

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { 
-  ArrowLeft, 
   Check, 
   X, 
   Sparkles, 
@@ -18,6 +17,7 @@ import {
   ArrowRight,
   Star
 } from "lucide-react";
+import PublicHeader from "@/components/PublicHeader";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -136,12 +136,9 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Header */}
+      <PublicHeader />
+      
       <div className="container mx-auto px-4 py-8">
-        <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
         
         {/* Hero Section */}
         <div className="text-center mb-16">

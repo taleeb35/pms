@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { 
   Calendar, Users, FileText, Activity, Shield, Clock, Heart, Stethoscope, 
   Sparkles, UserPlus, BarChart3, TrendingUp, DollarSign, Eye, ChartBar, 
-  LogIn, CheckCircle2, Clipboard, PillIcon, TestTube, FileBarChart, 
+  CheckCircle2, Clipboard, PillIcon, TestTube, FileBarChart, 
   Bell, Lock, Zap, Globe, HeadphonesIcon, ArrowRight, Play,
   Building2, CreditCard, Receipt, ClipboardList, UserCog, CalendarCheck,
   FilePlus, FileSearch, MessageSquare, BadgeCheck, Layers, Settings
 } from "lucide-react";
+import PublicHeader from "@/components/PublicHeader";
 import clinicLogo from "@/assets/clinic-logo.png";
 
 const Features = () => {
@@ -204,39 +205,7 @@ const Features = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Header */}
-      <header className="border-b bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div 
-            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate("/")}
-          >
-            <img src={clinicLogo} alt="Clinic Logo" className="h-12 w-12" />
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                MedCare Pro
-              </h1>
-              <p className="text-xs text-muted-foreground">Complete Clinic Management</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost"
-              onClick={() => navigate("/")}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Home
-            </Button>
-            <Button 
-              onClick={() => navigate("/auth")} 
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            >
-              <LogIn className="mr-2 h-4 w-4" />
-              Get Started
-            </Button>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center relative overflow-hidden">
