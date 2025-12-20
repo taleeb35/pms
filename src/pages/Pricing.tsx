@@ -18,6 +18,7 @@ import {
   Star
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -342,6 +343,8 @@ const Pricing = () => {
           </div>
         </div>
       </div>
+
+      <PublicFooter />
     </div>
   );
 };

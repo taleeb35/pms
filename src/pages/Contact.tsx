@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -429,6 +430,8 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      <PublicFooter />
     </div>
   );
 };
