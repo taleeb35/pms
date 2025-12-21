@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Home, Stethoscope, Sparkles, Loader2, AlertCircle, UserPlus, LogIn } from "lucide-react";
+import { Home, Stethoscope, Sparkles, Loader2, AlertCircle, UserPlus, LogIn, Check, ChevronsUpDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,8 +16,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import clinicLogo from "@/assets/clinic-logo.png";
 import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput } from "@/lib/validations";
+import { cn } from "@/lib/utils";
 
 const DoctorAuth = () => {
   const [email, setEmail] = useState("");
@@ -42,6 +56,24 @@ const DoctorAuth = () => {
     pmdcNumber: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [specializations, setSpecializations] = useState<string[]>([]);
+  const [specializationOpen, setSpecializationOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      const { data, error } = await supabase
+        .from("specializations")
+        .select("name")
+        .order("name");
+      
+      if (!error && data) {
+        // Get unique specialization names
+        const uniqueSpecs = [...new Set(data.map(s => s.name))];
+        setSpecializations(uniqueSpecs);
+      }
+    };
+    fetchSpecializations();
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -376,14 +408,50 @@ const DoctorAuth = () => {
 
                   <div className="space-y-1">
                     <Label htmlFor="specialization" className="text-xs">Specialization *</Label>
-                    <Input
-                      id="specialization"
-                      value={signupData.specialization}
-                      onChange={(e) => setSignupData({ ...signupData, specialization: e.target.value })}
-                      required
-                      placeholder="e.g., Cardiologist"
-                      className="text-sm border-teal-200"
-                    />
+                    <Popover open={specializationOpen} onOpenChange={setSpecializationOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={specializationOpen}
+                          className={cn(
+                            "w-full justify-between text-sm font-normal border-teal-200 hover:border-teal-400",
+                            !signupData.specialization && "text-muted-foreground"
+                          )}
+                        >
+                          {signupData.specialization || "Select specialization..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[280px] p-0 z-50 bg-background border shadow-lg" align="start">
+                        <Command>
+                          <CommandInput placeholder="Search specialization..." className="h-9" />
+                          <CommandList>
+                            <CommandEmpty>No specialization found.</CommandEmpty>
+                            <CommandGroup className="max-h-[200px] overflow-auto">
+                              {specializations.map((spec) => (
+                                <CommandItem
+                                  key={spec}
+                                  value={spec}
+                                  onSelect={() => {
+                                    setSignupData({ ...signupData, specialization: spec });
+                                    setSpecializationOpen(false);
+                                  }}
+                                >
+                                  {spec}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      signupData.specialization === spec ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div className="space-y-1">
