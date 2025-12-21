@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles, UserCheck, UserX } from "lucide-react";
+import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles, UserCheck, UserX, Filter, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface Clinic {
   id: string;
@@ -50,6 +53,7 @@ interface SingleDoctor {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [approvedDoctors, setApprovedDoctors] = useState(0);
   const [pendingDoctors, setPendingDoctors] = useState(0);
@@ -62,6 +66,11 @@ const Dashboard = () => {
   const [singleDoctors, setSingleDoctors] = useState<SingleDoctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [approvingDoctor, setApprovingDoctor] = useState<string | null>(null);
+  
+  // Filters for single doctors
+  const [doctorFilter, setDoctorFilter] = useState<"all" | "single" | "clinic">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "approved" | "pending">("all");
 
   useEffect(() => {
     fetchStats();
@@ -150,15 +159,65 @@ const Dashboard = () => {
 
       if (error) throw error;
 
+      // If approving, send welcome email
+      if (approve) {
+        const doctor = singleDoctors.find(d => d.id === doctorId);
+        if (doctor) {
+          try {
+            await supabase.functions.invoke("send-doctor-approval-email", {
+              body: {
+                doctorName: doctor.profiles?.full_name || "Doctor",
+                email: doctor.profiles?.email || "",
+                specialization: doctor.specialization,
+              },
+            });
+            toast({
+              title: "Success",
+              description: "Doctor approved and welcome email sent!",
+            });
+          } catch (emailError) {
+            console.error("Failed to send approval email:", emailError);
+            toast({
+              title: "Success",
+              description: "Doctor approved (email could not be sent)",
+            });
+          }
+        }
+      } else {
+        toast({
+          title: "Success",
+          description: "Doctor suspended successfully",
+        });
+      }
+
       // Refresh data
       fetchSingleDoctors();
       fetchStats();
     } catch (error) {
       console.error("Error updating doctor:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update doctor status",
+        variant: "destructive",
+      });
     } finally {
       setApprovingDoctor(null);
     }
   };
+
+  // Filter single doctors based on search and status
+  const filteredSingleDoctors = singleDoctors.filter(doctor => {
+    const matchesSearch = searchQuery === "" || 
+      doctor.profiles?.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.specialization?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doctor.profiles?.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = statusFilter === "all" || 
+      (statusFilter === "approved" && doctor.approved) ||
+      (statusFilter === "pending" && !doctor.approved);
+    
+    return matchesSearch && matchesStatus;
+  });
 
   const fetchClinics = async () => {
     setLoading(true);
@@ -475,22 +534,48 @@ const Dashboard = () => {
         <TabsContent value="single" className="mt-4">
           <Card className="border-border/40">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-                <Stethoscope className="h-5 w-5 text-info" />
-                Single Doctors (No Clinic)
-              </CardTitle>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                  <Stethoscope className="h-5 w-5 text-info" />
+                  Single Doctors (No Clinic)
+                </CardTitle>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search doctors..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 w-[200px]"
+                    />
+                  </div>
+                  <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+                    <SelectTrigger className="w-[130px]">
+                      <Filter className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background">
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              {singleDoctors.length === 0 ? (
+              {filteredSingleDoctors.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
                     <Stethoscope className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <p className="text-muted-foreground">No single doctors registered yet</p>
+                  <p className="text-muted-foreground">
+                    {singleDoctors.length === 0 ? "No single doctors registered yet" : "No doctors match your filters"}
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {singleDoctors.map((doctor) => (
+                  {filteredSingleDoctors.map((doctor) => (
                     <div
                       key={doctor.id}
                       className="p-4 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-sm transition-all"

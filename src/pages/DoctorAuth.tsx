@@ -49,6 +49,7 @@ const DoctorAuth = () => {
     email: "",
     password: "",
     specialization: "",
+    city: "",
     contactNumber: "",
     experienceYears: "",
     consultationFee: "",
@@ -57,22 +58,53 @@ const DoctorAuth = () => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [specializations, setSpecializations] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
   const [specializationOpen, setSpecializationOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [monthlyFee, setMonthlyFee] = useState<number>(0);
 
   useEffect(() => {
-    const fetchSpecializations = async () => {
-      const { data, error } = await supabase
+    const fetchData = async () => {
+      // Fetch specializations
+      const { data: specData } = await supabase
         .from("specializations")
         .select("name")
         .order("name");
       
-      if (!error && data) {
-        // Get unique specialization names
-        const uniqueSpecs = [...new Set(data.map(s => s.name))];
+      if (specData) {
+        const uniqueSpecs = [...new Set(specData.map(s => s.name))];
         setSpecializations(uniqueSpecs);
       }
+
+      // Fetch cities from doctors and clinics
+      const { data: doctorCities } = await supabase
+        .from("doctors")
+        .select("city")
+        .not("city", "is", null);
+      
+      const { data: clinicCities } = await supabase
+        .from("clinics")
+        .select("city");
+
+      const allCities = [
+        ...(doctorCities?.map(d => d.city) || []),
+        ...(clinicCities?.map(c => c.city) || [])
+      ].filter(Boolean);
+      const uniqueCities = [...new Set(allCities)].sort();
+      setCities(uniqueCities);
+
+      // Fetch monthly fee from system settings
+      const { data: feeData } = await supabase
+        .from("system_settings")
+        .select("value")
+        .eq("key", "monthly_fee_per_doctor")
+        .single();
+      
+      if (feeData) {
+        setMonthlyFee(parseFloat(feeData.value) || 0);
+      }
     };
-    fetchSpecializations();
+    fetchData();
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -201,11 +233,27 @@ const DoctorAuth = () => {
         clinic_percentage: 0, // No clinic percentage for single doctors
         introduction: signupData.introduction || null,
         pmdc_number: signupData.pmdcNumber || null,
+        city: signupData.city || null,
         clinic_id: null, // No clinic - single doctor
         approved: false, // Pending admin approval
       });
 
       if (doctorError) throw doctorError;
+
+      // Send signup email with monthly fee info
+      try {
+        await supabase.functions.invoke("send-doctor-signup-email", {
+          body: {
+            doctorName: signupData.fullName,
+            email: signupData.email,
+            specialization: signupData.specialization,
+            city: signupData.city,
+            monthlyFee: monthlyFee,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send signup email:", emailError);
+      }
 
       // Sign out immediately since account needs approval
       await supabase.auth.signOut();
@@ -218,6 +266,7 @@ const DoctorAuth = () => {
         email: "",
         password: "",
         specialization: "",
+        city: "",
         contactNumber: "",
         experienceYears: "",
         consultationFee: "",
@@ -443,6 +492,54 @@ const DoctorAuth = () => {
                                     className={cn(
                                       "ml-auto h-4 w-4",
                                       signupData.specialization === spec ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label htmlFor="city" className="text-xs">City *</Label>
+                    <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={cityOpen}
+                          className={cn(
+                            "w-full justify-between text-sm font-normal border-teal-200 hover:border-teal-400",
+                            !signupData.city && "text-muted-foreground"
+                          )}
+                        >
+                          {signupData.city || "Select city..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[280px] p-0 z-50 bg-background border shadow-lg" align="start">
+                        <Command>
+                          <CommandInput placeholder="Search city..." className="h-9" />
+                          <CommandList>
+                            <CommandEmpty>No city found.</CommandEmpty>
+                            <CommandGroup className="max-h-[200px] overflow-auto">
+                              {cities.map((city) => (
+                                <CommandItem
+                                  key={city}
+                                  value={city}
+                                  onSelect={() => {
+                                    setSignupData({ ...signupData, city: city });
+                                    setCityOpen(false);
+                                  }}
+                                >
+                                  {city}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto h-4 w-4",
+                                      signupData.city === city ? "opacity-100" : "opacity-0"
                                     )}
                                   />
                                 </CommandItem>
