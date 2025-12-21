@@ -12,6 +12,8 @@ import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Auth from "./pages/Auth";
 import ReceptionistAuth from "./pages/ReceptionistAuth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Patients from "./pages/Patients";
 import Appointments from "./pages/Appointments";
@@ -78,6 +80,8 @@ const App = () => (
           <Route path="/doctor-auth" element={<DoctorAuth />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/receptionist-auth" element={<ReceptionistAuth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/dashboard"
               element={

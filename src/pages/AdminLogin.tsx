@@ -166,6 +166,16 @@ const AdminLogin = () => {
             </Button>
           </form>
 
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-sm text-primary hover:underline"
+            >
+              Forgot your password?
+            </button>
+          </div>
+
           <div className="pt-4 border-t border-border/50">
             <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
               <Lock className="h-3 w-3" />

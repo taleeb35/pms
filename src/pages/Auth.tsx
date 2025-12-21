@@ -389,6 +389,18 @@ const Auth = () => {
               {!loading && <Building2 className="mr-2 h-5 w-5" />}
               {isSignup ? "Create Clinic Account" : "Sign In to Dashboard"}
             </Button>
+
+            {!isSignup && (
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-sm text-purple-600 hover:underline"
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
           </form>
 
           <div className="mt-6 text-center">
