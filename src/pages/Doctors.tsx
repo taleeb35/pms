@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Eye, Users, Trash2 } from "lucide-react";
+import { Eye, Users, Trash2, Check, ChevronsUpDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
@@ -35,6 +35,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { CitySelect } from "@/components/CitySelect";
 import { differenceInYears } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
 
 interface Doctor {
   id: string;
@@ -47,12 +50,18 @@ interface Doctor {
   license_number: string | null;
   introduction: string | null;
   approved: boolean;
+  clinic_id: string | null;
   profiles: {
     full_name: string;
     email: string;
     phone: string | null;
     date_of_birth: string | null;
   };
+}
+
+interface Specialization {
+  id: string;
+  name: string;
 }
 
 const Doctors = () => {
@@ -74,14 +83,30 @@ const Doctors = () => {
   const [filterCity, setFilterCity] = useState<string>("all");
   const [filterAgeRange, setFilterAgeRange] = useState<string>("all");
   const [filterSpecialization, setFilterSpecialization] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  
+  // Specializations from database
+  const [specializations, setSpecializations] = useState<Specialization[]>([]);
+  const [specializationOpen, setSpecializationOpen] = useState(false);
 
   useEffect(() => {
     fetchDoctors();
+    fetchSpecializations();
   }, []);
+
+  const fetchSpecializations = async () => {
+    const { data } = await supabase
+      .from("specializations")
+      .select("id, name")
+      .order("name");
+    if (data) {
+      setSpecializations(data);
+    }
+  };
 
   useEffect(() => {
     applyFilters();
-  }, [doctors, filterCity, filterAgeRange, filterSpecialization]);
+  }, [doctors, filterCity, filterAgeRange, filterSpecialization, filterCategory]);
 
   const calculateAge = (dateOfBirth: string | null): number | null => {
     if (!dateOfBirth) return null;
@@ -116,6 +141,13 @@ const Doctors = () => {
     // Specialization filter
     if (filterSpecialization !== "all") {
       filtered = filtered.filter(d => d.specialization === filterSpecialization);
+    }
+
+    // Category filter (Single Dr / Clinic Dr)
+    if (filterCategory === "single") {
+      filtered = filtered.filter(d => !d.clinic_id);
+    } else if (filterCategory === "clinic") {
+      filtered = filtered.filter(d => !!d.clinic_id);
     }
 
     setFilteredDoctors(filtered);
@@ -243,7 +275,7 @@ const Doctors = () => {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="space-y-2">
               <Label>Filter by City</Label>
               <Select value={filterCity} onValueChange={setFilterCity}>
@@ -278,15 +310,76 @@ const Doctors = () => {
 
             <div className="space-y-2">
               <Label>Filter by Type</Label>
-              <Select value={filterSpecialization} onValueChange={setFilterSpecialization}>
+              <Popover open={specializationOpen} onOpenChange={setSpecializationOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={specializationOpen}
+                    className="w-full justify-between"
+                  >
+                    {filterSpecialization === "all"
+                      ? "All Types"
+                      : filterSpecialization}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search specialization..." />
+                    <CommandList>
+                      <CommandEmpty>No specialization found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="all"
+                          onSelect={() => {
+                            setFilterSpecialization("all");
+                            setSpecializationOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              filterSpecialization === "all" ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          All Types
+                        </CommandItem>
+                        {specializations.map((spec) => (
+                          <CommandItem
+                            key={spec.id}
+                            value={spec.name}
+                            onSelect={() => {
+                              setFilterSpecialization(spec.name);
+                              setSpecializationOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                filterSpecialization === spec.name ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {spec.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Filter by Category</Label>
+              <Select value={filterCategory} onValueChange={setFilterCategory}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All Types" />
+                  <SelectValue placeholder="All Doctors" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  {uniqueSpecializations.map((spec) => (
-                    <SelectItem key={spec} value={spec!}>{spec}</SelectItem>
-                  ))}
+                  <SelectItem value="all">All Doctors</SelectItem>
+                  <SelectItem value="single">Single Doctors</SelectItem>
+                  <SelectItem value="clinic">Clinic Doctors</SelectItem>
                 </SelectContent>
               </Select>
             </div>
