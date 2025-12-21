@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles, UserCheck, UserX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
 
@@ -33,21 +34,39 @@ interface DoctorWithPatientCount {
   patient_count: number;
 }
 
+interface SingleDoctor {
+  id: string;
+  specialization: string;
+  approved: boolean;
+  consultation_fee: number | null;
+  experience_years: number | null;
+  pmdc_number: string | null;
+  profiles: {
+    full_name: string;
+    email: string;
+  };
+  patient_count: number;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [approvedDoctors, setApprovedDoctors] = useState(0);
   const [pendingDoctors, setPendingDoctors] = useState(0);
+  const [singleDoctorsCount, setSingleDoctorsCount] = useState(0);
   const [totalClinics, setTotalClinics] = useState(0);
   const [totalPatients, setTotalPatients] = useState(0);
   const [clinics, setClinics] = useState<Clinic[]>([]);
   const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
   const [clinicDoctors, setClinicDoctors] = useState<DoctorWithPatientCount[]>([]);
+  const [singleDoctors, setSingleDoctors] = useState<SingleDoctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [approvingDoctor, setApprovingDoctor] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStats();
     fetchClinics();
+    fetchSingleDoctors();
   }, []);
 
   useEffect(() => {
@@ -71,6 +90,11 @@ const Dashboard = () => {
       .select("id", { count: "exact", head: true })
       .eq("approved", false);
 
+    const { count: singleCount } = await supabase
+      .from("doctors")
+      .select("id", { count: "exact", head: true })
+      .is("clinic_id", null);
+
     const { count: clinicCount } = await supabase
       .from("clinics")
       .select("id", { count: "exact", head: true });
@@ -82,8 +106,58 @@ const Dashboard = () => {
     setTotalDoctors(totalCount || 0);
     setApprovedDoctors(approvedCount || 0);
     setPendingDoctors(pendingCount || 0);
+    setSingleDoctorsCount(singleCount || 0);
     setTotalClinics(clinicCount || 0);
     setTotalPatients(patientCount || 0);
+  };
+
+  const fetchSingleDoctors = async () => {
+    const { data: doctors, error } = await supabase
+      .from("doctors")
+      .select(`
+        id,
+        specialization,
+        approved,
+        consultation_fee,
+        experience_years,
+        pmdc_number,
+        profiles(full_name, email)
+      `)
+      .is("clinic_id", null)
+      .order("approved", { ascending: true });
+
+    if (!error && doctors) {
+      const doctorsWithCounts = await Promise.all(
+        doctors.map(async (doctor) => {
+          const { count } = await supabase
+            .from("patients")
+            .select("id", { count: "exact", head: true })
+            .eq("created_by", doctor.id);
+          return { ...doctor, patient_count: count || 0 };
+        })
+      );
+      setSingleDoctors(doctorsWithCounts);
+    }
+  };
+
+  const handleApproveDoctor = async (doctorId: string, approve: boolean) => {
+    setApprovingDoctor(doctorId);
+    try {
+      const { error } = await supabase
+        .from("doctors")
+        .update({ approved: approve })
+        .eq("id", doctorId);
+
+      if (error) throw error;
+
+      // Refresh data
+      fetchSingleDoctors();
+      fetchStats();
+    } catch (error) {
+      console.error("Error updating doctor:", error);
+    } finally {
+      setApprovingDoctor(null);
+    }
   };
 
   const fetchClinics = async () => {
@@ -269,119 +343,215 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Clinic Hierarchy */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Clinics List */}
-        <Card className="border-border/40">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-              <Building2 className="h-5 w-5 text-primary" />
-              Registered Clinics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p className="text-center text-muted-foreground py-8">Loading clinics...</p>
-            ) : clinics.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No clinics registered yet</p>
-            ) : (
-              <div className="space-y-2">
-                {clinics.map((clinic) => (
-                  <div
-                    key={clinic.id}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedClinic === clinic.id 
-                        ? "bg-primary/10 border-primary shadow-sm" 
-                        : "border-border/40 hover:bg-accent/30 hover:shadow-sm"
-                    }`}
-                    onClick={() => setSelectedClinic(clinic.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <Building2 className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-base mb-0.5">{clinic.clinic_name}</h3>
-                          <p className="text-sm text-muted-foreground">{clinic.city}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Stethoscope className="h-3 w-3" />
-                          {clinic.no_of_doctors}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Tabbed Content */}
+      <Tabs defaultValue="clinics" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 lg:w-[400px]">
+          <TabsTrigger value="clinics" className="gap-2">
+            <Building2 className="h-4 w-4" />
+            Clinic Doctors
+          </TabsTrigger>
+          <TabsTrigger value="single" className="gap-2">
+            <Stethoscope className="h-4 w-4" />
+            Single Doctors ({singleDoctorsCount})
+          </TabsTrigger>
+        </TabsList>
 
-        {/* Doctors under selected clinic */}
-        <Card className="border-border/40">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-              <Stethoscope className="h-5 w-5 text-info" />
-              {selectedClinic ? "Clinic Doctors" : "Select a Clinic"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!selectedClinic ? (
-              <div className="text-center py-12">
-                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                  <Stethoscope className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <p className="text-muted-foreground">Select a clinic to view its doctors</p>
-              </div>
-            ) : clinicDoctors.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                  <Stethoscope className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <p className="text-muted-foreground">No doctors registered yet</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {clinicDoctors.map((doctor) => (
-                  <div
-                    key={doctor.id}
-                    className="p-4 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-sm transition-all cursor-pointer"
-                    onClick={() => navigate(`/admin/doctor-patients/${doctor.id}`)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="h-10 w-10 rounded-full bg-info/10 flex items-center justify-center shrink-0">
-                          <Stethoscope className="h-5 w-5 text-info" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-semibold text-base">{doctor.profiles?.full_name || "Unknown Doctor"}</h4>
-                            <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
-                              {doctor.approved ? "Active" : "Pending"}
-                            </Badge>
+        <TabsContent value="clinics" className="mt-4">
+          {/* Clinic Hierarchy */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Clinics List */}
+            <Card className="border-border/40">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                  <Building2 className="h-5 w-5 text-primary" />
+                  Registered Clinics
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <p className="text-center text-muted-foreground py-8">Loading clinics...</p>
+                ) : clinics.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No clinics registered yet</p>
+                ) : (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {clinics.map((clinic) => (
+                      <div
+                        key={clinic.id}
+                        className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                          selectedClinic === clinic.id 
+                            ? "bg-primary/10 border-primary shadow-sm" 
+                            : "border-border/40 hover:bg-accent/30 hover:shadow-sm"
+                        }`}
+                        onClick={() => setSelectedClinic(clinic.id)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                              <Building2 className="h-5 w-5 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-base mb-0.5">{clinic.clinic_name}</h3>
+                              <p className="text-sm text-muted-foreground">{clinic.city}</p>
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="secondary" className="flex items-center gap-1">
+                              <Stethoscope className="h-3 w-3" />
+                              {clinic.no_of_doctors}
+                            </Badge>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {doctor.patient_count}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Doctors under selected clinic */}
+            <Card className="border-border/40">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                  <Stethoscope className="h-5 w-5 text-info" />
+                  {selectedClinic ? "Clinic Doctors" : "Select a Clinic"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!selectedClinic ? (
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                      <Stethoscope className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground">Select a clinic to view its doctors</p>
+                  </div>
+                ) : clinicDoctors.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                      <Stethoscope className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground">No doctors registered yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                    {clinicDoctors.map((doctor) => (
+                      <div
+                        key={doctor.id}
+                        className="p-4 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-sm transition-all cursor-pointer"
+                        onClick={() => navigate(`/admin/doctor-patients/${doctor.id}`)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="h-10 w-10 rounded-full bg-info/10 flex items-center justify-center shrink-0">
+                              <Stethoscope className="h-5 w-5 text-info" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <h4 className="font-semibold text-base">{doctor.profiles?.full_name || "Unknown Doctor"}</h4>
+                                <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
+                                  {doctor.approved ? "Active" : "Pending"}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Users className="h-3 w-3" />
+                              {doctor.patient_count}
+                            </Badge>
+                            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="single" className="mt-4">
+          <Card className="border-border/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+                <Stethoscope className="h-5 w-5 text-info" />
+                Single Doctors (No Clinic)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {singleDoctors.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
+                    <Stethoscope className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground">No single doctors registered yet</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {singleDoctors.map((doctor) => (
+                    <div
+                      key={doctor.id}
+                      className="p-4 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-sm transition-all"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className="h-12 w-12 rounded-full bg-info/10 flex items-center justify-center shrink-0">
+                            <Stethoscope className="h-6 w-6 text-info" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <h4 className="font-semibold text-base">{doctor.profiles?.full_name || "Unknown Doctor"}</h4>
+                              <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
+                                {doctor.approved ? "Active" : "Pending"}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
+                            <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                              <span>{doctor.profiles?.email}</span>
+                              {doctor.consultation_fee && <span>Fee: PKR {doctor.consultation_fee}</span>}
+                              {doctor.experience_years && <span>{doctor.experience_years} yrs exp</span>}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />
+                            {doctor.patient_count} patients
+                          </Badge>
+                          {!doctor.approved ? (
+                            <Button
+                              size="sm"
+                              onClick={() => handleApproveDoctor(doctor.id, true)}
+                              disabled={approvingDoctor === doctor.id}
+                              className="gap-1"
+                            >
+                              <UserCheck className="h-4 w-4" />
+                              Approve
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleApproveDoctor(doctor.id, false)}
+                              disabled={approvingDoctor === doctor.id}
+                              className="gap-1 text-destructive hover:text-destructive"
+                            >
+                              <UserX className="h-4 w-4" />
+                              Suspend
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Quick Actions */}
       <Card className="border-border/40">
