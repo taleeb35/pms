@@ -8,3 +8,15 @@ verify_jwt = false
 
 [functions.send-clinic-welcome-email]
 verify_jwt = false
+
+[functions.send-clinic-approval-email]
+verify_jwt = false
+
+[functions.send-doctor-signup-email]
+verify_jwt = false
+
+[functions.send-doctor-approval-email]
+verify_jwt = false
+
+[functions.delete-user]
+verify_jwt = false
