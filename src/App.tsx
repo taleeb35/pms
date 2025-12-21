@@ -43,6 +43,7 @@ import ClinicPatientDetail from "./pages/ClinicPatientDetail";
 import ClinicAppointments from "./pages/ClinicAppointments";
 import ClinicWalkIn from "./pages/ClinicWalkIn";
 import ClinicFinance from "./pages/ClinicFinance";
+import ClinicExpenses from "./pages/ClinicExpenses";
 import ClinicSupport from "./pages/ClinicSupport";
 import ClinicSpecializations from "./pages/ClinicSpecializations";
 import ClinicAllergies from "./pages/ClinicAllergies";
@@ -342,6 +343,14 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/expenses"
+              element={
+                <Layout>
+                  <ClinicExpenses />
+                </Layout>
+              }
+            />
+            <Route
               path="/clinic/support"
               element={
                 <Layout>
@@ -475,6 +484,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicFinance />
+                </Layout>
+              }
+            />
+            <Route
+              path="/receptionist/expenses"
+              element={
+                <Layout>
+                  <ClinicExpenses />
                 </Layout>
               }
             />
