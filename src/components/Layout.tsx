@@ -201,6 +201,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
     { path: "/clinic/procedures", icon: Settings, label: "Procedures" },
     { path: "/clinic/finance", icon: Banknote, label: "Finance" },
+    { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
     { path: "/clinic/profile", icon: UserCog, label: "Profile" },
     { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
   ];
@@ -219,6 +220,7 @@ const Layout = ({ children }: LayoutProps) => {
     { path: "/receptionist/icd-codes", icon: FileCode, label: "ICD Codes" },
     { path: "/receptionist/procedures", icon: Settings, label: "Procedures" },
     { path: "/receptionist/finance", icon: Banknote, label: "Finance" },
+    { path: "/receptionist/expenses", icon: FileText, label: "Expenses" },
   ];
 
   const menuItems = userRole === "doctor" 

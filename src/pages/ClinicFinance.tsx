@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -58,6 +58,7 @@ export default function ClinicFinance() {
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [clinicShare, setClinicShare] = useState(0);
   const [doctorsShare, setDoctorsShare] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
 
@@ -67,8 +68,53 @@ export default function ClinicFinance() {
   }, []);
 
   useEffect(() => {
+    fetchExpenses();
+  }, [startDate, endDate]);
+
+  useEffect(() => {
     fetchRevenue();
   }, [startDate, endDate, selectedDoctor, doctors]);
+
+  const fetchExpenses = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get clinic ID (for both clinic owner and receptionist)
+      let clinicId = user.id;
+      
+      const { data: receptionistData } = await supabase
+        .from("clinic_receptionists")
+        .select("clinic_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (receptionistData) {
+        clinicId = receptionistData.clinic_id;
+      }
+
+      let query = supabase
+        .from("clinic_expenses")
+        .select("amount")
+        .eq("clinic_id", clinicId);
+
+      if (startDate) {
+        query = query.gte("expense_date", format(startDate, "yyyy-MM-dd"));
+      }
+      if (endDate) {
+        query = query.lte("expense_date", format(endDate, "yyyy-MM-dd"));
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      const total = (data || []).reduce((sum, exp) => sum + Number(exp.amount), 0);
+      setTotalExpenses(total);
+    } catch (error: any) {
+      console.error("Error fetching expenses:", error);
+    }
+  };
 
   const fetchClinicDetails = async () => {
     try {
@@ -503,7 +549,7 @@ export default function ClinicFinance() {
       </div>
 
       {/* Revenue Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* Total Revenue Card */}
         <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
           <CardHeader className="pb-2">
@@ -522,7 +568,7 @@ export default function ClinicFinance() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-2xl font-bold">
               {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
@@ -540,7 +586,7 @@ export default function ClinicFinance() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-2xl font-bold">
               -{totalDiscount.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
@@ -561,7 +607,7 @@ export default function ClinicFinance() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-2xl font-bold">
               {clinicShare.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
@@ -572,7 +618,7 @@ export default function ClinicFinance() {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Stethoscope className="h-5 w-5" />
-              {selectedDoctor !== "all" ? "Doctor Share" : "All Doctors Share"}
+              {selectedDoctor !== "all" ? "Doctor Share" : "Doctors Share"}
             </CardTitle>
             <CardDescription className="text-info-foreground/80 text-sm">
               {selectedDoctor !== "all" && selectedDoctorInfo 
@@ -582,8 +628,49 @@ export default function ClinicFinance() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">
+            <div className="text-2xl font-bold">
               {doctorsShare.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Total Expenses Card */}
+        <Card className="bg-gradient-to-br from-orange-500 to-amber-600 text-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-lg">
+              <Receipt className="h-5 w-5" />
+              Expenses
+            </CardTitle>
+            <CardDescription className="text-orange-100 text-sm">
+              Clinic operating costs
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              -{totalExpenses.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Net Profit/Loss Card */}
+        <Card className={cn(
+          "text-white",
+          (clinicShare - totalExpenses) >= 0 
+            ? "bg-gradient-to-br from-emerald-600 to-teal-700" 
+            : "bg-gradient-to-br from-rose-600 to-red-700"
+        )}>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-white text-lg">
+              {(clinicShare - totalExpenses) >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+              Net {(clinicShare - totalExpenses) >= 0 ? "Profit" : "Loss"}
+            </CardTitle>
+            <CardDescription className="text-white/80 text-sm">
+              Clinic Share - Expenses
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {(clinicShare - totalExpenses).toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
