@@ -239,10 +239,10 @@ const AdminFinance = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-primary/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Earnings</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Estimated</CardTitle>
             <Banknote className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
@@ -251,36 +251,25 @@ const AdminFinance = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border/40">
+        <Card className="border-border/40 bg-gradient-to-br from-success/5 to-success/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
-            <Building2 className="h-5 w-5 text-info" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Received</CardTitle>
+            <CheckCircle2 className="h-5 w-5 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{payments.length}</div>
-            <p className="text-xs text-muted-foreground">Eligible this month</p>
+            <div className="text-3xl font-bold text-success">{paidAmount.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
 
         <Card className="border-border/40 bg-gradient-to-br from-amber-500/5 to-amber-500/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Payments</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Pending</CardTitle>
             <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-600">{totalPending}</div>
-            <p className="text-xs text-muted-foreground">{pendingAmount.toLocaleString()} amount</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40 bg-gradient-to-br from-success/5 to-success/10">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Paid</CardTitle>
-            <CheckCircle2 className="h-5 w-5 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-success">{totalPaid}</div>
-            <p className="text-xs text-muted-foreground">{paidAmount.toLocaleString()} collected</p>
+            <div className="text-3xl font-bold text-amber-600">{pendingAmount.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
       </div>
