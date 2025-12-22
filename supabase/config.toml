@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.cleanup-orphaned-users]
 verify_jwt = false
+
+[functions.send-clinic-doctor-welcome-email]
+verify_jwt = false
