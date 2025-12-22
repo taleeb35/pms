@@ -37,6 +37,7 @@ const AdminFinance = () => {
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const { toast } = useToast();
 
   // Generate last 12 months for dropdown
@@ -207,8 +208,12 @@ const AdminFinance = () => {
   const paidAmount = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
   const totalEarnings = payments.reduce((sum, p) => sum + p.amount, 0);
 
-  // Filter payments by search query
+  // Filter payments by search query and status
   const filteredPayments = payments.filter((payment) => {
+    // Status filter
+    if (statusFilter !== "all" && payment.status !== statusFilter) return false;
+    
+    // Search filter
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     const clinicName = payment.clinic?.clinic_name?.toLowerCase() || "";
@@ -302,6 +307,20 @@ const AdminFinance = () => {
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                 className="pl-9"
               />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Status:</span>
+              <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
+                <SelectTrigger className="w-[130px]">
+                  <SelectValue placeholder="All" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-2 ml-auto">
