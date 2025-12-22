@@ -131,27 +131,19 @@ const AdminClinics = () => {
     }
   };
 
-  const updateClinicStatus = async (clinicId: string, status: string) => {
+  const updateClinic = async (clinicId: string, status: string, doctorLimit: number) => {
     try {
-      const { error } = await supabase.from("clinics").update({ status, updated_at: new Date().toISOString() }).eq("id", clinicId);
+      const { error } = await supabase.from("clinics").update({ 
+        status, 
+        requested_doctors: doctorLimit,
+        updated_at: new Date().toISOString() 
+      }).eq("id", clinicId);
       if (error) throw error;
-      toast.success(`Clinic status updated to ${status}`);
+      toast.success("Clinic updated successfully");
       fetchClinics();
       setIsDetailOpen(false);
     } catch (error: any) {
-      toast.error("Failed to update status: " + error.message);
-    }
-  };
-
-
-  const updateDoctorLimit = async (clinicId: string, limit: number) => {
-    try {
-      const { error } = await supabase.from("clinics").update({ requested_doctors: limit, updated_at: new Date().toISOString() }).eq("id", clinicId);
-      if (error) throw error;
-      toast.success(`Doctor limit updated to ${limit}`);
-      fetchClinics();
-    } catch (error: any) {
-      toast.error("Failed to update doctor limit: " + error.message);
+      toast.error("Failed to update clinic: " + error.message);
     }
   };
 
@@ -229,7 +221,7 @@ const AdminClinics = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active": return <Badge className="bg-green-500">Active</Badge>;
-      case "pending": return <Badge className="bg-yellow-500">Pending</Badge>;
+      case "draft": return <Badge className="bg-yellow-500">Pending</Badge>;
       case "suspended": return <Badge className="bg-red-500">Suspended</Badge>;
       default: return <Badge variant="secondary">{status}</Badge>;
     }
@@ -241,7 +233,7 @@ const AdminClinics = () => {
   const paginatedClinics = filteredClinics.slice(startIndex, startIndex + itemsPerPage);
   const totalClinics = clinics.length;
   const activeClinics = clinics.filter((c) => c.status === "active").length;
-  const pendingClinics = clinics.filter((c) => c.status === "pending").length;
+  const pendingClinics = clinics.filter((c) => c.status === "draft").length;
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
@@ -255,10 +247,10 @@ const AdminClinics = () => {
         <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Active Clinics</CardTitle><CheckCircle2 className="h-4 w-4 text-green-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{activeClinics}</div></CardContent></Card>
         <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Pending Clinics</CardTitle><Clock className="h-4 w-4 text-yellow-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{pendingClinics}</div></CardContent></Card>
       </div>
-      <Card><CardContent className="pt-6"><div className="flex flex-wrap gap-4 items-center"><div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search by clinic name, city, email, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" /></div><div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Status:</span><Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}><SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="pending">Pending</SelectItem></SelectContent></Select></div><div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Show:</span><Select value={itemsPerPage.toString()} onValueChange={(v) => { setItemsPerPage(Number(v)); setCurrentPage(1); }}><SelectTrigger className="w-[80px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="25">25</SelectItem><SelectItem value="50">50</SelectItem><SelectItem value="75">75</SelectItem><SelectItem value="100">100</SelectItem></SelectContent></Select></div></div>{searchQuery && <p className="text-sm text-muted-foreground mt-2">Found {filteredClinics.length} clinic{filteredClinics.length !== 1 ? "s" : ""}</p>}</CardContent></Card>
+      <Card><CardContent className="pt-6"><div className="flex flex-wrap gap-4 items-center"><div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search by clinic name, city, email, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" /></div><div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Status:</span><Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}><SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="draft">Pending</SelectItem><SelectItem value="suspended">Suspended</SelectItem></SelectContent></Select></div><div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Show:</span><Select value={itemsPerPage.toString()} onValueChange={(v) => { setItemsPerPage(Number(v)); setCurrentPage(1); }}><SelectTrigger className="w-[80px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="25">25</SelectItem><SelectItem value="50">50</SelectItem><SelectItem value="75">75</SelectItem><SelectItem value="100">100</SelectItem></SelectContent></Select></div></div>{searchQuery && <p className="text-sm text-muted-foreground mt-2">Found {filteredClinics.length} clinic{filteredClinics.length !== 1 ? "s" : ""}</p>}</CardContent></Card>
       <Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Clinic Name</TableHead><TableHead>Email</TableHead><TableHead>City</TableHead><TableHead>Phone</TableHead><TableHead>Status</TableHead><TableHead>Doctors</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader><TableBody>{paginatedClinics.length === 0 ? <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">{searchQuery ? "No clinics found matching your search" : "No clinics found"}</TableCell></TableRow> : paginatedClinics.map((clinic) => <TableRow key={clinic.id}><TableCell className="font-medium">{clinic.clinic_name}</TableCell><TableCell>{clinic.profile?.email || "N/A"}</TableCell><TableCell>{clinic.city}</TableCell><TableCell>{clinic.phone_number}</TableCell><TableCell>{getStatusBadge(clinic.status)}</TableCell><TableCell>{clinic.no_of_doctors} / {clinic.requested_doctors}</TableCell><TableCell><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => { setSelectedClinic(clinic); setIsDetailOpen(true); }}><Eye className="h-4 w-4" /></Button><Button variant="destructive" size="sm" onClick={() => { setClinicToDelete(clinic); setIsDeleteOpen(true); }}><Trash2 className="h-4 w-4" /></Button></div></TableCell></TableRow>)}</TableBody></Table></CardContent></Card>
       {totalPages > 1 && <div className="flex items-center justify-center gap-2"><Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button><span className="text-sm">Page {currentPage} of {totalPages}</span><Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button></div>}
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}><DialogContent className="max-w-2xl"><DialogHeader><DialogTitle>{selectedClinic?.clinic_name}</DialogTitle><DialogDescription>Clinic details and management</DialogDescription></DialogHeader>{selectedClinic && <div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><label className="text-sm font-medium text-muted-foreground">Email</label><p>{selectedClinic.profile?.email || "N/A"}</p></div><div><label className="text-sm font-medium text-muted-foreground">Phone</label><p>{selectedClinic.phone_number}</p></div><div><label className="text-sm font-medium text-muted-foreground">City</label><p>{selectedClinic.city}</p></div><div><label className="text-sm font-medium text-muted-foreground">Address</label><p>{selectedClinic.address}</p></div><div><label className="text-sm font-medium text-muted-foreground">Registered On</label><p>{format(new Date(selectedClinic.created_at), "PPP")}</p></div><div><label className="text-sm font-medium text-muted-foreground">Doctors ({selectedClinic.no_of_doctors} / {selectedClinic.requested_doctors})</label><p>Monthly Fee: PKR {(selectedClinic.requested_doctors * doctorMonthlyFee).toLocaleString()}</p></div></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Status</label><Select value={selectedClinic.status} onValueChange={(value) => updateClinicStatus(selectedClinic.id, value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">Pending</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="suspended">Suspended</SelectItem></SelectContent></Select></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Doctor Limit</label><div className="flex gap-2"><Input type="number" min={1} value={selectedClinic.requested_doctors} onChange={(e) => { const newLimit = parseInt(e.target.value) || 1; setSelectedClinic({ ...selectedClinic, requested_doctors: newLimit }); }} className="w-24" /><Button onClick={() => updateDoctorLimit(selectedClinic.id, selectedClinic.requested_doctors)}>Update Limit</Button></div></div></div>}</DialogContent></Dialog>
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}><DialogContent className="max-w-2xl"><DialogHeader><DialogTitle>{selectedClinic?.clinic_name}</DialogTitle><DialogDescription>Clinic details and management</DialogDescription></DialogHeader>{selectedClinic && <div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><label className="text-sm font-medium text-muted-foreground">Email</label><p>{selectedClinic.profile?.email || "N/A"}</p></div><div><label className="text-sm font-medium text-muted-foreground">Phone</label><p>{selectedClinic.phone_number}</p></div><div><label className="text-sm font-medium text-muted-foreground">City</label><p>{selectedClinic.city}</p></div><div><label className="text-sm font-medium text-muted-foreground">Address</label><p>{selectedClinic.address}</p></div><div><label className="text-sm font-medium text-muted-foreground">Registered On</label><p>{format(new Date(selectedClinic.created_at), "PPP")}</p></div><div><label className="text-sm font-medium text-muted-foreground">Doctors ({selectedClinic.no_of_doctors} / {selectedClinic.requested_doctors})</label><p>Monthly Fee: PKR {(selectedClinic.requested_doctors * doctorMonthlyFee).toLocaleString()}</p></div></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Status</label><Select value={selectedClinic.status} onValueChange={(value) => setSelectedClinic({ ...selectedClinic, status: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Pending</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="suspended">Suspended</SelectItem></SelectContent></Select></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Doctor Limit</label><Input type="number" min={1} value={selectedClinic.requested_doctors} onChange={(e) => { const newLimit = parseInt(e.target.value) || 1; setSelectedClinic({ ...selectedClinic, requested_doctors: newLimit }); }} className="w-24" /></div><div className="flex justify-end pt-4"><Button onClick={() => updateClinic(selectedClinic.id, selectedClinic.status, selectedClinic.requested_doctors)}>Update</Button></div></div>}</DialogContent></Dialog>
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Delete Clinic</AlertDialogTitle><AlertDialogDescription>Are you sure you want to delete "{clinicToDelete?.clinic_name}"? This action cannot be undone and will permanently delete the clinic along with all associated data including doctors, patients, appointments, and records.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteClinic} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{isDeleting ? "Deleting..." : "Delete Clinic"}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </div>
   );
