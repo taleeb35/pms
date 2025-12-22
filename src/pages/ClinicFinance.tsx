@@ -549,7 +549,7 @@ export default function ClinicFinance() {
       </div>
 
       {/* Revenue Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Revenue Card */}
         <Card className="bg-gradient-to-br from-green-500 to-emerald-600 text-white">
           <CardHeader className="pb-2">
