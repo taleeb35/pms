@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, FileText, Activity, Shield, Clock, Heart, Stethoscope, Sparkles, UserPlus, BarChart3, TrendingUp, DollarSign, Eye, ChartBar, LogIn } from "lucide-react";
@@ -15,6 +15,17 @@ import PublicFooter from "@/components/PublicFooter";
 const Index = () => {
   const navigate = useNavigate();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
+
+  // Check for password recovery redirect from Supabase
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get("type");
+    
+    if (type === "recovery") {
+      // Redirect to reset-password page with the hash intact
+      navigate(`/reset-password${window.location.hash}`, { replace: true });
+    }
+  }, [navigate]);
 
   const features = [
     {

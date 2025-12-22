@@ -24,27 +24,40 @@ const ResetPassword = () => {
   useEffect(() => {
     // Check if user came from a valid password reset link
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      // Check for hash fragment that indicates password recovery
+      // Check for hash fragment that indicates password recovery (Supabase default format)
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const type = hashParams.get("type");
-      const accessToken = hashParams.get("access_token");
+      const hashType = hashParams.get("type");
+      const hashAccessToken = hashParams.get("access_token");
+      const hashRefreshToken = hashParams.get("refresh_token");
+      
+      // Also check URL query parameters (alternative format)
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryType = urlParams.get("type");
+      const queryAccessToken = urlParams.get("access_token");
+      const queryRefreshToken = urlParams.get("refresh_token");
+      
+      // Use hash params first, then fall back to query params
+      const type = hashType || queryType;
+      const accessToken = hashAccessToken || queryAccessToken;
+      const refreshToken = hashRefreshToken || queryRefreshToken || "";
       
       if (type === "recovery" && accessToken) {
         // Set the session from the recovery link
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
-          refresh_token: hashParams.get("refresh_token") || "",
+          refresh_token: refreshToken,
         });
         
         if (!error) {
           setIsValidSession(true);
+          // Clear the URL to remove tokens
+          window.history.replaceState({}, document.title, window.location.pathname);
           return;
         }
       }
       
       // Check if there's an existing valid session
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         setIsValidSession(true);
       } else {
@@ -55,7 +68,7 @@ const ResetPassword = () => {
     checkSession();
 
     // Listen for auth changes (password recovery event)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY") {
         setIsValidSession(true);
       }
