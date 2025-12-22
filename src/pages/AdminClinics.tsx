@@ -133,12 +133,34 @@ const AdminClinics = () => {
 
   const updateClinic = async (clinicId: string, status: string, doctorLimit: number) => {
     try {
+      // Get the original status before update
+      const originalClinic = clinics.find(c => c.id === clinicId);
+      const originalStatus = originalClinic?.status;
+
       const { error } = await supabase.from("clinics").update({ 
         status, 
         requested_doctors: doctorLimit,
         updated_at: new Date().toISOString() 
       }).eq("id", clinicId);
       if (error) throw error;
+
+      // Send email notification if status changed to active or suspended
+      if (originalStatus !== status && (status === "active" || status === "suspended") && originalClinic?.profile?.email) {
+        try {
+          await supabase.functions.invoke("send-clinic-status-email", {
+            body: {
+              clinicName: originalClinic.clinic_name,
+              email: originalClinic.profile.email,
+              ownerName: originalClinic.profile.full_name || "Clinic Owner",
+              status: status,
+            },
+          });
+          console.log("Status notification email sent");
+        } catch (emailError) {
+          console.error("Failed to send status email:", emailError);
+        }
+      }
+
       toast.success("Clinic updated successfully");
       fetchClinics();
       setIsDetailOpen(false);
