@@ -91,6 +91,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     weight: "",
     height: "",
     pain_scale: null as number | null,
+    right_eye_vision: "",
+    left_eye_vision: "",
     
     // Medical Info
     chief_complaint: "",
@@ -147,6 +149,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         weight: "",
         height: "",
         pain_scale: null,
+        right_eye_vision: "",
+        left_eye_vision: "",
         chief_complaint: "",
         patient_history: "",
         current_prescription: "",
@@ -385,6 +389,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         weight: data.weight || "",
         height: data.height || "",
         pain_scale: data.pain_scale || null,
+        right_eye_vision: data.right_eye_vision || "",
+        left_eye_vision: data.left_eye_vision || "",
         chief_complaint: data.chief_complaint || "",
         patient_history: data.patient_history || "",
         current_prescription: data.current_prescription || "",
@@ -749,6 +755,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         weight: formData.weight,
         height: formData.height,
         pain_scale: formData.pain_scale,
+        right_eye_vision: formData.right_eye_vision || null,
+        left_eye_vision: formData.left_eye_vision || null,
         chief_complaint: formData.chief_complaint,
         patient_history: formData.patient_history,
         current_prescription: formData.current_prescription,
@@ -1014,34 +1022,55 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                       })()}
                     </div>
                   </div>
-                  <div className="col-span-3">
-                    <Label>Pain Scale (1-10)</Label>
-                    <div className="flex items-center gap-4 mt-2">
-                      <Slider
-                        value={formData.pain_scale ? [formData.pain_scale] : [0]}
-                        onValueChange={(value) => setFormData({...formData, pain_scale: value[0] === 0 ? null : value[0]})}
-                        max={10}
-                        min={0}
-                        step={1}
-                        className="flex-1"
-                      />
-                      <div className={cn(
-                        "w-16 h-10 rounded-md border flex items-center justify-center font-bold text-lg",
-                        formData.pain_scale === null && "bg-muted text-muted-foreground",
-                        formData.pain_scale && formData.pain_scale <= 3 && "bg-green-100 text-green-700 border-green-300",
-                        formData.pain_scale && formData.pain_scale > 3 && formData.pain_scale <= 6 && "bg-amber-100 text-amber-700 border-amber-300",
-                        formData.pain_scale && formData.pain_scale > 6 && "bg-red-100 text-red-700 border-red-300"
-                      )}>
-                        {formData.pain_scale || "-"}
+                  {isOphthalmologist ? (
+                    <>
+                      <div>
+                        <Label>Right Eye Vision</Label>
+                        <Input
+                          placeholder="e.g., 6/6, 20/20"
+                          value={formData.right_eye_vision}
+                          onChange={(e) => setFormData({...formData, right_eye_vision: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label>Left Eye Vision</Label>
+                        <Input
+                          placeholder="e.g., 6/6, 20/20"
+                          value={formData.left_eye_vision}
+                          onChange={(e) => setFormData({...formData, left_eye_vision: e.target.value})}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="col-span-3">
+                      <Label>Pain Scale (1-10)</Label>
+                      <div className="flex items-center gap-4 mt-2">
+                        <Slider
+                          value={formData.pain_scale ? [formData.pain_scale] : [0]}
+                          onValueChange={(value) => setFormData({...formData, pain_scale: value[0] === 0 ? null : value[0]})}
+                          max={10}
+                          min={0}
+                          step={1}
+                          className="flex-1"
+                        />
+                        <div className={cn(
+                          "w-16 h-10 rounded-md border flex items-center justify-center font-bold text-lg",
+                          formData.pain_scale === null && "bg-muted text-muted-foreground",
+                          formData.pain_scale && formData.pain_scale <= 3 && "bg-green-100 text-green-700 border-green-300",
+                          formData.pain_scale && formData.pain_scale > 3 && formData.pain_scale <= 6 && "bg-amber-100 text-amber-700 border-amber-300",
+                          formData.pain_scale && formData.pain_scale > 6 && "bg-red-100 text-red-700 border-red-300"
+                        )}>
+                          {formData.pain_scale || "-"}
+                        </div>
+                      </div>
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>No Pain</span>
+                        <span>Mild</span>
+                        <span>Moderate</span>
+                        <span>Severe</span>
                       </div>
                     </div>
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>No Pain</span>
-                      <span>Mild</span>
-                      <span>Moderate</span>
-                      <span>Severe</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
 

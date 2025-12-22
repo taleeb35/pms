@@ -1403,12 +1403,14 @@ export type Database = {
           doctor_id: string
           height: string | null
           id: string
+          left_eye_vision: string | null
           next_visit_date: string | null
           next_visit_notes: string | null
           pain_scale: number | null
           patient_history: string | null
           patient_id: string
           pulse: string | null
+          right_eye_vision: string | null
           temperature: string | null
           test_reports: string | null
           updated_at: string
@@ -1424,12 +1426,14 @@ export type Database = {
           doctor_id: string
           height?: string | null
           id?: string
+          left_eye_vision?: string | null
           next_visit_date?: string | null
           next_visit_notes?: string | null
           pain_scale?: number | null
           patient_history?: string | null
           patient_id: string
           pulse?: string | null
+          right_eye_vision?: string | null
           temperature?: string | null
           test_reports?: string | null
           updated_at?: string
@@ -1445,12 +1449,14 @@ export type Database = {
           doctor_id?: string
           height?: string | null
           id?: string
+          left_eye_vision?: string | null
           next_visit_date?: string | null
           next_visit_notes?: string | null
           pain_scale?: number | null
           patient_history?: string | null
           patient_id?: string
           pulse?: string | null
+          right_eye_vision?: string | null
           temperature?: string | null
           test_reports?: string | null
           updated_at?: string
