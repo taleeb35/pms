@@ -60,6 +60,8 @@ import ClinicProfile from "./pages/ClinicProfile";
 import ClinicTemplates from "./pages/ClinicTemplates";
 import ClinicDoctorSchedules from "./pages/ClinicDoctorSchedules";
 import ReceptionistDashboard from "./pages/ReceptionistDashboard";
+import KnowledgeBase from "./pages/KnowledgeBase";
+import KnowledgeBaseArticle from "./pages/KnowledgeBaseArticle";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -76,6 +78,8 @@ const App = () => (
           <Route path="/features" element={<Features />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/knowledge-base" element={<KnowledgeBase />} />
+          <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />
           <Route path="/auth" element={<Auth />} />
