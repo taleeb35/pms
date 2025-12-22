@@ -30,6 +30,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import clinicLogo from "@/assets/clinic-logo.png";
+
+const pakistanCities = [
+  "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",
+  "Multan", "Gujranwala", "Peshawar", "Quetta", "Sialkot",
+  "Sargodha", "Bahawalpur", "Sukkur", "Larkana", "Hyderabad",
+  "Mardan", "Mingora", "Abbottabad", "Dera Ghazi Khan", "Sahiwal",
+  "Nawabshah", "Jhang", "Rahim Yar Khan", "Kasur", "Gujrat",
+  "Sheikhupura", "Dera Ismail Khan", "Mirpur Khas", "Okara", "Chiniot",
+  "Kamoke", "Mandi Bahauddin", "Jhelum", "Sadiqabad", "Jacobabad",
+  "Shikarpur", "Khanewal", "Hafizabad", "Kohat", "Muzaffargarh",
+  "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari"
+].sort();
 import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +70,7 @@ const DoctorAuth = () => {
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [specializations, setSpecializations] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
+  const cities = pakistanCities;
   const [specializationOpen, setSpecializationOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [monthlyFee, setMonthlyFee] = useState<number>(0);
@@ -76,22 +88,7 @@ const DoctorAuth = () => {
         setSpecializations(uniqueSpecs);
       }
 
-      // Fetch cities from doctors and clinics
-      const { data: doctorCities } = await supabase
-        .from("doctors")
-        .select("city")
-        .not("city", "is", null);
-      
-      const { data: clinicCities } = await supabase
-        .from("clinics")
-        .select("city");
-
-      const allCities = [
-        ...(doctorCities?.map(d => d.city) || []),
-        ...(clinicCities?.map(c => c.city) || [])
-      ].filter(Boolean);
-      const uniqueCities = [...new Set(allCities)].sort();
-      setCities(uniqueCities);
+      // Cities are now using the predefined pakistanCities list
 
       // Fetch monthly fee from system settings
       const { data: feeData } = await supabase
