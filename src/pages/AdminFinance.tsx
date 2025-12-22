@@ -86,18 +86,18 @@ const AdminFinance = () => {
     const { data } = await supabase
       .from("system_settings")
       .select("key, value")
-      .in("key", ["doctor_monthly_fee", "single_doctor_fee"]);
+      .in("key", ["doctor_monthly_fee", "single_doctor_monthly_fee"]);
 
     if (data) {
       data.forEach(setting => {
         if (setting.key === "doctor_monthly_fee") {
           setDoctorMonthlyFee(parseFloat(setting.value) || 0);
-        } else if (setting.key === "single_doctor_fee") {
+        } else if (setting.key === "single_doctor_monthly_fee") {
           setSingleDoctorFee(parseFloat(setting.value) || 0);
         }
       });
       // Default single doctor fee to same as clinic doctor fee if not set
-      if (!data.find(s => s.key === "single_doctor_fee")) {
+      if (!data.find(s => s.key === "single_doctor_monthly_fee")) {
         const clinicFee = data.find(s => s.key === "doctor_monthly_fee");
         if (clinicFee) {
           setSingleDoctorFee(parseFloat(clinicFee.value) || 0);

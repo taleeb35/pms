@@ -10,8 +10,10 @@ import { Mail, DollarSign, Trash2, Loader2 } from "lucide-react";
 const AdminSettings = () => {
   const [supportEmail, setSupportEmail] = useState("");
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState("");
+  const [singleDoctorMonthlyFee, setSingleDoctorMonthlyFee] = useState("");
   const [loading, setLoading] = useState(false);
   const [savingFee, setSavingFee] = useState(false);
+  const [savingSingleDoctorFee, setSavingSingleDoctorFee] = useState(false);
   const [cleaningUp, setCleaningUp] = useState(false);
   const { toast } = useToast();
 
@@ -40,6 +42,17 @@ const AdminSettings = () => {
 
     if (feeData) {
       setDoctorMonthlyFee(feeData.value);
+    }
+
+    // Fetch single doctor monthly fee
+    const { data: singleFeeData } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "single_doctor_monthly_fee")
+      .maybeSingle();
+
+    if (singleFeeData) {
+      setSingleDoctorMonthlyFee(singleFeeData.value);
     }
   };
 
@@ -106,6 +119,42 @@ const AdminSettings = () => {
     });
   };
 
+  const handleSaveSingleDoctorFee = async () => {
+    if (!singleDoctorMonthlyFee || isNaN(Number(singleDoctorMonthlyFee))) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid fee amount",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavingSingleDoctorFee(true);
+    const { error } = await supabase
+      .from("system_settings")
+      .upsert({
+        key: "single_doctor_monthly_fee",
+        value: singleDoctorMonthlyFee,
+        updated_at: new Date().toISOString(),
+      });
+
+    setSavingSingleDoctorFee(false);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update single doctor monthly fee",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Single doctor monthly fee updated successfully",
+    });
+  };
+
   const handleCleanupOrphanedUsers = async () => {
     setCleaningUp(true);
     try {
@@ -163,6 +212,38 @@ const AdminSettings = () => {
           </div>
           <Button onClick={handleSaveFee} disabled={savingFee}>
             {savingFee ? "Saving..." : "Save Fee"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Single Doctor Monthly Fee
+          </CardTitle>
+          <CardDescription>
+            Set the monthly fee for single doctors (not affiliated with any clinic).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="single-doctor-fee">Monthly Fee Per Single Doctor (PKR)</Label>
+            <Input
+              id="single-doctor-fee"
+              type="number"
+              placeholder="6000"
+              value={singleDoctorMonthlyFee}
+              onChange={(e) => setSingleDoctorMonthlyFee(e.target.value)}
+            />
+            {singleDoctorMonthlyFee && !isNaN(Number(singleDoctorMonthlyFee)) && (
+              <p className="text-sm text-muted-foreground">
+                Single doctors will pay PKR {Number(singleDoctorMonthlyFee).toLocaleString()} per month
+              </p>
+            )}
+          </div>
+          <Button onClick={handleSaveSingleDoctorFee} disabled={savingSingleDoctorFee}>
+            {savingSingleDoctorFee ? "Saving..." : "Save Fee"}
           </Button>
         </CardContent>
       </Card>
