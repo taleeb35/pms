@@ -350,14 +350,18 @@ const AdminFinance = () => {
   };
 
   // Combined statistics
+  const clinicTotalAmount = clinicPayments.reduce((sum, p) => sum + p.amount, 0);
   const clinicPendingAmount = clinicPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
   const clinicPaidAmount = clinicPayments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
+  
+  const doctorTotalAmount = doctorPayments.reduce((sum, p) => sum + p.amount, 0);
   const doctorPendingAmount = doctorPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
   const doctorPaidAmount = doctorPayments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
   
-  const totalEstimated = clinicPayments.reduce((sum, p) => sum + p.amount, 0) + doctorPayments.reduce((sum, p) => sum + p.amount, 0);
-  const totalPaid = clinicPaidAmount + doctorPaidAmount;
-  const totalPending = clinicPendingAmount + doctorPendingAmount;
+  // Tab-specific totals
+  const displayEstimated = activeTab === "clinics" ? clinicTotalAmount : doctorTotalAmount;
+  const displayPaid = activeTab === "clinics" ? clinicPaidAmount : doctorPaidAmount;
+  const displayPending = activeTab === "clinics" ? clinicPendingAmount : doctorPendingAmount;
 
   // Filter clinic payments
   const filteredClinicPayments = clinicPayments.filter((payment) => {
@@ -411,7 +415,7 @@ const AdminFinance = () => {
             <Banknote className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{totalEstimated.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-primary">{displayEstimated.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -422,7 +426,7 @@ const AdminFinance = () => {
             <CheckCircle2 className="h-5 w-5 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-success">{totalPaid.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-success">{displayPaid.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -433,7 +437,7 @@ const AdminFinance = () => {
             <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-600">{totalPending.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-amber-600">{displayPending.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
