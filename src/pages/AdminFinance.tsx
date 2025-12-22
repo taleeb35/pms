@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Banknote, CheckCircle2, Clock, Building2, Calendar, RefreshCw, Users, Search } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Banknote, CheckCircle2, Clock, Building2, Calendar, RefreshCw, Users, Search, Stethoscope } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { format, startOfMonth, subMonths, addMonths } from "date-fns";
+import { format, startOfMonth, subMonths } from "date-fns";
 
 interface ClinicPayment {
   id: string;
@@ -29,15 +30,37 @@ interface ClinicPayment {
   };
 }
 
+interface DoctorPayment {
+  id: string;
+  doctor_id: string;
+  month: string;
+  amount: number;
+  status: string;
+  payment_date: string | null;
+  notes: string | null;
+  doctor: {
+    profiles: {
+      full_name: string;
+      email: string;
+      phone: string | null;
+    };
+    specialization: string;
+    city: string | null;
+  };
+}
+
 const AdminFinance = () => {
-  const [payments, setPayments] = useState<ClinicPayment[]>([]);
+  const [clinicPayments, setClinicPayments] = useState<ClinicPayment[]>([]);
+  const [doctorPayments, setDoctorPayments] = useState<DoctorPayment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState<string>(format(startOfMonth(new Date()), "yyyy-MM-dd"));
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
+  const [singleDoctorFee, setSingleDoctorFee] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<string>("clinics");
   const { toast } = useToast();
 
   // Generate last 12 months for dropdown
@@ -50,31 +73,51 @@ const AdminFinance = () => {
   });
 
   useEffect(() => {
-    fetchDoctorFee();
+    fetchSystemSettings();
   }, []);
 
   useEffect(() => {
-    if (doctorMonthlyFee > 0) {
+    if (doctorMonthlyFee > 0 || singleDoctorFee > 0) {
       fetchPayments();
     }
-  }, [selectedMonth, doctorMonthlyFee]);
+  }, [selectedMonth, doctorMonthlyFee, singleDoctorFee]);
 
-  const fetchDoctorFee = async () => {
+  const fetchSystemSettings = async () => {
     const { data } = await supabase
       .from("system_settings")
-      .select("value")
-      .eq("key", "doctor_monthly_fee")
-      .single();
+      .select("key, value")
+      .in("key", ["doctor_monthly_fee", "single_doctor_fee"]);
 
     if (data) {
-      setDoctorMonthlyFee(parseFloat(data.value) || 0);
+      data.forEach(setting => {
+        if (setting.key === "doctor_monthly_fee") {
+          setDoctorMonthlyFee(parseFloat(setting.value) || 0);
+        } else if (setting.key === "single_doctor_fee") {
+          setSingleDoctorFee(parseFloat(setting.value) || 0);
+        }
+      });
+      // Default single doctor fee to same as clinic doctor fee if not set
+      if (!data.find(s => s.key === "single_doctor_fee")) {
+        const clinicFee = data.find(s => s.key === "doctor_monthly_fee");
+        if (clinicFee) {
+          setSingleDoctorFee(parseFloat(clinicFee.value) || 0);
+        }
+      }
     }
   };
 
   const fetchPayments = async () => {
     setLoading(true);
     try {
-      // First, get all active clinics with created_at
+      await Promise.all([fetchClinicPayments(), fetchDoctorPayments()]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchClinicPayments = async () => {
+    try {
+      // Get all active clinics
       const { data: clinics, error: clinicsError } = await supabase
         .from("clinics")
         .select(`
@@ -88,10 +131,10 @@ const AdminFinance = () => {
 
       if (clinicsError) throw clinicsError;
 
-      // Filter clinics: only include clinics registered on or before the selected month
+      // Filter clinics registered before selected month
       const selectedMonthEnd = new Date(selectedMonth);
       selectedMonthEnd.setMonth(selectedMonthEnd.getMonth() + 1);
-      selectedMonthEnd.setDate(0); // Last day of selected month
+      selectedMonthEnd.setDate(0);
       
       const eligibleClinics = (clinics || []).filter(clinic => {
         const clinicCreatedAt = new Date(clinic.created_at);
@@ -106,13 +149,11 @@ const AdminFinance = () => {
 
       if (paymentsError) throw paymentsError;
 
-      // Create payment records for clinics that don't have one for this month
       const paymentsMap = new Map(existingPayments?.map(p => [p.clinic_id, p]) || []);
       
       const allPayments: ClinicPayment[] = [];
       
       for (const clinic of eligibleClinics) {
-        // Get actual doctor count for this clinic
         const { count: doctorCount } = await supabase
           .from("doctors")
           .select("id", { count: "exact", head: true })
@@ -126,7 +167,6 @@ const AdminFinance = () => {
             clinic: clinic as any,
           });
         } else {
-          // Create new payment record
           const amount = (doctorCount || 0) * doctorMonthlyFee;
           const { data: newPayment, error: insertError } = await supabase
             .from("clinic_payments")
@@ -149,19 +189,96 @@ const AdminFinance = () => {
         }
       }
 
-      setPayments(allPayments);
+      setClinicPayments(allPayments);
     } catch (error: any) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
-  const updatePaymentStatus = async (paymentId: string, clinicId: string, status: string) => {
+  const fetchDoctorPayments = async () => {
+    try {
+      // Get all single doctors (without clinic)
+      const { data: doctors, error: doctorsError } = await supabase
+        .from("doctors")
+        .select(`
+          id,
+          specialization,
+          city,
+          created_at,
+          profiles(full_name, email, phone)
+        `)
+        .is("clinic_id", null)
+        .eq("approved", true);
+
+      if (doctorsError) throw doctorsError;
+
+      // Filter doctors registered before selected month
+      const selectedMonthEnd = new Date(selectedMonth);
+      selectedMonthEnd.setMonth(selectedMonthEnd.getMonth() + 1);
+      selectedMonthEnd.setDate(0);
+      
+      const eligibleDoctors = (doctors || []).filter(doctor => {
+        const doctorCreatedAt = new Date(doctor.created_at);
+        return doctorCreatedAt <= selectedMonthEnd;
+      });
+
+      // Fetch existing payments for selected month
+      const { data: existingPayments, error: paymentsError } = await supabase
+        .from("doctor_payments")
+        .select("*")
+        .eq("month", selectedMonth);
+
+      if (paymentsError) throw paymentsError;
+
+      const paymentsMap = new Map(existingPayments?.map(p => [p.doctor_id, p]) || []);
+      
+      const allPayments: DoctorPayment[] = [];
+      
+      for (const doctor of eligibleDoctors) {
+        const existingPayment = paymentsMap.get(doctor.id);
+        
+        if (existingPayment) {
+          allPayments.push({
+            ...existingPayment,
+            doctor: doctor as any,
+          });
+        } else {
+          const amount = singleDoctorFee || doctorMonthlyFee;
+          const { data: newPayment, error: insertError } = await supabase
+            .from("doctor_payments")
+            .insert({
+              doctor_id: doctor.id,
+              month: selectedMonth,
+              amount,
+              status: "pending",
+            })
+            .select()
+            .single();
+
+          if (!insertError && newPayment) {
+            allPayments.push({
+              ...newPayment,
+              doctor: doctor as any,
+            });
+          }
+        }
+      }
+
+      setDoctorPayments(allPayments);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateClinicPaymentStatus = async (paymentId: string, clinicId: string, status: string) => {
     try {
       const updateData: any = { status };
       if (status === "paid") {
@@ -177,7 +294,6 @@ const AdminFinance = () => {
 
       if (error) throw error;
 
-      // Also sync with clinics.fee_status for current month
       const currentMonth = format(startOfMonth(new Date()), "yyyy-MM-dd");
       if (selectedMonth === currentMonth) {
         const feeStatus = status === "paid" ? "paid" : "unpaid";
@@ -202,18 +318,50 @@ const AdminFinance = () => {
     }
   };
 
-  const totalPending = payments.filter(p => p.status === "pending").length;
-  const totalPaid = payments.filter(p => p.status === "paid").length;
-  const pendingAmount = payments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
-  const paidAmount = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
-  const totalEarnings = payments.reduce((sum, p) => sum + p.amount, 0);
+  const updateDoctorPaymentStatus = async (paymentId: string, status: string) => {
+    try {
+      const updateData: any = { status };
+      if (status === "paid") {
+        updateData.payment_date = new Date().toISOString();
+      } else {
+        updateData.payment_date = null;
+      }
 
-  // Filter payments by search query and status
-  const filteredPayments = payments.filter((payment) => {
-    // Status filter
+      const { error } = await supabase
+        .from("doctor_payments")
+        .update(updateData)
+        .eq("id", paymentId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Payment marked as ${status}`,
+      });
+
+      fetchPayments();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Combined statistics
+  const clinicPendingAmount = clinicPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
+  const clinicPaidAmount = clinicPayments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
+  const doctorPendingAmount = doctorPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
+  const doctorPaidAmount = doctorPayments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
+  
+  const totalEstimated = clinicPayments.reduce((sum, p) => sum + p.amount, 0) + doctorPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalPaid = clinicPaidAmount + doctorPaidAmount;
+  const totalPending = clinicPendingAmount + doctorPendingAmount;
+
+  // Filter clinic payments
+  const filteredClinicPayments = clinicPayments.filter((payment) => {
     if (statusFilter !== "all" && payment.status !== statusFilter) return false;
-    
-    // Search filter
     if (!searchQuery.trim()) return true;
     const query = searchQuery.toLowerCase();
     const clinicName = payment.clinic?.clinic_name?.toLowerCase() || "";
@@ -222,9 +370,21 @@ const AdminFinance = () => {
     return clinicName.includes(query) || email.includes(query) || phone.includes(query);
   });
 
-  // Pagination
-  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
-  const paginatedPayments = filteredPayments.slice(
+  // Filter doctor payments
+  const filteredDoctorPayments = doctorPayments.filter((payment) => {
+    if (statusFilter !== "all" && payment.status !== statusFilter) return false;
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const doctorName = payment.doctor?.profiles?.full_name?.toLowerCase() || "";
+    const email = payment.doctor?.profiles?.email?.toLowerCase() || "";
+    const phone = payment.doctor?.profiles?.phone?.toLowerCase() || "";
+    return doctorName.includes(query) || email.includes(query) || phone.includes(query);
+  });
+
+  // Pagination for active tab
+  const currentPayments = activeTab === "clinics" ? filteredClinicPayments : filteredDoctorPayments;
+  const totalPages = Math.ceil(currentPayments.length / itemsPerPage);
+  const paginatedPayments = currentPayments.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -235,7 +395,7 @@ const AdminFinance = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Payment Tracking</h1>
-          <p className="text-muted-foreground">Track monthly payments from clinics</p>
+          <p className="text-muted-foreground">Track monthly payments from clinics and single doctors</p>
         </div>
         <Button onClick={fetchPayments} variant="outline" className="gap-2">
           <RefreshCw className="h-4 w-4" />
@@ -251,7 +411,7 @@ const AdminFinance = () => {
             <Banknote className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{totalEarnings.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-primary">{totalEstimated.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -262,7 +422,7 @@ const AdminFinance = () => {
             <CheckCircle2 className="h-5 w-5 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-success">{paidAmount.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-success">{totalPaid.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -273,7 +433,7 @@ const AdminFinance = () => {
             <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-600">{pendingAmount.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-amber-600">{totalPending.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -302,7 +462,7 @@ const AdminFinance = () => {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by clinic name, email, phone..."
+                placeholder="Search by name, email, phone..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                 className="pl-9"
@@ -341,129 +501,233 @@ const AdminFinance = () => {
         </CardContent>
       </Card>
 
-      {/* Payments Table */}
-      <Card className="border-border/40">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Banknote className="h-5 w-5" />
-            Clinic Payments - {format(new Date(selectedMonth), "MMMM yyyy")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="text-center py-8 text-muted-foreground">Loading payments...</div>
-          ) : filteredPayments.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {searchQuery ? "No clinics match your search" : "No active clinics found"}
-            </div>
-          ) : (
-            <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Clinic Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead className="text-center">Doctors</TableHead>
-                      <TableHead className="text-right">Amount</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead>Payment Date</TableHead>
-                      <TableHead className="text-center">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedPayments.map((payment) => (
-                      <TableRow key={payment.id} className="hover:bg-accent/30">
-                        <TableCell className="font-medium">{payment.clinic?.clinic_name || "N/A"}</TableCell>
-                        <TableCell className="text-muted-foreground">{payment.clinic?.profiles?.email || "N/A"}</TableCell>
-                        <TableCell className="text-muted-foreground">{payment.clinic?.profiles?.phone || "N/A"}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className="gap-1">
-                            <Users className="h-3 w-3" />
-                            {payment.doctor_count}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">{payment.amount.toLocaleString()}</TableCell>
-                        <TableCell className="text-center">
-                          {payment.status === "paid" ? (
-                            <Badge className="bg-success/10 text-success border-success/20 gap-1">
-                              <CheckCircle2 className="h-3 w-3" />
-                              Paid
-                            </Badge>
-                          ) : (
-                            <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 gap-1">
-                              <Clock className="h-3 w-3" />
-                              Pending
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {payment.payment_date 
-                            ? format(new Date(payment.payment_date), "MMM dd, yyyy")
-                            : "-"
-                          }
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {payment.status === "pending" ? (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="gap-1 text-success hover:text-success hover:bg-success/10"
-                              onClick={() => updatePaymentStatus(payment.id, payment.clinic_id, "paid")}
-                            >
-                              <CheckCircle2 className="h-3 w-3" />
-                              Mark Paid
-                            </Button>
-                          ) : (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="gap-1 text-amber-600 hover:text-amber-600 hover:bg-amber-500/10"
-                              onClick={() => updatePaymentStatus(payment.id, payment.clinic_id, "pending")}
-                            >
-                              <Clock className="h-3 w-3" />
-                              Mark Pending
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+      {/* Payments Tabs */}
+      <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setCurrentPage(1); }}>
+        <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsTrigger value="clinics" className="gap-2">
+            <Building2 className="h-4 w-4" />
+            Clinics ({clinicPayments.length})
+          </TabsTrigger>
+          <TabsTrigger value="doctors" className="gap-2">
+            <Stethoscope className="h-4 w-4" />
+            Single Doctors ({doctorPayments.length})
+          </TabsTrigger>
+        </TabsList>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredPayments.length)} of {filteredPayments.length} clinics
-                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, payments.length)} of {payments.length} clinics
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                    </Button>
-                  </div>
+        <TabsContent value="clinics">
+          <Card className="border-border/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                Clinic Payments - {format(new Date(selectedMonth), "MMMM yyyy")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">Loading payments...</div>
+              ) : filteredClinicPayments.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {searchQuery ? "No clinics match your search" : "No active clinics found"}
                 </div>
+              ) : (
+                <>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Clinic Name</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Phone</TableHead>
+                          <TableHead className="text-center">Doctors</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
+                          <TableHead className="text-center">Status</TableHead>
+                          <TableHead>Payment Date</TableHead>
+                          <TableHead className="text-center">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(paginatedPayments as ClinicPayment[]).map((payment) => (
+                          <TableRow key={payment.id} className="hover:bg-accent/30">
+                            <TableCell className="font-medium">{payment.clinic?.clinic_name || "N/A"}</TableCell>
+                            <TableCell className="text-muted-foreground">{payment.clinic?.profiles?.email || "N/A"}</TableCell>
+                            <TableCell className="text-muted-foreground">{payment.clinic?.profiles?.phone || "N/A"}</TableCell>
+                            <TableCell className="text-center">
+                              <Badge variant="outline" className="gap-1">
+                                <Users className="h-3 w-3" />
+                                {payment.doctor_count}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">{payment.amount.toLocaleString()}</TableCell>
+                            <TableCell className="text-center">
+                              {payment.status === "paid" ? (
+                                <Badge className="bg-success/10 text-success border-success/20 gap-1">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Paid
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  Pending
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {payment.payment_date 
+                                ? format(new Date(payment.payment_date), "MMM dd, yyyy")
+                                : "-"
+                              }
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {payment.status === "pending" ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1 text-success hover:text-success hover:bg-success/10"
+                                  onClick={() => updateClinicPaymentStatus(payment.id, payment.clinic_id, "paid")}
+                                >
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Mark Paid
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1 text-amber-600 hover:text-amber-600 hover:bg-amber-500/10"
+                                  onClick={() => updateClinicPaymentStatus(payment.id, payment.clinic_id, "pending")}
+                                >
+                                  <Clock className="h-3 w-3" />
+                                  Mark Pending
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </>
               )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="doctors">
+          <Card className="border-border/40">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Stethoscope className="h-5 w-5" />
+                Single Doctor Payments - {format(new Date(selectedMonth), "MMMM yyyy")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">Loading payments...</div>
+              ) : filteredDoctorPayments.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {searchQuery ? "No doctors match your search" : "No single doctors found"}
+                </div>
+              ) : (
+                <>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Doctor Name</TableHead>
+                          <TableHead>Specialization</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>City</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
+                          <TableHead className="text-center">Status</TableHead>
+                          <TableHead>Payment Date</TableHead>
+                          <TableHead className="text-center">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {(paginatedPayments as DoctorPayment[]).map((payment) => (
+                          <TableRow key={payment.id} className="hover:bg-accent/30">
+                            <TableCell className="font-medium">{payment.doctor?.profiles?.full_name || "N/A"}</TableCell>
+                            <TableCell className="text-muted-foreground">{payment.doctor?.specialization || "N/A"}</TableCell>
+                            <TableCell className="text-muted-foreground">{payment.doctor?.profiles?.email || "N/A"}</TableCell>
+                            <TableCell className="text-muted-foreground">{payment.doctor?.city || "N/A"}</TableCell>
+                            <TableCell className="text-right font-semibold">{payment.amount.toLocaleString()}</TableCell>
+                            <TableCell className="text-center">
+                              {payment.status === "paid" ? (
+                                <Badge className="bg-success/10 text-success border-success/20 gap-1">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Paid
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20 gap-1">
+                                  <Clock className="h-3 w-3" />
+                                  Pending
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {payment.payment_date 
+                                ? format(new Date(payment.payment_date), "MMM dd, yyyy")
+                                : "-"
+                              }
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {payment.status === "pending" ? (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1 text-success hover:text-success hover:bg-success/10"
+                                  onClick={() => updateDoctorPaymentStatus(payment.id, "paid")}
+                                >
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Mark Paid
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="gap-1 text-amber-600 hover:text-amber-600 hover:bg-amber-500/10"
+                                  onClick={() => updateDoctorPaymentStatus(payment.id, "pending")}
+                                >
+                                  <Clock className="h-3 w-3" />
+                                  Mark Pending
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <span className="text-sm">
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

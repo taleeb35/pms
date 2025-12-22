@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon, TrendingUp, Banknote, Building2 } from "lucide-react";
+import { CalendarIcon, TrendingUp, Banknote, Building2, Stethoscope } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Chart as ChartJS,
@@ -39,23 +39,27 @@ ChartJS.register(
 
 interface PaymentData {
   month: string;
-  amount: number;
-  status: string;
+  clinicAmount: number;
+  doctorAmount: number;
+  totalAmount: number;
 }
 
-interface ClinicRevenue {
-  clinicId: string;
-  clinicName: string;
+interface SourceRevenue {
+  sourceId: string;
+  sourceName: string;
+  sourceType: 'clinic' | 'doctor';
   totalRevenue: number;
 }
 
 const AdminAnalyticsCharts = () => {
   const [revenueData, setRevenueData] = useState<PaymentData[]>([]);
-  const [clinicRevenueData, setClinicRevenueData] = useState<ClinicRevenue[]>([]);
+  const [sourceRevenueData, setSourceRevenueData] = useState<SourceRevenue[]>([]);
   const [datePeriod, setDatePeriod] = useState("all");
   const [customStartDate, setCustomStartDate] = useState<Date | undefined>();
   const [customEndDate, setCustomEndDate] = useState<Date | undefined>();
   const [loading, setLoading] = useState(true);
+  const [totalClinicRevenue, setTotalClinicRevenue] = useState(0);
+  const [totalDoctorRevenue, setTotalDoctorRevenue] = useState(0);
 
   useEffect(() => {
     fetchRevenueData();
@@ -91,21 +95,39 @@ const AdminAnalyticsCharts = () => {
       setLoading(true);
       const { startDate, endDate } = getDateRange();
 
-      let query = supabase
+      // Fetch clinic payments
+      let clinicQuery = supabase
         .from("clinic_payments")
         .select("month, amount, status, clinic_id")
         .eq("status", "paid")
         .order("month", { ascending: true });
 
       if (startDate) {
-        query = query.gte("month", format(startDate, "yyyy-MM-dd"));
+        clinicQuery = clinicQuery.gte("month", format(startDate, "yyyy-MM-dd"));
       }
       if (datePeriod !== "all") {
-        query = query.lte("month", format(endDate, "yyyy-MM-dd"));
+        clinicQuery = clinicQuery.lte("month", format(endDate, "yyyy-MM-dd"));
       }
 
-      const { data: paymentsData, error: paymentsError } = await query;
-      if (paymentsError) throw paymentsError;
+      const { data: clinicPayments, error: clinicError } = await clinicQuery;
+      if (clinicError) throw clinicError;
+
+      // Fetch doctor payments
+      let doctorQuery = supabase
+        .from("doctor_payments")
+        .select("month, amount, status, doctor_id")
+        .eq("status", "paid")
+        .order("month", { ascending: true });
+
+      if (startDate) {
+        doctorQuery = doctorQuery.gte("month", format(startDate, "yyyy-MM-dd"));
+      }
+      if (datePeriod !== "all") {
+        doctorQuery = doctorQuery.lte("month", format(endDate, "yyyy-MM-dd"));
+      }
+
+      const { data: doctorPayments, error: doctorError } = await doctorQuery;
+      if (doctorError) throw doctorError;
 
       // Fetch clinics for names
       const { data: clinicsData, error: clinicsError } = await supabase
@@ -113,45 +135,96 @@ const AdminAnalyticsCharts = () => {
         .select("id, clinic_name");
       if (clinicsError) throw clinicsError;
 
+      // Fetch doctors for names
+      const { data: doctorsData, error: doctorsError } = await supabase
+        .from("doctors")
+        .select("id, profiles(full_name)")
+        .is("clinic_id", null);
+      if (doctorsError) throw doctorsError;
+
       const clinicMap = new Map<string, string>();
       (clinicsData || []).forEach(c => clinicMap.set(c.id, c.clinic_name));
 
+      const doctorMap = new Map<string, string>();
+      (doctorsData || []).forEach((d: any) => doctorMap.set(d.id, d.profiles?.full_name || "Unknown Doctor"));
+
       // Group by month for trend chart
-      const grouped: { [key: string]: number } = {};
-      (paymentsData || []).forEach(payment => {
+      const grouped: { [key: string]: { clinic: number; doctor: number } } = {};
+      
+      (clinicPayments || []).forEach(payment => {
         if (payment.month) {
           const monthKey = format(new Date(payment.month), "yyyy-MM");
-          grouped[monthKey] = (grouped[monthKey] || 0) + (payment.amount || 0);
+          if (!grouped[monthKey]) grouped[monthKey] = { clinic: 0, doctor: 0 };
+          grouped[monthKey].clinic += (payment.amount || 0);
+        }
+      });
+
+      (doctorPayments || []).forEach(payment => {
+        if (payment.month) {
+          const monthKey = format(new Date(payment.month), "yyyy-MM");
+          if (!grouped[monthKey]) grouped[monthKey] = { clinic: 0, doctor: 0 };
+          grouped[monthKey].doctor += (payment.amount || 0);
         }
       });
 
       const result = Object.entries(grouped)
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([month, amount]) => ({ 
+        .map(([month, amounts]) => ({ 
           month, 
-          amount, 
-          status: "paid" 
+          clinicAmount: amounts.clinic,
+          doctorAmount: amounts.doctor,
+          totalAmount: amounts.clinic + amounts.doctor,
         }));
 
       setRevenueData(result);
 
-      // Group by clinic for breakdown chart
+      // Calculate totals
+      const clinicTotal = (clinicPayments || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+      const doctorTotal = (doctorPayments || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+      setTotalClinicRevenue(clinicTotal);
+      setTotalDoctorRevenue(doctorTotal);
+
+      // Group by source for breakdown chart
+      const sourceGrouped: SourceRevenue[] = [];
+      
+      // Clinic revenues
       const clinicGrouped: { [key: string]: number } = {};
-      (paymentsData || []).forEach(payment => {
+      (clinicPayments || []).forEach(payment => {
         if (payment.clinic_id) {
           clinicGrouped[payment.clinic_id] = (clinicGrouped[payment.clinic_id] || 0) + (payment.amount || 0);
         }
       });
 
-      const clinicResult = Object.entries(clinicGrouped)
-        .map(([clinicId, totalRevenue]) => ({
-          clinicId,
-          clinicName: clinicMap.get(clinicId) || "Unknown Clinic",
+      Object.entries(clinicGrouped).forEach(([clinicId, totalRevenue]) => {
+        sourceGrouped.push({
+          sourceId: clinicId,
+          sourceName: clinicMap.get(clinicId) || "Unknown Clinic",
+          sourceType: 'clinic',
           totalRevenue,
-        }))
-        .sort((a, b) => b.totalRevenue - a.totalRevenue);
+        });
+      });
 
-      setClinicRevenueData(clinicResult);
+      // Doctor revenues
+      const doctorGrouped: { [key: string]: number } = {};
+      (doctorPayments || []).forEach(payment => {
+        if (payment.doctor_id) {
+          doctorGrouped[payment.doctor_id] = (doctorGrouped[payment.doctor_id] || 0) + (payment.amount || 0);
+        }
+      });
+
+      Object.entries(doctorGrouped).forEach(([doctorId, totalRevenue]) => {
+        sourceGrouped.push({
+          sourceId: doctorId,
+          sourceName: `Dr. ${doctorMap.get(doctorId) || "Unknown"}`,
+          sourceType: 'doctor',
+          totalRevenue,
+        });
+      });
+
+      // Sort by revenue
+      sourceGrouped.sort((a, b) => b.totalRevenue - a.totalRevenue);
+
+      setSourceRevenueData(sourceGrouped);
     } catch (error) {
       console.error("Error fetching revenue:", error);
     } finally {
@@ -159,44 +232,56 @@ const AdminAnalyticsCharts = () => {
     }
   };
 
-  // Revenue Chart Data
+  // Revenue Chart Data with both clinic and doctor
   const getRevenueChartData = () => {
     return {
       labels: revenueData.map(d => format(new Date(d.month + "-01"), "MMM yyyy")),
-      datasets: [{
-        label: 'Revenue',
-        data: revenueData.map(d => d.amount),
-        fill: true,
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-        borderColor: 'rgba(99, 102, 241, 1)',
-        borderWidth: 3,
-        tension: 0.4,
-        pointBackgroundColor: 'rgba(99, 102, 241, 1)',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-      }],
+      datasets: [
+        {
+          label: 'Total Revenue',
+          data: revenueData.map(d => d.totalAmount),
+          fill: true,
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderColor: 'rgba(99, 102, 241, 1)',
+          borderWidth: 3,
+          tension: 0.4,
+          pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+      ],
     };
   };
 
-  const getBarChartData = () => {
+  const getStackedBarChartData = () => {
     return {
       labels: revenueData.map(d => format(new Date(d.month + "-01"), "MMM yyyy")),
-      datasets: [{
-        label: 'Revenue',
-        data: revenueData.map(d => d.amount),
-        backgroundColor: 'rgba(16, 185, 129, 0.7)',
-        borderColor: 'rgba(16, 185, 129, 1)',
-        borderWidth: 2,
-        borderRadius: 8,
-      }],
+      datasets: [
+        {
+          label: 'Clinics',
+          data: revenueData.map(d => d.clinicAmount),
+          backgroundColor: 'rgba(16, 185, 129, 0.7)',
+          borderColor: 'rgba(16, 185, 129, 1)',
+          borderWidth: 2,
+          borderRadius: 4,
+        },
+        {
+          label: 'Single Doctors',
+          data: revenueData.map(d => d.doctorAmount),
+          backgroundColor: 'rgba(99, 102, 241, 0.7)',
+          borderColor: 'rgba(99, 102, 241, 1)',
+          borderWidth: 2,
+          borderRadius: 4,
+        },
+      ],
     };
   };
 
-  const clinicColors = [
-    'rgba(99, 102, 241, 0.8)',
+  const sourceColors = [
     'rgba(16, 185, 129, 0.8)',
+    'rgba(99, 102, 241, 0.8)',
     'rgba(245, 158, 11, 0.8)',
     'rgba(239, 68, 68, 0.8)',
     'rgba(168, 85, 247, 0.8)',
@@ -207,28 +292,36 @@ const AdminAnalyticsCharts = () => {
     'rgba(139, 92, 246, 0.8)',
   ];
 
-  const getClinicDoughnutData = () => {
-    const top10 = clinicRevenueData.slice(0, 10);
+  const getSourceDoughnutData = () => {
+    const top10 = sourceRevenueData.slice(0, 10);
     return {
-      labels: top10.map(d => d.clinicName),
+      labels: top10.map(d => d.sourceName),
       datasets: [{
         data: top10.map(d => d.totalRevenue),
-        backgroundColor: clinicColors.slice(0, top10.length),
-        borderColor: clinicColors.slice(0, top10.length).map(c => c.replace('0.8', '1')),
+        backgroundColor: top10.map((d, i) => 
+          d.sourceType === 'clinic' ? 'rgba(16, 185, 129, 0.8)' : 'rgba(99, 102, 241, 0.8)'
+        ),
+        borderColor: top10.map((d, i) => 
+          d.sourceType === 'clinic' ? 'rgba(16, 185, 129, 1)' : 'rgba(99, 102, 241, 1)'
+        ),
         borderWidth: 2,
       }],
     };
   };
 
-  const getClinicBarData = () => {
-    const top10 = clinicRevenueData.slice(0, 10);
+  const getSourceBarData = () => {
+    const top10 = sourceRevenueData.slice(0, 10);
     return {
-      labels: top10.map(d => d.clinicName.length > 15 ? d.clinicName.substring(0, 15) + '...' : d.clinicName),
+      labels: top10.map(d => d.sourceName.length > 15 ? d.sourceName.substring(0, 15) + '...' : d.sourceName),
       datasets: [{
         label: 'Revenue',
         data: top10.map(d => d.totalRevenue),
-        backgroundColor: clinicColors.slice(0, top10.length),
-        borderColor: clinicColors.slice(0, top10.length).map(c => c.replace('0.8', '1')),
+        backgroundColor: top10.map(d => 
+          d.sourceType === 'clinic' ? 'rgba(16, 185, 129, 0.8)' : 'rgba(99, 102, 241, 0.8)'
+        ),
+        borderColor: top10.map(d => 
+          d.sourceType === 'clinic' ? 'rgba(16, 185, 129, 1)' : 'rgba(99, 102, 241, 1)'
+        ),
         borderWidth: 2,
         borderRadius: 8,
       }],
@@ -253,6 +346,7 @@ const AdminAnalyticsCharts = () => {
     scales: {
       y: {
         beginAtZero: true,
+        stacked: false,
         grid: {
           color: 'rgba(0, 0, 0, 0.05)',
         },
@@ -263,6 +357,44 @@ const AdminAnalyticsCharts = () => {
         }
       },
       x: {
+        stacked: false,
+        grid: {
+          display: false,
+        },
+      },
+    },
+  };
+
+  const stackedBarOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          font: {
+            size: 12,
+          },
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        stacked: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        },
+        ticks: {
+          callback: function(value: any) {
+            return 'PKR ' + value.toLocaleString();
+          }
+        }
+      },
+      x: {
+        stacked: true,
         grid: {
           display: false,
         },
@@ -326,7 +458,7 @@ const AdminAnalyticsCharts = () => {
     },
   };
 
-  const totalRevenue = revenueData.reduce((sum, d) => sum + d.amount, 0);
+  const totalRevenue = totalClinicRevenue + totalDoctorRevenue;
   const avgRevenue = revenueData.length > 0 ? Math.round(totalRevenue / revenueData.length) : 0;
 
   if (loading) {
@@ -424,7 +556,7 @@ const AdminAnalyticsCharts = () => {
         </CardHeader>
         <CardContent>
           {/* Summary Cards */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="p-4 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20">
               <div className="flex items-center gap-2 mb-2">
                 <Banknote className="h-5 w-5 text-primary" />
@@ -434,10 +566,24 @@ const AdminAnalyticsCharts = () => {
             </div>
             <div className="p-4 rounded-xl bg-gradient-to-br from-success/5 to-success/10 border border-success/20">
               <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-5 w-5 text-success" />
+                <Building2 className="h-5 w-5 text-success" />
+                <span className="text-sm text-muted-foreground">From Clinics</span>
+              </div>
+              <p className="text-2xl font-bold text-success">PKR {totalClinicRevenue.toLocaleString()}</p>
+            </div>
+            <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-500/5 to-indigo-500/10 border border-indigo-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Stethoscope className="h-5 w-5 text-indigo-500" />
+                <span className="text-sm text-muted-foreground">From Single Drs</span>
+              </div>
+              <p className="text-2xl font-bold text-indigo-500">PKR {totalDoctorRevenue.toLocaleString()}</p>
+            </div>
+            <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/5 to-amber-500/10 border border-amber-500/20">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="h-5 w-5 text-amber-500" />
                 <span className="text-sm text-muted-foreground">Avg/Month</span>
               </div>
-              <p className="text-2xl font-bold text-success">PKR {avgRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-amber-500">PKR {avgRevenue.toLocaleString()}</p>
             </div>
           </div>
 
@@ -456,9 +602,9 @@ const AdminAnalyticsCharts = () => {
                 </div>
               </div>
               <div className="p-4 rounded-xl border border-border/40 bg-card">
-                <h4 className="font-medium mb-4 text-center">Monthly Revenue</h4>
+                <h4 className="font-medium mb-4 text-center">Revenue by Source (Clinics vs Single Drs)</h4>
                 <div className="h-[300px]">
-                  <Bar data={getBarChartData()} options={chartOptions} />
+                  <Bar data={getStackedBarChartData()} options={stackedBarOptions} />
                 </div>
               </div>
             </div>
@@ -466,32 +612,40 @@ const AdminAnalyticsCharts = () => {
         </CardContent>
       </Card>
 
-      {/* Clinic-wise Revenue Breakdown */}
+      {/* Source-wise Revenue Breakdown */}
       <Card className="border-border/40">
         <CardHeader>
           <CardTitle className="text-xl font-semibold flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
-            Clinic-wise Revenue Breakdown
+            Revenue Breakdown (Clinics & Single Doctors)
           </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            <span className="inline-flex items-center gap-1 mr-4">
+              <span className="w-3 h-3 rounded-full bg-success"></span> Clinics
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="w-3 h-3 rounded-full bg-indigo-500"></span> Single Doctors
+            </span>
+          </p>
         </CardHeader>
         <CardContent>
-          {clinicRevenueData.length === 0 ? (
+          {sourceRevenueData.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>No clinic revenue data available for the selected period</p>
+              <p>No revenue data available for the selected period</p>
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-6">
               <div className="p-4 rounded-xl border border-border/40 bg-card">
                 <h4 className="font-medium mb-4 text-center">Revenue Distribution</h4>
                 <div className="h-[350px]">
-                  <Doughnut data={getClinicDoughnutData()} options={doughnutOptions} />
+                  <Doughnut data={getSourceDoughnutData()} options={doughnutOptions} />
                 </div>
               </div>
               <div className="p-4 rounded-xl border border-border/40 bg-card">
-                <h4 className="font-medium mb-4 text-center">Top 10 Clinics by Revenue</h4>
+                <h4 className="font-medium mb-4 text-center">Top 10 by Revenue</h4>
                 <div className="h-[350px]">
-                  <Bar data={getClinicBarData()} options={horizontalBarOptions} />
+                  <Bar data={getSourceBarData()} options={horizontalBarOptions} />
                 </div>
               </div>
             </div>
