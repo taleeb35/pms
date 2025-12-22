@@ -306,13 +306,28 @@ const ClinicReceptionists = () => {
     
     setFormLoading(true);
     try {
-      // Delete from clinic_receptionists (cascade will handle user_roles through auth.users)
+      const userIdToDelete = selectedReceptionist.user_id;
+      
+      // Delete from clinic_receptionists first
       const { error } = await supabase
         .from("clinic_receptionists")
         .delete()
         .eq("id", selectedReceptionist.id);
 
       if (error) throw error;
+
+      // Delete the receptionist user from auth.users via edge function
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && userIdToDelete) {
+          await supabase.functions.invoke("delete-user", {
+            body: { userId: userIdToDelete },
+          });
+        }
+      } catch (authDeleteError) {
+        console.error("Error deleting auth user:", authDeleteError);
+        // Continue anyway as the receptionist record is already deleted
+      }
 
       toast({
         title: "Receptionist Removed",
