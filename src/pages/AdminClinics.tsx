@@ -1,13 +1,24 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Clock, CheckCircle2, MapPin, Phone, Mail, Users, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,29 +36,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { Eye, Trash2, Building2, CheckCircle2, Clock, Search } from "lucide-react";
 
 interface Clinic {
   id: string;
@@ -55,832 +46,230 @@ interface Clinic {
   city: string;
   phone_number: string;
   address: string;
-  no_of_doctors: number;
-  requested_doctors: number;
   status: string;
   fee_status: string;
+  no_of_doctors: number;
+  requested_doctors: number;
   created_at: string;
-  profiles: {
-    full_name: string;
+  updated_at: string;
+  profile?: {
     email: string;
+    full_name: string;
   };
 }
 
 const AdminClinics = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [filteredClinics, setFilteredClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [clinicToDelete, setClinicToDelete] = useState<Clinic | null>(null);
-  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState<number>(0);
-  const [editingDoctorLimit, setEditingDoctorLimit] = useState<number | null>(null);
-  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState<number>(6000);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchClinics();
-    fetchDoctorFee();
+    fetchSystemSettings();
   }, []);
 
-  const fetchDoctorFee = async () => {
-    const { data } = await supabase
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredClinics(clinics);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = clinics.filter((clinic) => {
+        return (
+          clinic.clinic_name.toLowerCase().includes(query) ||
+          clinic.city.toLowerCase().includes(query) ||
+          clinic.phone_number.toLowerCase().includes(query) ||
+          (clinic.profile?.email?.toLowerCase().includes(query) ?? false)
+        );
+      });
+      setFilteredClinics(filtered);
+    }
+    setCurrentPage(1);
+  }, [searchQuery, clinics]);
+
+  const fetchSystemSettings = async () => {
+    const { data, error } = await supabase
       .from("system_settings")
       .select("value")
       .eq("key", "doctor_monthly_fee")
       .maybeSingle();
-
-    if (data) {
-      setDoctorMonthlyFee(Number(data.value) || 0);
+    if (!error && data) {
+      setDoctorMonthlyFee(Number(data.value) || 6000);
     }
   };
 
   const fetchClinics = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("clinics")
-      .select(`
-        *,
-        profiles(full_name, email)
-      `)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      // Fetch doctor counts for each clinic
-      const clinicsWithCounts = await Promise.all(
-        data.map(async (clinic) => {
-          const { count } = await supabase
-            .from("doctors")
-            .select("id", { count: "exact", head: true })
-            .eq("clinic_id", clinic.id);
-          return { ...clinic, no_of_doctors: count || 0 };
-        })
-      );
-      setClinics(clinicsWithCounts);
-    }
-    setLoading(false);
-  };
-
-  const updateClinicStatus = async (clinicId: string, newStatus: string) => {
-    setUpdating(clinicId);
-    
-    // Get clinic details for email
-    const clinic = clinics.find(c => c.id === clinicId);
-    
-    const { error } = await supabase
-      .from("clinics")
-      .update({ status: newStatus })
-      .eq("id", clinicId);
-
-    if (error) {
-      toast({
-        title: "Error updating status",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      // Send approval email when status changes to active
-      if (newStatus === "active" && clinic) {
-        try {
-          await supabase.functions.invoke("send-clinic-approval-email", {
-            body: {
-              clinicName: clinic.clinic_name,
-              email: clinic.profiles?.email,
-              ownerName: clinic.profiles?.full_name || clinic.clinic_name,
-            },
-          });
-          console.log("Approval email sent successfully");
-        } catch (emailError) {
-          console.error("Failed to send approval email:", emailError);
-          // Don't block the status update if email fails
-        }
-      }
-      
-      toast({
-        title: "Status updated",
-        description: `Clinic status changed to ${newStatus}`,
-      });
-      fetchClinics();
-    }
-    setUpdating(null);
-  };
-
-  const updateFeeStatus = async (clinicId: string, newFeeStatus: string) => {
-    setUpdating(clinicId);
-    
-    // Update clinics table
-    const { error } = await supabase
-      .from("clinics")
-      .update({ fee_status: newFeeStatus })
-      .eq("id", clinicId);
-
-    if (error) {
-      toast({
-        title: "Error updating fee status",
-        description: error.message,
-        variant: "destructive",
-      });
-      setUpdating(null);
-      return;
-    }
-
-    // Also sync with clinic_payments for current month
-    const currentMonth = format(new Date(), "yyyy-MM-01");
-    const paymentStatus = newFeeStatus === "paid" ? "paid" : "pending";
-    const updateData: any = { status: paymentStatus };
-    if (paymentStatus === "paid") {
-      updateData.payment_date = new Date().toISOString();
-    } else {
-      updateData.payment_date = null;
-    }
-
-    await supabase
-      .from("clinic_payments")
-      .update(updateData)
-      .eq("clinic_id", clinicId)
-      .eq("month", currentMonth);
-
-    toast({
-      title: "Fee status updated",
-      description: `Payment status changed to ${newFeeStatus}`,
-    });
-    fetchClinics();
-    setUpdating(null);
-  };
-
-  const updateDoctorLimit = async (clinicId: string, newLimit: number) => {
-    if (newLimit < 1) {
-      toast({
-        title: "Invalid Limit",
-        description: "Doctor limit must be at least 1",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setUpdating(clinicId);
-    const { error } = await supabase
-      .from("clinics")
-      .update({ requested_doctors: newLimit })
-      .eq("id", clinicId);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update doctor limit",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: `Doctor limit updated to ${newLimit} successfully`,
-      });
-      fetchClinics();
-      if (selectedClinic && selectedClinic.id === clinicId) {
-        setSelectedClinic({ ...selectedClinic, requested_doctors: newLimit });
-      }
-    }
-    setUpdating(null);
-    setEditingDoctorLimit(null);
-  };
-
-  const deleteClinic = async () => {
-    if (!clinicToDelete) return;
-    
-    setDeleting(true);
-    
-    // First get the count of doctors and patients that will be deleted
-    const { count: doctorCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true })
-      .eq("clinic_id", clinicToDelete.id);
-
-    const { data: doctors } = await supabase
-      .from("doctors")
-      .select("id")
-      .eq("clinic_id", clinicToDelete.id);
-
-    let patientCount = 0;
-    if (doctors && doctors.length > 0) {
-      const doctorIds = doctors.map(d => d.id);
-      const { count } = await supabase
-        .from("patients")
-        .select("id", { count: "exact", head: true })
-        .in("created_by", doctorIds);
-      patientCount = count || 0;
-    }
-
-    // Get doctor user IDs before deleting
-    const doctorUserIds = doctors ? doctors.map(d => d.id) : [];
-
-    // Delete the clinic from database first
-    const { error } = await supabase
-      .from("clinics")
-      .delete()
-      .eq("id", clinicToDelete.id);
-
-    if (error) {
-      console.error("Clinic deletion error:", error);
-      toast({
-        title: "Error deleting clinic",
-        description: error.message,
-        variant: "destructive",
-      });
-      setDeleting(false);
-      setClinicToDelete(null);
-      return;
-    }
-
-    // Delete the clinic user from auth.users via edge function
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        // Delete clinic user
-        await supabase.functions.invoke("delete-user", {
-          body: { userId: clinicToDelete.id },
-        });
-        
-        // Delete doctor users
-        for (const doctorId of doctorUserIds) {
-          await supabase.functions.invoke("delete-user", {
-            body: { userId: doctorId },
-          });
+      const { data: clinicsData, error } = await supabase
+        .from("clinics")
+        .select(`*, profile:profiles!clinics_id_fkey(email, full_name)`)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      setClinics(clinicsData || []);
+      setFilteredClinics(clinicsData || []);
+    } catch (error: any) {
+      toast.error("Failed to fetch clinics: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateClinicStatus = async (clinicId: string, status: string) => {
+    try {
+      const { error } = await supabase.from("clinics").update({ status, updated_at: new Date().toISOString() }).eq("id", clinicId);
+      if (error) throw error;
+      toast.success(`Clinic status updated to ${status}`);
+      fetchClinics();
+      setIsDetailOpen(false);
+    } catch (error: any) {
+      toast.error("Failed to update status: " + error.message);
+    }
+  };
+
+  const updateFeeStatus = async (clinicId: string, feeStatus: string) => {
+    try {
+      const { error } = await supabase.from("clinics").update({ fee_status: feeStatus, updated_at: new Date().toISOString() }).eq("id", clinicId);
+      if (error) throw error;
+      toast.success(`Fee status updated to ${feeStatus}`);
+      fetchClinics();
+    } catch (error: any) {
+      toast.error("Failed to update fee status: " + error.message);
+    }
+  };
+
+  const updateDoctorLimit = async (clinicId: string, limit: number) => {
+    try {
+      const { error } = await supabase.from("clinics").update({ requested_doctors: limit, updated_at: new Date().toISOString() }).eq("id", clinicId);
+      if (error) throw error;
+      toast.success(`Doctor limit updated to ${limit}`);
+      fetchClinics();
+    } catch (error: any) {
+      toast.error("Failed to update doctor limit: " + error.message);
+    }
+  };
+
+  const handleDeleteClinic = async () => {
+    if (!clinicToDelete) return;
+    setIsDeleting(true);
+    try {
+      const clinicId = clinicToDelete.id;
+      await supabase.from("clinic_allergies").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_diseases").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_icd_codes").delete().eq("clinic_id", clinicId);
+      await supabase.from("specializations").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_payments").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_expenses").delete().eq("clinic_id", clinicId);
+      await supabase.from("support_tickets").delete().eq("clinic_id", clinicId);
+      const { data: doctors } = await supabase.from("doctors").select("id").eq("clinic_id", clinicId);
+      if (doctors && doctors.length > 0) {
+        const doctorIds = doctors.map((d) => d.id);
+        for (const doctorId of doctorIds) {
+          await supabase.from("doctor_schedules").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_leaves").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_disease_templates").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_test_templates").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_report_templates").delete().eq("doctor_id", doctorId);
+          await supabase.from("procedures").delete().eq("doctor_id", doctorId);
+          await supabase.from("wait_list").delete().eq("doctor_id", doctorId);
+          const { data: patients } = await supabase.from("patients").select("id").eq("created_by", doctorId);
+          if (patients && patients.length > 0) {
+            const patientIds = patients.map((p) => p.id);
+            await supabase.from("appointments").delete().in("patient_id", patientIds);
+            await supabase.from("visit_records").delete().in("patient_id", patientIds);
+            await supabase.from("medical_records").delete().in("patient_id", patientIds);
+            await supabase.from("prescriptions").delete().in("patient_id", patientIds);
+            await supabase.from("medical_documents").delete().in("patient_id", patientIds);
+            await supabase.from("patients").delete().in("id", patientIds);
+          }
+          await supabase.from("appointments").delete().eq("doctor_id", doctorId);
+          await supabase.from("visit_records").delete().eq("doctor_id", doctorId);
+          await supabase.from("medical_records").delete().eq("doctor_id", doctorId);
+          await supabase.from("prescriptions").delete().eq("doctor_id", doctorId);
+        }
+        await supabase.from("doctors").delete().eq("clinic_id", clinicId);
+        await supabase.from("user_roles").delete().in("user_id", doctorIds);
+        await supabase.from("profiles").delete().in("id", doctorIds);
+        for (const doctorId of doctorIds) {
+          await supabase.functions.invoke("delete-user", { body: { userId: doctorId } });
         }
       }
-    } catch (e) {
-      console.error("Error deleting auth users:", e);
-      // Continue anyway since database records are deleted
+      const { data: receptionists } = await supabase.from("clinic_receptionists").select("user_id").eq("clinic_id", clinicId);
+      if (receptionists && receptionists.length > 0) {
+        const receptionistIds = receptionists.map((r) => r.user_id);
+        await supabase.from("clinic_receptionists").delete().eq("clinic_id", clinicId);
+        await supabase.from("user_roles").delete().in("user_id", receptionistIds);
+        await supabase.from("profiles").delete().in("id", receptionistIds);
+        for (const receptionistId of receptionistIds) {
+          await supabase.functions.invoke("delete-user", { body: { userId: receptionistId } });
+        }
+      }
+      await supabase.from("user_roles").delete().eq("user_id", clinicId);
+      const { error: clinicError } = await supabase.from("clinics").delete().eq("id", clinicId);
+      if (clinicError) throw clinicError;
+      await supabase.from("profiles").delete().eq("id", clinicId);
+      await supabase.functions.invoke("delete-user", { body: { userId: clinicId } });
+      toast.success("Clinic and all related data deleted successfully");
+      setIsDeleteOpen(false);
+      setClinicToDelete(null);
+      fetchClinics();
+    } catch (error: any) {
+      toast.error("Failed to delete clinic: " + error.message);
+    } finally {
+      setIsDeleting(false);
     }
-
-    // Immediately update local state without waiting for refetch
-    setClinics(prevClinics => prevClinics.filter(c => c.id !== clinicToDelete.id));
-    
-    toast({
-      title: "Clinic deleted successfully",
-      description: `Deleted 1 clinic, ${doctorCount || 0} doctors, and ${patientCount} patients`,
-    });
-    
-    setSelectedClinic(null);
-    setDeleting(false);
-    setClinicToDelete(null);
   };
 
-  const stats = {
-    total: clinics.length,
-    active: clinics.filter(c => c.status === 'active').length,
-    draft: clinics.filter(c => c.status === 'draft').length,
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "active": return <Badge className="bg-green-500">Active</Badge>;
+      case "pending": return <Badge className="bg-yellow-500">Pending</Badge>;
+      case "suspended": return <Badge className="bg-red-500">Suspended</Badge>;
+      default: return <Badge variant="secondary">{status}</Badge>;
+    }
   };
 
-  // Pagination logic
-  const totalPages = Math.ceil(clinics.length / itemsPerPage);
+  const getFeeStatusBadge = (feeStatus: string) => {
+    switch (feeStatus) {
+      case "paid": return <Badge className="bg-green-500">Paid</Badge>;
+      case "unpaid": return <Badge className="bg-red-500">Unpaid</Badge>;
+      case "partial": return <Badge className="bg-yellow-500">Partial</Badge>;
+      default: return <Badge variant="secondary">{feeStatus}</Badge>;
+    }
+  };
+
+  const totalPages = Math.ceil(filteredClinics.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentClinics = clinics.slice(startIndex, endIndex);
+  const paginatedClinics = filteredClinics.slice(startIndex, startIndex + itemsPerPage);
+  const totalClinics = clinics.length;
+  const activeClinics = clinics.filter((c) => c.status === "active").length;
+  const pendingClinics = clinics.filter((c) => c.status === "pending").length;
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (value: string) => {
-    setItemsPerPage(Number(value));
-    setCurrentPage(1);
-  };
+  if (loading) {
+    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-4xl font-bold tracking-tight mb-2">Manage Clinics</h2>
-        <p className="text-muted-foreground text-base">
-          Review and approve clinic registrations, manage clinic status
-        </p>
+      <h1 className="text-2xl font-bold">Clinic Management</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Total Clinics</CardTitle><Building2 className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{totalClinics}</div></CardContent></Card>
+        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Active Clinics</CardTitle><CheckCircle2 className="h-4 w-4 text-green-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{activeClinics}</div></CardContent></Card>
+        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Pending Clinics</CardTitle><Clock className="h-4 w-4 text-yellow-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{pendingClinics}</div></CardContent></Card>
       </div>
-
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
-            <Building2 className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active</CardTitle>
-            <CheckCircle2 className="h-5 w-5 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-success">{stats.active}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle>
-            <Clock className="h-5 w-5 text-warning" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-warning">{stats.draft}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Clinics Table */}
-      <Card className="border-border/40">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-            <Building2 className="h-5 w-5 text-primary" />
-            All Clinics
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Show:</span>
-            <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="15">15</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="45">45</SelectItem>
-                <SelectItem value="60">60</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <p className="text-center text-muted-foreground py-8">Loading clinics...</p>
-          ) : clinics.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No clinics registered yet</p>
-          ) : (
-            <>
-              <div className="rounded-md border border-border/40">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="font-semibold">Clinic Name</TableHead>
-                      <TableHead className="font-semibold">Email</TableHead>
-                      <TableHead className="font-semibold">Phone</TableHead>
-                      <TableHead className="font-semibold">City</TableHead>
-                      <TableHead className="font-semibold text-center">Requested</TableHead>
-                      <TableHead className="font-semibold text-center">Created</TableHead>
-                      <TableHead className="font-semibold text-center">Monthly Fee</TableHead>
-                      <TableHead className="font-semibold">Fee Status</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                      <TableHead className="font-semibold">Registered</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {currentClinics.map((clinic) => (
-                      <TableRow 
-                        key={clinic.id} 
-                        className="hover:bg-accent/50 cursor-pointer transition-colors"
-                        onClick={() => setSelectedClinic(clinic)}
-                      >
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{clinic.clinic_name}</p>
-                            <p className="text-xs text-muted-foreground">{clinic.profiles?.full_name || "Unknown"}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">{clinic.profiles?.email || "N/A"}</TableCell>
-                        <TableCell className="text-sm">{clinic.phone_number}</TableCell>
-                        <TableCell className="text-sm">{clinic.city}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className="font-semibold text-primary border-primary/30">
-                            {clinic.requested_doctors}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="secondary" className="font-semibold">
-                            {clinic.no_of_doctors}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="default" className="font-semibold bg-success text-white">
-                            PKR {(doctorMonthlyFee * clinic.requested_doctors).toLocaleString()}
-                          </Badge>
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Select
-                            value={clinic.fee_status}
-                            onValueChange={(value) => updateFeeStatus(clinic.id, value)}
-                            disabled={updating === clinic.id}
-                          >
-                            <SelectTrigger className="w-[120px] h-8">
-                              <SelectValue>
-                                {clinic.fee_status === "paid" && (
-                                  <span className="flex items-center gap-1 text-success">
-                                    <CheckCircle2 className="h-3 w-3" />
-                                    Paid
-                                  </span>
-                                )}
-                                {clinic.fee_status === "unpaid" && (
-                                  <span className="flex items-center gap-1 text-destructive">
-                                    <Clock className="h-3 w-3" />
-                                    Unpaid
-                                  </span>
-                                )}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="unpaid">
-                                <span className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4 text-destructive" />
-                                  Unpaid
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="paid">
-                                <span className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-success" />
-                                  Paid
-                                </span>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Select
-                            value={clinic.status}
-                            onValueChange={(value) => updateClinicStatus(clinic.id, value)}
-                            disabled={updating === clinic.id}
-                          >
-                            <SelectTrigger className="w-[120px] h-8">
-                              <SelectValue>
-                                {clinic.status === "active" && (
-                                  <span className="flex items-center gap-1 text-success">
-                                    <CheckCircle2 className="h-3 w-3" />
-                                    Active
-                                  </span>
-                                )}
-                                {clinic.status === "draft" && (
-                                  <span className="flex items-center gap-1 text-warning">
-                                    <Clock className="h-3 w-3" />
-                                    Draft
-                                  </span>
-                                )}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="draft">
-                                <span className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4 text-warning" />
-                                  Draft
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="active">
-                                <span className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-success" />
-                                  Active
-                                </span>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {format(new Date(clinic.created_at), "MMM dd, yyyy")}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {startIndex + 1} to {Math.min(endIndex, clinics.length)} of {clinics.length} clinics
-                  </p>
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      
-                      {[...Array(totalPages)].map((_, index) => {
-                        const page = index + 1;
-                        if (
-                          page === 1 ||
-                          page === totalPages ||
-                          (page >= currentPage - 1 && page <= currentPage + 1)
-                        ) {
-                          return (
-                            <PaginationItem key={page}>
-                              <PaginationLink
-                                onClick={() => handlePageChange(page)}
-                                isActive={currentPage === page}
-                                className="cursor-pointer"
-                              >
-                                {page}
-                              </PaginationLink>
-                            </PaginationItem>
-                          );
-                        } else if (page === currentPage - 2 || page === currentPage + 2) {
-                          return <PaginationItem key={page}>...</PaginationItem>;
-                        }
-                        return null;
-                      })}
-                      
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Clinic Details Modal */}
-      <Dialog open={!!selectedClinic} onOpenChange={() => {
-        setSelectedClinic(null);
-        setEditingDoctorLimit(null);
-      }}>
-        <DialogContent className="max-w-3xl animate-scale-in">
-          {selectedClinic && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    <Building2 className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <DialogTitle className="text-2xl font-bold mb-1">
-                      {selectedClinic.clinic_name}
-                    </DialogTitle>
-                    <DialogDescription className="text-base">
-                      Managed by {selectedClinic.profiles?.full_name || "Unknown"}
-                    </DialogDescription>
-                  </div>
-                  {selectedClinic.status === "active" ? (
-                    <Badge className="bg-success/10 text-success border-success/20 px-3 py-1">
-                      <CheckCircle2 className="h-4 w-4 mr-1" />
-                      Active
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-warning/10 text-warning border-warning/20 px-3 py-1">
-                      <Clock className="h-4 w-4 mr-1" />
-                      Pending Approval
-                    </Badge>
-                  )}
-                </div>
-              </DialogHeader>
-
-              <div className="space-y-6 mt-6">
-                {/* Contact Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-primary" />
-                    Contact Information
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4 bg-accent/30 p-4 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">Email</p>
-                        <p className="font-medium">{selectedClinic.profiles.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">Phone</p>
-                        <p className="font-medium">{selectedClinic.phone_number}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Location */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    Location
-                  </h3>
-                  <div className="bg-accent/30 p-4 rounded-lg">
-                    <p className="font-medium mb-1">{selectedClinic.address}</p>
-                    <p className="text-sm text-muted-foreground">{selectedClinic.city}</p>
-                  </div>
-                </div>
-
-                {/* Doctor Statistics */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    Doctor Statistics & Billing
-                  </h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-transparent">
-                      <CardContent className="pt-6">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground mb-2">Requested Doctors</p>
-                          <p className="text-4xl font-bold text-primary">{selectedClinic.requested_doctors}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="border-border/40 bg-gradient-to-br from-success/5 to-transparent">
-                      <CardContent className="pt-6">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground mb-2">Doctors Created</p>
-                          <p className="text-4xl font-bold text-success">{selectedClinic.no_of_doctors}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="border-border/40 bg-gradient-to-br from-amber-500/5 to-transparent">
-                      <CardContent className="pt-6">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground mb-2">Monthly Fee</p>
-                          <p className="text-3xl font-bold text-amber-600">
-                            PKR {(doctorMonthlyFee * selectedClinic.requested_doctors).toLocaleString()}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {selectedClinic.requested_doctors} × PKR {doctorMonthlyFee.toLocaleString()}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                {/* Registration Date */}
-                <div className="bg-accent/30 p-4 rounded-lg flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Registered On</p>
-                    <p className="font-semibold">{format(new Date(selectedClinic.created_at), "MMMM dd, yyyy 'at' HH:mm")}</p>
-                  </div>
-                  <Clock className="h-8 w-8 text-muted-foreground" />
-                </div>
-
-                {/* Actions */}
-                <div className="space-y-4 pt-4 border-t">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground min-w-[120px]">Doctor Limit:</span>
-                    <div className="flex items-center gap-2 flex-1">
-                      <Input
-                        type="number"
-                        min="1"
-                        value={editingDoctorLimit !== null ? editingDoctorLimit : selectedClinic.requested_doctors}
-                        onChange={(e) => setEditingDoctorLimit(parseInt(e.target.value) || 1)}
-                        className="w-[120px]"
-                        disabled={updating === selectedClinic.id}
-                      />
-                      {editingDoctorLimit !== null && editingDoctorLimit !== selectedClinic.requested_doctors && (
-                        <Button
-                          size="sm"
-                          onClick={() => updateDoctorLimit(selectedClinic.id, editingDoctorLimit)}
-                          disabled={updating === selectedClinic.id}
-                        >
-                          Update
-                        </Button>
-                      )}
-                      <span className="text-xs text-muted-foreground">
-                        (Currently using {selectedClinic.no_of_doctors})
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground min-w-[120px]">Change Status:</span>
-                    <Select
-                      value={selectedClinic.status}
-                      onValueChange={(value) => {
-                        updateClinicStatus(selectedClinic.id, value);
-                        setSelectedClinic({ ...selectedClinic, status: value });
-                      }}
-                      disabled={updating === selectedClinic.id}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">
-                          <span className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-warning" />
-                            Draft
-                          </span>
-                        </SelectItem>
-                        <SelectItem value="active">
-                          <span className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-success" />
-                            Active
-                          </span>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground min-w-[120px]">Fee Status:</span>
-                    <Select
-                      value={selectedClinic.fee_status}
-                      onValueChange={(value) => {
-                        updateFeeStatus(selectedClinic.id, value);
-                        setSelectedClinic({ ...selectedClinic, fee_status: value });
-                      }}
-                      disabled={updating === selectedClinic.id}
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="unpaid">
-                          <span className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-destructive" />
-                            Unpaid
-                          </span>
-                        </SelectItem>
-                        <SelectItem value="paid">
-                          <span className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-success" />
-                            Paid
-                          </span>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Delete Clinic Button */}
-                <div className="pt-6 border-t border-border/40 mt-4">
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setClinicToDelete(selectedClinic);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Clinic Permanently
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center mt-2">
-                    ⚠️ This will delete all doctors and patients associated with this clinic
-                  </p>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!clinicToDelete} onOpenChange={() => setClinicToDelete(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-              <Trash2 className="h-5 w-5" />
-              Delete Clinic - Permanent Action
-            </AlertDialogTitle>
-            <AlertDialogDescription className="space-y-4 pt-4">
-              <p className="font-semibold text-foreground">
-                Are you absolutely sure you want to delete "{clinicToDelete?.clinic_name}"?
-              </p>
-              
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-2">
-                <p className="font-semibold text-destructive flex items-center gap-2">
-                  ⚠️ Warning: Cascade Deletion
-                </p>
-                <p className="text-sm">This action will permanently delete:</p>
-                <ul className="text-sm space-y-1 ml-4 list-disc">
-                  <li>The clinic record</li>
-                  <li>All doctors associated with this clinic</li>
-                  <li>All patients created by those doctors</li>
-                  <li>All appointments for those patients</li>
-                  <li>All medical records, prescriptions, and documents</li>
-                </ul>
-              </div>
-
-              <p className="text-sm font-semibold">
-                This action cannot be undone. All data will be permanently lost.
-              </p>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={deleteClinic}
-              disabled={deleting}
-              className="bg-destructive hover:bg-destructive/90"
-            >
-              {deleting ? "Deleting..." : "Yes, Delete Everything"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Card><CardContent className="pt-6"><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search by clinic name, city, email, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" /></div>{searchQuery && <p className="text-sm text-muted-foreground mt-2">Found {filteredClinics.length} clinic{filteredClinics.length !== 1 ? "s" : ""}</p>}</CardContent></Card>
+      <Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Clinic Name</TableHead><TableHead>Email</TableHead><TableHead>City</TableHead><TableHead>Phone</TableHead><TableHead>Status</TableHead><TableHead>Fee Status</TableHead><TableHead>Doctors</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader><TableBody>{paginatedClinics.length === 0 ? <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">{searchQuery ? "No clinics found matching your search" : "No clinics found"}</TableCell></TableRow> : paginatedClinics.map((clinic) => <TableRow key={clinic.id}><TableCell className="font-medium">{clinic.clinic_name}</TableCell><TableCell>{clinic.profile?.email || "N/A"}</TableCell><TableCell>{clinic.city}</TableCell><TableCell>{clinic.phone_number}</TableCell><TableCell>{getStatusBadge(clinic.status)}</TableCell><TableCell>{getFeeStatusBadge(clinic.fee_status)}</TableCell><TableCell>{clinic.no_of_doctors} / {clinic.requested_doctors}</TableCell><TableCell><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => { setSelectedClinic(clinic); setIsDetailOpen(true); }}><Eye className="h-4 w-4" /></Button><Button variant="destructive" size="sm" onClick={() => { setClinicToDelete(clinic); setIsDeleteOpen(true); }}><Trash2 className="h-4 w-4" /></Button></div></TableCell></TableRow>)}</TableBody></Table></CardContent></Card>
+      {totalPages > 1 && <div className="flex items-center justify-center gap-2"><Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button><span className="text-sm">Page {currentPage} of {totalPages}</span><Button variant="outline" size="sm" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button></div>}
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}><DialogContent className="max-w-2xl"><DialogHeader><DialogTitle>{selectedClinic?.clinic_name}</DialogTitle><DialogDescription>Clinic details and management</DialogDescription></DialogHeader>{selectedClinic && <div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><label className="text-sm font-medium text-muted-foreground">Email</label><p>{selectedClinic.profile?.email || "N/A"}</p></div><div><label className="text-sm font-medium text-muted-foreground">Phone</label><p>{selectedClinic.phone_number}</p></div><div><label className="text-sm font-medium text-muted-foreground">City</label><p>{selectedClinic.city}</p></div><div><label className="text-sm font-medium text-muted-foreground">Address</label><p>{selectedClinic.address}</p></div><div><label className="text-sm font-medium text-muted-foreground">Registered On</label><p>{format(new Date(selectedClinic.created_at), "PPP")}</p></div><div><label className="text-sm font-medium text-muted-foreground">Doctors ({selectedClinic.no_of_doctors} / {selectedClinic.requested_doctors})</label><p>Monthly Fee: PKR {(selectedClinic.requested_doctors * doctorMonthlyFee).toLocaleString()}</p></div></div><div className="grid grid-cols-2 gap-4"><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Status</label><Select value={selectedClinic.status} onValueChange={(value) => updateClinicStatus(selectedClinic.id, value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="pending">Pending</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="suspended">Suspended</SelectItem></SelectContent></Select></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Fee Status</label><Select value={selectedClinic.fee_status} onValueChange={(value) => updateFeeStatus(selectedClinic.id, value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="unpaid">Unpaid</SelectItem><SelectItem value="paid">Paid</SelectItem><SelectItem value="partial">Partial</SelectItem></SelectContent></Select></div></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Doctor Limit</label><div className="flex gap-2"><Input type="number" min={1} value={selectedClinic.requested_doctors} onChange={(e) => { const newLimit = parseInt(e.target.value) || 1; setSelectedClinic({ ...selectedClinic, requested_doctors: newLimit }); }} className="w-24" /><Button onClick={() => updateDoctorLimit(selectedClinic.id, selectedClinic.requested_doctors)}>Update Limit</Button></div></div></div>}</DialogContent></Dialog>
+      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Delete Clinic</AlertDialogTitle><AlertDialogDescription>Are you sure you want to delete "{clinicToDelete?.clinic_name}"? This action cannot be undone and will permanently delete the clinic along with all associated data including doctors, patients, appointments, and records.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteClinic} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{isDeleting ? "Deleting..." : "Delete Clinic"}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </div>
   );
 };
