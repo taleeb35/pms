@@ -146,6 +146,15 @@ const ClinicAddDoctor = () => {
       if (!session) throw new Error("Not authenticated");
       const user = session.user;
 
+      // Fetch clinic name for the email
+      const { data: clinicData } = await supabase
+        .from("clinics")
+        .select("clinic_name")
+        .eq("id", user.id)
+        .single();
+
+      const clinicName = clinicData?.clinic_name || "Your Clinic";
+
       // Store clinic owner's session
       const clinicSession = session;
 
@@ -180,6 +189,23 @@ const ClinicAddDoctor = () => {
 
       if (doctorError) throw doctorError;
 
+      // Send welcome email with credentials to the doctor
+      try {
+        await supabase.functions.invoke('send-clinic-doctor-welcome-email', {
+          body: {
+            doctorName: formData.fullName,
+            doctorEmail: formData.email,
+            password: formData.password,
+            clinicName: clinicName,
+            specialization: formData.specialization,
+          },
+        });
+        console.log("Doctor welcome email sent successfully");
+      } catch (emailError) {
+        console.error("Failed to send doctor welcome email:", emailError);
+        // Don't throw - email failure shouldn't block the registration
+      }
+
       // Sign out the newly created doctor and restore clinic owner's session
       await supabase.auth.signOut();
       await supabase.auth.setSession({
@@ -189,7 +215,7 @@ const ClinicAddDoctor = () => {
 
       toast({
         title: "✓ Doctor Added Successfully!",
-        description: "The doctor has been registered and can now login immediately. You can view all doctors in the Doctors listing.",
+        description: "The doctor has been registered and a welcome email with login credentials has been sent.",
       });
 
       navigate("/clinic/doctors");
