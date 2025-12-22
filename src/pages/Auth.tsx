@@ -280,7 +280,7 @@ const Auth = () => {
             {isSignup && (
               <>
                 <div className="space-y-2 animate-fade-in">
-                  <Label htmlFor="clinicName" className="text-sm font-semibold">Clinic Name</Label>
+                  <Label htmlFor="clinicName" className="text-sm font-semibold">Clinic Name <span className="text-destructive">*</span></Label>
                   <Input
                     id="clinicName"
                     type="text"
@@ -288,11 +288,12 @@ const Auth = () => {
                     value={clinicName}
                     onChange={(e) => setClinicName(e.target.value)}
                     required
-                    className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                    className={`border-2 ${errors.clinicName ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
                   />
+                  {errors.clinicName && <p className="text-sm text-destructive">{errors.clinicName}</p>}
                 </div>
                 <div className="space-y-2 animate-fade-in" style={{ animationDelay: '50ms' }}>
-                  <Label htmlFor="phoneNumber" className="text-sm font-semibold">Phone Number</Label>
+                  <Label htmlFor="phoneNumber" className="text-sm font-semibold">Phone Number <span className="text-destructive">*</span></Label>
                   <Input
                     id="phoneNumber"
                     type="tel"
@@ -311,9 +312,10 @@ const Auth = () => {
                     onValueChange={setCity}
                     required
                   />
+                  {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
                 </div>
                 <div className="space-y-2 animate-fade-in" style={{ animationDelay: '150ms' }}>
-                  <Label htmlFor="address" className="text-sm font-semibold">Address</Label>
+                  <Label htmlFor="address" className="text-sm font-semibold">Address <span className="text-destructive">*</span></Label>
                   <Input
                     id="address"
                     type="text"
@@ -321,11 +323,12 @@ const Auth = () => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     required
-                    className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                    className={`border-2 ${errors.address ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
                   />
+                  {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
                 </div>
                 <div className="space-y-2 animate-fade-in" style={{ animationDelay: '200ms' }}>
-                  <Label htmlFor="noOfDoctors" className="text-sm font-semibold">Number of Doctors</Label>
+                  <Label htmlFor="noOfDoctors" className="text-sm font-semibold">Number of Doctors <span className="text-destructive">*</span></Label>
                   <Input
                     id="noOfDoctors"
                     type="text"
@@ -341,7 +344,7 @@ const Auth = () => {
             )}
             
             <div className={`space-y-2 ${isSignup ? 'animate-fade-in' : ''}`} style={{ animationDelay: '250ms' }}>
-              <Label htmlFor="clinicEmail" className="text-sm font-semibold">Email</Label>
+              <Label htmlFor="clinicEmail" className="text-sm font-semibold">Email {isSignup && <span className="text-destructive">*</span>}</Label>
               <Input
                 id="clinicEmail"
                 type="email"
@@ -349,12 +352,13 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                className={`border-2 ${errors.email ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
               />
+              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
             
             <div className={`space-y-2 ${isSignup ? 'animate-fade-in' : ''}`} style={{ animationDelay: '300ms' }}>
-              <Label htmlFor="clinicPassword" className="text-sm font-semibold">Password</Label>
+              <Label htmlFor="clinicPassword" className="text-sm font-semibold">Password {isSignup && <span className="text-destructive">*</span>}</Label>
               <Input
                 id="clinicPassword"
                 type="password"
@@ -362,13 +366,14 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                className={`border-2 ${errors.password ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
               />
+              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
             
             {isSignup && (
               <div className="space-y-2 animate-fade-in" style={{ animationDelay: '350ms' }}>
-                <Label htmlFor="confirmPassword" className="text-sm font-semibold">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-sm font-semibold">Confirm Password <span className="text-destructive">*</span></Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -376,8 +381,9 @@ const Auth = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="border-2 border-purple-200 focus:border-purple-400 transition-colors"
+                  className={`border-2 ${errors.confirmPassword ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
                 />
+                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
               </div>
             )}
             
