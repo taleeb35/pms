@@ -33,7 +33,7 @@ const handler = async (req: Request): Promise<Response> => {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Registration Received</title>
+        <title>Registration Received - MyClinicHQ</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
         <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -45,8 +45,11 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 40px 30px; text-align: center;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
-                      🩺 Registration Received!
+                      🩺 Registration Received
                     </h1>
+                    <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
+                      MyClinicHQ - Your Healthcare Partner
+                    </p>
                   </td>
                 </tr>
                 
@@ -54,23 +57,23 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="padding: 40px 30px;">
                     <h2 style="margin: 0 0 20px; color: #333; font-size: 22px;">
-                      Hello, Dr. ${doctorName}! 👋
+                      Dear Dr. ${doctorName},
                     </h2>
                     
                     <p style="margin: 0 0 20px; color: #555; font-size: 16px; line-height: 1.6;">
-                      Thank you for registering on our platform as an independent doctor. We're excited to have you join our network!
+                      Thank you for registering with <strong>MyClinicHQ</strong>. We are pleased to receive your application to join our growing network of healthcare professionals.
                     </p>
                     
                     <p style="margin: 0 0 25px; color: #555; font-size: 16px; line-height: 1.6;">
-                      Your registration is currently under review by our admin team. You will receive another email once your account is approved.
+                      Your registration is currently under review by our administrative team.
                     </p>
                     
                     <!-- Doctor Details Card -->
                     <div style="background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); border-radius: 12px; padding: 25px; margin: 25px 0;">
-                      <h3 style="margin: 0 0 15px; color: #059669; font-size: 18px;">📋 Your Registration Details</h3>
+                      <h3 style="margin: 0 0 15px; color: #059669; font-size: 18px;">📋 Registration Details</h3>
                       <table style="width: 100%; border-collapse: collapse;">
                         <tr>
-                          <td style="padding: 8px 0; color: #666; font-size: 14px;">Name:</td>
+                          <td style="padding: 8px 0; color: #666; font-size: 14px; width: 40%;">Name:</td>
                           <td style="padding: 8px 0; color: #333; font-size: 14px; font-weight: 600;">Dr. ${doctorName}</td>
                         </tr>
                         <tr>
@@ -90,22 +93,46 @@ const handler = async (req: Request): Promise<Response> => {
                       </table>
                     </div>
                     
-                    <!-- Monthly Fee Notice -->
-                    <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
-                      <p style="margin: 0; color: #92400e; font-size: 14px;">
-                        <strong>💰 Monthly Fee:</strong> Once your account is approved, a monthly subscription fee of <strong>PKR ${monthlyFee.toLocaleString('en-PK')}</strong> will be applicable for using our platform.
+                    <!-- Fee Information Card -->
+                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; padding: 25px; margin: 25px 0; border: 1px solid #f59e0b;">
+                      <h3 style="margin: 0 0 15px; color: #92400e; font-size: 18px;">💰 Subscription Fee Details</h3>
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 14px; width: 40%;">Monthly Fee:</td>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 20px; font-weight: 700;">PKR ${monthlyFee.toLocaleString('en-PK')}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 14px;">Billing Cycle:</td>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 14px; font-weight: 600;">Monthly</td>
+                        </tr>
+                      </table>
+                      <p style="margin: 15px 0 0; color: #92400e; font-size: 13px; line-height: 1.5;">
+                        This fee covers full access to all platform features including patient management, appointment scheduling, medical records, and more.
+                      </p>
+                    </div>
+                    
+                    <!-- Payment Activation Notice -->
+                    <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
+                      <h4 style="margin: 0 0 10px; color: #1e40af; font-size: 16px;">📌 Account Activation Process</h4>
+                      <p style="margin: 0; color: #1e40af; font-size: 14px; line-height: 1.6;">
+                        Your account will be <strong>activated</strong> once the payment has been successfully processed. After approval, you will receive payment instructions via email with detailed steps to complete your subscription.
                       </p>
                     </div>
                     
                     <!-- Pending Notice -->
-                    <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
-                      <p style="margin: 0; color: #1e40af; font-size: 14px;">
-                        <strong>⏳ Pending Approval:</strong> Your account is under review. We'll notify you via email once approved.
+                    <div style="background-color: #f3f4f6; border-left: 4px solid #6b7280; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
+                      <p style="margin: 0; color: #374151; font-size: 14px;">
+                        <strong>⏳ Current Status:</strong> Pending Admin Review
                       </p>
                     </div>
                     
                     <p style="margin: 25px 0 0; color: #555; font-size: 16px; line-height: 1.6;">
-                      If you have any questions, feel free to reach out to our support team.
+                      If you have any questions regarding the registration process or fee structure, please don't hesitate to contact our support team.
+                    </p>
+                    
+                    <p style="margin: 20px 0 0; color: #555; font-size: 16px; line-height: 1.6;">
+                      Best Regards,<br>
+                      <strong>The MyClinicHQ Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -114,7 +141,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
                     <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
-                      Thank you for choosing our platform!
+                      Thank you for choosing MyClinicHQ!
                     </p>
                     <p style="margin: 0; color: #999; font-size: 12px;">
                       © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
@@ -133,7 +160,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "MyClinicHQ <noreply@myclinichq.com>",
       to: [email],
-      subject: `Registration Received - Dr. ${doctorName} 🩺`,
+      subject: `Registration Received - Dr. ${doctorName} | MyClinicHQ`,
       html: emailHtml,
     });
 
