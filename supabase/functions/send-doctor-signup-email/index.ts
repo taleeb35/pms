@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
@@ -14,7 +14,7 @@ interface DoctorSignupEmailRequest {
   email: string;
   specialization: string;
   city: string;
-  monthlyFee: number;
+  monthlyFee?: number;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -26,6 +26,28 @@ const handler = async (req: Request): Promise<Response> => {
     const { doctorName, email, specialization, city, monthlyFee }: DoctorSignupEmailRequest = await req.json();
 
     console.log("Sending doctor signup email to:", email);
+
+    // Fetch the monthly fee per doctor from system_settings (server-side, not from the client)
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { data: feeData, error: feeError } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "doctor_monthly_fee")
+      .maybeSingle();
+
+    if (feeError) {
+      console.error("Failed to fetch doctor_monthly_fee:", feeError);
+    }
+
+    const resolvedMonthlyFee =
+      feeData?.value != null && !isNaN(Number(feeData.value))
+        ? Number(feeData.value)
+        : typeof monthlyFee === "number" && !isNaN(monthlyFee)
+          ? monthlyFee
+          : 6000;
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -99,7 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                           <td style="padding: 8px 0; color: #78350f; font-size: 14px; width: 40%;">Monthly Fee:</td>
-                          <td style="padding: 8px 0; color: #78350f; font-size: 20px; font-weight: 700;">PKR ${monthlyFee.toLocaleString('en-PK')}</td>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 20px; font-weight: 700;">PKR ${resolvedMonthlyFee.toLocaleString('en-PK')}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78350f; font-size: 14px;">Billing Cycle:</td>
