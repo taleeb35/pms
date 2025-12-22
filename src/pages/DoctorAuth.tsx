@@ -94,8 +94,8 @@ const DoctorAuth = () => {
       const { data: feeData } = await supabase
         .from("system_settings")
         .select("value")
-        .eq("key", "monthly_fee_per_doctor")
-        .single();
+        .eq("key", "doctor_monthly_fee")
+        .maybeSingle();
       
       if (feeData) {
         setMonthlyFee(parseFloat(feeData.value) || 0);
