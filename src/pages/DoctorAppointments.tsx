@@ -121,11 +121,12 @@ const DoctorAppointments = () => {
         .from("doctors")
         .select("specialization")
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       
-      setIsGynecologist(data?.specialization?.toLowerCase().includes("gynecologist") || false);
+      const spec = data?.specialization?.toLowerCase() || "";
+      setIsGynecologist(spec.includes("gynecologist"));
     } catch (error) {
       console.error("Error checking doctor specialization:", error);
     }
