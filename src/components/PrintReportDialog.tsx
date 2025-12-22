@@ -108,118 +108,242 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { 
               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-              padding: 40px; 
-              color: #333;
+              padding: 0; 
+              color: #1a1a2e;
               line-height: 1.6;
+              background: #fff;
+            }
+            .page-wrapper {
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 30px;
             }
             .header { 
-              text-align: center; 
-              border-bottom: 2px solid #333; 
-              padding-bottom: 20px; 
-              margin-bottom: 30px; 
+              background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+              color: white;
+              padding: 25px 30px;
+              border-radius: 12px;
+              margin-bottom: 25px;
+              position: relative;
+              overflow: hidden;
+            }
+            .header::before {
+              content: '';
+              position: absolute;
+              top: -50%;
+              right: -20%;
+              width: 200px;
+              height: 200px;
+              background: rgba(255,255,255,0.1);
+              border-radius: 50%;
             }
             .header h1 { 
-              font-size: 24px; 
-              margin-bottom: 5px;
+              font-size: 26px; 
+              margin-bottom: 8px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              font-weight: 700;
+              position: relative;
+            }
+            .header-date { 
+              font-size: 14px;
+              opacity: 0.9;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .header-date::before {
+              content: '📅';
+            }
+            .patient-card { 
+              background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+              border: 2px solid #14b8a6;
+              border-radius: 12px;
+              padding: 20px 25px;
+              margin-bottom: 25px;
+              display: grid;
+              grid-template-columns: repeat(2, 1fr);
+              gap: 15px;
+            }
+            .patient-card h3 {
+              grid-column: 1 / -1;
+              color: #0f766e;
+              font-size: 14px;
               text-transform: uppercase;
               letter-spacing: 1px;
+              margin-bottom: 5px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
             }
-            .header p { 
-              color: #666; 
-              font-size: 14px;
+            .patient-card h3::before {
+              content: '👤';
             }
-            .patient-info { 
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 10px;
-              background: #f9f9f9; 
-              padding: 20px; 
-              border-radius: 8px; 
-              margin-bottom: 30px; 
+            .info-item {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
             }
-            .patient-info p { 
-              margin: 5px 0;
-              font-size: 14px;
-            }
-            .patient-info strong { 
-              color: #333;
-            }
-            .report-title {
-              font-size: 18px;
+            .info-label { 
+              font-size: 11px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              color: #64748b;
               font-weight: 600;
-              margin-bottom: 20px;
-              padding-bottom: 10px;
-              border-bottom: 1px solid #ddd;
+            }
+            .info-value {
+              font-size: 15px;
+              color: #1e293b;
+              font-weight: 500;
+            }
+            .report-section {
+              background: #fff;
+              border: 1px solid #e2e8f0;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            }
+            .section-header {
+              background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+              color: white;
+              padding: 12px 20px;
+              font-size: 14px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            .section-header::before {
+              content: '📋';
             }
             .field-row { 
               display: flex; 
-              border-bottom: 1px solid #eee; 
-              padding: 12px 0;
+              border-bottom: 1px solid #f1f5f9; 
+              padding: 14px 20px;
+              transition: background 0.2s;
+            }
+            .field-row:nth-child(even) {
+              background: #f8fafc;
             }
             .field-row:last-child {
               border-bottom: none;
             }
             .field-title { 
               font-weight: 600; 
-              width: 200px;
+              width: 180px;
               flex-shrink: 0;
-              color: #555;
+              color: #0f766e;
+              font-size: 14px;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            }
+            .field-title::before {
+              content: '•';
+              color: #14b8a6;
+              font-size: 18px;
             }
             .field-value { 
               flex: 1;
-              color: #333;
+              color: #334155;
+              font-size: 14px;
             }
             .footer { 
-              margin-top: 50px; 
-              padding-top: 20px; 
-              border-top: 1px solid #ddd;
+              margin-top: 40px; 
+              padding: 25px;
+              background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+              border-radius: 12px;
+              border: 1px solid #e2e8f0;
               display: flex;
               justify-content: space-between;
+              align-items: flex-end;
+            }
+            .signature-box {
+              text-align: center;
+              width: 200px;
             }
             .signature-line {
-              width: 200px;
-              text-align: center;
+              border-top: 2px solid #0f766e;
+              margin-top: 60px;
+              padding-top: 8px;
             }
-            .signature-line .line {
-              border-top: 1px solid #333;
-              margin-top: 50px;
-              padding-top: 5px;
+            .signature-label {
               font-size: 12px;
-              color: #666;
+              color: #64748b;
+              font-weight: 500;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            .watermark {
+              text-align: center;
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px dashed #e2e8f0;
+              color: #94a3b8;
+              font-size: 11px;
             }
             @media print {
-              body { padding: 20px; }
+              body { padding: 0; }
+              .page-wrapper { padding: 20px; }
+              .header, .patient-card, .report-section, .footer {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
             }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>${selectedTemplate?.template_name || 'Patient Report'}</h1>
-            <p>Date: ${format(new Date(appointment.appointment_date), "PPP")}</p>
-          </div>
-          
-          <div class="patient-info">
-            <p><strong>Patient Name:</strong> ${appointment.patients.full_name}</p>
-            <p><strong>Patient ID:</strong> ${appointment.patients.patient_id}</p>
-            <p><strong>Phone:</strong> ${appointment.patients.phone}</p>
-            <p><strong>Date of Birth:</strong> ${format(new Date(appointment.patients.date_of_birth), "PPP")}</p>
-          </div>
-          
-          <div class="report-content">
-            ${editableFields.map(field => `
-              <div class="field-row">
-                <div class="field-title">${field.title}:</div>
-                <div class="field-value">${field.value || '-'}</div>
-              </div>
-            `).join('')}
-          </div>
-          
-          <div class="footer">
-            <div class="signature-line">
-              <div class="line">Doctor's Signature</div>
+          <div class="page-wrapper">
+            <div class="header">
+              <h1>${selectedTemplate?.template_name || 'Patient Report'}</h1>
+              <div class="header-date">Report Date: ${format(new Date(appointment.appointment_date), "PPPP")}</div>
             </div>
-            <div class="signature-line">
-              <div class="line">Date</div>
+            
+            <div class="patient-card">
+              <h3>Patient Information</h3>
+              <div class="info-item">
+                <span class="info-label">Patient Name</span>
+                <span class="info-value">${appointment.patients.full_name}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Patient ID</span>
+                <span class="info-value">${appointment.patients.patient_id}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Phone Number</span>
+                <span class="info-value">${appointment.patients.phone}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Date of Birth</span>
+                <span class="info-value">${format(new Date(appointment.patients.date_of_birth), "PPP")}</span>
+              </div>
+            </div>
+            
+            <div class="report-section">
+              <div class="section-header">Report Details</div>
+              ${editableFields.map(field => `
+                <div class="field-row">
+                  <div class="field-title">${field.title}</div>
+                  <div class="field-value">${field.value || '—'}</div>
+                </div>
+              `).join('')}
+            </div>
+            
+            <div class="footer">
+              <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-label">Doctor's Signature</div>
+              </div>
+              <div class="signature-box">
+                <div class="signature-line"></div>
+                <div class="signature-label">Date & Stamp</div>
+              </div>
+            </div>
+            
+            <div class="watermark">
+              This is a computer-generated document. Generated on ${format(new Date(), "PPPp")}
             </div>
           </div>
         </body>
