@@ -38,15 +38,15 @@ interface Appointment {
   doctor_id: string;
   created_by: string | null;
   icd_code_id: string | null;
-  patients: { 
-    full_name: string; 
-    phone: string; 
+  patients: {
+    full_name: string;
+    phone: string;
     patient_id: string;
     date_of_birth: string;
     email: string | null;
     father_name: string | null;
     pregnancy_start_date?: string | null;
-  };
+  } | null;
   creator: {
     full_name: string;
   } | null;
@@ -133,14 +133,34 @@ const DoctorAppointments = () => {
   };
 
   const fetchAppointments = async () => {
+    setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data, error } = await supabase.from("appointments").select(`*, patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date), creator:profiles!appointments_created_by_fkey(full_name), icd_code:clinic_icd_codes(id, code, description)`).eq("doctor_id", user.id).order("appointment_date", { ascending: true }).order("appointment_time", { ascending: true });
+      if (!user) {
+        setAppointments([]);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("appointments")
+        .select(`
+          *,
+          patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date),
+          creator:profiles!appointments_created_by_fkey(full_name),
+          icd_code:clinic_icd_codes(id, code, description)
+        `)
+        .eq("doctor_id", user.id)
+        .order("appointment_date", { ascending: true })
+        .order("appointment_time", { ascending: true });
+
       if (error) throw error;
-      setAppointments(data || []);
+
+      // Guard against missing/blocked patient joins (can crash the page otherwise)
+      setAppointments((data || []).filter((apt: any) => apt.patients));
     } catch (error: any) {
+      console.error("Error fetching appointments:", error);
       toast({ title: "Error fetching appointments", description: error.message, variant: "destructive" });
+      setAppointments([]);
     } finally {
       setLoading(false);
     }
@@ -385,11 +405,12 @@ const DoctorAppointments = () => {
   };
 
   const getFilteredAppointments = () => {
-    let filtered = appointments;
+    // If patient join is missing (RLS / deleted patient), exclude it to avoid runtime crashes
+    let filtered = appointments.filter((apt) => apt.patients);
     
     // Apply status filter
     if (statusFilter && statusFilter !== "all") {
-      filtered = filtered.filter(apt => apt.status === statusFilter);
+      filtered = filtered.filter((apt) => apt.status === statusFilter);
     }
     
     // Apply date filter
@@ -397,19 +418,19 @@ const DoctorAppointments = () => {
       const today = startOfDay(new Date());
       switch (dateFilter) {
         case "today":
-          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }));
+          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }));
           break;
         case "tomorrow":
           const tomorrow = addDays(today, 1);
-          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }));
+          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }));
           break;
         case "day_after":
           const dayAfter = addDays(today, 2);
-          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }));
+          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }));
           break;
         case "week":
           const weekEnd = addDays(today, 7);
-          filtered = filtered.filter(apt => isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }));
+          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }));
           break;
       }
     }
@@ -417,18 +438,22 @@ const DoctorAppointments = () => {
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(apt => 
-        apt.patients.full_name?.toLowerCase().includes(query) ||
-        apt.patients.father_name?.toLowerCase().includes(query) ||
-        apt.patients.phone?.toLowerCase().includes(query) ||
-        apt.patients.email?.toLowerCase().includes(query) ||
-        apt.patients.patient_id?.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter((apt) => {
+        const p = apt.patients;
+        if (!p) return false;
+        return (
+          p.full_name?.toLowerCase().includes(query) ||
+          p.father_name?.toLowerCase().includes(query) ||
+          p.phone?.toLowerCase().includes(query) ||
+          (p.email || "").toLowerCase().includes(query) ||
+          p.patient_id?.toLowerCase().includes(query)
+        );
+      });
     }
 
     // Apply ICD code filter
     if (icdCodeFilter && icdCodeFilter !== "all") {
-      filtered = filtered.filter(apt => apt.icd_code_id === icdCodeFilter);
+      filtered = filtered.filter((apt) => apt.icd_code_id === icdCodeFilter);
     }
     
     return filtered;
@@ -559,13 +584,13 @@ const DoctorAppointments = () => {
               <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Created By</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
               <TableBody>{paginatedAppointments.map((apt) => (
                 <TableRow key={apt.id} className="hover:bg-accent/50">
-                  <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
-                  <TableCell>{apt.patients.phone}</TableCell>
+                  <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
+                  <TableCell>{apt.patients?.phone || "-"}</TableCell>
                   {isGynecologist && (
                     <TableCell>
-                      {apt.patients.pregnancy_start_date ? (
+                      {apt.patients?.pregnancy_start_date ? (
                         <span className="text-primary font-medium">
-                          {calculatePregnancyDuration(apt.patients.pregnancy_start_date)}
+                          {calculatePregnancyDuration(apt.patients!.pregnancy_start_date)}
                         </span>
                       ) : (
                         <span className="text-muted-foreground text-sm">-</span>
@@ -629,7 +654,7 @@ const DoctorAppointments = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete this appointment for {apt.patients.full_name}? This action cannot be undone.
+                                Are you sure you want to delete this appointment for {apt.patients?.full_name || "this patient"}? This action cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -679,7 +704,7 @@ const DoctorAppointments = () => {
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Edit Appointment</DialogTitle><DialogDescription>Update appointment details for {editingAppointment?.patients.full_name}</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle>Edit Appointment</DialogTitle><DialogDescription>Update appointment details for {editingAppointment?.patients?.full_name || "patient"}</DialogDescription></DialogHeader>
           {editingAppointment && (
             <form onSubmit={handleEditAppointment} className="space-y-4">
               <div className="space-y-2">
