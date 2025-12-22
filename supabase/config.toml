@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.update-admin-email]
 verify_jwt = false
+
+[functions.cleanup-orphaned-users]
+verify_jwt = false

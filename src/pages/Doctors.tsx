@@ -239,6 +239,19 @@ const Doctors = () => {
       return;
     }
 
+    // Delete the doctor user from auth.users via edge function
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        await supabase.functions.invoke("delete-user", {
+          body: { userId: doctorToDelete.id },
+        });
+      }
+    } catch (authDeleteError) {
+      console.error("Error deleting auth user:", authDeleteError);
+      // Continue anyway as the doctor record is already deleted
+    }
+
     // Immediately update local state
     setDoctors(prevDoctors => prevDoctors.filter(d => d.id !== doctorToDelete.id));
     setFilteredDoctors(prevDoctors => prevDoctors.filter(d => d.id !== doctorToDelete.id));

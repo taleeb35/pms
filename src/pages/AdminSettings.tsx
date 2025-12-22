@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, DollarSign } from "lucide-react";
+import { Mail, DollarSign, Trash2, Loader2 } from "lucide-react";
 
 const AdminSettings = () => {
   const [supportEmail, setSupportEmail] = useState("");
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState("");
   const [loading, setLoading] = useState(false);
   const [savingFee, setSavingFee] = useState(false);
+  const [cleaningUp, setCleaningUp] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -105,6 +106,28 @@ const AdminSettings = () => {
     });
   };
 
+  const handleCleanupOrphanedUsers = async () => {
+    setCleaningUp(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("cleanup-orphaned-users");
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Cleanup Complete",
+        description: `Deleted ${data.deletedCount} orphaned user(s). ${data.failedCount > 0 ? `Failed: ${data.failedCount}` : ''}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cleanup orphaned users",
+        variant: "destructive",
+      });
+    } finally {
+      setCleaningUp(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -167,6 +190,29 @@ const AdminSettings = () => {
           </div>
           <Button onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Save Changes"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <Trash2 className="h-5 w-5" />
+            Cleanup Orphaned Users
+          </CardTitle>
+          <CardDescription>
+            Remove auth users that are not linked to any doctor, clinic, or receptionist. 
+            This allows deleted users to sign up again with the same email.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button 
+            variant="destructive" 
+            onClick={handleCleanupOrphanedUsers} 
+            disabled={cleaningUp}
+          >
+            {cleaningUp && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {cleaningUp ? "Cleaning up..." : "Cleanup Orphaned Users"}
           </Button>
         </CardContent>
       </Card>
