@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, Users, Stethoscope, UserPlus } from "lucide-react";
+import { LogIn, Users, Stethoscope, UserPlus, BookOpen } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -127,6 +127,14 @@ const PublicHeader = () => {
               className="text-muted-foreground hover:text-foreground font-medium"
             >
               Contact
+            </Button>
+            <Button 
+              variant="ghost"
+              onClick={() => navigate("/knowledge-base")} 
+              className="text-muted-foreground hover:text-foreground font-medium"
+            >
+              <BookOpen className="mr-1.5 h-4 w-4" />
+              Help
             </Button>
             <Button 
               onClick={() => setShowLoginDialog(true)} 
