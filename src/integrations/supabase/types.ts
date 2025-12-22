@@ -525,6 +525,50 @@ export type Database = {
           },
         ]
       }
+      doctor_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          doctor_id: string
+          id: string
+          month: string
+          notes: string | null
+          payment_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          doctor_id: string
+          id?: string
+          month: string
+          notes?: string | null
+          payment_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          month?: string
+          notes?: string | null
+          payment_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_payments_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_report_templates: {
         Row: {
           clinic_id: string | null
