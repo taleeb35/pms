@@ -33,6 +33,59 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
+      // First, check if the account exists and is active
+      // Check for clinic account
+      const { data: clinicData } = await supabase
+        .from("profiles")
+        .select("id, clinics(status)")
+        .eq("email", email.toLowerCase())
+        .maybeSingle();
+
+      // Check for doctor account
+      const { data: doctorData } = await supabase
+        .from("profiles")
+        .select("id, doctors(approved, clinic_id, clinics:clinic_id(status))")
+        .eq("email", email.toLowerCase())
+        .maybeSingle();
+
+      // Check if user is a clinic and if it's active
+      if (clinicData?.clinics && (clinicData.clinics as any)?.status !== "active") {
+        toast({
+          title: "Account Not Active",
+          description: "Your clinic account is not active yet. Please wait for admin approval before resetting your password.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Check if user is a doctor and if they're approved
+      if (doctorData?.doctors) {
+        const doctor = doctorData.doctors as any;
+        
+        // Check if doctor is approved
+        if (!doctor.approved) {
+          toast({
+            title: "Account Not Active",
+            description: "Your doctor account is not approved yet. Please wait for approval before resetting your password.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // If doctor belongs to a clinic, check if clinic is active
+        if (doctor.clinic_id && doctor.clinics?.status !== "active") {
+          toast({
+            title: "Clinic Not Active",
+            description: "Your clinic is not active. Please contact your clinic administrator.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
       // Use Supabase's built-in password reset
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/reset-password`,
