@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Banknote, CheckCircle2, Clock, Building2, Calendar, RefreshCw, Users } from "lucide-react";
+import { Banknote, CheckCircle2, Clock, Building2, Calendar, RefreshCw, Users, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { format, startOfMonth, subMonths, addMonths } from "date-fns";
 
@@ -35,6 +36,7 @@ const AdminFinance = () => {
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
   // Generate last 12 months for dropdown
@@ -205,9 +207,19 @@ const AdminFinance = () => {
   const paidAmount = payments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
   const totalEarnings = payments.reduce((sum, p) => sum + p.amount, 0);
 
+  // Filter payments by search query
+  const filteredPayments = payments.filter((payment) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const clinicName = payment.clinic?.clinic_name?.toLowerCase() || "";
+    const email = payment.clinic?.profiles?.email?.toLowerCase() || "";
+    const phone = payment.clinic?.profiles?.phone?.toLowerCase() || "";
+    return clinicName.includes(query) || email.includes(query) || phone.includes(query);
+  });
+
   // Pagination
-  const totalPages = Math.ceil(payments.length / itemsPerPage);
-  const paginatedPayments = payments.slice(
+  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
+  const paginatedPayments = filteredPayments.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -227,7 +239,7 @@ const AdminFinance = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-primary/10">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Earnings</CardTitle>
@@ -271,17 +283,6 @@ const AdminFinance = () => {
             <p className="text-xs text-muted-foreground">{paidAmount.toLocaleString()} collected</p>
           </CardContent>
         </Card>
-
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Doctor Fee</CardTitle>
-            <Users className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{doctorMonthlyFee.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Per doctor/month</p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Filters */}
@@ -302,6 +303,16 @@ const AdminFinance = () => {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search by clinic name, email, phone..."
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                className="pl-9"
+              />
             </div>
 
             <div className="flex items-center gap-2 ml-auto">
@@ -333,8 +344,10 @@ const AdminFinance = () => {
         <CardContent>
           {loading ? (
             <div className="text-center py-8 text-muted-foreground">Loading payments...</div>
-          ) : payments.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No active clinics found</div>
+          ) : filteredPayments.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              {searchQuery ? "No clinics match your search" : "No active clinics found"}
+            </div>
           ) : (
             <>
               <div className="rounded-md border">
@@ -416,6 +429,7 @@ const AdminFinance = () => {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredPayments.length)} of {filteredPayments.length} clinics
                     Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, payments.length)} of {payments.length} clinics
                   </p>
                   <div className="flex gap-2">
