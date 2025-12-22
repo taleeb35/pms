@@ -64,6 +64,11 @@ interface Specialization {
   name: string;
 }
 
+interface Clinic {
+  id: string;
+  clinic_name: string;
+}
+
 const Doctors = () => {
   const navigate = useNavigate();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -84,14 +89,18 @@ const Doctors = () => {
   const [filterAgeRange, setFilterAgeRange] = useState<string>("all");
   const [filterSpecialization, setFilterSpecialization] = useState<string>("all");
   const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterClinic, setFilterClinic] = useState<string>("all");
   
-  // Specializations from database
+  // Specializations and Clinics from database
   const [specializations, setSpecializations] = useState<Specialization[]>([]);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
   const [specializationOpen, setSpecializationOpen] = useState(false);
+  const [clinicOpen, setClinicOpen] = useState(false);
 
   useEffect(() => {
     fetchDoctors();
     fetchSpecializations();
+    fetchClinics();
   }, []);
 
   const fetchSpecializations = async () => {
@@ -104,9 +113,19 @@ const Doctors = () => {
     }
   };
 
+  const fetchClinics = async () => {
+    const { data } = await supabase
+      .from("clinics")
+      .select("id, clinic_name")
+      .order("clinic_name");
+    if (data) {
+      setClinics(data);
+    }
+  };
+
   useEffect(() => {
     applyFilters();
-  }, [doctors, filterCity, filterAgeRange, filterSpecialization, filterCategory]);
+  }, [doctors, filterCity, filterAgeRange, filterSpecialization, filterCategory, filterClinic]);
 
   const calculateAge = (dateOfBirth: string | null): number | null => {
     if (!dateOfBirth) return null;
@@ -148,6 +167,11 @@ const Doctors = () => {
       filtered = filtered.filter(d => !d.clinic_id);
     } else if (filterCategory === "clinic") {
       filtered = filtered.filter(d => !!d.clinic_id);
+    }
+
+    // Clinic filter
+    if (filterClinic !== "all") {
+      filtered = filtered.filter(d => d.clinic_id === filterClinic);
     }
 
     setFilteredDoctors(filtered);
@@ -397,6 +421,70 @@ const Doctors = () => {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label>Filter by Clinic</Label>
+              <Popover open={clinicOpen} onOpenChange={setClinicOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={clinicOpen}
+                    className="w-full justify-between"
+                  >
+                    {filterClinic === "all"
+                      ? "All Clinics"
+                      : clinics.find(c => c.id === filterClinic)?.clinic_name || "All Clinics"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput placeholder="Search clinic..." />
+                    <CommandList>
+                      <CommandEmpty>No clinic found.</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="all"
+                          onSelect={() => {
+                            setFilterClinic("all");
+                            setClinicOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              filterClinic === "all" ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          All Clinics
+                        </CommandItem>
+                        {clinics.map((clinic) => (
+                          <CommandItem
+                            key={clinic.id}
+                            value={clinic.clinic_name}
+                            onSelect={() => {
+                              setFilterClinic(clinic.id);
+                              setClinicOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                filterClinic === clinic.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {clinic.clinic_name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
             <div className="space-y-2">
               <Label>Items per page</Label>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
