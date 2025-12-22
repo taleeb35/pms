@@ -148,6 +148,7 @@ const Auth = () => {
               phoneNumber,
               city,
               address,
+              requestedDoctors: parseInt(noOfDoctors) || 1,
             },
           });
           console.log("Welcome email sent successfully");
