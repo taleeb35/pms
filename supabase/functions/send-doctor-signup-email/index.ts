@@ -32,15 +32,13 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data: feeData, error: feeError } = await supabase
+    // Fetch system settings
+    const { data: settingsData } = await supabase
       .from("system_settings")
-      .select("value")
-      .eq("key", "doctor_monthly_fee")
-      .maybeSingle();
+      .select("key, value");
 
-    if (feeError) {
-      console.error("Failed to fetch doctor_monthly_fee:", feeError);
-    }
+    const feeData = settingsData?.find(s => s.key === "doctor_monthly_fee");
+    const adminEmailData = settingsData?.find(s => s.key === "admin_email") || settingsData?.find(s => s.key === "support_email");
 
     const resolvedMonthlyFee =
       feeData?.value != null && !isNaN(Number(feeData.value))
@@ -48,6 +46,8 @@ const handler = async (req: Request): Promise<Response> => {
         : typeof monthlyFee === "number" && !isNaN(monthlyFee)
           ? monthlyFee
           : 6000;
+    
+    const adminEmail = adminEmailData?.value || "admin@myclinichq.com";
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -179,14 +179,139 @@ const handler = async (req: Request): Promise<Response> => {
       </html>
     `;
 
+    // Send email to doctor
     const emailResponse = await resend.emails.send({
       from: "MyClinicHQ <noreply@myclinichq.com>",
       to: [email],
       subject: `Registration Received - Dr. ${doctorName} | MyClinicHQ`,
       html: emailHtml,
+      headers: {
+        "X-Priority": "1",
+        "X-MSMail-Priority": "High",
+        "Importance": "High",
+      },
     });
 
     console.log("Doctor signup email sent successfully:", emailResponse);
+
+    // Send admin notification email
+    const adminEmailHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Doctor Registration - MyClinicHQ Admin</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 40px 0;">
+              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+                
+                <!-- Header -->
+                <tr>
+                  <td style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 40px 30px; text-align: center;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
+                      🩺 New Doctor Registration
+                    </h1>
+                    <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
+                      Admin Notification - Requires Review
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Body -->
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 0 0 25px;">
+                      <p style="margin: 0; color: #991b1b; font-size: 16px; font-weight: 600;">
+                        ⚠️ Action Required: New doctor registration pending approval
+                      </p>
+                    </div>
+                    
+                    <!-- Doctor Details Card -->
+                    <div style="background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); border-radius: 12px; padding: 25px; margin: 25px 0;">
+                      <h3 style="margin: 0 0 15px; color: #059669; font-size: 18px;">📋 Doctor Details</h3>
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 10px 0; color: #666; font-size: 14px; width: 40%; border-bottom: 1px solid #ddd;">Name:</td>
+                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;">Dr. ${doctorName}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 10px 0; color: #666; font-size: 14px; border-bottom: 1px solid #ddd;">Email:</td>
+                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;"><a href="mailto:${email}" style="color: #059669;">${email}</a></td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 10px 0; color: #666; font-size: 14px; border-bottom: 1px solid #ddd;">Specialization:</td>
+                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;">${specialization}</td>
+                        </tr>
+                        ${city ? `
+                        <tr>
+                          <td style="padding: 10px 0; color: #666; font-size: 14px;">City:</td>
+                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600;">${city}</td>
+                        </tr>
+                        ` : ''}
+                      </table>
+                    </div>
+                    
+                    <!-- Fee Summary -->
+                    <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 12px; padding: 25px; margin: 25px 0; border: 1px solid #10b981;">
+                      <h3 style="margin: 0 0 15px; color: #065f46; font-size: 18px;">💰 Expected Revenue</h3>
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 8px 0; color: #065f46; font-size: 14px;">Monthly Fee:</td>
+                          <td style="padding: 8px 0; color: #065f46; font-size: 22px; font-weight: 700;">PKR ${resolvedMonthlyFee.toLocaleString('en-PK')}</td>
+                        </tr>
+                      </table>
+                    </div>
+                    
+                    <!-- Registration Time -->
+                    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 15px 20px; margin: 25px 0;">
+                      <p style="margin: 0; color: #374151; font-size: 14px;">
+                        <strong>📅 Registration Time:</strong> ${new Date().toLocaleString('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'full', timeStyle: 'short' })}
+                      </p>
+                    </div>
+                    
+                    <p style="margin: 25px 0 0; color: #555; font-size: 14px; line-height: 1.6;">
+                      Please login to the admin dashboard to review and approve this registration.
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="background-color: #1f2937; padding: 30px; text-align: center;">
+                    <p style="margin: 0 0 10px; color: #9ca3af; font-size: 14px;">
+                      MyClinicHQ Admin Notification
+                    </p>
+                    <p style="margin: 0; color: #6b7280; font-size: 12px;">
+                      © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+                
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const adminNotification = await resend.emails.send({
+      from: "MyClinicHQ System <noreply@myclinichq.com>",
+      to: [adminEmail],
+      subject: `🩺 New Doctor Registration: Dr. ${doctorName} - Action Required`,
+      html: adminEmailHtml,
+      headers: {
+        "X-Priority": "1",
+        "X-MSMail-Priority": "High",
+        "Importance": "High",
+      },
+    });
+
+    console.log("Admin notification email sent successfully:", adminNotification);
 
     return new Response(JSON.stringify({ success: true, data: emailResponse }), {
       status: 200,
