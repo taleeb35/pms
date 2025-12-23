@@ -138,5 +138,5 @@ All colors MUST be HSL.
     color: #fff !important;
 }
 .hover\:text-primary-foreground:hover {
-    color: #544feb;
+    color: #544feb  !important;
 }
