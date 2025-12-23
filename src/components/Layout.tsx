@@ -320,10 +320,3 @@ const Layout = ({ children }: LayoutProps) => {
 };
 
 export default Layout;
-
-<style>
-  .dr .bg-accent\/50 {
-    background-color: #4051b5 !important;
-    color: #fff !important;
-}
-</style>
