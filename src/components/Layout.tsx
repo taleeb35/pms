@@ -236,7 +236,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Enhanced Header with Logo and Graphics */}
-      <header className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-card via-card/95 to-primary/5 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
+      <header className="dr sticky top-0 z-50 w-full border-b bg-gradient-to-r from-card via-card/95 to-primary/5 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
