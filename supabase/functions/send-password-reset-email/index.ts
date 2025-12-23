@@ -30,9 +30,9 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "MedCare Pro <onboarding@resend.dev>",
+        from: "MyClinicHQ <noreply@myclinichq.com>",
         to: [email],
-        subject: "Password Reset Request - MedCare Pro",
+        subject: "Password Reset Request - MyClinicHQ",
         html: `
           <!DOCTYPE html>
           <html>
@@ -54,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </p>
                   
                   <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                    We received a request to reset your password for your MedCare Pro account.
+                    We received a request to reset your password for your MyClinicHQ account.
                   </p>
 
                   <div style="background: linear-gradient(135deg, #e0f2fe 0%, #e8e0fe 100%); border-radius: 12px; padding: 20px; margin: 24px 0; border-left: 4px solid #667eea;">
@@ -81,13 +81,13 @@ const handler = async (req: Request): Promise<Response> => {
                   
                   <p style="color: #666; font-size: 14px; text-align: center;">
                     Best regards,<br>
-                    <strong>The MedCare Pro Team</strong>
+                    <strong>The MyClinicHQ Team</strong>
                   </p>
                 </div>
                 
                 <div style="text-align: center; padding: 20px; color: #888; font-size: 12px;">
-                  <p>This is an automated message from MedCare Pro.</p>
-                  <p>© ${new Date().getFullYear()} MedCare Pro. All rights reserved.</p>
+                  <p>This is an automated message from MyClinicHQ.</p>
+                  <p>© ${new Date().getFullYear()} MyClinicHQ. All rights reserved.</p>
                 </div>
               </div>
             </body>
