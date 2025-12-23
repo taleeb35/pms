@@ -40,7 +40,7 @@ const handler = async (req: Request): Promise<Response> => {
       .select("key, value");
 
     const feeData = settingsData?.find(s => s.key === "doctor_monthly_fee");
-    const adminEmailData = settingsData?.find(s => s.key === "admin_email") || settingsData?.find(s => s.key === "support_email");
+    const adminEmailData = settingsData?.find(s => s.key === "support_email") || settingsData?.find(s => s.key === "admin_email");
 
     const feePerDoctor = feeData ? parseInt(feeData.value) : 6000;
     const numberOfDoctors = requestedDoctors || 1;
