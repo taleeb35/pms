@@ -154,10 +154,8 @@ const AdminFinance = () => {
       const allPayments: ClinicPayment[] = [];
       
       for (const clinic of eligibleClinics) {
-        const { count: doctorCount } = await supabase
-          .from("doctors")
-          .select("id", { count: "exact", head: true })
-          .eq("clinic_id", clinic.id);
+        // Use requested_doctors for billing, not actual doctor count
+        const requestedDoctors = clinic.requested_doctors || 0;
 
         const existingPayment = paymentsMap.get(clinic.id);
         
@@ -167,14 +165,14 @@ const AdminFinance = () => {
             clinic: clinic as any,
           });
         } else {
-          const amount = (doctorCount || 0) * doctorMonthlyFee;
+          const amount = requestedDoctors * doctorMonthlyFee;
           const { data: newPayment, error: insertError } = await supabase
             .from("clinic_payments")
             .insert({
               clinic_id: clinic.id,
               month: selectedMonth,
               amount,
-              doctor_count: doctorCount || 0,
+              doctor_count: requestedDoctors,
               status: "pending",
             })
             .select()
@@ -349,10 +347,19 @@ const AdminFinance = () => {
     }
   };
 
-  // Combined statistics
-  const clinicTotalAmount = clinicPayments.reduce((sum, p) => sum + p.amount, 0);
-  const clinicPendingAmount = clinicPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
-  const clinicPaidAmount = clinicPayments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
+  // Combined statistics - use requested_doctors for estimated amounts
+  const clinicTotalAmount = clinicPayments.reduce((sum, p) => {
+    const requestedDoctors = p.clinic?.requested_doctors || p.doctor_count;
+    return sum + (requestedDoctors * doctorMonthlyFee);
+  }, 0);
+  const clinicPendingAmount = clinicPayments.filter(p => p.status === "pending").reduce((sum, p) => {
+    const requestedDoctors = p.clinic?.requested_doctors || p.doctor_count;
+    return sum + (requestedDoctors * doctorMonthlyFee);
+  }, 0);
+  const clinicPaidAmount = clinicPayments.filter(p => p.status === "paid").reduce((sum, p) => {
+    const requestedDoctors = p.clinic?.requested_doctors || p.doctor_count;
+    return sum + (requestedDoctors * doctorMonthlyFee);
+  }, 0);
   
   const doctorTotalAmount = doctorPayments.reduce((sum, p) => sum + p.amount, 0);
   const doctorPendingAmount = doctorPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
@@ -558,10 +565,12 @@ const AdminFinance = () => {
                             <TableCell className="text-center">
                               <Badge variant="outline" className="gap-1">
                                 <Users className="h-3 w-3" />
-                                {payment.doctor_count}
+                                {payment.clinic?.requested_doctors || payment.doctor_count}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-semibold">{payment.amount.toLocaleString()}</TableCell>
+                            <TableCell className="text-right font-semibold">
+                              {((payment.clinic?.requested_doctors || payment.doctor_count) * doctorMonthlyFee).toLocaleString()}
+                            </TableCell>
                             <TableCell className="text-center">
                               {payment.status === "paid" ? (
                                 <Badge className="bg-success/10 text-success border-success/20 gap-1">
