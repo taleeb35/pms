@@ -134,3 +134,6 @@ All colors MUST be HSL.
     margin: 1cm;
   }
 }
+.hover\:text-foreground:hover {
+    color: #fff !important;
+}
