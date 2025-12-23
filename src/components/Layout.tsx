@@ -1,3 +1,4 @@
+import styles from './Layout.module.css';
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
