@@ -206,7 +206,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "Clinic Management <onboarding@resend.dev>",
+      from: "MyClinicHQ <noreply@myclinichq.com>",
       to: [doctorEmail],
       subject: `🎉 Welcome to ${clinicName} - Your Doctor Account is Ready!`,
       html: emailHtml,
