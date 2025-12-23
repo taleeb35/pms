@@ -209,12 +209,30 @@ const Doctors = () => {
 
   const handleToggleStatus = async (doctorId: string, currentStatus: boolean) => {
     try {
+      const doctor = doctors.find(d => d.id === doctorId);
+      
       const { error } = await supabase
         .from("doctors")
         .update({ approved: !currentStatus })
         .eq("id", doctorId);
 
       if (error) throw error;
+
+      // Send status change email to doctor
+      if (doctor) {
+        try {
+          await supabase.functions.invoke("send-doctor-approval-email", {
+            body: {
+              doctorName: doctor.profiles?.full_name || "Doctor",
+              email: doctor.profiles?.email,
+              specialization: doctor.specialization || "General",
+              status: !currentStatus ? 'approved' : 'pending'
+            },
+          });
+        } catch (emailError) {
+          console.error("Failed to send status email:", emailError);
+        }
+      }
 
       toast({
         title: "Success",

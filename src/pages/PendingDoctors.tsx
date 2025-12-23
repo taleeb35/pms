@@ -19,6 +19,7 @@ interface PendingDoctor {
   email: string;
   phone: string | null;
   city: string | null;
+  specialization: string;
   created_at: string;
 }
 
@@ -41,6 +42,7 @@ const PendingDoctors = () => {
           created_at,
           city,
           contact_number,
+          specialization,
           profiles!inner(full_name, email, phone)
         `)
         .eq("approved", false);
@@ -53,6 +55,7 @@ const PendingDoctors = () => {
         email: doctor.profiles?.email || "N/A",
         phone: doctor.contact_number || doctor.profiles?.phone || "N/A",
         city: doctor.city,
+        specialization: doctor.specialization || "General",
         created_at: doctor.created_at,
       })) || [];
 
@@ -71,12 +74,30 @@ const PendingDoctors = () => {
   const handleApprove = async (doctorId: string) => {
     setActionLoading(doctorId);
     try {
+      const doctor = pendingDoctors.find(d => d.id === doctorId);
+      
       const { error } = await supabase
         .from("doctors")
         .update({ approved: true })
         .eq("id", doctorId);
 
       if (error) throw error;
+
+      // Send approval email to doctor
+      if (doctor) {
+        try {
+          await supabase.functions.invoke("send-doctor-approval-email", {
+            body: {
+              doctorName: doctor.full_name,
+              email: doctor.email,
+              specialization: doctor.specialization,
+              status: 'approved'
+            },
+          });
+        } catch (emailError) {
+          console.error("Failed to send approval email:", emailError);
+        }
+      }
 
       toast({
         title: "Doctor approved",
