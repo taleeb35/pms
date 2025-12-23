@@ -14,6 +14,9 @@ interface DoctorWelcomeEmailRequest {
   doctorEmail: string;
   password: string;
   clinicName: string;
+  clinicAddress?: string;
+  clinicCity?: string;
+  clinicPhone?: string;
   specialization: string;
 }
 
@@ -24,7 +27,16 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { doctorName, doctorEmail, password, clinicName, specialization }: DoctorWelcomeEmailRequest = await req.json();
+    const { 
+      doctorName, 
+      doctorEmail, 
+      password, 
+      clinicName, 
+      clinicAddress,
+      clinicCity,
+      clinicPhone,
+      specialization 
+    }: DoctorWelcomeEmailRequest = await req.json();
 
     console.log("Sending welcome email to doctor:", doctorEmail);
 
@@ -46,12 +58,13 @@ const handler = async (req: Request): Promise<Response> => {
                   
                   <!-- Header -->
                   <tr>
-                    <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%); padding: 40px 40px 30px 40px; text-align: center;">
+                    <td style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%); padding: 40px 40px 30px 40px; text-align: center;">
+                      <div style="font-size: 48px; margin-bottom: 10px;">🏥</div>
                       <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
-                        🎉 Welcome to ${clinicName}!
+                        Welcome to ${clinicName}!
                       </h1>
                       <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
-                        Your doctor account has been created
+                        You've been added as a doctor
                       </p>
                     </td>
                   </tr>
@@ -64,8 +77,48 @@ const handler = async (req: Request): Promise<Response> => {
                       </p>
                       
                       <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                        You have been registered as a doctor at <strong>${clinicName}</strong>. Your specialization has been set as <strong>${specialization}</strong>.
+                        Congratulations! You have been registered as a <strong>${specialization}</strong> at <strong>${clinicName}</strong>. 
+                        Your account is now active and ready to use.
                       </p>
+                      
+                      <!-- Clinic Details Box -->
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 12px; margin: 24px 0; border: 2px solid #10b981;">
+                        <tr>
+                          <td style="padding: 24px;">
+                            <h3 style="margin: 0 0 16px 0; color: #065f46; font-size: 16px; font-weight: 700;">
+                              🏢 Clinic Details
+                            </h3>
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                              <tr>
+                                <td style="padding: 6px 0; color: #047857; font-size: 14px; width: 35%;">Clinic Name:</td>
+                                <td style="padding: 6px 0; color: #065f46; font-size: 14px; font-weight: 600;">${clinicName}</td>
+                              </tr>
+                              ${clinicAddress ? `
+                              <tr>
+                                <td style="padding: 6px 0; color: #047857; font-size: 14px;">Address:</td>
+                                <td style="padding: 6px 0; color: #065f46; font-size: 14px; font-weight: 600;">${clinicAddress}</td>
+                              </tr>
+                              ` : ''}
+                              ${clinicCity ? `
+                              <tr>
+                                <td style="padding: 6px 0; color: #047857; font-size: 14px;">City:</td>
+                                <td style="padding: 6px 0; color: #065f46; font-size: 14px; font-weight: 600;">${clinicCity}</td>
+                              </tr>
+                              ` : ''}
+                              ${clinicPhone ? `
+                              <tr>
+                                <td style="padding: 6px 0; color: #047857; font-size: 14px;">Contact:</td>
+                                <td style="padding: 6px 0; color: #065f46; font-size: 14px; font-weight: 600;">${clinicPhone}</td>
+                              </tr>
+                              ` : ''}
+                              <tr>
+                                <td style="padding: 6px 0; color: #047857; font-size: 14px;">Your Role:</td>
+                                <td style="padding: 6px 0; color: #065f46; font-size: 14px; font-weight: 600;">${specialization}</td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
                       
                       <p style="margin: 0 0 20px 0; color: #374151; font-size: 16px; line-height: 1.6;">
                         Below are your login credentials to access the Doctor Dashboard:
@@ -75,9 +128,12 @@ const handler = async (req: Request): Promise<Response> => {
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; margin: 24px 0; border: 2px solid #f59e0b;">
                         <tr>
                           <td style="padding: 24px;">
+                            <h3 style="margin: 0 0 16px 0; color: #92400e; font-size: 16px; font-weight: 700;">
+                              🔐 Your Login Credentials
+                            </h3>
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                               <tr>
-                                <td style="padding: 8px 0; color: #92400e; font-size: 14px; width: 40%;">Email:</td>
+                                <td style="padding: 8px 0; color: #92400e; font-size: 14px; width: 35%;">Email:</td>
                                 <td style="padding: 8px 0; color: #78350f; font-size: 16px; font-weight: 700;">${doctorEmail}</td>
                               </tr>
                               <tr>
@@ -103,15 +159,28 @@ const handler = async (req: Request): Promise<Response> => {
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                         <tr>
                           <td align="center" style="padding: 20px 0;">
-                            <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
+                            <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);">
                               Login to Doctor Dashboard →
                             </a>
                           </td>
                         </tr>
                       </table>
                       
+                      <!-- What's Next Section -->
+                      <div style="background-color: #f0f9ff; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                        <h3 style="margin: 0 0 12px 0; color: #0369a1; font-size: 16px; font-weight: 700;">
+                          📋 What's Next?
+                        </h3>
+                        <ul style="margin: 0; padding: 0 0 0 20px; color: #0c4a6e; font-size: 14px; line-height: 1.8;">
+                          <li>Login to your dashboard and update your profile</li>
+                          <li>Set up your availability schedule</li>
+                          <li>Start managing your appointments</li>
+                          <li>Access patient records and medical history</li>
+                        </ul>
+                      </div>
+                      
                       <p style="margin: 24px 0 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
-                        If you have any questions, please contact your clinic administrator.
+                        If you have any questions, please contact your clinic administrator at <strong>${clinicName}</strong>.
                       </p>
                     </td>
                   </tr>
@@ -123,7 +192,7 @@ const handler = async (req: Request): Promise<Response> => {
                         © ${new Date().getFullYear()} ${clinicName}. All rights reserved.
                       </p>
                       <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
-                        This email was sent to you because you were registered as a doctor.
+                        This email was sent to you because you were registered as a doctor at ${clinicName}.
                       </p>
                     </td>
                   </tr>
@@ -139,7 +208,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Clinic Management <onboarding@resend.dev>",
       to: [doctorEmail],
-      subject: `Welcome to ${clinicName} - Your Doctor Account is Ready!`,
+      subject: `🎉 Welcome to ${clinicName} - Your Doctor Account is Ready!`,
       html: emailHtml,
     });
 

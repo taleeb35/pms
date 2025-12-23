@@ -146,14 +146,17 @@ const ClinicAddDoctor = () => {
       if (!session) throw new Error("Not authenticated");
       const user = session.user;
 
-      // Fetch clinic name for the email
+      // Fetch clinic details for the email
       const { data: clinicData } = await supabase
         .from("clinics")
-        .select("clinic_name")
+        .select("clinic_name, address, city, phone_number")
         .eq("id", user.id)
         .single();
 
       const clinicName = clinicData?.clinic_name || "Your Clinic";
+      const clinicAddress = clinicData?.address || "";
+      const clinicCity = clinicData?.city || "";
+      const clinicPhone = clinicData?.phone_number || "";
 
       // Store clinic owner's session
       const clinicSession = session;
@@ -197,6 +200,9 @@ const ClinicAddDoctor = () => {
             doctorEmail: formData.email,
             password: formData.password,
             clinicName: clinicName,
+            clinicAddress: clinicAddress,
+            clinicCity: clinicCity,
+            clinicPhone: clinicPhone,
             specialization: formData.specialization,
           },
         });
