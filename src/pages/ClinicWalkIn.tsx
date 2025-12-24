@@ -25,7 +25,7 @@ import {
 } from "@/lib/validations";
 import { useClinicId } from "@/hooks/useClinicId";
 import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
-import { TimeSelect } from "@/components/TimeSelect";
+import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { Calendar as CalendarIcon } from "lucide-react";
 
 interface Doctor {
@@ -510,9 +510,12 @@ const ClinicWalkIn = () => {
 
               <div className="space-y-2">
                 <Label>Appointment Time *</Label>
-                <TimeSelect
+                <DoctorTimeSelect
+                  doctorId={appointmentForm.doctor_id}
+                  selectedDate={new Date()}
                   value={appointmentForm.appointment_time}
                   onValueChange={(value) => setAppointmentForm(prev => ({ ...prev, appointment_time: value }))}
+                  required
                 />
               </div>
 
