@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -173,9 +174,26 @@ const ClinicDiseases = () => {
     currentPage * pageSize
   );
 
-  if (loading) {
-    return <div className="p-6">Loading...</div>;
-  }
+  const isLoading = loading || clinicLoading;
+
+  // Loading skeleton that shows page structure
+  const TableLoadingSkeleton = () => (
+    <>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <TableRow key={i}>
+          <TableCell>
+            <Skeleton className="h-5 w-[200px]" />
+          </TableCell>
+          <TableCell>
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-8 w-8 rounded" />
+            </div>
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
 
   return (
     <div className="space-y-6">
@@ -219,10 +237,12 @@ const ClinicDiseases = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedDiseases.length === 0 ? (
+                {isLoading ? (
+                  <TableLoadingSkeleton />
+                ) : paginatedDiseases.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={2} className="text-center text-muted-foreground">
-                      No diseases found
+                    <TableCell colSpan={2} className="text-center text-muted-foreground py-8">
+                      {searchQuery ? "No diseases match your search" : "No diseases found. Add your first disease."}
                     </TableCell>
                   </TableRow>
                 ) : (
