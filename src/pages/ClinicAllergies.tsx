@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -173,9 +174,26 @@ const ClinicAllergies = () => {
     currentPage * pageSize
   );
 
-  if (loading) {
-    return <div className="p-6">Loading...</div>;
-  }
+  const isLoading = loading || clinicLoading;
+
+  // Loading skeleton that shows page structure
+  const TableLoadingSkeleton = () => (
+    <>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <TableRow key={i}>
+          <TableCell>
+            <Skeleton className="h-5 w-[200px]" />
+          </TableCell>
+          <TableCell>
+            <div className="flex gap-2">
+              <Skeleton className="h-8 w-8 rounded" />
+              <Skeleton className="h-8 w-8 rounded" />
+            </div>
+          </TableCell>
+        </TableRow>
+      ))}
+    </>
+  );
 
   return (
     <div className="space-y-6">
@@ -219,10 +237,12 @@ const ClinicAllergies = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedAllergies.length === 0 ? (
+                {isLoading ? (
+                  <TableLoadingSkeleton />
+                ) : paginatedAllergies.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={2} className="text-center text-muted-foreground">
-                      No allergies found
+                    <TableCell colSpan={2} className="text-center text-muted-foreground py-8">
+                      {searchQuery ? "No allergies match your search" : "No allergies found. Add your first allergy."}
                     </TableCell>
                   </TableRow>
                 ) : (
