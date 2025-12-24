@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -61,6 +62,7 @@ export default function ClinicFinance() {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [searchPatient, setSearchPatient] = useState("");
 
   useEffect(() => {
     fetchDoctors();
@@ -676,36 +678,51 @@ export default function ClinicFinance() {
         </Card>
       </div>
 
-      {/* Appointments Revenue Listing */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <CardTitle>Appointments Revenue</CardTitle>
               <CardDescription>
                 Revenue breakdown for each appointment {(startDate || endDate) ? "in selected date range" : ""}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Show:</span>
-              <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
-                <SelectTrigger className="w-[80px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="25">25</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="75">75</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search patient or doctor..."
+                  value={searchPatient}
+                  onChange={(e) => { setSearchPatient(e.target.value); setCurrentPage(1); }}
+                  className="pl-9 w-[220px]"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Show:</span>
+                <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                  <SelectTrigger className="w-[80px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="25">25</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="75">75</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          {appointments.length === 0 ? (
+          {(() => {
+            const filteredAppointments = appointments.filter(apt =>
+              apt.patient_name.toLowerCase().includes(searchPatient.toLowerCase()) ||
+              apt.doctor_name.toLowerCase().includes(searchPatient.toLowerCase())
+            );
+            return filteredAppointments.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
-              No completed appointments found{(startDate || endDate) ? " for selected date range" : ""}.
+              No completed appointments found{(startDate || endDate) ? " for selected date range" : ""}{searchPatient ? " matching your search" : ""}.
             </p>
           ) : (
             <>
@@ -723,7 +740,7 @@ export default function ClinicFinance() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {appointments
+                  {filteredAppointments
                     .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
                     .map((apt) => {
                       const aptClinicShare = apt.total_fee * apt.clinic_percentage / 100;
@@ -755,10 +772,10 @@ export default function ClinicFinance() {
               </Table>
               
               {/* Pagination */}
-              {appointments.length > itemsPerPage && (
+              {filteredAppointments.length > itemsPerPage && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, appointments.length)} of {appointments.length} entries
+                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAppointments.length)} of {filteredAppointments.length} entries
                   </p>
                   <Pagination>
                     <PaginationContent>
@@ -768,7 +785,7 @@ export default function ClinicFinance() {
                           className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                         />
                       </PaginationItem>
-                      {Array.from({ length: Math.ceil(appointments.length / itemsPerPage) }, (_, i) => i + 1).map((page) => (
+                      {Array.from({ length: Math.ceil(filteredAppointments.length / itemsPerPage) }, (_, i) => i + 1).map((page) => (
                         <PaginationItem key={page}>
                           <PaginationLink
                             onClick={() => setCurrentPage(page)}
@@ -781,8 +798,8 @@ export default function ClinicFinance() {
                       ))}
                       <PaginationItem>
                         <PaginationNext 
-                          onClick={() => setCurrentPage(p => Math.min(Math.ceil(appointments.length / itemsPerPage), p + 1))}
-                          className={currentPage === Math.ceil(appointments.length / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredAppointments.length / itemsPerPage), p + 1))}
+                          className={currentPage === Math.ceil(filteredAppointments.length / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
                         />
                       </PaginationItem>
                     </PaginationContent>
@@ -790,7 +807,8 @@ export default function ClinicFinance() {
                 </div>
               )}
             </>
-          )}
+          );
+          })()}
         </CardContent>
       </Card>
     </div>
