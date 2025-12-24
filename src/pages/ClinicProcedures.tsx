@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { useClinicId } from "@/hooks/useClinicId";
+import { TableSkeleton } from "@/components/TableSkeleton";
 
 interface Procedure {
   id: string;
@@ -182,9 +183,7 @@ const ClinicProcedures = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProcedures = filteredProcedures.slice(startIndex, startIndex + itemsPerPage);
 
-  if (clinicLoading) {
-    return <div className="flex items-center justify-center p-8">Loading...</div>;
-  }
+  const isLoading = clinicLoading || loading;
 
   return (
     <div className="space-y-6">
@@ -236,16 +235,12 @@ const ClinicProcedures = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-8">
-                  Loading...
-                </TableCell>
-              </TableRow>
+            {isLoading ? (
+              <TableSkeleton columns={4} rows={5} columnWidths={["w-[180px]", "w-[150px]", "w-[80px]"]} />
             ) : paginatedProcedures.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                  No procedures found. Add your first procedure.
+                  {searchQuery || selectedDoctorFilter !== "all" ? "No procedures match your filters" : "No procedures found. Add your first procedure."}
                 </TableCell>
               </TableRow>
             ) : (

@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Printer } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Printer, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { TableSkeleton } from "@/components/TableSkeleton";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -464,7 +466,7 @@ const DoctorAppointments = () => {
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const totalPages = Math.ceil(filteredAppointments.length / pageSize);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  // No early return - show skeleton in content instead
 
   return (
     <div className="p-8 space-y-6">
@@ -581,9 +583,29 @@ const DoctorAppointments = () => {
         </div>
         <TabsContent value="table" className="space-y-4">
           <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
-            {paginatedAppointments.length === 0 ? <p className="text-center text-muted-foreground py-8">No appointments scheduled</p> : (
-              <Table><TableHeader><TableRow><TableHead>Patient</TableHead><TableHead>Patient Phone</TableHead>{isGynecologist && <TableHead>Pregnancy</TableHead>}<TableHead>Date & Time</TableHead><TableHead>Created By</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
-              <TableBody>{paginatedAppointments.map((apt) => (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Patient</TableHead>
+                  <TableHead>Patient Phone</TableHead>
+                  {isGynecologist && <TableHead>Pregnancy</TableHead>}
+                  <TableHead>Date & Time</TableHead>
+                  <TableHead>Created By</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableSkeleton columns={isGynecologist ? 7 : 6} rows={5} columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]", "w-[80px]"]} />
+                ) : paginatedAppointments.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
+                      No appointments scheduled
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedAppointments.map((apt) => (
                 <TableRow key={apt.id} className="hover:bg-accent/50">
                   <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                   <TableCell>{apt.patients?.phone || "-"}</TableCell>
@@ -675,8 +697,10 @@ const DoctorAppointments = () => {
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))}</TableBody></Table>
-            )}
+              ))
+                )}
+              </TableBody>
+            </Table>
             <TablePagination
               currentPage={currentPage}
               totalPages={totalPages}
