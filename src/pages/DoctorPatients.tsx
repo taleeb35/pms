@@ -16,7 +16,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon } from "lucide-react";
 import { VisitHistory } from "@/components/VisitHistory";
-import { format, differenceInYears } from "date-fns";
+import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,7 @@ interface Patient {
   city: string | null;
   major_diseases: string | null;
   pregnancy_start_date: string | null;
+  created_at: string;
 }
 
 interface Document {
@@ -125,6 +126,10 @@ const DoctorPatients = () => {
   const [filterGender, setFilterGender] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterDelivery, setFilterDelivery] = useState("");
+  const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
+  const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
+  const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
+  const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
   const [editForm, setEditForm] = useState<{
     full_name: string;
     father_name: string;
@@ -357,6 +362,20 @@ const DoctorPatients = () => {
           if (filterDelivery === "60") return daysUntilDelivery >= 0 && daysUntilDelivery <= 60;
           if (filterDelivery === "90") return daysUntilDelivery >= 0 && daysUntilDelivery <= 90;
           return true;
+        });
+      }
+
+      // Apply added date filter
+      if (filterAddedDateFrom) {
+        filteredData = filteredData.filter(patient => {
+          const createdAt = new Date(patient.created_at);
+          return createdAt >= startOfDay(filterAddedDateFrom);
+        });
+      }
+      if (filterAddedDateTo) {
+        filteredData = filteredData.filter(patient => {
+          const createdAt = new Date(patient.created_at);
+          return createdAt <= endOfDay(filterAddedDateTo);
         });
       }
 
@@ -967,6 +986,51 @@ const DoctorPatients = () => {
                   </SelectContent>
                 </Select>
               )}
+              <div className="flex gap-2 items-center">
+                <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filterAddedDateFrom ? format(filterAddedDateFrom, "PP") : "From Date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filterAddedDateFrom}
+                      onSelect={(date) => { setFilterAddedDateFrom(date); setAddedDateFromPopoverOpen(false); }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Popover open={addedDateToPopoverOpen} onOpenChange={setAddedDateToPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filterAddedDateTo ? format(filterAddedDateTo, "PP") : "To Date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filterAddedDateTo}
+                      onSelect={(date) => { setFilterAddedDateTo(date); setAddedDateToPopoverOpen(false); }}
+                      disabled={(date) => date > new Date() || (filterAddedDateFrom && date < filterAddedDateFrom)}
+                      initialFocus
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {(filterAddedDateFrom || filterAddedDateTo) && (
+                  <Button variant="ghost" size="icon" onClick={() => { setFilterAddedDateFrom(undefined); setFilterAddedDateTo(undefined); }}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -982,12 +1046,13 @@ const DoctorPatients = () => {
                   <TableHead>Gender</TableHead>
                   <TableHead>Age</TableHead>
                   <TableHead>Blood Group</TableHead>
+                  <TableHead>Added Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center text-muted-foreground">
                       No patients found
                     </TableCell>
                   </TableRow>
@@ -1019,10 +1084,11 @@ const DoctorPatients = () => {
                         <TableCell className="capitalize">{patient.gender}</TableCell>
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                         <TableCell>{patient.blood_group || "N/A"}</TableCell>
+                        <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
-                          <TableCell colSpan={7} className="p-0">
+                          <TableCell colSpan={8} className="p-0">
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
