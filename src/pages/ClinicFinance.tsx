@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown, Search } from "lucide-react";
+import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown, Search, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -14,12 +14,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 
 interface AppointmentRevenue {
   id: string;
   patient_name: string;
+  patient_uuid: string;
+  patient_id: string;
+  patient_dob: string;
+  patient_pregnancy_start_date: string | null;
   doctor_name: string;
   appointment_date: string;
+  appointment_time: string;
   consultation_fee: number;
   other_fee: number;
   procedure_fee: number;
@@ -44,6 +50,20 @@ interface ClinicDetails {
   email: string;
 }
 
+interface VisitAppointment {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  appointment_date: string;
+  appointment_time: string;
+  patients: {
+    full_name: string;
+    patient_id: string;
+    date_of_birth: string;
+    pregnancy_start_date?: string | null;
+  };
+}
+
 export default function ClinicFinance() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -63,6 +83,8 @@ export default function ClinicFinance() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [searchPatient, setSearchPatient] = useState("");
+  const [showVisitDialog, setShowVisitDialog] = useState(false);
+  const [visitAppointment, setVisitAppointment] = useState<VisitAppointment | null>(null);
 
   useEffect(() => {
     fetchDoctors();
@@ -215,13 +237,14 @@ export default function ClinicFinance() {
         .select(`
           id,
           appointment_date,
+          appointment_time,
           consultation_fee,
           other_fee,
           procedure_fee,
           refund,
           total_fee,
           doctor_id,
-          patients(full_name),
+          patients(id, full_name, patient_id, date_of_birth, pregnancy_start_date),
           doctors!appointments_doctor_id_fkey(profiles(full_name))
         `)
         .in("doctor_id", selectedDoctor !== "all" ? [selectedDoctor] : doctorIds)
@@ -249,8 +272,13 @@ export default function ClinicFinance() {
         return {
           id: apt.id,
           patient_name: apt.patients?.full_name || "Unknown",
+          patient_uuid: apt.patients?.id || "",
+          patient_id: apt.patients?.patient_id || "N/A",
+          patient_dob: apt.patients?.date_of_birth || "",
+          patient_pregnancy_start_date: apt.patients?.pregnancy_start_date || null,
           doctor_name: apt.doctors?.profiles?.full_name || "Unknown Doctor",
           appointment_date: apt.appointment_date,
+          appointment_time: apt.appointment_time || "",
           consultation_fee: consultationFee,
           other_fee: otherFee,
           procedure_fee: procedureFee,
@@ -737,6 +765,7 @@ export default function ClinicFinance() {
                     <TableHead className="text-right">Total</TableHead>
                     <TableHead className="text-right">Clinic Share</TableHead>
                     <TableHead className="text-right">Dr Share</TableHead>
+                    <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -764,6 +793,30 @@ export default function ClinicFinance() {
                           </TableCell>
                           <TableCell className="text-right text-info font-medium">
                             {aptDrShare.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setVisitAppointment({
+                                  id: apt.id,
+                                  patient_id: apt.patient_uuid,
+                                  doctor_id: apt.doctor_id,
+                                  appointment_date: apt.appointment_date,
+                                  appointment_time: apt.appointment_time,
+                                  patients: {
+                                    full_name: apt.patient_name,
+                                    patient_id: apt.patient_id,
+                                    date_of_birth: apt.patient_dob,
+                                    pregnancy_start_date: apt.patient_pregnancy_start_date,
+                                  },
+                                });
+                                setShowVisitDialog(true);
+                              }}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
                           </TableCell>
                         </TableRow>
                       );
@@ -811,6 +864,12 @@ export default function ClinicFinance() {
           })()}
         </CardContent>
       </Card>
+
+      <VisitRecordDialog
+        open={showVisitDialog}
+        onOpenChange={setShowVisitDialog}
+        appointment={visitAppointment}
+      />
     </div>
   );
 }

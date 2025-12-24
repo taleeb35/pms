@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Banknote, Calendar as CalendarIcon, Download, Building2, Stethoscope, Search } from "lucide-react";
+import { Loader2, Banknote, Calendar as CalendarIcon, Download, Building2, Stethoscope, Search, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -14,11 +14,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 
 interface AppointmentRevenue {
   id: string;
   patient_name: string;
   patient_id: string;
+  patient_uuid: string;
+  patient_dob: string;
+  patient_pregnancy_start_date: string | null;
+  doctor_id: string;
   appointment_date: string;
   appointment_time: string;
   consultation_fee: number;
@@ -42,6 +47,20 @@ interface DoctorDetails {
   clinic_percentage: number;
 }
 
+interface VisitAppointment {
+  id: string;
+  patient_id: string;
+  doctor_id: string;
+  appointment_date: string;
+  appointment_time: string;
+  patients: {
+    full_name: string;
+    patient_id: string;
+    date_of_birth: string;
+    pregnancy_start_date?: string | null;
+  };
+}
+
 export default function DoctorFinance() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -58,6 +77,8 @@ export default function DoctorFinance() {
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [doctorDetails, setDoctorDetails] = useState<DoctorDetails | null>(null);
   const [searchPatient, setSearchPatient] = useState("");
+  const [showVisitDialog, setShowVisitDialog] = useState(false);
+  const [visitAppointment, setVisitAppointment] = useState<VisitAppointment | null>(null);
 
   useEffect(() => {
     fetchDoctorDetails();
@@ -126,6 +147,7 @@ export default function DoctorFinance() {
         .from("appointments")
         .select(`
           id,
+          doctor_id,
           appointment_date,
           appointment_time,
           consultation_fee,
@@ -133,7 +155,7 @@ export default function DoctorFinance() {
           procedure_fee,
           refund,
           total_fee,
-          patients(full_name, patient_id)
+          patients(id, full_name, patient_id, date_of_birth, pregnancy_start_date)
         `)
         .eq("doctor_id", user.id)
         .eq("status", "completed")
@@ -164,6 +186,10 @@ export default function DoctorFinance() {
           id: apt.id,
           patient_name: apt.patients?.full_name || "Unknown",
           patient_id: apt.patients?.patient_id || "N/A",
+          patient_uuid: apt.patients?.id || "",
+          patient_dob: apt.patients?.date_of_birth || "",
+          patient_pregnancy_start_date: apt.patients?.pregnancy_start_date || null,
+          doctor_id: apt.doctor_id,
           appointment_date: apt.appointment_date,
           appointment_time: apt.appointment_time,
           consultation_fee: consultationFee,
@@ -548,6 +574,7 @@ export default function DoctorFinance() {
                     <TableHead className="text-right">Total</TableHead>
                     <TableHead className="text-right">Clinic Share</TableHead>
                     <TableHead className="text-right">Dr Share</TableHead>
+                    <TableHead className="text-center">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -571,6 +598,30 @@ export default function DoctorFinance() {
                       </TableCell>
                       <TableCell className="text-right font-bold text-cyan-600 dark:text-cyan-400">
                         {apt.doctor_share.toLocaleString('en-PK')}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setVisitAppointment({
+                              id: apt.id,
+                              patient_id: apt.patient_uuid,
+                              doctor_id: apt.doctor_id,
+                              appointment_date: apt.appointment_date,
+                              appointment_time: apt.appointment_time,
+                              patients: {
+                                full_name: apt.patient_name,
+                                patient_id: apt.patient_id,
+                                date_of_birth: apt.patient_dob,
+                                pregnancy_start_date: apt.patient_pregnancy_start_date,
+                              },
+                            });
+                            setShowVisitDialog(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -617,6 +668,12 @@ export default function DoctorFinance() {
           })()}
         </CardContent>
       </Card>
+
+      <VisitRecordDialog
+        open={showVisitDialog}
+        onOpenChange={setShowVisitDialog}
+        appointment={visitAppointment}
+      />
     </div>
   );
 }
