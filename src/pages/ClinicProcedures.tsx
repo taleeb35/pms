@@ -125,7 +125,18 @@ const ClinicProcedures = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this procedure?")) return;
+    if (!confirm("Are you sure you want to delete this procedure? The procedure fee will be removed from any appointments using it.")) return;
+
+    // First, clear procedure_id and procedure_fee from any appointments using this procedure
+    const { error: updateError } = await supabase
+      .from("appointments")
+      .update({ procedure_id: null, procedure_fee: 0 })
+      .eq("procedure_id", id);
+
+    if (updateError) {
+      toast({ title: "Error", description: "Failed to update appointments: " + updateError.message, variant: "destructive" });
+      return;
+    }
 
     const { error } = await supabase
       .from("procedures")
@@ -135,7 +146,7 @@ const ClinicProcedures = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Success", description: "Procedure deleted successfully" });
+      toast({ title: "Success", description: "Procedure deleted and removed from appointments" });
       fetchProcedures();
     }
   };
