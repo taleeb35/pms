@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { TableSkeleton } from "@/components/TableSkeleton";
 import {
   Table,
   TableBody,
@@ -195,9 +196,7 @@ const DoctorDiseases = () => {
     currentPage * pageSize
   );
 
-  if (loading) {
-    return <div className="p-6">Loading...</div>;
-  }
+  // No early return for loading - show skeleton in table instead
 
   if (!clinicId) {
     return (
@@ -255,10 +254,12 @@ const DoctorDiseases = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedDiseases.length === 0 ? (
+                {loading ? (
+                  <TableSkeleton columns={2} rows={5} columnWidths={["w-[200px]"]} />
+                ) : paginatedDiseases.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={2} className="text-center text-muted-foreground">
-                      No diseases found
+                    <TableCell colSpan={2} className="text-center text-muted-foreground py-8">
+                      {searchQuery ? "No diseases match your search" : "No diseases found. Add your first disease."}
                     </TableCell>
                   </TableRow>
                 ) : (

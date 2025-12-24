@@ -12,7 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { format, addDays } from "date-fns";
-import { Calendar as CalendarIcon, Clock, Trash2, Plus, User } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, Trash2, Plus, User, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Doctor {
   id: string;
@@ -347,7 +348,31 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
   const selectedDoctor = doctors.find(d => d.id === selectedDoctorId);
 
   if (loading) {
-    return <div className="flex items-center justify-center p-8">Loading...</div>;
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
+          <Skeleton className="h-10 w-64" />
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-4">
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 flex-1" />
+                <Skeleton className="h-10 w-20" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (doctors.length === 0) {

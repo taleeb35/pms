@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TableSkeleton } from "@/components/TableSkeleton";
 
 interface ICDCode {
   id: string;
@@ -142,7 +143,7 @@ const DoctorICDCodes = () => {
   const totalPages = Math.ceil(filteredCodes.length / pageSize);
   const paginatedCodes = filteredCodes.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  // No early return for loading - show skeleton in table instead
 
   if (!clinicId) {
     return (
@@ -181,19 +182,25 @@ const DoctorICDCodes = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {paginatedCodes.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No ICD codes found</p>
-          ) : (
-            <Table>
-              <TableHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableSkeleton columns={3} rows={5} columnWidths={["w-[100px]", "w-[250px]"]} />
+              ) : paginatedCodes.length === 0 ? (
                 <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
+                    {searchQuery ? "No ICD codes match your search" : "No ICD codes found. Add your first ICD code."}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedCodes.map((icd) => (
+              ) : (
+                paginatedCodes.map((icd) => (
                   <TableRow key={icd.id}>
                     <TableCell className="font-mono font-medium">{icd.code}</TableCell>
                     <TableCell>{icd.description}</TableCell>
@@ -226,10 +233,10 @@ const DoctorICDCodes = () => {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+                ))
+              )}
+            </TableBody>
+          </Table>
 
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center gap-2">
