@@ -290,7 +290,7 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="new_bg hidden text-sm text-muted-foreground sm:inline px-3 py-1 rounded-full bg-accent/50">
+            <span className="new_bg hidden text-sm sm:inline px-3 py-1.5 rounded-full">
               {user.email}
             </span>
             <Button 
