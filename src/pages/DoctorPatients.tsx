@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
+import { TablePagination } from "@/components/TablePagination";
 
 interface Patient {
   id: string;

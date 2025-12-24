@@ -4,14 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search, Edit, Trash2, X, Upload } from "lucide-react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -51,6 +43,7 @@ import {
 import { useClinicId } from "@/hooks/useClinicId";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { VisitHistory } from "@/components/VisitHistory";
+import { TablePagination } from "@/components/TablePagination";
 
 interface Patient {
   id: string;
@@ -976,21 +969,6 @@ const ClinicPatients = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Page Size</Label>
-              <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-50">
-                  <SelectItem value="10">10 per page</SelectItem>
-                  <SelectItem value="25">25 per page</SelectItem>
-                  <SelectItem value="50">50 per page</SelectItem>
-                  <SelectItem value="100">100 per page</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
               <Label>Added Date Range</Label>
               <div className="flex gap-2 items-center">
                 <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
@@ -1373,52 +1351,13 @@ const ClinicPatients = () => {
               </div>
 
               {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, filteredPatients.length)} of {filteredPatients.length} patients
-                  </p>
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum;
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (currentPage <= 3) {
-                          pageNum = i + 1;
-                        } else if (currentPage >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = currentPage - 2 + i;
-                        }
-                        return (
-                          <PaginationItem key={pageNum}>
-                            <PaginationLink
-                              onClick={() => setCurrentPage(pageNum)}
-                              isActive={currentPage === pageNum}
-                              className="cursor-pointer"
-                            >
-                              {pageNum}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      })}
-                      <PaginationItem>
-                        <PaginationNext 
-                          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+              />
             </>
           )}
         </CardContent>
