@@ -25,6 +25,7 @@ import { PrintReportDialog } from "@/components/PrintReportDialog";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
+import { TablePagination } from "@/components/TablePagination";
 
 interface Appointment {
   id: string;
@@ -676,20 +677,13 @@ const DoctorAppointments = () => {
                 </TableRow>
               ))}</TableBody></Table>
             )}
-            <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Show</span>
-                <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(Number(v)); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="25">25</SelectItem><SelectItem value="50">50</SelectItem><SelectItem value="75">75</SelectItem><SelectItem value="100">100</SelectItem></SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
-                <span className="text-sm py-2">Page {currentPage} of {totalPages || 1}</span>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>Next</Button>
-              </div>
-            </div>
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+            />
           </CardContent></Card>
         </TabsContent>
         <TabsContent value="calendar">

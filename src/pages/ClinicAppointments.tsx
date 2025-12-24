@@ -25,6 +25,7 @@ import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { useClinicId } from "@/hooks/useClinicId";
 import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
+import { TablePagination } from "@/components/TablePagination";
 
 interface Appointment {
   id: string;
@@ -748,22 +749,13 @@ const ClinicAppointments = () => {
                   </TableBody>
                 </Table>
               )}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Rows per page:</span>
-                    <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(parseInt(v)); setCurrentPage(1); }}>
-                      <SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger>
-                      <SelectContent>{[25, 50, 75, 100].map(size => <SelectItem key={size} value={size.toString()}>{size}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
-                    <span className="text-sm">Page {currentPage} of {totalPages}</span>
-                    <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>Next</Button>
-                  </div>
-                </div>
-              )}
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+              />
             </CardContent>
           </Card>
         </TabsContent>
