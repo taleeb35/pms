@@ -748,7 +748,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       const visitData = {
         appointment_id: appointment.id,
         patient_id: appointment.patient_id,
-        doctor_id: user.id,
+        doctor_id: appointment.doctor_id, // Use the appointment's doctor_id, not the logged-in user
         blood_pressure: formData.blood_pressure,
         temperature: formData.temperature,
         pulse: formData.pulse,
@@ -827,7 +827,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
         // Check for double booking for follow-up
         const { available } = await isTimeSlotAvailable(
-          user.id,
+          appointment.doctor_id,
           followUpDate,
           followUpTime
         );
@@ -843,7 +843,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
             .from("appointments")
             .insert({
               patient_id: appointment.patient_id,
-              doctor_id: user.id,
+              doctor_id: appointment.doctor_id,
               appointment_date: followUpDate,
               appointment_time: followUpTime,
               duration_minutes: 30,
