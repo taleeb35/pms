@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,11 +10,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
+import { TablePagination } from "@/components/TablePagination";
 
 interface AppointmentRevenue {
   id: string;
@@ -522,30 +521,14 @@ export default function DoctorFinance() {
                 Revenue breakdown for each appointment on selected date
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search patient..."
-                  value={searchPatient}
-                  onChange={(e) => { setSearchPatient(e.target.value); setCurrentPage(1); }}
-                  className="pl-9 w-[200px]"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Show:</span>
-                <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
-                  <SelectTrigger className="w-[80px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="25">25</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                    <SelectItem value="75">75</SelectItem>
-                    <SelectItem value="100">100</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search patient..."
+                value={searchPatient}
+                onChange={(e) => { setSearchPatient(e.target.value); setCurrentPage(1); }}
+                className="pl-9 w-[200px]"
+              />
             </div>
           </div>
         </CardHeader>
@@ -628,41 +611,14 @@ export default function DoctorFinance() {
                 </TableBody>
               </Table>
               
-              {/* Pagination */}
-              {filteredAppointments.length > itemsPerPage && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAppointments.length)} of {filteredAppointments.length} entries
-                  </p>
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious 
-                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      {Array.from({ length: Math.ceil(filteredAppointments.length / itemsPerPage) }, (_, i) => i + 1).map((page) => (
-                        <PaginationItem key={page}>
-                          <PaginationLink
-                            onClick={() => setCurrentPage(page)}
-                            isActive={currentPage === page}
-                            className="cursor-pointer"
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
-                      <PaginationItem>
-                        <PaginationNext 
-                          onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredAppointments.length / itemsPerPage), p + 1))}
-                          className={currentPage === Math.ceil(filteredAppointments.length / itemsPerPage) ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(filteredAppointments.length / itemsPerPage)}
+                pageSize={itemsPerPage}
+                totalItems={filteredAppointments.length}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }}
+              />
             </>
           );
           })()}
