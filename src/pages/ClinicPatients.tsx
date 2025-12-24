@@ -97,6 +97,7 @@ const ClinicPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
   const [selectedDoctor, setSelectedDoctor] = useState<string>(doctorIdFromParams || "all");
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
@@ -107,7 +108,8 @@ const ClinicPatients = () => {
   const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
   const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
+  const [doctorIds, setDoctorIds] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Selected patient state for expandable row
@@ -216,10 +218,17 @@ const ClinicPatients = () => {
 
   useEffect(() => {
     if (clinicId) {
-      fetchDoctorsAndPatients();
+      fetchDoctors();
       fetchAllergyAndDiseaseOptions();
     }
   }, [clinicId]);
+
+  // Fetch patients when filters or pagination changes
+  useEffect(() => {
+    if (doctorIds.length > 0) {
+      fetchPatients();
+    }
+  }, [doctorIds, currentPage, pageSize, searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, filterAddedDateFrom, filterAddedDateTo]);
 
   const fetchAllergyAndDiseaseOptions = async () => {
     if (!clinicId) return;
@@ -253,11 +262,9 @@ const ClinicPatients = () => {
     }
   }, [doctorIdFromParams]);
 
-  const fetchDoctorsAndPatients = async () => {
+  const fetchDoctors = async () => {
     if (!clinicId) return;
-    setLoading(true);
     try {
-      // Fetch doctors under this clinic
       const { data: doctorsData, error: doctorsError } = await supabase
         .from("doctors")
         .select("id, profiles(full_name)")
@@ -265,20 +272,76 @@ const ClinicPatients = () => {
 
       if (doctorsError) throw doctorsError;
       setDoctors(doctorsData || []);
+      setDoctorIds(doctorsData?.map(d => d.id) || []);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
 
-      // Fetch all patients created by doctors of this clinic
-      const doctorIds = doctorsData?.map(d => d.id) || [];
-      
-      if (doctorIds.length > 0) {
-        const { data: patientsData, error: patientsError } = await supabase
-          .from("patients")
-          .select("*")
-          .in("created_by", doctorIds)
-          .order("created_at", { ascending: false });
+  const fetchPatients = async () => {
+    if (doctorIds.length === 0) return;
+    setLoading(true);
+    try {
+      // Build query with server-side filters
+      let query = supabase
+        .from("patients")
+        .select("*", { count: "exact" })
+        .in("created_by", selectedDoctor !== "all" ? [selectedDoctor] : doctorIds)
+        .order("created_at", { ascending: false });
 
-        if (patientsError) throw patientsError;
-        setPatients(patientsData || []);
+      // Server-side search
+      if (searchTerm.trim()) {
+        query = query.or(`full_name.ilike.%${searchTerm.trim()}%,patient_id.ilike.%${searchTerm.trim()}%,phone.ilike.%${searchTerm.trim()}%`);
       }
+
+      // Server-side gender filter
+      if (selectedGender !== "all") {
+        query = query.eq("gender", selectedGender as any);
+      }
+
+      // Server-side city filter
+      if (selectedCity !== "all") {
+        query = query.eq("city", selectedCity);
+      }
+
+      // Server-side date filters
+      if (filterAddedDateFrom) {
+        query = query.gte("created_at", format(startOfDay(filterAddedDateFrom), "yyyy-MM-dd'T'HH:mm:ss"));
+      }
+      if (filterAddedDateTo) {
+        query = query.lte("created_at", format(endOfDay(filterAddedDateTo), "yyyy-MM-dd'T'HH:mm:ss"));
+      }
+
+      // Apply pagination
+      const from = (currentPage - 1) * pageSize;
+      const to = from + pageSize - 1;
+      query = query.range(from, to);
+
+      const { data: patientsData, error: patientsError, count } = await query;
+
+      if (patientsError) throw patientsError;
+      
+      // Client-side age filter (can't easily do date calculations in Postgres)
+      let filteredData = patientsData || [];
+      if (ageFilter !== "all") {
+        filteredData = filteredData.filter(p => {
+          const age = calculateAge(p.date_of_birth);
+          switch (ageFilter) {
+            case "0-18": return age >= 0 && age <= 18;
+            case "19-35": return age >= 19 && age <= 35;
+            case "36-50": return age >= 36 && age <= 50;
+            case "51+": return age >= 51;
+            default: return true;
+          }
+        });
+      }
+
+      setPatients(filteredData);
+      setTotalCount(count || 0);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -331,76 +394,13 @@ const ClinicPatients = () => {
     return age;
   };
 
-  const getFilteredPatients = () => {
-    let filtered = [...patients];
-
-    // Search by patient name
-    if (searchTerm.trim()) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.full_name.toLowerCase().includes(search) ||
-        p.patient_id.toLowerCase().includes(search) ||
-        p.phone.includes(search)
-      );
-    }
-
-    // Filter by doctor
-    if (selectedDoctor !== "all") {
-      filtered = filtered.filter(p => p.created_by === selectedDoctor);
-    }
-
-    // Filter by gender
-    if (selectedGender !== "all") {
-      filtered = filtered.filter(p => p.gender === selectedGender);
-    }
-
-    // Filter by city
-    if (selectedCity !== "all") {
-      filtered = filtered.filter(p => p.city === selectedCity);
-    }
-
-    // Filter by age
-    if (ageFilter !== "all") {
-      filtered = filtered.filter(p => {
-        const age = calculateAge(p.date_of_birth);
-        switch (ageFilter) {
-          case "0-18": return age >= 0 && age <= 18;
-          case "19-35": return age >= 19 && age <= 35;
-          case "36-50": return age >= 36 && age <= 50;
-          case "51+": return age >= 51;
-          default: return true;
-        }
-      });
-    }
-
-    // Filter by added date range
-    if (filterAddedDateFrom) {
-      filtered = filtered.filter(p => {
-        const createdAt = new Date(p.created_at);
-        return createdAt >= startOfDay(filterAddedDateFrom);
-      });
-    }
-    if (filterAddedDateTo) {
-      filtered = filtered.filter(p => {
-        const createdAt = new Date(p.created_at);
-        return createdAt <= endOfDay(filterAddedDateTo);
-      });
-    }
-
-    return filtered;
-  };
-
-  const filteredPatients = getFilteredPatients();
-  const totalPages = Math.ceil(filteredPatients.length / pageSize);
-  const paginatedPatients = filteredPatients.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  // With server-side pagination, patients are already filtered and paginated
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, pageSize]);
+  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, pageSize, filterAddedDateFrom, filterAddedDateTo]);
 
   const getDoctorName = (doctorId: string | null) => {
     if (!doctorId) return "Unknown";
@@ -508,7 +508,7 @@ const ClinicPatients = () => {
 
     setIsEditDialogOpen(false);
     setSelectedPatient(null);
-    fetchDoctorsAndPatients();
+    fetchPatients();
   };
 
   const handleDeletePatient = async () => {
@@ -538,7 +538,7 @@ const ClinicPatients = () => {
     if (selectedPatient?.id === patientToDelete.id) {
       setSelectedPatient(null);
     }
-    fetchDoctorsAndPatients();
+    fetchPatients();
   };
 
   const handleAddHistory = async () => {
@@ -585,7 +585,7 @@ const ClinicPatients = () => {
     setNewHistoryDate("");
     setNewHistoryDateObj(undefined);
     setIsHistoryDialogOpen(false);
-    fetchDoctorsAndPatients();
+    fetchPatients();
   };
 
   const handleUpdateHistory = async () => {
@@ -630,7 +630,7 @@ const ClinicPatients = () => {
     setNewHistoryDateObj(undefined);
     setEditingHistory(null);
     setIsEditHistoryDialogOpen(false);
-    fetchDoctorsAndPatients();
+    fetchPatients();
   };
 
   const handleDeleteHistory = async (id: string) => {
@@ -658,7 +658,7 @@ const ClinicPatients = () => {
     });
 
     setMedicalHistory(updatedHistory);
-    fetchDoctorsAndPatients();
+    fetchPatients();
   };
 
   const handleViewDocument = async (documentUrl: string) => {
@@ -864,7 +864,7 @@ const ClinicPatients = () => {
     setSelectedAllergies([]);
     setSelectedDiseases([]);
     setIsAddDialogOpen(false);
-    fetchDoctorsAndPatients();
+    fetchPatients();
   };
 
   return (
@@ -884,7 +884,7 @@ const ClinicPatients = () => {
         <CardHeader>
           <CardTitle className="text-2xl font-bold">All Patients</CardTitle>
           <CardDescription>
-            View and manage all patients from your clinic doctors ({filteredPatients.length} patients)
+            View and manage all patients from your clinic doctors ({totalCount} patients)
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -1020,7 +1020,7 @@ const ClinicPatients = () => {
 
           {loading ? (
             <p className="text-center text-muted-foreground py-8">Loading patients...</p>
-          ) : filteredPatients.length === 0 ? (
+          ) : patients.length === 0 ? (
             <div className="text-center py-12">
               <div className="h-20 w-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">
                 <Users className="h-10 w-10 text-muted-foreground" />
@@ -1049,7 +1049,7 @@ const ClinicPatients = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paginatedPatients.map((patient) => (
+                    {patients.map((patient) => (
                       <>
                         <TableRow
                           key={patient.id}
