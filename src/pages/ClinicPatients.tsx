@@ -36,7 +36,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
+import { format, subMonths, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { 
@@ -70,6 +70,7 @@ interface Patient {
   major_diseases: string | null;
   medical_history: string | null;
   created_by: string | null;
+  created_at: string;
 }
 
 interface Doctor {
@@ -108,6 +109,10 @@ const ClinicPatients = () => {
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [ageFilter, setAgeFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
+  const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
+  const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
+  const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const { toast } = useToast();
@@ -362,6 +367,20 @@ const ClinicPatients = () => {
           case "51+": return age >= 51;
           default: return true;
         }
+      });
+    }
+
+    // Filter by added date range
+    if (filterAddedDateFrom) {
+      filtered = filtered.filter(p => {
+        const createdAt = new Date(p.created_at);
+        return createdAt >= startOfDay(filterAddedDateFrom);
+      });
+    }
+    if (filterAddedDateTo) {
+      filtered = filtered.filter(p => {
+        const createdAt = new Date(p.created_at);
+        return createdAt <= endOfDay(filterAddedDateTo);
       });
     }
 
@@ -957,6 +976,55 @@ const ClinicPatients = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="space-y-2">
+              <Label>Added Date Range</Label>
+              <div className="flex gap-2 items-center">
+                <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filterAddedDateFrom ? format(filterAddedDateFrom, "PP") : "From"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filterAddedDateFrom}
+                      onSelect={(date) => { setFilterAddedDateFrom(date); setAddedDateFromPopoverOpen(false); }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Popover open={addedDateToPopoverOpen} onOpenChange={setAddedDateToPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal", !filterAddedDateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filterAddedDateTo ? format(filterAddedDateTo, "PP") : "To"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filterAddedDateTo}
+                      onSelect={(date) => { setFilterAddedDateTo(date); setAddedDateToPopoverOpen(false); }}
+                      disabled={(date) => date > new Date() || (filterAddedDateFrom && date < filterAddedDateFrom)}
+                      initialFocus
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {(filterAddedDateFrom || filterAddedDateTo) && (
+                  <Button variant="ghost" size="icon" onClick={() => { setFilterAddedDateFrom(undefined); setFilterAddedDateTo(undefined); }}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
 
           {loading ? (
@@ -986,6 +1054,7 @@ const ClinicPatients = () => {
                       <TableHead>Gender</TableHead>
                       <TableHead>Age</TableHead>
                       <TableHead>Blood Group</TableHead>
+                      <TableHead>Added Date</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1007,10 +1076,11 @@ const ClinicPatients = () => {
                           <TableCell className="capitalize">{patient.gender}</TableCell>
                           <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                           <TableCell>{patient.blood_group || "-"}</TableCell>
+                          <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                         </TableRow>
                         {selectedPatient?.id === patient.id && (
                           <TableRow>
-                            <TableCell colSpan={7} className="p-0">
+                            <TableCell colSpan={8} className="p-0">
                               <div className="border-t bg-muted/30 p-6">
                                 <div className="flex justify-between items-start mb-4">
                                   <h3 className="text-lg font-semibold">Patient Details</h3>

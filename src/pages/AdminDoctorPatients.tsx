@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ArrowLeft, Eye } from "lucide-react";
+import { Search, ArrowLeft, Eye, Calendar as CalendarIcon, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -15,7 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { differenceInYears } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { differenceInYears, format, subMonths, startOfDay, endOfDay } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface Patient {
   id: string;
@@ -30,6 +33,7 @@ interface Patient {
   address: string | null;
   city: string | null;
   major_diseases: string | null;
+  created_at: string;
 }
 
 interface Doctor {
@@ -51,6 +55,10 @@ const AdminDoctorPatients = () => {
   const [filterGender, setFilterGender] = useState("all");
   const [filterCity, setFilterCity] = useState("all");
   const [cities, setCities] = useState<string[]>([]);
+  const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
+  const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
+  const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
+  const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (doctorId) {
@@ -154,6 +162,20 @@ const AdminDoctorPatients = () => {
     // City filter
     if (filterCity !== "all") {
       filtered = filtered.filter((patient) => patient.city === filterCity);
+    }
+
+    // Added date filter
+    if (filterAddedDateFrom) {
+      filtered = filtered.filter((patient) => {
+        const createdAt = new Date(patient.created_at);
+        return createdAt >= startOfDay(filterAddedDateFrom);
+      });
+    }
+    if (filterAddedDateTo) {
+      filtered = filtered.filter((patient) => {
+        const createdAt = new Date(patient.created_at);
+        return createdAt <= endOfDay(filterAddedDateTo);
+      });
     }
 
     // Pagination
@@ -280,6 +302,52 @@ const AdminDoctorPatients = () => {
                 <SelectItem value="100">100 per page</SelectItem>
               </SelectContent>
             </Select>
+
+            <div className="flex gap-2 items-center">
+              <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filterAddedDateFrom ? format(filterAddedDateFrom, "PP") : "From Date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filterAddedDateFrom}
+                    onSelect={(date) => { setFilterAddedDateFrom(date); setAddedDateFromPopoverOpen(false); }}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    fromDate={subMonths(new Date(), 12)}
+                    toDate={new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover open={addedDateToPopoverOpen} onOpenChange={setAddedDateToPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateTo && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filterAddedDateTo ? format(filterAddedDateTo, "PP") : "To Date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filterAddedDateTo}
+                    onSelect={(date) => { setFilterAddedDateTo(date); setAddedDateToPopoverOpen(false); }}
+                    disabled={(date) => date > new Date() || (filterAddedDateFrom && date < filterAddedDateFrom)}
+                    initialFocus
+                    fromDate={subMonths(new Date(), 12)}
+                    toDate={new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+              {(filterAddedDateFrom || filterAddedDateTo) && (
+                <Button variant="ghost" size="icon" onClick={() => { setFilterAddedDateFrom(undefined); setFilterAddedDateTo(undefined); }}>
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -302,13 +370,14 @@ const AdminDoctorPatients = () => {
                 <TableHead>City</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Blood Group</TableHead>
+                <TableHead>Added Date</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPatients.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center text-muted-foreground">
                     No patients found
                   </TableCell>
                 </TableRow>
@@ -325,6 +394,7 @@ const AdminDoctorPatients = () => {
                     <TableCell>{patient.city || "N/A"}</TableCell>
                     <TableCell>{patient.phone}</TableCell>
                     <TableCell>{patient.blood_group || "N/A"}</TableCell>
+                    <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
