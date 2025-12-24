@@ -371,8 +371,12 @@ const Layout = ({ children }: LayoutProps) => {
     ? receptionistMenuGroups
     : adminMenuGroups;
 
-  // Auto-expand group containing the active route
+  // Auto-expand group containing the active route on initial load only
+  const initializedGroupsRef = useRef(false);
   useEffect(() => {
+    if (initializedGroupsRef.current) return;
+    initializedGroupsRef.current = true;
+    
     const currentPath = location.pathname;
     const newOpenGroups: Record<string, boolean> = {};
     
@@ -383,8 +387,8 @@ const Layout = ({ children }: LayoutProps) => {
       }
     });
     
-    setOpenGroups(prev => ({ ...prev, ...newOpenGroups }));
-  }, [location.pathname, menuGroups]);
+    setOpenGroups(newOpenGroups);
+  }, []);
 
   const toggleGroup = (label: string) => {
     setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }));
@@ -486,8 +490,8 @@ const Layout = ({ children }: LayoutProps) => {
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-between hover:bg-accent/50 ${
-                        hasActiveItem ? "bg-primary/10 text-primary font-medium" : ""
+                      className={`w-full justify-between text-foreground hover:bg-accent ${
+                        hasActiveItem ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary" : "hover:text-foreground"
                       }`}
                     >
                       <span className="flex items-center">
@@ -495,9 +499,9 @@ const Layout = ({ children }: LayoutProps) => {
                         {group.label}
                       </span>
                       {isOpen ? (
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-4 w-4 transition-transform" />
                       ) : (
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-4 w-4 transition-transform" />
                       )}
                     </Button>
                   </CollapsibleTrigger>
