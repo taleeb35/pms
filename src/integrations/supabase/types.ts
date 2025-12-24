@@ -1584,6 +1584,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_doctor_clinic_id: { Args: { _doctor_id: string }; Returns: string }
+      get_receptionist_clinic_id: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1592,6 +1597,10 @@ export type Database = {
         Returns: boolean
       }
       is_clinic_active: { Args: { _clinic_id: string }; Returns: boolean }
+      is_receptionist_of_clinic: {
+        Args: { _clinic_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:
