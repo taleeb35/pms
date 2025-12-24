@@ -526,7 +526,7 @@ const ClinicAppointments = () => {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus />
+                      <Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} initialFocus />
                     </PopoverContent>
                   </Popover>
                 </div>
@@ -820,7 +820,7 @@ const ClinicAppointments = () => {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))} initialFocus />
+                      <Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} initialFocus />
                     </PopoverContent>
                   </Popover>
                 </div>

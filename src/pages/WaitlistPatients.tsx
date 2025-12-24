@@ -301,7 +301,6 @@ const WaitlistPatients = () => {
                       onSelect={(date) => {
                         setScheduledDate(date);
                       }}
-                      disabled={(date) => date < new Date()}
                       initialFocus
                       className="pointer-events-auto"
                     />
