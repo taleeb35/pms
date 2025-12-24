@@ -86,6 +86,7 @@ const DoctorPatients = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    added_date: string;
   }>({
     full_name: "",
     father_name: "",
@@ -100,7 +101,10 @@ const DoctorPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    added_date: "",
   });
+  const [addedDate, setAddedDate] = useState<Date>();
+  const [addedDatePopoverOpen, setAddedDatePopoverOpen] = useState(false);
   const [dobDate, setDobDate] = useState<Date>();
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [editDobDate, setEditDobDate] = useState<Date>();
@@ -119,6 +123,13 @@ const DoctorPatients = () => {
       setEditForm(prev => ({ ...prev, date_of_birth: format(editDobDate, 'yyyy-MM-dd') }));
     }
   }, [editDobDate]);
+
+  // Sync addedDate with addForm.added_date
+  useEffect(() => {
+    if (addedDate) {
+      setAddForm(prev => ({ ...prev, added_date: format(addedDate, 'yyyy-MM-dd\'T\'HH:mm:ss') }));
+    }
+  }, [addedDate]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [totalCount, setTotalCount] = useState(0);
@@ -841,6 +852,7 @@ const DoctorPatients = () => {
           pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
             ? format(pregnancyStartDate, "yyyy-MM-dd") 
             : null,
+          created_at: addForm.added_date || new Date().toISOString(),
         },
       ])
       .select();
@@ -876,7 +888,9 @@ const DoctorPatients = () => {
       marital_status: "",
       city: "",
       major_diseases: "",
+      added_date: "",
     });
+    setAddedDate(undefined);
     setDobDate(undefined);
     setPregnancyStartDate(undefined);
     setIsAddDialogOpen(false);
@@ -1589,6 +1603,38 @@ const DoctorPatients = () => {
                       captionLayout="dropdown-buttons"
                       fromYear={1900}
                       toYear={new Date().getFullYear()}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label>Added Date</Label>
+                <Popover open={addedDatePopoverOpen} onOpenChange={setAddedDatePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !addedDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {addedDate ? format(addedDate, "PPP") : <span>Today (default)</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={addedDate}
+                      onSelect={(date) => {
+                        setAddedDate(date);
+                        setAddedDatePopoverOpen(false);
+                      }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
                     />
                   </PopoverContent>
                 </Popover>
