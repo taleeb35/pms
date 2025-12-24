@@ -1,5 +1,5 @@
 import styles from './Layout.module.css';
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import {
   FileText,
   Layers,
 } from "lucide-react";
-import { User } from "@supabase/supabase-js";
+import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
 
 interface LayoutProps {
@@ -35,21 +35,41 @@ const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const initRef = useRef(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/");
+    // Prevent double initialization in development mode (React StrictMode)
+    if (initRef.current) return;
+    initRef.current = true;
+
+    // Set up auth state listener FIRST (critical for proper session handling)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      // Only update state synchronously - no async calls here to prevent deadlock
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsInitialized(true);
+      
+      // Handle specific auth events
+      if (event === 'SIGNED_OUT' || !currentSession) {
+        // Use setTimeout to defer navigation and avoid potential deadlock
+        setTimeout(() => {
+          navigate("/");
+        }, 0);
       }
     });
 
-    const {
-      data: { subscription },
-  } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (!session) {
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
+      setSession(existingSession);
+      setUser(existingSession?.user ?? null);
+      setIsInitialized(true);
+      
+      if (!existingSession) {
         navigate("/");
       }
     });
@@ -232,7 +252,8 @@ const Layout = ({ children }: LayoutProps) => {
     ? receptionistMenuItems
     : adminMenuItems;
 
-  if (!user) return null;
+  // Show nothing while initializing to prevent flicker
+  if (!isInitialized || !user) return null;
 
   return (
     <div className="min-h-screen bg-background">
