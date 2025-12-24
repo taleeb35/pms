@@ -608,6 +608,10 @@ const DoctorAppointments = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-background z-50">
+                        <DropdownMenuItem onClick={() => openEditDialog(apt)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Appointment
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => openVisitDialog(apt)}>
                           <FileText className="h-4 w-4 mr-2" />
                           Record Visit
@@ -618,6 +622,7 @@ const DoctorAppointments = () => {
                             Print Report
                           </DropdownMenuItem>
                         )}
+                        <DropdownMenuSeparator />
                         {apt.status === "scheduled" && (
                           <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
                             <Check className="h-4 w-4 mr-2" />
