@@ -17,7 +17,7 @@ import { VisitHistory } from "./VisitHistory";
 import { PatientMedicalDocsView } from "./PatientMedicalDocsView";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
-import { TimeSelect } from "./TimeSelect";
+import { DoctorTimeSelect } from "./DoctorTimeSelect";
 
 interface Procedure {
   id: string;
@@ -1279,7 +1279,9 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                   </div>
                   <div>
                     <Label>Next Visit Time</Label>
-                    <TimeSelect
+                    <DoctorTimeSelect
+                      doctorId={appointment?.doctor_id || ""}
+                      selectedDate={nextVisitDate}
                       value={nextVisitTime}
                       onValueChange={setNextVisitTime}
                       placeholder="Select time"
