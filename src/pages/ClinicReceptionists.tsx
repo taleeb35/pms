@@ -13,6 +13,7 @@ import { Plus, Trash2, UserCog, Search, Pencil, CheckCircle2, Clock } from "luci
 import { format } from "date-fns";
 import { validateName, validateEmail, validatePassword, validatePhone, handleNameInput, handlePhoneInput } from "@/lib/validations";
 import { Badge } from "@/components/ui/badge";
+import TableSkeleton from "@/components/TableSkeleton";
 
 interface Receptionist {
   id: string;
@@ -502,7 +503,21 @@ const ClinicReceptionists = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-center text-muted-foreground py-8">Loading...</p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Added On</TableHead>
+                  <TableHead className="w-[120px]">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableSkeleton columns={6} rows={5} />
+              </TableBody>
+            </Table>
           ) : filteredReceptionists.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
               {searchQuery ? "No receptionists found" : "No receptionists added yet"}

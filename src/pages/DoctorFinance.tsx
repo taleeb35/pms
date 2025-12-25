@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Banknote, Calendar as CalendarIcon, Download, Building2, Stethoscope, Search, Eye } from "lucide-react";
+import { Banknote, Calendar as CalendarIcon, Download, Building2, Stethoscope, Search, Eye } from "lucide-react";
+import TableSkeleton from "@/components/TableSkeleton";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -360,13 +361,7 @@ export default function DoctorFinance() {
   const clinicPct = doctorDetails?.clinic_percentage || 0;
   const doctorPct = 100 - clinicPct;
 
-  if (loading && !doctorDetails) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
+  // Remove full-page loading - we'll use skeleton in the table instead
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -534,9 +529,23 @@ export default function DoctorFinance() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Patient Name</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Sub Total</TableHead>
+                  <TableHead className="text-right">Discount</TableHead>
+                  <TableHead className="text-right">Total</TableHead>
+                  <TableHead className="text-right">Clinic Share</TableHead>
+                  <TableHead className="text-right">Dr Share</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableSkeleton columns={8} rows={5} />
+              </TableBody>
+            </Table>
           ) : (() => {
             const filteredAppointments = appointments.filter(apt =>
               apt.patient_name.toLowerCase().includes(searchPatient.toLowerCase())

@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import type { Json } from "@/integrations/supabase/types";
+import TableSkeleton from "@/components/TableSkeleton";
 
 interface DiseaseTemplate {
   id: string;
@@ -478,7 +479,18 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
 
             <TabsContent value="disease">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Disease Name</TableHead>
+                      <TableHead>Prescription Template</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableSkeleton columns={3} rows={5} />
+                  </TableBody>
+                </Table>
               ) : paginatedDiseaseTemplates.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   {searchTerm ? "No templates found" : "No disease templates yet"}
@@ -521,7 +533,18 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
 
             <TabsContent value="test">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Test Title</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableSkeleton columns={3} rows={5} />
+                  </TableBody>
+                </Table>
               ) : paginatedTestTemplates.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   {searchTerm ? "No templates found" : "No test templates yet"}
@@ -564,7 +587,18 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
 
             <TabsContent value="report">
               {loading ? (
-                <div className="text-center py-8 text-muted-foreground">Loading...</div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Template Name</TableHead>
+                      <TableHead>Fields</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableSkeleton columns={3} rows={5} />
+                  </TableBody>
+                </Table>
               ) : paginatedReportTemplates.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   {searchTerm ? "No templates found" : "No report templates yet"}
