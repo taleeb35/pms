@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Plus, ArrowLeft, Mail, Phone, Users, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import TableSkeleton from "@/components/TableSkeleton";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -239,7 +240,25 @@ const ClinicDoctors = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <p className="text-center text-muted-foreground py-8">Loading doctors...</p>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Doctor Name</TableHead>
+                    <TableHead>Specialization</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Experience</TableHead>
+                    <TableHead>Fee (PKR)</TableHead>
+                    <TableHead>Clinic Share</TableHead>
+                    <TableHead>Dr Share</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableSkeleton columns={8} rows={5} />
+                </TableBody>
+              </Table>
+            </div>
           ) : doctors.length === 0 ? (
             <div className="text-center py-12">
               <div className="h-20 w-20 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4">

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown, Search, Eye } from "lucide-react";
+import { Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown, Search, Eye } from "lucide-react";
+import TableSkeleton from "@/components/TableSkeleton";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -481,13 +482,7 @@ export default function ClinicFinance() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
+  // Remove full-page loading - we'll use skeleton in the table instead
 
   return (
     <div className="container mx-auto p-6 space-y-6">
