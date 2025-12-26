@@ -26,6 +26,7 @@ interface SuccessData {
   fullName: string;
 }
 
+const ReferralProgram = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
@@ -63,15 +64,12 @@ interface SuccessData {
       // to the referral_partners table (they only have INSERT).
       const { error } = await supabase
         .from("referral_partners")
-        .insert(
-          {
-            full_name: data.full_name.trim(),
-            email: data.email.toLowerCase().trim(),
-            phone: data.phone.trim(),
-            referral_code: referralCode,
-          },
-          { returning: "minimal" }
-        );
+        .insert({
+          full_name: data.full_name.trim(),
+          email: data.email.toLowerCase().trim(),
+          phone: data.phone.trim(),
+          referral_code: referralCode,
+        });
 
       if (error) {
         if (error.code === "23505") {
