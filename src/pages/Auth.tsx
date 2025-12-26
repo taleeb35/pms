@@ -232,10 +232,10 @@ const Auth = () => {
 
         if (error) throw error;
 
-        // Check clinic status
+        // Check clinic status and trial
         const { data: clinicData, error: clinicError } = await supabase
           .from("clinics")
-          .select("status, clinic_name")
+          .select("status, clinic_name, trial_end_date")
           .eq("id", authData.user.id)
           .maybeSingle();
 
@@ -250,6 +250,23 @@ const Auth = () => {
           throw new Error(
             "Clinic account not found. Please contact support for assistance."
           );
+        }
+
+        // Check if trial has expired
+        if (clinicData.trial_end_date) {
+          const trialEnd = new Date(clinicData.trial_end_date + "T00:00:00");
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (trialEnd < today) {
+            await supabase.auth.signOut();
+            toast({
+              title: "Trial Expired",
+              description: "Your 14-day free trial has ended. Please contact support to subscribe and continue using all features.",
+              variant: "destructive",
+            });
+            setLoading(false);
+            return;
+          }
         }
 
         // Check if clinic is active

@@ -146,10 +146,10 @@ const DoctorAuth = () => {
 
       if (authError) throw authError;
 
-      // Check if doctor is approved and get clinic status
+      // Check if doctor is approved and get clinic/trial status
       const { data: doctorData, error: doctorError } = await supabase
         .from("doctors")
-        .select("approved, clinic_id")
+        .select("approved, clinic_id, trial_end_date")
         .eq("id", authData.user.id)
         .single();
 
@@ -161,6 +161,23 @@ const DoctorAuth = () => {
       if (!doctorData.approved) {
         await supabase.auth.signOut();
         throw new Error("Your account is pending approval. Please wait for admin approval.");
+      }
+
+      // For single doctors (no clinic), check if trial has expired
+      if (!doctorData.clinic_id && doctorData.trial_end_date) {
+        const trialEnd = new Date(doctorData.trial_end_date + "T00:00:00");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (trialEnd < today) {
+          await supabase.auth.signOut();
+          toast({
+            title: "Trial Expired",
+            description: "Your 14-day free trial has ended. Please contact support to subscribe and continue using all features.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
       }
 
       // Check if the doctor's clinic is active using security definer function
