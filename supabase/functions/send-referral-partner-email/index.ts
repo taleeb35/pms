@@ -12,7 +12,7 @@ interface ReferralPartnerEmailRequest {
   full_name: string;
   email: string;
   referral_code: string;
-  type: "signup" | "approved" | "rejected";
+  type: "signup" | "approved" | "rejected" | "deleted";
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -157,6 +157,44 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
             <div class="footer">
               <p>You're receiving this because you applied to our referral program.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+    } else if (type === "deleted") {
+      subject = "Your Referral Partner Account Has Been Removed";
+      html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #DC2626; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Account Removed</h1>
+            </div>
+            <div class="content">
+              <p>Dear <strong>${full_name}</strong>,</p>
+              <p>We're writing to inform you that your referral partner account has been removed from our system.</p>
+              
+              <p>Your referral code <strong>${referral_code}</strong> is no longer active and cannot be used for new referrals.</p>
+              
+              <p>If you believe this was done in error or have any questions, please contact our support team.</p>
+              
+              <p>Thank you for your interest in our program.</p>
+              
+              <p>Best regards,<br>The Team</p>
+            </div>
+            <div class="footer">
+              <p>You're receiving this because your referral partner account was removed.</p>
             </div>
           </div>
         </body>

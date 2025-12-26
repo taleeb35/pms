@@ -197,6 +197,20 @@ const AdminReferralPartners = () => {
     
     setActionLoading(partnerToDelete.id);
     try {
+      // Send email notification before deleting
+      try {
+        await supabase.functions.invoke("send-referral-partner-email", {
+          body: {
+            full_name: partnerToDelete.full_name,
+            email: partnerToDelete.email,
+            referral_code: partnerToDelete.referral_code,
+            type: "deleted",
+          },
+        });
+      } catch (emailError) {
+        console.error("Email notification failed:", emailError);
+      }
+
       const { error } = await supabase
         .from("referral_partners")
         .delete()
