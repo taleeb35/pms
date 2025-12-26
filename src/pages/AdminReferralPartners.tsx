@@ -29,7 +29,7 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  DollarSign,
+  Coins,
   TrendingUp,
   Copy,
   Eye,
@@ -268,7 +268,7 @@ const AdminReferralPartners = () => {
                 <p className="text-sm text-purple-700">Total Payouts</p>
                 <p className="text-3xl font-bold text-purple-700">Rs. {stats.totalEarnings.toLocaleString()}</p>
               </div>
-              <DollarSign className="h-8 w-8 text-purple-600" />
+              <Coins className="h-8 w-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>

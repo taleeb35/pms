@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, DollarSign, Trash2, Loader2 } from "lucide-react";
+import { Mail, Banknote, Trash2, Loader2 } from "lucide-react";
 
 const AdminSettings = () => {
   const [supportEmail, setSupportEmail] = useState("");
@@ -187,7 +187,7 @@ const AdminSettings = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
+            <Banknote className="h-5 w-5" />
             Doctor Monthly Fee
           </CardTitle>
           <CardDescription>
@@ -219,7 +219,7 @@ const AdminSettings = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
+            <Banknote className="h-5 w-5" />
             Single Doctor Monthly Fee
           </CardTitle>
           <CardDescription>

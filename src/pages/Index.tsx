@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, FileText, Shield, Stethoscope, Sparkles, UserPlus, TrendingUp, DollarSign, Eye, ChartBar, Activity, Clock, LogIn } from "lucide-react";
+import { Calendar, Users, FileText, Shield, Stethoscope, Sparkles, UserPlus, TrendingUp, Coins, Eye, ChartBar, Activity, Clock, LogIn } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 
@@ -39,7 +39,7 @@ const Index = () => {
       color: "from-green-500 to-emerald-500"
     },
     {
-      icon: DollarSign,
+      icon: Coins,
       title: "Finance Management",
       description: "Track clinic revenue, doctor earnings, patient payments, and maintain complete financial records.",
       color: "from-orange-500 to-amber-500"
@@ -260,7 +260,7 @@ const Index = () => {
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 border-2 border-emerald-200 hover:shadow-xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '200ms' }}>
               <div className="flex items-start gap-4">
                 <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl shadow-lg">
-                  <DollarSign className="h-8 w-8 text-white" />
+                  <Coins className="h-8 w-8 text-white" />
                 </div>
                 <div>
                   <h4 className="text-xl font-bold mb-2 text-foreground">Financial Management</h4>

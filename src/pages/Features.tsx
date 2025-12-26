@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Calendar, Users, FileText, Shield, 
-  Sparkles, UserPlus, BarChart3, DollarSign, 
+  Sparkles, UserPlus, BarChart3, Coins, 
   CheckCircle2, ArrowRight, Play,
   Building2, Stethoscope, HeadphonesIcon
 } from "lucide-react";
@@ -42,7 +42,7 @@ const Features = () => {
       color: "from-orange-500 to-amber-500"
     },
     {
-      icon: DollarSign,
+      icon: Coins,
       title: "Finance Tracking",
       description: "Revenue analytics and comprehensive financial reports.",
       color: "from-emerald-500 to-teal-500"
