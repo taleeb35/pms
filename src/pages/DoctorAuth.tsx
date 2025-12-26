@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Home, Stethoscope, Sparkles, Loader2, AlertCircle, UserPlus, LogIn, Check, ChevronsUpDown } from "lucide-react";
+import { Home, Stethoscope, Sparkles, Loader2, AlertCircle, UserPlus, LogIn, Check, ChevronsUpDown, CheckCircle, XCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -75,6 +75,35 @@ const DoctorAuth = () => {
   const [specializationOpen, setSpecializationOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [monthlyFee, setMonthlyFee] = useState<number>(0);
+  const [referralCodeStatus, setReferralCodeStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "inactive">("idle");
+
+  // Debounced referral code validation
+  useEffect(() => {
+    if (!signupData.referralCode.trim()) {
+      setReferralCodeStatus("idle");
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setReferralCodeStatus("checking");
+      
+      const { data, error } = await supabase
+        .from("referral_partners")
+        .select("status")
+        .eq("referral_code", signupData.referralCode.trim().toUpperCase())
+        .maybeSingle();
+
+      if (error || !data) {
+        setReferralCodeStatus("invalid");
+      } else if (data.status !== "approved") {
+        setReferralCodeStatus("inactive");
+      } else {
+        setReferralCodeStatus("valid");
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [signupData.referralCode]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -621,14 +650,42 @@ const DoctorAuth = () => {
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="referralCode" className="text-xs">Referral Code</Label>
-                    <Input
-                      id="referralCode"
-                      value={signupData.referralCode}
-                      onChange={(e) => setSignupData({ ...signupData, referralCode: e.target.value.toUpperCase() })}
-                      placeholder="Enter code if you have one"
-                      className="text-sm border-teal-200 uppercase"
-                      maxLength={10}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="referralCode"
+                        value={signupData.referralCode}
+                        onChange={(e) => setSignupData({ ...signupData, referralCode: e.target.value.toUpperCase() })}
+                        placeholder="Enter code if you have one"
+                        className={`text-sm uppercase pr-10 ${
+                          referralCodeStatus === "valid" 
+                            ? "border-green-400 focus:border-green-500" 
+                            : referralCodeStatus === "invalid" || referralCodeStatus === "inactive"
+                            ? "border-destructive focus:border-destructive"
+                            : "border-teal-200"
+                        }`}
+                        maxLength={10}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {referralCodeStatus === "checking" && (
+                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        )}
+                        {referralCodeStatus === "valid" && (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
+                        {(referralCodeStatus === "invalid" || referralCodeStatus === "inactive") && (
+                          <XCircle className="h-4 w-4 text-destructive" />
+                        )}
+                      </div>
+                    </div>
+                    {referralCodeStatus === "valid" && (
+                      <p className="text-xs text-green-600">Valid referral code</p>
+                    )}
+                    {referralCodeStatus === "invalid" && (
+                      <p className="text-xs text-destructive">Invalid referral code</p>
+                    )}
+                    {referralCodeStatus === "inactive" && (
+                      <p className="text-xs text-destructive">This code is not active</p>
+                    )}
                   </div>
                 </div>
 
