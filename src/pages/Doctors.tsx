@@ -781,12 +781,27 @@ const Doctors = () => {
                 )}
               </div>
 
-              {/* Activate Account Button for expired single doctors */}
+              {/* End Trial Button for expired single doctors - set to inactive */}
               {!selectedDoctor.clinic_id && 
-               ((getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
-               getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0) || !selectedDoctor.approved) && (
+               getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
+               getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 && 
+               selectedDoctor.approved && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                  <p className="text-sm text-destructive font-medium mb-2">⚠️ Trial has expired. Status will change to Inactive.</p>
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={() => handleToggleStatus(selectedDoctor.id, true)}
+                  >
+                    Set to Inactive
+                  </Button>
+                </div>
+              )}
+
+              {/* Activate Account Button for inactive single doctors */}
+              {!selectedDoctor.clinic_id && !selectedDoctor.approved && (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                  <p className="text-sm text-green-700 font-medium mb-3">💳 Payment Received? Activate account to grant 30 days access.</p>
+                  <p className="text-sm text-green-700 font-medium mb-3">💳 Payment Received? Activate account.</p>
                   <Button 
                     className="bg-green-600 hover:bg-green-700 text-white"
                     size="sm" 
@@ -801,29 +816,12 @@ const Doctors = () => {
                         toast({ title: "Error", description: "Failed to activate account", variant: "destructive" });
                         return;
                       }
-                      toast({ title: "Success", description: "Account activated for 30 days" });
+                      toast({ title: "Success", description: "Account activated" });
                       setSelectedDoctor({ ...selectedDoctor, trial_end_date: newEndDate.toISOString().split("T")[0], approved: true });
                       fetchDoctors();
                     }}
                   >
-                    ✓ Activate Account (30 Days)
-                  </Button>
-                </div>
-              )}
-
-              {/* End Trial Button for expired single doctors */}
-              {!selectedDoctor.clinic_id && 
-               getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
-               getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 && 
-               selectedDoctor.approved && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                  <p className="text-sm text-destructive font-medium mb-2">⚠️ Trial has expired. Click "End Trial" to deactivate this doctor's access.</p>
-                  <Button 
-                    variant="destructive" 
-                    size="sm" 
-                    onClick={() => handleToggleStatus(selectedDoctor.id, true)}
-                  >
-                    End Trial
+                    ✓ Activate Account
                   </Button>
                 </div>
               )}
