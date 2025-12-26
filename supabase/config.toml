@@ -32,3 +32,12 @@ verify_jwt = false
 
 [functions.send-clinic-doctor-welcome-email]
 verify_jwt = false
+
+[functions.send-trial-expiry-reminder]
+verify_jwt = false
+
+[functions.send-clinic-status-email]
+verify_jwt = false
+
+[functions.send-referral-partner-email]
+verify_jwt = false
