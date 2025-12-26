@@ -25,11 +25,11 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
             .maybeSingle();
 
           if (clinic?.trial_end_date) {
-            const trialEnd = new Date(clinic.trial_end_date);
+            const trialEnd = new Date(clinic.trial_end_date + "T00:00:00");
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const diffTime = trialEnd.getTime() - today.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             setTrialDaysRemaining(diffDays);
           }
         } else if (userType === "doctor") {
@@ -42,11 +42,11 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
 
           // Only show trial banner for single doctors (no clinic)
           if (doctor && !doctor.clinic_id && doctor.trial_end_date) {
-            const trialEnd = new Date(doctor.trial_end_date);
+            const trialEnd = new Date(doctor.trial_end_date + "T00:00:00");
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             const diffTime = trialEnd.getTime() - today.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             setTrialDaysRemaining(diffDays);
           }
         }
@@ -83,11 +83,11 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
       variant={isUrgent ? "destructive" : "default"} 
       className={`mb-4 ${isUrgent ? "" : "border-warning bg-warning/10"}`}
     >
-      <Clock className={`h-4 w-4 ${isUrgent ? "" : "text-warning"}`} />
-      <AlertDescription className={`ml-2 ${isUrgent ? "" : "text-warning-foreground"}`}>
+      <Clock className={`h-4 w-4 ${isUrgent ? "" : "text-foreground"}`} />
+      <AlertDescription className="ml-2 text-foreground">
         <span className="font-semibold">Free Trial:</span> You have{" "}
         <span className="font-bold">{trialDaysRemaining} day{trialDaysRemaining !== 1 ? "s" : ""}</span>{" "}
-        remaining in your trial period.
+        remaining in your 14-day trial period.
         {isUrgent && " Contact support to subscribe and avoid service interruption."}
       </AlertDescription>
     </Alert>
