@@ -67,7 +67,51 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Found ${doctors?.length || 0} single doctors with expired trials today`);
 
     const emailsSent: string[] = [];
+    const accessRestricted: string[] = [];
     const errors: string[] = [];
+
+    // Restrict access for expired clinics
+    for (const clinic of clinics || []) {
+      try {
+        const { error: updateError } = await supabase
+          .from("clinics")
+          .update({ status: "inactive" })
+          .eq("id", clinic.id);
+
+        if (updateError) {
+          console.error(`Failed to restrict clinic ${clinic.id}:`, updateError);
+          errors.push(`Clinic ${clinic.clinic_name}: ${updateError.message}`);
+        } else {
+          console.log(`Restricted access for clinic: ${clinic.clinic_name}`);
+          accessRestricted.push(`Clinic: ${clinic.clinic_name}`);
+        }
+      } catch (error: any) {
+        console.error(`Error restricting clinic ${clinic.id}:`, error);
+        errors.push(`Clinic ${clinic.clinic_name}: ${error.message}`);
+      }
+    }
+
+    // Restrict access for expired single doctors
+    for (const doctor of doctors || []) {
+      const profile = doctor.profiles as any;
+      try {
+        const { error: updateError } = await supabase
+          .from("doctors")
+          .update({ approved: false })
+          .eq("id", doctor.id);
+
+        if (updateError) {
+          console.error(`Failed to restrict doctor ${doctor.id}:`, updateError);
+          errors.push(`Doctor ${profile?.full_name}: ${updateError.message}`);
+        } else {
+          console.log(`Restricted access for doctor: ${profile?.full_name}`);
+          accessRestricted.push(`Doctor: ${profile?.full_name}`);
+        }
+      } catch (error: any) {
+        console.error(`Error restricting doctor ${doctor.id}:`, error);
+        errors.push(`Doctor ${profile?.full_name}: ${error.message}`);
+      }
+    }
 
     // Send emails to clinics
     for (const clinic of clinics || []) {
@@ -219,6 +263,8 @@ const handler = async (req: Request): Promise<Response> => {
         success: true,
         emailsSent: emailsSent.length,
         emails: emailsSent,
+        accessRestricted: accessRestricted.length,
+        restrictedAccounts: accessRestricted,
         errors: errors.length > 0 ? errors : undefined,
       }),
       {
