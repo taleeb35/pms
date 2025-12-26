@@ -33,8 +33,18 @@ import {
   TrendingUp,
   Copy,
   Eye,
-  Mail,
+  Trash2,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { format } from "date-fns";
 
 interface ReferralPartner {
@@ -67,6 +77,7 @@ const AdminReferralPartners = () => {
   const [partnerReferrals, setPartnerReferrals] = useState<Referral[]>([]);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [partnerToDelete, setPartnerToDelete] = useState<ReferralPartner | null>(null);
 
   useEffect(() => {
     fetchPartners();
@@ -179,6 +190,29 @@ const AdminReferralPartners = () => {
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     toast.success("Referral code copied!");
+  };
+
+  const handleDeletePartner = async () => {
+    if (!partnerToDelete) return;
+    
+    setActionLoading(partnerToDelete.id);
+    try {
+      const { error } = await supabase
+        .from("referral_partners")
+        .delete()
+        .eq("id", partnerToDelete.id);
+
+      if (error) throw error;
+
+      toast.success("Referral partner deleted successfully");
+      setPartnerToDelete(null);
+      fetchPartners();
+    } catch (error) {
+      console.error("Error deleting partner:", error);
+      toast.error("Failed to delete referral partner");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -383,6 +417,15 @@ const AdminReferralPartners = () => {
                               </Button>
                             </>
                           )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => setPartnerToDelete(partner)}
+                            disabled={actionLoading === partner.id}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -480,6 +523,27 @@ const AdminReferralPartners = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!partnerToDelete} onOpenChange={(open) => !open && setPartnerToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Referral Partner</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{partnerToDelete?.full_name}</strong>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeletePartner}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
