@@ -67,10 +67,10 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 40px 30px; text-align: center;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
-                      🩺 Registration Received
+                      🎉 Welcome to MyClinicHQ!
                     </h1>
                     <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
-                      MyClinicHQ - Your Healthcare Partner
+                      Your 14-Day Free Trial Has Started
                     </p>
                   </td>
                 </tr>
@@ -83,12 +83,16 @@ const handler = async (req: Request): Promise<Response> => {
                     </h2>
                     
                     <p style="margin: 0 0 20px; color: #555; font-size: 16px; line-height: 1.6;">
-                      Thank you for registering with <strong>MyClinicHQ</strong>. We are pleased to receive your application to join our growing network of healthcare professionals.
+                      Congratulations! Your account has been <strong>automatically activated</strong> with a <strong>14-day free trial</strong>. You now have full access to all MyClinicHQ features!
                     </p>
                     
-                    <p style="margin: 0 0 25px; color: #555; font-size: 16px; line-height: 1.6;">
-                      Your registration is currently under review by our administrative team.
-                    </p>
+                    <!-- Trial Banner -->
+                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 12px; padding: 25px; margin: 25px 0; text-align: center;">
+                      <h3 style="margin: 0 0 10px; color: #ffffff; font-size: 24px;">🎁 14-Day Free Trial</h3>
+                      <p style="margin: 0; color: rgba(255,255,255,0.95); font-size: 16px;">
+                        Explore all premium features at no cost for the first 14 days!
+                      </p>
+                    </div>
                     
                     <!-- Doctor Details Card -->
                     <div style="background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); border-radius: 12px; padding: 25px; margin: 25px 0;">
@@ -133,18 +137,18 @@ const handler = async (req: Request): Promise<Response> => {
                       </p>
                     </div>
                     
-                    <!-- Payment Activation Notice -->
+                    <!-- Trial Info Notice -->
                     <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
-                      <h4 style="margin: 0 0 10px; color: #1e40af; font-size: 16px;">📌 Account Activation Process</h4>
+                      <h4 style="margin: 0 0 10px; color: #1e40af; font-size: 16px;">📌 What Happens After Your Trial?</h4>
                       <p style="margin: 0; color: #1e40af; font-size: 14px; line-height: 1.6;">
-                        Your account will be <strong>activated</strong> once the payment has been successfully processed. After approval, you will receive payment instructions via email with detailed steps to complete your subscription.
+                        After your 14-day free trial ends, you will need to subscribe to continue using MyClinicHQ. We will send you a reminder before your trial expires with payment instructions.
                       </p>
                     </div>
                     
-                    <!-- Pending Notice -->
-                    <div style="background-color: #f3f4f6; border-left: 4px solid #6b7280; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
-                      <p style="margin: 0; color: #374151; font-size: 14px;">
-                        <strong>⏳ Current Status:</strong> Pending Admin Review
+                    <!-- Active Status Notice -->
+                    <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-left: 4px solid #10b981; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
+                      <p style="margin: 0; color: #065f46; font-size: 14px;">
+                        <strong>✅ Account Status:</strong> Active (Trial Period)
                       </p>
                     </div>
                     

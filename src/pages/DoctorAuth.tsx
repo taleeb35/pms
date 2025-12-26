@@ -268,7 +268,7 @@ const DoctorAuth = () => {
         validatedReferralCode = signupData.referralCode.trim().toUpperCase();
       }
 
-      // Create doctor profile with approved = false (pending admin approval)
+      // Create doctor profile with auto-approved status and 14-day trial
       const { error: doctorError } = await supabase.from("doctors").insert({
         id: authData.user.id,
         specialization: signupData.specialization,
@@ -281,7 +281,7 @@ const DoctorAuth = () => {
         pmdc_number: signupData.pmdcNumber || null,
         city: signupData.city || null,
         clinic_id: null, // No clinic - single doctor
-        approved: false, // Pending admin approval
+        approved: true, // Auto-approve with 14-day trial
         referred_by: validatedReferralCode,
       });
 
@@ -755,14 +755,19 @@ const DoctorAuth = () => {
                 <Sparkles className="h-10 w-10 text-green-600" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl">Registration Successful!</DialogTitle>
+            <DialogTitle className="text-center text-2xl">Welcome to MyClinicHQ! 🎉</DialogTitle>
             <DialogDescription className="text-center text-base space-y-3 pt-4">
               <p className="font-semibold text-foreground">
-                Your account has been created successfully.
+                Your account is now active with a 14-day free trial!
               </p>
               <p className="text-muted-foreground">
-                Your account is pending admin approval. You will be able to login once approved. Monthly fee will apply as per system settings.
+                You can now login and start using all features. A welcome email with details has been sent to your inbox.
               </p>
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg p-3 mt-4">
+                <p className="text-sm text-green-700 font-medium">
+                  🎁 Enjoy 14 days of full access - completely free!
+                </p>
+              </div>
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center pt-4">
