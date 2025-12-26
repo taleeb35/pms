@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Users, DollarSign, Share2, TrendingUp, CheckCircle, Gift, Percent } from "lucide-react";
+import { Users, Coins, Share2, TrendingUp, CheckCircle, Gift, Percent } from "lucide-react";
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -100,7 +100,7 @@ const ReferralProgram = () => {
       description: "Get your personal referral code to share with potential clients",
     },
     {
-      icon: DollarSign,
+      icon: Coins,
       title: "Monthly Payouts",
       description: "Receive your commissions every month directly to your account",
     },

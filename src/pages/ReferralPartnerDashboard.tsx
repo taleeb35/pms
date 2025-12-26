@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
-  Users, Copy, DollarSign, TrendingUp, LogOut, 
+  Users, Copy, Coins, TrendingUp, LogOut, 
   Building2, Stethoscope, Clock, CheckCircle2, XCircle
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -244,7 +244,7 @@ const ReferralPartnerDashboard = () => {
                   <p className="text-3xl font-bold mt-1">Rs. {partner.total_earnings.toLocaleString()}</p>
                 </div>
                 <div className="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-white" />
+                  <Coins className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>

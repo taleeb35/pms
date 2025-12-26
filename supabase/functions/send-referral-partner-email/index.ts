@@ -171,7 +171,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Referral Program <onboarding@resend.dev>",
+        from: "MyClinicHQ <noreply@myclinichq.com>",
         to: [email],
         subject,
         html,
