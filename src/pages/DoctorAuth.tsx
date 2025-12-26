@@ -67,6 +67,7 @@ const DoctorAuth = () => {
     consultationFee: "",
     introduction: "",
     pmdcNumber: "",
+    referralCode: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [specializations, setSpecializations] = useState<string[]>([]);
@@ -233,6 +234,7 @@ const DoctorAuth = () => {
         city: signupData.city || null,
         clinic_id: null, // No clinic - single doctor
         approved: false, // Pending admin approval
+        referred_by: signupData.referralCode.trim().toUpperCase() || null,
       });
 
       if (doctorError) throw doctorError;
@@ -269,6 +271,7 @@ const DoctorAuth = () => {
         consultationFee: "",
         introduction: "",
         pmdcNumber: "",
+        referralCode: "",
       });
     } catch (error: any) {
       toast({
@@ -595,6 +598,17 @@ const DoctorAuth = () => {
                       onChange={(e) => setSignupData({ ...signupData, pmdcNumber: e.target.value })}
                       placeholder="12345-P"
                       className="text-sm border-teal-200"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="referralCode" className="text-xs">Referral Code</Label>
+                    <Input
+                      id="referralCode"
+                      value={signupData.referralCode}
+                      onChange={(e) => setSignupData({ ...signupData, referralCode: e.target.value.toUpperCase() })}
+                      placeholder="Enter code if you have one"
+                      className="text-sm border-teal-200 uppercase"
+                      maxLength={10}
                     />
                   </div>
                 </div>

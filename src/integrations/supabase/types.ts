@@ -796,6 +796,7 @@ export type Database = {
           license_number: string | null
           pmdc_number: string | null
           qualification: string
+          referred_by: string | null
           specialization: string
           updated_at: string
         }
@@ -815,6 +816,7 @@ export type Database = {
           license_number?: string | null
           pmdc_number?: string | null
           qualification: string
+          referred_by?: string | null
           specialization: string
           updated_at?: string
         }
@@ -834,6 +836,7 @@ export type Database = {
           license_number?: string | null
           pmdc_number?: string | null
           qualification?: string
+          referred_by?: string | null
           specialization?: string
           updated_at?: string
         }
