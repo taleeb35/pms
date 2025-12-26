@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 interface ClinicInfo {
   clinic_name: string;
@@ -116,6 +117,10 @@ const ReceptionistDashboard = () => {
   };
 
   const today = format(new Date(), "EEEE, dd MMM yyyy");
+
+  if (loading) {
+    return <DashboardSkeleton statsCount={4} />;
+  }
 
   return (
     <div className="space-y-6">
