@@ -63,6 +63,8 @@ import ReceptionistDashboard from "./pages/ReceptionistDashboard";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeBaseArticle from "./pages/KnowledgeBaseArticle";
 import ReferralProgram from "./pages/ReferralProgram";
+import ReferralPartnerAuth from "./pages/ReferralPartnerAuth";
+import ReferralPartnerDashboard from "./pages/ReferralPartnerDashboard";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -82,6 +84,8 @@ const App = () => (
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/referral-program" element={<ReferralProgram />} />
+          <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
+          <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />
           <Route path="/auth" element={<Auth />} />
