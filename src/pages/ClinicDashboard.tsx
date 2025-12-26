@@ -11,6 +11,7 @@ import { format, addMonths, startOfMonth } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import TrialBanner from "@/components/TrialBanner";
 
 interface Clinic {
   clinic_name: string;
@@ -148,6 +149,9 @@ const ClinicDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Trial Banner */}
+      <TrialBanner userType="clinic" />
+      
       {/* Compact Header */}
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-info/10 via-info/5 to-background p-4 border border-info/20">
         <div className="flex items-center justify-between">

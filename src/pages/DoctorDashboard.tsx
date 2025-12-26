@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import TrialBanner from "@/components/TrialBanner";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -67,7 +68,8 @@ const DoctorDashboard = () => {
   
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Trial Banner for Single Doctors */}
+      <TrialBanner userType="doctor" />
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
