@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Home, Building2, Sparkles, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, Home, Building2, Sparkles, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { CitySelect } from "@/components/CitySelect";
 import {
   Dialog,
@@ -41,8 +41,37 @@ const Auth = () => {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showInactiveDialog, setShowInactiveDialog] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [referralCodeStatus, setReferralCodeStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "inactive">("idle");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Debounced referral code validation
+  useEffect(() => {
+    if (!referralCode.trim()) {
+      setReferralCodeStatus("idle");
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setReferralCodeStatus("checking");
+      
+      const { data, error } = await supabase
+        .from("referral_partners")
+        .select("status")
+        .eq("referral_code", referralCode.trim().toUpperCase())
+        .maybeSingle();
+
+      if (error || !data) {
+        setReferralCodeStatus("invalid");
+      } else if (data.status !== "approved") {
+        setReferralCodeStatus("inactive");
+      } else {
+        setReferralCodeStatus("valid");
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [referralCode]);
 
 
   const handleClinicAuth = async (e: React.FormEvent) => {
@@ -372,16 +401,48 @@ const Auth = () => {
                 </div>
                 <div className="space-y-2 animate-fade-in" style={{ animationDelay: '225ms' }}>
                   <Label htmlFor="referralCode" className="text-sm font-semibold">Referral Code <span className="text-muted-foreground text-xs">(Optional)</span></Label>
-                  <Input
-                    id="referralCode"
-                    type="text"
-                    placeholder="Enter referral code if you have one"
-                    value={referralCode}
-                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                    className="border-2 border-purple-200 focus:border-purple-400 transition-colors uppercase"
-                    maxLength={10}
-                  />
-                  <p className="text-xs text-muted-foreground">If someone referred you, enter their code here</p>
+                  <div className="relative">
+                    <Input
+                      id="referralCode"
+                      type="text"
+                      placeholder="Enter referral code if you have one"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      className={`border-2 transition-colors uppercase pr-10 ${
+                        referralCodeStatus === "valid" 
+                          ? "border-green-400 focus:border-green-500" 
+                          : referralCodeStatus === "invalid" || referralCodeStatus === "inactive"
+                          ? "border-destructive focus:border-destructive"
+                          : "border-purple-200 focus:border-purple-400"
+                      }`}
+                      maxLength={10}
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {referralCodeStatus === "checking" && (
+                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                      )}
+                      {referralCodeStatus === "valid" && (
+                        <CheckCircle className="h-4 w-4 text-green-500" />
+                      )}
+                      {(referralCodeStatus === "invalid" || referralCodeStatus === "inactive") && (
+                        <XCircle className="h-4 w-4 text-destructive" />
+                      )}
+                    </div>
+                  </div>
+                  {referralCodeStatus === "valid" && (
+                    <p className="text-xs text-green-600 flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" /> Valid referral code
+                    </p>
+                  )}
+                  {referralCodeStatus === "invalid" && (
+                    <p className="text-xs text-destructive">Invalid referral code</p>
+                  )}
+                  {referralCodeStatus === "inactive" && (
+                    <p className="text-xs text-destructive">This referral code is not active</p>
+                  )}
+                  {referralCodeStatus === "idle" && (
+                    <p className="text-xs text-muted-foreground">If someone referred you, enter their code here</p>
+                  )}
                 </div>
               </>
             )}
