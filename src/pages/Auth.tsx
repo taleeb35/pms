@@ -36,6 +36,7 @@ const Auth = () => {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [noOfDoctors, setNoOfDoctors] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showInactiveDialog, setShowInactiveDialog] = useState(false);
@@ -127,6 +128,7 @@ const Auth = () => {
           phone_number: phoneNumber,
           address: address,
           requested_doctors: parseInt(noOfDoctors) || 0,
+          referred_by: referralCode.trim().toUpperCase() || null,
         });
 
         if (clinicError) throw clinicError;
@@ -339,6 +341,19 @@ const Auth = () => {
                     className={`border-2 ${errors.noOfDoctors ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
                   />
                   {errors.noOfDoctors && <p className="text-sm text-destructive">{errors.noOfDoctors}</p>}
+                </div>
+                <div className="space-y-2 animate-fade-in" style={{ animationDelay: '225ms' }}>
+                  <Label htmlFor="referralCode" className="text-sm font-semibold">Referral Code <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                  <Input
+                    id="referralCode"
+                    type="text"
+                    placeholder="Enter referral code if you have one"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                    className="border-2 border-purple-200 focus:border-purple-400 transition-colors uppercase"
+                    maxLength={10}
+                  />
+                  <p className="text-xs text-muted-foreground">If someone referred you, enter their code here</p>
                 </div>
               </>
             )}
