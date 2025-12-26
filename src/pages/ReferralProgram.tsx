@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Users, Coins, Share2, TrendingUp, CheckCircle, Gift, Percent } from "lucide-react";
+import { Users, Coins, Share2, TrendingUp, CheckCircle, Gift, Percent, Copy } from "lucide-react";
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -21,9 +21,15 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
+interface SuccessData {
+  referralCode: string;
+  fullName: string;
+}
+
 const ReferralProgram = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successData, setSuccessData] = useState<SuccessData | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -42,6 +48,11 @@ const ReferralProgram = () => {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return code;
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Referral code copied to clipboard!");
   };
 
   const onSubmit = async (data: FormData) => {
@@ -85,7 +96,11 @@ const ReferralProgram = () => {
         // Don't fail the whole operation if email fails
       }
 
-      toast.success("Application submitted successfully! Check your email for details.");
+      // Show success screen with referral code
+      setSuccessData({
+        referralCode: insertedData.referral_code,
+        fullName: data.full_name,
+      });
       form.reset();
     } catch (error: any) {
       console.error("Error submitting referral application:", error);
@@ -218,71 +233,122 @@ const ReferralProgram = () => {
       <section className="py-16 px-4 bg-muted/30" id="signup">
         <div className="container mx-auto max-w-xl">
           <Card className="border-0 shadow-2xl">
-            <CardHeader className="text-center">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Join Our Referral Program</CardTitle>
-              <CardDescription>
-                Fill out the form below to become a referral partner and start earning commissions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="full_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your full name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="Enter your email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter your phone number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-                    {isSubmitting ? "Submitting..." : "Submit Application"}
-                  </Button>
-                </form>
-              </Form>
-              <div className="mt-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Already a partner?{" "}
-                  <a href="/referral-partner/login" className="text-primary hover:underline font-medium">
-                    Access your dashboard
-                  </a>
-                </p>
-              </div>
-            </CardContent>
+            {successData ? (
+              <>
+                <CardHeader className="text-center">
+                  <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                  <CardTitle className="text-2xl">Application Submitted!</CardTitle>
+                  <CardDescription>
+                    Thank you for joining our referral program, {successData.fullName}!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="bg-muted/50 rounded-lg p-6 text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Your Referral Code</p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-3xl font-bold tracking-wider text-primary">
+                        {successData.referralCode}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => copyToClipboard(successData.referralCode)}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <p className="text-sm text-yellow-800">
+                      <strong>Important:</strong> Please save your referral code. Your application is pending approval. 
+                      Once approved, you can start sharing your code and earning commissions!
+                    </p>
+                  </div>
+                  <div className="text-center space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      We've also sent this information to your email. Check your inbox!
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setSuccessData(null)}
+                      className="w-full"
+                    >
+                      Submit Another Application
+                    </Button>
+                  </div>
+                </CardContent>
+              </>
+            ) : (
+              <>
+                <CardHeader className="text-center">
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-2xl">Join Our Referral Program</CardTitle>
+                  <CardDescription>
+                    Fill out the form below to become a referral partner and start earning commissions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="full_name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Full Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter your full name" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email Address</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="Enter your email" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone Number</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter your phone number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+                        {isSubmitting ? "Submitting..." : "Submit Application"}
+                      </Button>
+                    </form>
+                  </Form>
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Already a partner?{" "}
+                      <a href="/referral-partner/login" className="text-primary hover:underline font-medium">
+                        Access your dashboard
+                      </a>
+                    </p>
+                  </div>
+                </CardContent>
+              </>
+            )}
           </Card>
         </div>
       </section>
