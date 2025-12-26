@@ -30,6 +30,7 @@ const ReferralProgram = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -39,6 +40,33 @@ const ReferralProgram = () => {
       phone: "",
     },
   });
+
+  // Check if email already exists
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    const { data, error } = await supabase
+      .from("referral_partners")
+      .select("id")
+      .eq("email", email.toLowerCase().trim())
+      .maybeSingle();
+    
+    return !!data;
+  };
+
+  const handleEmailBlur = async () => {
+    const email = form.getValues("email");
+    if (!email || form.formState.errors.email) return;
+    
+    setIsCheckingEmail(true);
+    const exists = await checkEmailExists(email);
+    setIsCheckingEmail(false);
+    
+    if (exists) {
+      form.setError("email", { 
+        type: "manual", 
+        message: "This email is already registered as a referral partner" 
+      });
+    }
+  };
 
   // Generate a unique referral code
   const generateReferralCode = () => {
@@ -58,13 +86,24 @@ const ReferralProgram = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
+      // Check for duplicate email before submission
+      const emailExists = await checkEmailExists(data.email);
+      if (emailExists) {
+        form.setError("email", { 
+          type: "manual", 
+          message: "This email is already registered as a referral partner" 
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const referralCode = generateReferralCode();
       
       const { data: insertedData, error } = await supabase
         .from("referral_partners")
         .insert({
           full_name: data.full_name,
-          email: data.email,
+          email: data.email.toLowerCase().trim(),
           phone: data.phone,
           referral_code: referralCode,
         })
@@ -73,7 +112,10 @@ const ReferralProgram = () => {
 
       if (error) {
         if (error.code === "23505") {
-          toast.error("This email is already registered as a referral partner");
+          form.setError("email", { 
+            type: "manual", 
+            message: "This email is already registered as a referral partner" 
+          });
         } else {
           console.error("Insert error:", error);
           throw error;
@@ -314,8 +356,19 @@ const ReferralProgram = () => {
                           <FormItem>
                             <FormLabel>Email Address</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="Enter your email" {...field} />
+                              <Input 
+                                type="email" 
+                                placeholder="Enter your email" 
+                                {...field} 
+                                onBlur={(e) => {
+                                  field.onBlur();
+                                  handleEmailBlur();
+                                }}
+                              />
                             </FormControl>
+                            {isCheckingEmail && (
+                              <p className="text-sm text-muted-foreground">Checking email...</p>
+                            )}
                             <FormMessage />
                           </FormItem>
                         )}
