@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.send-referral-partner-email]
 verify_jwt = false
+
+[functions.send-trial-expired-notification]
+verify_jwt = false
