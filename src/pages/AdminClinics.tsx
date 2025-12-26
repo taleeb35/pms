@@ -138,10 +138,10 @@ const AdminClinics = () => {
       // Fetch actual approved doctor counts for each clinic
       const { data: doctorCounts, error: doctorError } = await supabase
         .from("doctors")
-        .select("clinic_id, approved")
+        .select("clinic_id")
         .eq("approved", true)
         .not("clinic_id", "is", null);
-      
+
       if (doctorError) throw doctorError;
 
       // Count approved doctors per clinic
@@ -152,14 +152,34 @@ const AdminClinics = () => {
         }
       });
 
-      // Merge counts into clinic data
-      const clinicsWithCounts = (clinicsData || []).map((clinic) => ({
-        ...clinic,
-        activeDoctorCount: countMap[clinic.id] || 0,
-      }));
+      // Normalize status: if trial expired -> Pending (draft). Also remove legacy 'suspended'.
+      const idsToSetPending: string[] = [];
+      const clinicsNormalized = (clinicsData || []).map((clinic) => {
+        const trialDays = getTrialDaysRemaining(clinic.trial_end_date);
+        const shouldBePending =
+          clinic.status === "suspended" || (trialDays !== null && trialDays <= 0);
 
-      setClinics(clinicsWithCounts);
-      setFilteredClinics(clinicsWithCounts);
+        if (shouldBePending && clinic.status !== "draft") {
+          idsToSetPending.push(clinic.id);
+        }
+
+        return {
+          ...clinic,
+          status: shouldBePending ? "draft" : clinic.status,
+          activeDoctorCount: countMap[clinic.id] || 0,
+        };
+      });
+
+      // Persist auto change so filtering & other screens stay consistent
+      if (idsToSetPending.length > 0) {
+        await supabase
+          .from("clinics")
+          .update({ status: "draft", updated_at: new Date().toISOString() })
+          .in("id", idsToSetPending);
+      }
+
+      setClinics(clinicsNormalized);
+      setFilteredClinics(clinicsNormalized);
     } catch (error: any) {
       toast.error("Failed to fetch clinics: " + error.message);
     } finally {
@@ -180,8 +200,8 @@ const AdminClinics = () => {
       }).eq("id", clinicId);
       if (error) throw error;
 
-      // Send email notification if status changed to active or suspended
-      if (originalStatus !== status && (status === "active" || status === "suspended") && originalClinic?.profile?.email) {
+      // Send email notification if status changed to active
+      if (originalStatus !== status && status === "active" && originalClinic?.profile?.email) {
         try {
           await supabase.functions.invoke("send-clinic-status-email", {
             body: {
