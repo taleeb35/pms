@@ -64,13 +64,14 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
     return null;
   }
 
-  // Don't show if trial has expired (they would be blocked anyway)
+  // Show trial expired message (but user can still access until admin ends trial)
   if (trialDaysRemaining <= 0) {
     return (
-      <Alert variant="destructive" className="mb-4">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription className="ml-2">
-          Your free trial has expired. Please contact support to subscribe and continue using all features.
+      <Alert variant="default" className="mb-4 border-warning bg-warning/10">
+        <AlertTriangle className="h-4 w-4 text-foreground" />
+        <AlertDescription className="ml-2 text-foreground">
+          <span className="font-semibold">Trial Expired:</span> Your 14-day free trial has ended. 
+          Please contact support to subscribe and continue using all features.
         </AlertDescription>
       </Alert>
     );
