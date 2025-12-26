@@ -177,7 +177,7 @@ const Auth = () => {
 
         if (profileError) throw profileError;
 
-        // Create clinic record
+        // Create clinic record with auto-approved status and 14-day trial
         const { error: clinicError } = await supabase.from("clinics").insert({
           id: data.user.id,
           clinic_name: clinicName,
@@ -186,6 +186,7 @@ const Auth = () => {
           address: address,
           requested_doctors: parseInt(noOfDoctors) || 0,
           referred_by: referralCode.trim().toUpperCase() || null,
+          status: "active", // Auto-approve with trial
         });
 
         if (clinicError) throw clinicError;
@@ -556,17 +557,19 @@ const Auth = () => {
                 <CheckCircle className="h-10 w-10 text-green-600" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl">Registration Successful!</DialogTitle>
+            <DialogTitle className="text-center text-2xl">Welcome to MyClinicHQ! 🎉</DialogTitle>
             <DialogDescription className="text-center text-base space-y-3 pt-4">
               <p className="font-semibold text-foreground">
-                Your clinic is registered successfully.
+                Your clinic account is now active with a 14-day free trial!
               </p>
               <p className="text-muted-foreground">
-                You will receive an email notification when your account is activated by our admin team.
+                You can now login and start using all features. A welcome email with details has been sent to your inbox.
               </p>
-              <p className="text-sm text-muted-foreground italic">
-                Typically, this takes 1-2 business days.
-              </p>
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg p-3 mt-4">
+                <p className="text-sm text-green-700 font-medium">
+                  🎁 Enjoy 14 days of full access - completely free!
+                </p>
+              </div>
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center pt-4">
