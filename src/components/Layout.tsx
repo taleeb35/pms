@@ -28,6 +28,7 @@ import {
   ClipboardList,
   Database,
   FolderCog,
+  Share2,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -188,6 +189,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/admin/clinics", icon: Building2, label: "Manage Clinics" },
         { path: "/doctors", icon: Stethoscope, label: "Doctors" },
+        { path: "/admin/referral-partners", icon: Share2, label: "Referral Partners" },
         { path: "/admin/finance", icon: Banknote, label: "Payment Tracking" },
         { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
       ],
