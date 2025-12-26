@@ -65,6 +65,7 @@ import KnowledgeBaseArticle from "./pages/KnowledgeBaseArticle";
 import ReferralProgram from "./pages/ReferralProgram";
 import ReferralPartnerAuth from "./pages/ReferralPartnerAuth";
 import ReferralPartnerDashboard from "./pages/ReferralPartnerDashboard";
+import AdminReferralPartners from "./pages/AdminReferralPartners";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -289,6 +290,14 @@ const App = () => (
               element={
                 <Layout>
                   <AdminFinance />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/referral-partners"
+              element={
+                <Layout>
+                  <AdminReferralPartners />
                 </Layout>
               }
             />
