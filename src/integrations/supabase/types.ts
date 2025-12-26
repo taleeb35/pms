@@ -405,6 +405,7 @@ export type Database = {
           referred_by: string | null
           requested_doctors: number
           status: string
+          trial_end_date: string | null
           updated_at: string
         }
         Insert: {
@@ -419,6 +420,7 @@ export type Database = {
           referred_by?: string | null
           requested_doctors?: number
           status?: string
+          trial_end_date?: string | null
           updated_at?: string
         }
         Update: {
@@ -433,6 +435,7 @@ export type Database = {
           referred_by?: string | null
           requested_doctors?: number
           status?: string
+          trial_end_date?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -798,6 +801,7 @@ export type Database = {
           qualification: string
           referred_by: string | null
           specialization: string
+          trial_end_date: string | null
           updated_at: string
         }
         Insert: {
@@ -818,6 +822,7 @@ export type Database = {
           qualification: string
           referred_by?: string | null
           specialization: string
+          trial_end_date?: string | null
           updated_at?: string
         }
         Update: {
@@ -838,6 +843,7 @@ export type Database = {
           qualification?: string
           referred_by?: string | null
           specialization?: string
+          trial_end_date?: string | null
           updated_at?: string
         }
         Relationships: [
