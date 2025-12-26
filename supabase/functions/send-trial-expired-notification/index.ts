@@ -22,7 +22,7 @@ const handler = async (req: Request): Promise<Response> => {
     const today = new Date().toISOString().split('T')[0];
     console.log(`Checking for trials that expired on: ${today}`);
 
-    // Get clinics with trials that expired today
+    // Get clinics with trials that expired today (just for email notification, no access restriction)
     const { data: clinics, error: clinicsError } = await supabase
       .from("clinics")
       .select(`
@@ -44,7 +44,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Found ${clinics?.length || 0} clinics with expired trials today`);
 
-    // Get single doctors with trials that expired today
+    // Get single doctors with trials that expired today (just for email notification, no access restriction)
     const { data: doctors, error: doctorsError } = await supabase
       .from("doctors")
       .select(`
@@ -67,53 +67,9 @@ const handler = async (req: Request): Promise<Response> => {
     console.log(`Found ${doctors?.length || 0} single doctors with expired trials today`);
 
     const emailsSent: string[] = [];
-    const accessRestricted: string[] = [];
     const errors: string[] = [];
 
-    // Restrict access for expired clinics
-    for (const clinic of clinics || []) {
-      try {
-        const { error: updateError } = await supabase
-          .from("clinics")
-          .update({ status: "inactive" })
-          .eq("id", clinic.id);
-
-        if (updateError) {
-          console.error(`Failed to restrict clinic ${clinic.id}:`, updateError);
-          errors.push(`Clinic ${clinic.clinic_name}: ${updateError.message}`);
-        } else {
-          console.log(`Restricted access for clinic: ${clinic.clinic_name}`);
-          accessRestricted.push(`Clinic: ${clinic.clinic_name}`);
-        }
-      } catch (error: any) {
-        console.error(`Error restricting clinic ${clinic.id}:`, error);
-        errors.push(`Clinic ${clinic.clinic_name}: ${error.message}`);
-      }
-    }
-
-    // Restrict access for expired single doctors
-    for (const doctor of doctors || []) {
-      const profile = doctor.profiles as any;
-      try {
-        const { error: updateError } = await supabase
-          .from("doctors")
-          .update({ approved: false })
-          .eq("id", doctor.id);
-
-        if (updateError) {
-          console.error(`Failed to restrict doctor ${doctor.id}:`, updateError);
-          errors.push(`Doctor ${profile?.full_name}: ${updateError.message}`);
-        } else {
-          console.log(`Restricted access for doctor: ${profile?.full_name}`);
-          accessRestricted.push(`Doctor: ${profile?.full_name}`);
-        }
-      } catch (error: any) {
-        console.error(`Error restricting doctor ${doctor.id}:`, error);
-        errors.push(`Doctor ${profile?.full_name}: ${error.message}`);
-      }
-    }
-
-    // Send emails to clinics
+    // Send emails to clinics (no automatic access restriction - admin will do this manually)
     for (const clinic of clinics || []) {
       const profile = clinic.profiles as any;
       if (!profile?.email) continue;
@@ -131,33 +87,32 @@ const handler = async (req: Request): Promise<Response> => {
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
             </head>
             <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <div style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-                <h1 style="color: white; margin: 0; font-size: 28px;">🔒 Trial Period Ended</h1>
+              <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 28px;">⏰ Trial Period Ended</h1>
               </div>
               
               <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
                 <p style="font-size: 16px;">Dear <strong>${profile.full_name}</strong>,</p>
                 
-                <p style="font-size: 16px;">Your <strong>14-day free trial</strong> for <strong>${clinic.clinic_name}</strong> on ClinicPro has now expired.</p>
+                <p style="font-size: 16px;">Your <strong>14-day free trial</strong> for <strong>${clinic.clinic_name}</strong> on ClinicPro has now ended.</p>
                 
-                <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                  <p style="margin: 0; font-size: 14px; color: #721c24;">
-                    <strong>⚠️ Access Restricted:</strong> Your access to ClinicPro features has been temporarily restricted until you subscribe to a plan.
+                <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                  <p style="margin: 0; font-size: 14px; color: #856404;">
+                    <strong>📢 Important:</strong> You can continue using ClinicPro while your subscription is being processed. Please contact our support team to activate your paid subscription.
                   </p>
                 </div>
                 
-                <h3 style="color: #dc3545; margin-top: 25px;">What This Means:</h3>
+                <h3 style="color: #d97706; margin-top: 25px;">What's Next:</h3>
                 <ul style="font-size: 14px; color: #555;">
-                  <li>You can no longer access patient management features</li>
-                  <li>Appointment scheduling is temporarily disabled</li>
-                  <li>Medical records are in read-only mode</li>
-                  <li>Financial tracking is unavailable</li>
+                  <li>Contact our support team to discuss subscription options</li>
+                  <li>Continue using all features while your subscription is processed</li>
+                  <li>Your data is safe and secure</li>
                 </ul>
                 
                 <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin: 25px 0;">
-                  <h4 style="margin: 0 0 10px 0; color: #155724;">✨ Ready to Continue?</h4>
+                  <h4 style="margin: 0 0 10px 0; color: #155724;">✨ Ready to Subscribe?</h4>
                   <p style="margin: 0; font-size: 14px; color: #155724;">
-                    Contact our support team to subscribe and regain full access to all ClinicPro features. Your data is safe and will be available once you subscribe.
+                    Contact our support team to subscribe and secure uninterrupted access to all ClinicPro features.
                   </p>
                 </div>
                 
@@ -185,7 +140,7 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Send emails to single doctors
+    // Send emails to single doctors (no automatic access restriction - admin will do this manually)
     for (const doctor of doctors || []) {
       const profile = doctor.profiles as any;
       if (!profile?.email) continue;
@@ -203,34 +158,32 @@ const handler = async (req: Request): Promise<Response> => {
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
             </head>
             <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <div style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
-                <h1 style="color: white; margin: 0; font-size: 28px;">🔒 Trial Period Ended</h1>
+              <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                <h1 style="color: white; margin: 0; font-size: 28px;">⏰ Trial Period Ended</h1>
               </div>
               
               <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
                 <p style="font-size: 16px;">Dear <strong>Dr. ${profile.full_name}</strong>,</p>
                 
-                <p style="font-size: 16px;">Your <strong>14-day free trial</strong> on ClinicPro has now expired.</p>
+                <p style="font-size: 16px;">Your <strong>14-day free trial</strong> on ClinicPro has now ended.</p>
                 
-                <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                  <p style="margin: 0; font-size: 14px; color: #721c24;">
-                    <strong>⚠️ Access Restricted:</strong> Your access to ClinicPro features has been temporarily restricted until you subscribe to a plan.
+                <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                  <p style="margin: 0; font-size: 14px; color: #856404;">
+                    <strong>📢 Important:</strong> You can continue using ClinicPro while your subscription is being processed. Please contact our support team to activate your paid subscription.
                   </p>
                 </div>
                 
-                <h3 style="color: #dc3545; margin-top: 25px;">What This Means:</h3>
+                <h3 style="color: #d97706; margin-top: 25px;">What's Next:</h3>
                 <ul style="font-size: 14px; color: #555;">
-                  <li>You can no longer access patient management features</li>
-                  <li>Appointment scheduling is temporarily disabled</li>
-                  <li>Medical records are in read-only mode</li>
-                  <li>Prescription templates are unavailable</li>
-                  <li>Financial tracking is disabled</li>
+                  <li>Contact our support team to discuss subscription options</li>
+                  <li>Continue using all features while your subscription is processed</li>
+                  <li>Your data is safe and secure</li>
                 </ul>
                 
                 <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 15px; margin: 25px 0;">
-                  <h4 style="margin: 0 0 10px 0; color: #155724;">✨ Ready to Continue?</h4>
+                  <h4 style="margin: 0 0 10px 0; color: #155724;">✨ Ready to Subscribe?</h4>
                   <p style="margin: 0; font-size: 14px; color: #155724;">
-                    Contact our support team to subscribe and regain full access to all ClinicPro features. Your data is safe and will be available once you subscribe.
+                    Contact our support team to subscribe and secure uninterrupted access to all ClinicPro features.
                   </p>
                 </div>
                 
@@ -263,8 +216,7 @@ const handler = async (req: Request): Promise<Response> => {
         success: true,
         emailsSent: emailsSent.length,
         emails: emailsSent,
-        accessRestricted: accessRestricted.length,
-        restrictedAccounts: accessRestricted,
+        message: "Trial expiry notifications sent. Access will be restricted by admin manually.",
         errors: errors.length > 0 ? errors : undefined,
       }),
       {

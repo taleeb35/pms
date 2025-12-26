@@ -574,10 +574,8 @@ const Doctors = () => {
                         ) : trialDays !== null ? (
                           trialDays <= 0 ? (
                             <Badge variant="destructive">Expired</Badge>
-                          ) : trialDays <= 3 ? (
-                            <Badge variant="destructive">{trialDays} days</Badge>
                           ) : (
-                            <Badge variant="outline">{trialDays} days</Badge>
+                            <Badge variant="outline">{trialDays} days left</Badge>
                           )
                         ) : (
                           <span className="text-muted-foreground">N/A</span>
@@ -718,10 +716,10 @@ const Doctors = () => {
                   {!selectedDoctor.clinic_id && (
                     <>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">Trial Days Remaining</p>
-                        <p className={`text-sm ${getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 3 ? "text-destructive font-semibold" : ""}`}>
+                        <p className="text-sm font-medium text-muted-foreground">Trial Status</p>
+                        <p className={`text-sm ${getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "text-destructive font-semibold" : ""}`}>
                           {getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null 
-                            ? (getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "Expired" : `${getTrialDaysRemaining(selectedDoctor.trial_end_date)} days`)
+                            ? (getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "Expired" : `${getTrialDaysRemaining(selectedDoctor.trial_end_date)} days left`)
                             : "N/A"}
                         </p>
                       </div>
@@ -740,6 +738,23 @@ const Doctors = () => {
                   </div>
                 )}
               </div>
+
+              {/* End Trial Button for expired single doctors */}
+              {!selectedDoctor.clinic_id && 
+               getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
+               getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 && 
+               selectedDoctor.approved && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                  <p className="text-sm text-destructive font-medium mb-2">⚠️ Trial has expired. Click "End Trial" to deactivate this doctor's access.</p>
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={() => handleToggleStatus(selectedDoctor.id, true)}
+                  >
+                    End Trial
+                  </Button>
+                </div>
+              )}
 
               <div className="flex flex-col gap-4 pt-4 border-t border-border/40">
                 <div className="flex gap-2 justify-end">
