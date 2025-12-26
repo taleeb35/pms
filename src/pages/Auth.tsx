@@ -92,6 +92,34 @@ const Auth = () => {
     setLoading(true);
 
     try {
+      // Validate referral code if provided
+      if (isSignup && referralCode.trim()) {
+        const { data: partnerData, error: partnerError } = await supabase
+          .from("referral_partners")
+          .select("status")
+          .eq("referral_code", referralCode.trim().toUpperCase())
+          .maybeSingle();
+
+        if (partnerError) {
+          toast({ title: "Error validating referral code", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+
+        if (!partnerData) {
+          setErrors({ ...errors, referralCode: "Invalid referral code" });
+          toast({ title: "Invalid referral code", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+
+        if (partnerData.status !== "approved") {
+          setErrors({ ...errors, referralCode: "This referral code is not active" });
+          toast({ title: "This referral code is not active", variant: "destructive" });
+          setLoading(false);
+          return;
+        }
+      }
       if (isSignup) {
         // Clinic signup
         const { data, error } = await supabase.auth.signUp({

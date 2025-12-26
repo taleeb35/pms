@@ -220,6 +220,25 @@ const DoctorAuth = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create account");
 
+      // Validate referral code if provided
+      let validatedReferralCode: string | null = null;
+      if (signupData.referralCode.trim()) {
+        const { data: partnerData, error: partnerError } = await supabase
+          .from("referral_partners")
+          .select("status")
+          .eq("referral_code", signupData.referralCode.trim().toUpperCase())
+          .maybeSingle();
+
+        if (partnerError || !partnerData) {
+          throw new Error("Invalid referral code");
+        }
+
+        if (partnerData.status !== "approved") {
+          throw new Error("This referral code is not active");
+        }
+        validatedReferralCode = signupData.referralCode.trim().toUpperCase();
+      }
+
       // Create doctor profile with approved = false (pending admin approval)
       const { error: doctorError } = await supabase.from("doctors").insert({
         id: authData.user.id,
@@ -234,7 +253,7 @@ const DoctorAuth = () => {
         city: signupData.city || null,
         clinic_id: null, // No clinic - single doctor
         approved: false, // Pending admin approval
-        referred_by: signupData.referralCode.trim().toUpperCase() || null,
+        referred_by: validatedReferralCode,
       });
 
       if (doctorError) throw doctorError;
