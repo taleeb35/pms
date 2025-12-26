@@ -26,11 +26,9 @@ interface SuccessData {
   fullName: string;
 }
 
-const ReferralProgram = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -40,33 +38,6 @@ const ReferralProgram = () => {
       phone: "",
     },
   });
-
-  // Check if email already exists
-  const checkEmailExists = async (email: string): Promise<boolean> => {
-    const { data, error } = await supabase
-      .from("referral_partners")
-      .select("id")
-      .eq("email", email.toLowerCase().trim())
-      .maybeSingle();
-    
-    return !!data;
-  };
-
-  const handleEmailBlur = async () => {
-    const email = form.getValues("email");
-    if (!email || form.formState.errors.email) return;
-    
-    setIsCheckingEmail(true);
-    const exists = await checkEmailExists(email);
-    setIsCheckingEmail(false);
-    
-    if (exists) {
-      form.setError("email", { 
-        type: "manual", 
-        message: "This email is already registered as a referral partner" 
-      });
-    }
-  };
 
   // Generate a unique referral code
   const generateReferralCode = () => {
@@ -86,63 +57,49 @@ const ReferralProgram = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // Check for duplicate email before submission
-      const emailExists = await checkEmailExists(data.email);
-      if (emailExists) {
-        form.setError("email", { 
-          type: "manual", 
-          message: "This email is already registered as a referral partner" 
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
       const referralCode = generateReferralCode();
-      
-      const { data: insertedData, error } = await supabase
+
+      // IMPORTANT: don't call .select() here because public users don't have SELECT access
+      // to the referral_partners table (they only have INSERT).
+      const { error } = await supabase
         .from("referral_partners")
-        .insert({
-          full_name: data.full_name,
-          email: data.email.toLowerCase().trim(),
-          phone: data.phone,
-          referral_code: referralCode,
-        })
-        .select()
-        .single();
+        .insert(
+          {
+            full_name: data.full_name.trim(),
+            email: data.email.toLowerCase().trim(),
+            phone: data.phone.trim(),
+            referral_code: referralCode,
+          },
+          { returning: "minimal" }
+        );
 
       if (error) {
         if (error.code === "23505") {
-          form.setError("email", { 
-            type: "manual", 
-            message: "This email is already registered as a referral partner" 
+          form.setError("email", {
+            type: "manual",
+            message: "This email is already registered as a referral partner",
           });
-        } else {
-          console.error("Insert error:", error);
-          throw error;
+          return;
         }
-        return;
+        console.error("Referral partner insert failed:", error);
+        throw error;
       }
 
-      // Send welcome email with the generated referral code
+      // Send welcome email (don't fail the whole flow if it fails)
       try {
         await supabase.functions.invoke("send-referral-partner-email", {
           body: {
-            full_name: data.full_name,
-            email: data.email,
-            referral_code: insertedData.referral_code,
+            full_name: data.full_name.trim(),
+            email: data.email.toLowerCase().trim(),
+            referral_code: referralCode,
             type: "signup",
           },
         });
       } catch (emailError) {
         console.error("Email notification failed:", emailError);
-        // Don't fail the whole operation if email fails
       }
 
-      // Show success screen with referral code
-      setSuccessData({
-        referralCode: insertedData.referral_code,
-        fullName: data.full_name,
-      });
+      setSuccessData({ referralCode, fullName: data.full_name.trim() });
       form.reset();
     } catch (error: any) {
       console.error("Error submitting referral application:", error);
@@ -278,8 +235,8 @@ const ReferralProgram = () => {
             {successData ? (
               <>
                 <CardHeader className="text-center">
-                  <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="h-8 w-8 text-primary" />
                   </div>
                   <CardTitle className="text-2xl">Application Submitted!</CardTitle>
                   <CardDescription>
@@ -302,9 +259,9 @@ const ReferralProgram = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p className="text-sm text-yellow-800">
-                      <strong>Important:</strong> Please save your referral code. Your application is pending approval. 
+                  <div className="bg-muted/40 border border-border rounded-lg p-4">
+                    <p className="text-sm text-foreground">
+                      <strong>Important:</strong> Please save your referral code. Your application is pending approval.
                       Once approved, you can start sharing your code and earning commissions!
                     </p>
                   </div>
@@ -356,19 +313,8 @@ const ReferralProgram = () => {
                           <FormItem>
                             <FormLabel>Email Address</FormLabel>
                             <FormControl>
-                              <Input 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                {...field} 
-                                onBlur={(e) => {
-                                  field.onBlur();
-                                  handleEmailBlur();
-                                }}
-                              />
+                              <Input type="email" placeholder="Enter your email" {...field} />
                             </FormControl>
-                            {isCheckingEmail && (
-                              <p className="text-sm text-muted-foreground">Checking email...</p>
-                            )}
                             <FormMessage />
                           </FormItem>
                         )}
