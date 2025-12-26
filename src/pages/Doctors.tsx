@@ -781,6 +781,36 @@ const Doctors = () => {
                 )}
               </div>
 
+              {/* Activate Account Button for expired single doctors */}
+              {!selectedDoctor.clinic_id && 
+               ((getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
+               getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0) || !selectedDoctor.approved) && (
+                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                  <p className="text-sm text-green-700 font-medium mb-3">💳 Payment Received? Activate account to grant 30 days access.</p>
+                  <Button 
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    size="sm" 
+                    onClick={async () => {
+                      const newEndDate = new Date();
+                      newEndDate.setDate(newEndDate.getDate() + 30);
+                      const { error } = await supabase.from("doctors").update({ 
+                        trial_end_date: newEndDate.toISOString().split("T")[0],
+                        approved: true 
+                      }).eq("id", selectedDoctor.id);
+                      if (error) {
+                        toast({ title: "Error", description: "Failed to activate account", variant: "destructive" });
+                        return;
+                      }
+                      toast({ title: "Success", description: "Account activated for 30 days" });
+                      setSelectedDoctor({ ...selectedDoctor, trial_end_date: newEndDate.toISOString().split("T")[0], approved: true });
+                      fetchDoctors();
+                    }}
+                  >
+                    ✓ Activate Account (30 Days)
+                  </Button>
+                </div>
+              )}
+
               {/* End Trial Button for expired single doctors */}
               {!selectedDoctor.clinic_id && 
                getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
