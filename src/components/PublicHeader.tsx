@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, Users, Stethoscope, UserPlus, BookOpen, Menu, X } from "lucide-react";
+import { LogIn, Users, Stethoscope, UserPlus, BookOpen, Menu, X, Gift } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +44,7 @@ const PublicHeader = () => {
     { label: "Pricing", path: "/pricing" },
     { label: "Contact", path: "/contact" },
     { label: "Help", path: "/knowledge-base", icon: BookOpen },
+    { label: "Referral", path: "/referral-program", icon: Gift },
   ];
 
   return (

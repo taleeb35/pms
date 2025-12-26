@@ -402,6 +402,7 @@ export type Database = {
           id: string
           no_of_doctors: number
           phone_number: string
+          referred_by: string | null
           requested_doctors: number
           status: string
           updated_at: string
@@ -415,6 +416,7 @@ export type Database = {
           id: string
           no_of_doctors?: number
           phone_number: string
+          referred_by?: string | null
           requested_doctors?: number
           status?: string
           updated_at?: string
@@ -428,6 +430,7 @@ export type Database = {
           id?: string
           no_of_doctors?: number
           phone_number?: string
+          referred_by?: string | null
           requested_doctors?: number
           status?: string
           updated_at?: string
@@ -1258,6 +1261,48 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender"] | null
           id?: string
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      referral_partners: {
+        Row: {
+          commission_rate: number
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          referral_code: string
+          status: string
+          total_earnings: number
+          total_referrals: number
+          updated_at: string
+        }
+        Insert: {
+          commission_rate?: number
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          referral_code: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
+          updated_at?: string
+        }
+        Update: {
+          commission_rate?: number
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          referral_code?: string
+          status?: string
+          total_earnings?: number
+          total_referrals?: number
           updated_at?: string
         }
         Relationships: []
