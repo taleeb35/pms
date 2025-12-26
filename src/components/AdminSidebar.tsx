@@ -1,4 +1,4 @@
-import { Building2, Users, Stethoscope, LifeBuoy, Settings, LayoutDashboard, User } from "lucide-react";
+import { Building2, Users, Stethoscope, LifeBuoy, Settings, LayoutDashboard, User, Share2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -17,6 +17,7 @@ const adminMenuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Manage Clinics", url: "/admin/clinics", icon: Building2 },
   { title: "All Doctors", url: "/doctors", icon: Stethoscope },
+  { title: "Referral Partners", url: "/admin/referral-partners", icon: Share2 },
   { title: "Support Tickets", url: "/support-tickets", icon: LifeBuoy },
   { title: "Profile", url: "/admin/profile", icon: User },
   { title: "Settings", url: "/admin/settings", icon: Settings },
