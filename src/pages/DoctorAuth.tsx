@@ -50,6 +50,7 @@ const DoctorAuth = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showInactiveDialog, setShowInactiveDialog] = useState(false);
+  const [showTrialExpiredDialog, setShowTrialExpiredDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
@@ -170,11 +171,7 @@ const DoctorAuth = () => {
         today.setHours(0, 0, 0, 0);
         if (trialEnd < today) {
           await supabase.auth.signOut();
-          toast({
-            title: "Trial Expired",
-            description: "Your 14-day free trial has ended. Please contact support to subscribe and continue using all features.",
-            variant: "destructive",
-          });
+          setShowTrialExpiredDialog(true);
           setLoading(false);
           return;
         }
@@ -756,6 +753,44 @@ const DoctorAuth = () => {
             <Button
               onClick={() => setShowInactiveDialog(false)}
               className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700"
+            >
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Trial Expired Dialog */}
+      <Dialog open={showTrialExpiredDialog} onOpenChange={setShowTrialExpiredDialog}>
+        <DialogContent className="sm:max-w-md border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="h-20 w-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
+                <AlertCircle className="h-12 w-12 text-white" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl font-bold text-amber-800">Trial Expired</DialogTitle>
+            <DialogDescription className="text-center text-base space-y-3 pt-4">
+              <p className="font-semibold text-amber-900 text-lg">
+                Your 14-day free trial has ended.
+              </p>
+              <p className="text-amber-700">
+                Please contact support to subscribe and continue using all features.
+              </p>
+              <div className="bg-white/60 border border-amber-200 rounded-lg p-4 mt-4">
+                <p className="text-sm text-amber-800 font-medium">
+                  📧 Email: support@example.com
+                </p>
+                <p className="text-sm text-amber-800 font-medium mt-1">
+                  📞 Phone: +92 300 1234567
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => setShowTrialExpiredDialog(false)}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg"
             >
               Got it
             </Button>
