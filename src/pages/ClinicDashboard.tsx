@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { format, addMonths, startOfMonth } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 interface Clinic {
   clinic_name: string;
@@ -140,6 +141,10 @@ const ClinicDashboard = () => {
   const canAddMoreDoctors = doctors.length < DOCTOR_LIMIT;
   const isAtLimit = doctors.length >= DOCTOR_LIMIT;
   const today = format(new Date(), "EEEE, dd MMM yyyy");
+
+  if (loading) {
+    return <DashboardSkeleton statsCount={4} />;
+  }
 
   return (
     <div className="space-y-6">

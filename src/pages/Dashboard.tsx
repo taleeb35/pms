@@ -8,9 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
 import AdminAnalyticsCharts from "@/components/AdminAnalyticsCharts";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [approvedDoctors, setApprovedDoctors] = useState(0);
   const [pendingDoctors, setPendingDoctors] = useState(0);
@@ -22,36 +24,45 @@ const Dashboard = () => {
   }, []);
 
   const fetchStats = async () => {
-    const { count: totalCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true });
+    setLoading(true);
+    try {
+      const { count: totalCount } = await supabase
+        .from("doctors")
+        .select("id", { count: "exact", head: true });
 
-    const { count: approvedCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true })
-      .eq("approved", true);
+      const { count: approvedCount } = await supabase
+        .from("doctors")
+        .select("id", { count: "exact", head: true })
+        .eq("approved", true);
 
-    const { count: pendingCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true })
-      .eq("approved", false);
+      const { count: pendingCount } = await supabase
+        .from("doctors")
+        .select("id", { count: "exact", head: true })
+        .eq("approved", false);
 
-    const { count: clinicCount } = await supabase
-      .from("clinics")
-      .select("id", { count: "exact", head: true });
+      const { count: clinicCount } = await supabase
+        .from("clinics")
+        .select("id", { count: "exact", head: true });
 
-    const { count: patientCount } = await supabase
-      .from("patients")
-      .select("id", { count: "exact", head: true });
+      const { count: patientCount } = await supabase
+        .from("patients")
+        .select("id", { count: "exact", head: true });
 
-    setTotalDoctors(totalCount || 0);
-    setApprovedDoctors(approvedCount || 0);
-    setPendingDoctors(pendingCount || 0);
-    setTotalClinics(clinicCount || 0);
-    setTotalPatients(patientCount || 0);
+      setTotalDoctors(totalCount || 0);
+      setApprovedDoctors(approvedCount || 0);
+      setPendingDoctors(pendingCount || 0);
+      setTotalClinics(clinicCount || 0);
+      setTotalPatients(patientCount || 0);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const today = format(new Date(), "EEEE, dd MMM yyyy");
+
+  if (loading) {
+    return <DashboardSkeleton statsCount={5} />;
+  }
 
   return (
     <div className="space-y-6">
