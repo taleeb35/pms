@@ -51,6 +51,7 @@ interface Doctor {
   introduction: string | null;
   approved: boolean;
   clinic_id: string | null;
+  trial_end_date: string | null;
   profiles: {
     full_name: string;
     email: string;
@@ -58,6 +59,15 @@ interface Doctor {
     date_of_birth: string | null;
   };
 }
+
+const getTrialDaysRemaining = (trialEndDate: string | null): number | null => {
+  if (!trialEndDate) return null;
+  const trialEnd = new Date(trialEndDate + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffTime = trialEnd.getTime() - today.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+};
 
 interface Specialization {
   id: string;
@@ -537,11 +547,10 @@ const Doctors = () => {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
                   <TableHead>City</TableHead>
                   <TableHead>Specialization</TableHead>
-                  <TableHead>Date of Birth</TableHead>
                   <TableHead>Age</TableHead>
+                  <TableHead>Trial Days</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
@@ -549,21 +558,31 @@ const Doctors = () => {
               <TableBody>
                 {paginatedDoctors.map((doctor) => {
                   const age = calculateAge(doctor.profiles.date_of_birth);
+                  const trialDays = !doctor.clinic_id ? getTrialDaysRemaining(doctor.trial_end_date) : null;
                   return (
                     <TableRow key={doctor.id}>
                       <TableCell className="font-medium">
                         {doctor.profiles?.full_name || "Unknown Doctor"}
                       </TableCell>
                       <TableCell>{doctor.profiles?.email || "N/A"}</TableCell>
-                      <TableCell>{doctor.profiles?.phone || doctor.contact_number || "N/A"}</TableCell>
                       <TableCell>{doctor.city || "N/A"}</TableCell>
                       <TableCell>{doctor.specialization}</TableCell>
-                      <TableCell>
-                        {doctor.profiles.date_of_birth 
-                          ? new Date(doctor.profiles.date_of_birth).toLocaleDateString()
-                          : "N/A"}
-                      </TableCell>
                       <TableCell>{age !== null ? `${age} years` : "N/A"}</TableCell>
+                      <TableCell>
+                        {doctor.clinic_id ? (
+                          <span className="text-muted-foreground text-xs">Clinic Dr</span>
+                        ) : trialDays !== null ? (
+                          trialDays <= 0 ? (
+                            <Badge variant="destructive">Expired</Badge>
+                          ) : trialDays <= 3 ? (
+                            <Badge variant="destructive">{trialDays} days</Badge>
+                          ) : (
+                            <Badge variant="outline">{trialDays} days</Badge>
+                          )
+                        ) : (
+                          <span className="text-muted-foreground">N/A</span>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={doctor.approved ? "default" : "secondary"}>
                           {doctor.approved ? "Active" : "Inactive"}
@@ -696,6 +715,22 @@ const Doctors = () => {
                     <p className="text-sm font-medium text-muted-foreground">License Number</p>
                     <p className="text-sm">{selectedDoctor.license_number || "N/A"}</p>
                   </div>
+                  {!selectedDoctor.clinic_id && (
+                    <>
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Trial Days Remaining</p>
+                        <p className={`text-sm ${getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 3 ? "text-destructive font-semibold" : ""}`}>
+                          {getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null 
+                            ? (getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "Expired" : `${getTrialDaysRemaining(selectedDoctor.trial_end_date)} days`)
+                            : "N/A"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Trial End Date</p>
+                        <p className="text-sm">{selectedDoctor.trial_end_date ? new Date(selectedDoctor.trial_end_date).toLocaleDateString() : "N/A"}</p>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {selectedDoctor.introduction && (
