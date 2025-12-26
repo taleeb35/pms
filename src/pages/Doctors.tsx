@@ -730,6 +730,48 @@ const Doctors = () => {
                     </>
                   )}
                 </div>
+                
+                {/* Extend Trial Section for Single Doctors */}
+                {!selectedDoctor.clinic_id && (
+                  <div className="bg-muted/50 border rounded-lg p-4">
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Extend Trial (Days)</p>
+                    <div className="flex gap-2">
+                      <input 
+                        type="number" 
+                        min={1} 
+                        placeholder="Enter days" 
+                        id="extendDoctorTrialDays" 
+                        className="w-32 h-9 px-3 rounded-md border border-input bg-background text-sm" 
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={async () => { 
+                          const input = document.getElementById("extendDoctorTrialDays") as HTMLInputElement; 
+                          const days = parseInt(input?.value) || 0; 
+                          if (days <= 0) { 
+                            toast({ title: "Error", description: "Please enter a valid number of days", variant: "destructive" }); 
+                            return; 
+                          } 
+                          const currentEndDate = selectedDoctor.trial_end_date ? new Date(selectedDoctor.trial_end_date) : new Date(); 
+                          const newEndDate = new Date(currentEndDate); 
+                          newEndDate.setDate(newEndDate.getDate() + days); 
+                          const { error } = await supabase.from("doctors").update({ trial_end_date: newEndDate.toISOString().split("T")[0] }).eq("id", selectedDoctor.id); 
+                          if (error) { 
+                            toast({ title: "Error", description: "Failed to extend trial", variant: "destructive" }); 
+                            return; 
+                          } 
+                          toast({ title: "Success", description: `Trial extended by ${days} days` }); 
+                          setSelectedDoctor({ ...selectedDoctor, trial_end_date: newEndDate.toISOString().split("T")[0] }); 
+                          fetchDoctors(); 
+                          if (input) input.value = ""; 
+                        }}
+                      >
+                        Extend Trial
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {selectedDoctor.introduction && (
                   <div>
