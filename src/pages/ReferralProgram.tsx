@@ -242,6 +242,14 @@ const ReferralProgram = () => {
                   </Button>
                 </form>
               </Form>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Already a partner?{" "}
+                  <a href="/referral-partner/login" className="text-primary hover:underline font-medium">
+                    Access your dashboard
+                  </a>
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
