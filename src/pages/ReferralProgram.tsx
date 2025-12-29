@@ -40,16 +40,6 @@ const ReferralProgram = () => {
     },
   });
 
-  // Generate a unique referral code
-  const generateReferralCode = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success("Referral code copied to clipboard!");
@@ -58,18 +48,17 @@ const ReferralProgram = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      const referralCode = generateReferralCode();
-
-      // IMPORTANT: don't call .select() here because public users don't have SELECT access
-      // to the referral_partners table (they only have INSERT).
-      const { error } = await supabase
+      // Insert with placeholder referral_code - the database trigger will overwrite it
+      const { data: insertedData, error } = await supabase
         .from("referral_partners")
         .insert({
           full_name: data.full_name.trim(),
           email: data.email.toLowerCase().trim(),
           phone: data.phone.trim(),
-          referral_code: referralCode,
-        });
+          referral_code: "TEMP", // Will be overwritten by database trigger
+        })
+        .select("referral_code")
+        .single();
 
       if (error) {
         if (error.code === "23505") {
@@ -83,7 +72,9 @@ const ReferralProgram = () => {
         throw error;
       }
 
-      // Send welcome email (don't fail the whole flow if it fails)
+      const referralCode = insertedData?.referral_code || "";
+
+      // Send welcome email with the database-generated code
       try {
         await supabase.functions.invoke("send-referral-partner-email", {
           body: {
