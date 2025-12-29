@@ -286,7 +286,7 @@ const DoctorPatients = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      navigate("/doctor-auth");
+      navigate("/login");
       return;
     }
 

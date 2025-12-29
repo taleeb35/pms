@@ -40,7 +40,7 @@ const DoctorProfile = () => {
   const fetchProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      navigate("/doctor-auth");
+      navigate("/login");
       return;
     }
 

@@ -123,7 +123,7 @@ const Index = () => {
           </div>
           <div className="flex gap-4 justify-center pt-6">
             <Button 
-              onClick={() => navigate("/auth")} 
+              onClick={() => navigate("/login")} 
               size="lg" 
               className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110"
             >
@@ -131,7 +131,7 @@ const Index = () => {
               <Sparkles className="ml-2 h-5 w-5" />
             </Button>
             <Button 
-              onClick={() => navigate("/auth")} 
+              onClick={() => navigate("/login")} 
               size="lg" 
               variant="outline"
               className="text-lg px-10 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110"
@@ -310,7 +310,7 @@ const Index = () => {
             </p>
             <div className="flex gap-4 justify-center">
               <Button 
-                onClick={() => navigate("/auth")} 
+                onClick={() => navigate("/login")} 
                 size="lg" 
                 className="text-lg px-12 py-7 bg-white text-purple-600 hover:bg-gray-50 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
               >
@@ -318,7 +318,7 @@ const Index = () => {
                 <Sparkles className="ml-2 h-5 w-5" />
               </Button>
               <Button 
-                onClick={() => navigate("/doctor-auth")} 
+                onClick={() => navigate("/login")} 
                 size="lg" 
                 variant="outline"
                 className="text-lg px-12 py-7 bg-white/20 backdrop-blur-sm border-2 border-white text-white hover:bg-white/30 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"

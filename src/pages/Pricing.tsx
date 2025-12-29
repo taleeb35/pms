@@ -227,7 +227,7 @@ const Pricing = () => {
                   }`}
                   variant={plan.popular ? "default" : "outline"}
                   size="lg"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/login")}
                 >
                   {plan.cta}
                   <ArrowRight className="w-4 h-4 ml-2" />
@@ -311,7 +311,7 @@ const Pricing = () => {
                 size="lg" 
                 variant="secondary"
                 className="text-lg px-8"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/login")}
               >
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
