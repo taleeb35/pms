@@ -306,6 +306,12 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           current_prescription: template.prescription_template
         }));
       }
+    } else {
+      // Clear prescription when deselecting template
+      setFormData(prev => ({
+        ...prev,
+        current_prescription: ""
+      }));
     }
   };
 
