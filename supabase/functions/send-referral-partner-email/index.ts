@@ -27,7 +27,7 @@ const handler = async (req: Request): Promise<Response> => {
     let html = "";
 
     if (type === "signup") {
-      subject = "Welcome to Our Referral Program!";
+      subject = "🎉 Welcome to MyClinicHQ Referral Program - You're Approved!";
       html = `
         <!DOCTYPE html>
         <html>
@@ -35,41 +35,42 @@ const handler = async (req: Request): Promise<Response> => {
           <style>
             body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .header { background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
             .code-box { background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; font-size: 28px; font-weight: bold; padding: 20px; text-align: center; border-radius: 10px; margin: 20px 0; letter-spacing: 3px; }
-            .info-box { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #8B5CF6; }
+            .info-box { background: #ECFDF5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10B981; }
             .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1>🎉 Welcome to Our Referral Program!</h1>
+              <h1>✅ Welcome to MyClinicHQ!</h1>
+              <p>Your Referral Partner Account is Active</p>
             </div>
             <div class="content">
               <p>Dear <strong>${full_name}</strong>,</p>
-              <p>Thank you for joining our referral program! We're excited to have you as a partner.</p>
+              <p>Congratulations! You're now an approved referral partner. You can start earning commissions immediately!</p>
               
               <p><strong>Your unique referral code is:</strong></p>
               <div class="code-box">${referral_code}</div>
               
               <div class="info-box">
-                <h3>📋 Application Status: Pending Review</h3>
-                <p>Your application is currently under review. Once approved, you can start sharing your code and earning commissions!</p>
+                <h3>🚀 Start Earning Now!</h3>
+                <p>Your account is <strong>active</strong>. Share your code with clinics and doctors to earn 20% commission on their subscriptions!</p>
               </div>
               
               <h3>💰 How It Works:</h3>
               <ul>
                 <li><strong>20% Commission</strong> on every successful referral</li>
                 <li>Share your code with clinics and doctors</li>
-                <li>Track your referrals and earnings in your dashboard</li>
+                <li>They use your code when signing up</li>
                 <li>Monthly payouts directly to your account</li>
               </ul>
               
-              <p>We'll notify you once your application is approved. In the meantime, feel free to reach out if you have any questions!</p>
+              <p>Welcome aboard! Let's grow together.</p>
               
-              <p>Best regards,<br>The Team</p>
+              <p>Best regards,<br>The MyClinicHQ Team</p>
             </div>
             <div class="footer">
               <p>This email was sent because you signed up for our referral program.</p>
