@@ -384,7 +384,15 @@ const Layout = ({ children }: LayoutProps) => {
   }, []);
 
   const toggleGroup = (label: string) => {
-    setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }));
+    setOpenGroups(prev => {
+      // Close all other groups and toggle the clicked one
+      const newState: { [key: string]: boolean } = {};
+      Object.keys(prev).forEach(key => {
+        newState[key] = false;
+      });
+      newState[label] = !prev[label];
+      return newState;
+    });
   };
 
   // Show nothing while initializing to prevent flicker
