@@ -74,7 +74,7 @@ export function PatientSearchSelect({
             value={searchQuery}
             onValueChange={setSearchQuery}
           />
-          <CommandList>
+          <CommandList className="max-h-[300px] overflow-y-auto">
             <CommandEmpty>No patient found.</CommandEmpty>
             <CommandGroup>
               {filteredPatients.map((patient) => (
