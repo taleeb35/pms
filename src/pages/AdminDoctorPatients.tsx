@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ArrowLeft, Eye, Calendar as CalendarIcon, X } from "lucide-react";
+import { Search, ArrowLeft, Eye, Calendar as CalendarIcon, X, FileSpreadsheet } from "lucide-react";
+import PatientImportExport from "@/components/PatientImportExport";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -210,23 +211,31 @@ const AdminDoctorPatients = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/dashboard")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Dashboard
-        </Button>
-        <div>
-          <h2 className="text-3xl font-bold">
-            {doctor ? `Dr. ${doctor.full_name}'s Patients` : "Doctor's Patients"}
-          </h2>
-          <p className="text-muted-foreground">
-            {doctor && `Specialization: ${doctor.specialization}`}
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h2 className="text-3xl font-bold">
+              {doctor ? `Dr. ${doctor.full_name}'s Patients` : "Doctor's Patients"}
+            </h2>
+            <p className="text-muted-foreground">
+              {doctor && `Specialization: ${doctor.specialization}`}
+            </p>
+          </div>
         </div>
+        {doctorId && (
+          <PatientImportExport 
+            createdBy={doctorId} 
+            onImportComplete={fetchPatients} 
+          />
+        )}
       </div>
 
       <Card>

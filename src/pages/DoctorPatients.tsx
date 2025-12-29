@@ -14,7 +14,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet } from "lucide-react";
+import PatientImportExport from "@/components/PatientImportExport";
 import { VisitHistory } from "@/components/VisitHistory";
 import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -73,6 +74,7 @@ const DoctorPatients = () => {
   const [isEditHistoryDialogOpen, setIsEditHistoryDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [waitlistPatientIds, setWaitlistPatientIds] = useState<Set<string>>(new Set());
+  const [doctorId, setDoctorId] = useState<string>("");
   const [addForm, setAddForm] = useState<{
     full_name: string;
     father_name: string;
@@ -289,6 +291,8 @@ const DoctorPatients = () => {
       navigate("/login");
       return;
     }
+
+    setDoctorId(session.user.id);
 
     const { data: roles } = await supabase
       .from("user_roles")
@@ -942,10 +946,18 @@ const DoctorPatients = () => {
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <CardTitle>Patients List</CardTitle>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Patient
-              </Button>
+              <div className="flex gap-2">
+                {doctorId && (
+                  <PatientImportExport 
+                    createdBy={doctorId} 
+                    onImportComplete={fetchPatients} 
+                  />
+                )}
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Patient
+                </Button>
+              </div>
             </div>
             <div className="flex gap-2 items-center flex-wrap">
               <div className="relative w-64">
