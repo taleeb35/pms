@@ -392,14 +392,14 @@ const UnifiedLogin = () => {
               <div className="grid grid-cols-2 gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => navigate("/doctor-auth")}
+                  onClick={() => navigate("/doctor-auth?tab=signup")}
                   className="border-2"
                 >
                   Register as Doctor
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => navigate("/auth")}
+                  onClick={() => navigate("/auth?tab=signup")}
                   className="border-2"
                 >
                   Register as Clinic
