@@ -132,7 +132,7 @@ const Features = () => {
           <div className="flex gap-4 justify-center pt-4 animate-fade-in">
             <Button 
               size="lg" 
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/login")}
               className="text-lg px-8 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
             >
               Start Free Trial
@@ -216,7 +216,7 @@ const Features = () => {
                   </div>
 
                   <Button 
-                    onClick={() => navigate("/auth")}
+                    onClick={() => navigate("/login")}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
                     Get Started
@@ -305,7 +305,7 @@ const Features = () => {
                 size="lg" 
                 variant="secondary"
                 className="text-lg px-8"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/login")}
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
