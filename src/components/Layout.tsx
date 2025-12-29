@@ -97,16 +97,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    // Redirect based on user role
-    if (userRole === "doctor") {
-      navigate("/doctor-auth");
-    } else if (userRole === "clinic") {
-      navigate("/auth");
-    } else if (userRole === "receptionist") {
-      navigate("/receptionist-auth");
-    } else {
-      navigate("/admin-login");
-    }
+    navigate("/");
   };
 
   const [userRole, setUserRole] = useState<string | null>(null);
