@@ -48,7 +48,7 @@ const ReferralProgram = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // Insert with placeholder referral_code - the database trigger will overwrite it
+      // Insert with auto-approved status - the database trigger will generate referral_code
       const { data: insertedData, error } = await supabase
         .from("referral_partners")
         .insert({
@@ -56,6 +56,7 @@ const ReferralProgram = () => {
           email: data.email.toLowerCase().trim(),
           phone: data.phone.trim(),
           referral_code: "TEMP", // Will be overwritten by database trigger
+          status: "active", // Auto-approve on signup
         })
         .select("referral_code")
         .single();
@@ -248,15 +249,14 @@ const ReferralProgram = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="bg-muted/40 border border-border rounded-lg p-4">
+                  <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                     <p className="text-sm text-foreground">
-                      <strong>Important:</strong> Please save your referral code. Your application is pending approval.
-                      Once approved, you can start sharing your code and earning commissions!
+                      <strong>🎉 You're Approved!</strong> Your account is now active. Start sharing your referral code with clinics and doctors to earn 20% commission on their subscriptions!
                     </p>
                   </div>
                   <div className="text-center space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      We've also sent this information to your email. Check your inbox!
+                      We've sent your referral code and login details to your email.
                     </p>
                     <Button 
                       variant="outline" 
