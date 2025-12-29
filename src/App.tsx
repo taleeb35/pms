@@ -12,6 +12,7 @@ import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Auth from "./pages/Auth";
 import ReceptionistAuth from "./pages/ReceptionistAuth";
+import UnifiedLogin from "./pages/UnifiedLogin";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
@@ -88,6 +89,7 @@ const App = () => (
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/receptionist-auth" element={<ReceptionistAuth />} />
