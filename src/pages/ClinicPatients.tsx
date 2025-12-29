@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search, Edit, Trash2, X, Upload } from "lucide-react";
+import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search, Edit, Trash2, X, Upload, FileSpreadsheet } from "lucide-react";
+import PatientImportExport from "@/components/PatientImportExport";
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -874,10 +875,24 @@ const ClinicPatients = () => {
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
         </Button>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Patient
-        </Button>
+        <div className="flex gap-2">
+          {selectedDoctor !== "all" && (
+            <PatientImportExport 
+              createdBy={selectedDoctor} 
+              onImportComplete={fetchPatients} 
+            />
+          )}
+          {selectedDoctor === "all" && doctors.length > 0 && (
+            <PatientImportExport 
+              createdBy={doctors[0].id} 
+              onImportComplete={fetchPatients} 
+            />
+          )}
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Patient
+          </Button>
+        </div>
       </div>
 
       <Card>
