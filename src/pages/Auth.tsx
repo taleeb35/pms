@@ -199,6 +199,7 @@ const Auth = () => {
         requested_doctors: parseInt(noOfDoctors) || 0,
         referred_by: referralCode.trim().toUpperCase() || null,
         status: "active",
+        payment_plan: paymentPlan,
       });
 
       if (clinicError) throw clinicError;

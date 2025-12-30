@@ -401,6 +401,7 @@ export type Database = {
           fee_status: string
           id: string
           no_of_doctors: number
+          payment_plan: string
           phone_number: string
           referred_by: string | null
           requested_doctors: number
@@ -416,6 +417,7 @@ export type Database = {
           fee_status?: string
           id: string
           no_of_doctors?: number
+          payment_plan?: string
           phone_number: string
           referred_by?: string | null
           requested_doctors?: number
@@ -431,6 +433,7 @@ export type Database = {
           fee_status?: string
           id?: string
           no_of_doctors?: number
+          payment_plan?: string
           phone_number?: string
           referred_by?: string | null
           requested_doctors?: number
@@ -797,6 +800,7 @@ export type Database = {
           id: string
           introduction: string | null
           license_number: string | null
+          payment_plan: string
           pmdc_number: string | null
           qualification: string
           referred_by: string | null
@@ -818,6 +822,7 @@ export type Database = {
           id: string
           introduction?: string | null
           license_number?: string | null
+          payment_plan?: string
           pmdc_number?: string | null
           qualification: string
           referred_by?: string | null
@@ -839,6 +844,7 @@ export type Database = {
           id?: string
           introduction?: string | null
           license_number?: string | null
+          payment_plan?: string
           pmdc_number?: string | null
           qualification?: string
           referred_by?: string | null
