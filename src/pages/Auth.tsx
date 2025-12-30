@@ -101,7 +101,12 @@ const Auth = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      toast({ title: "Please fix the validation errors", variant: "destructive" });
+      const missingFields = Object.values(newErrors).join(", ");
+      toast({ 
+        title: "Missing Required Fields", 
+        description: missingFields,
+        variant: "destructive" 
+      });
       return;
     }
 
