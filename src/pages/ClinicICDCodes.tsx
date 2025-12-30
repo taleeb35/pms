@@ -12,6 +12,7 @@ import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useClinicId } from "@/hooks/useClinicId";
 import { TableSkeleton } from "@/components/TableSkeleton";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface ICDCode {
   id: string;

@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useClinicId } from "@/hooks/useClinicId";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface Disease {
   id: string;
@@ -196,7 +197,9 @@ const ClinicDiseases = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={submitting} message="Processing..." />
+      <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -393,7 +396,8 @@ const ClinicDiseases = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 };
 
