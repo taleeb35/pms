@@ -227,7 +227,6 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
           .from("doctor_disease_templates")
           .insert({
             clinic_id: clinicId,
-            doctor_id: clinicId, // Using clinic_id as doctor_id for clinic-created templates
             disease_name: formData.name,
             prescription_template: formData.content,
           });
@@ -267,7 +266,6 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
           .from("doctor_test_templates")
           .insert({
             clinic_id: clinicId,
-            doctor_id: clinicId,
             title: formData.name,
             description: formData.content,
           });
@@ -313,7 +311,6 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
           .from("doctor_report_templates")
           .insert([{
             clinic_id: clinicId,
-            doctor_id: clinicId,
             template_name: reportFormData.template_name,
             fields: validFields as unknown as Json,
           }]);
