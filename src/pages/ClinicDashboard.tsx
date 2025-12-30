@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Users, Building2, Plus, AlertCircle, LifeBuoy, Activity, UserPlus, Sparkles, Calendar } from "lucide-react";
+import { Stethoscope, Users, Building2, Plus, AlertCircle, LifeBuoy, Activity, UserPlus, Sparkles, Calendar, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -16,6 +16,7 @@ import TrialBanner from "@/components/TrialBanner";
 interface Clinic {
   clinic_name: string;
   no_of_doctors: number;
+  payment_plan: string;
 }
 
 interface Doctor {
@@ -77,7 +78,7 @@ const ClinicDashboard = () => {
       // Fetch clinic data
       const { data: clinicData, error: clinicError } = await supabase
         .from("clinics")
-        .select("clinic_name, no_of_doctors, requested_doctors")
+        .select("clinic_name, no_of_doctors, requested_doctors, payment_plan")
         .eq("id", currentUser.id)
         .single();
 
@@ -169,6 +170,14 @@ const ClinicDashboard = () => {
                   <Activity className="h-3 w-3 text-info animate-pulse" />
                   <span className="text-xs font-semibold text-info">Clinic Mode</span>
                 </div>
+                {clinic?.payment_plan && (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-primary/10 to-success/10 border border-primary/20">
+                    <CreditCard className="h-3 w-3 text-primary" />
+                    <span className="text-xs font-semibold text-primary">
+                      {clinic.payment_plan === "yearly" ? "Yearly Plan" : "Monthly Plan"}
+                    </span>
+                  </div>
+                )}
                 <Sparkles className="h-4 w-4 text-warning animate-pulse" />
               </div>
               <h2 className="text-2xl font-bold tracking-tight">
