@@ -23,6 +23,7 @@ interface ClinicPayment {
   clinic: {
     clinic_name: string;
     requested_doctors: number;
+    payment_plan: string;
     profiles: {
       email: string;
       phone: string | null;
@@ -46,6 +47,7 @@ interface DoctorPayment {
     };
     specialization: string;
     city: string | null;
+    payment_plan: string;
   };
 }
 
@@ -125,6 +127,7 @@ const AdminFinance = () => {
           clinic_name,
           requested_doctors,
           created_at,
+          payment_plan,
           profiles(email, phone)
         `)
         .eq("status", "active");
@@ -153,25 +156,40 @@ const AdminFinance = () => {
       
       const allPayments: ClinicPayment[] = [];
       
+      // Fixed pricing: 5999 monthly, 4979 yearly (17% discount)
+      const MONTHLY_FEE = 5999;
+      const YEARLY_FEE = 4979;
+      
       for (const clinic of eligibleClinics) {
         // Use requested_doctors for billing, not actual doctor count
         const requestedDoctors = clinic.requested_doctors || 0;
+        // Calculate fee based on clinic's payment plan
+        const feePerDoctor = clinic.payment_plan === "yearly" ? YEARLY_FEE : MONTHLY_FEE;
+        const totalAmount = requestedDoctors * feePerDoctor;
 
         const existingPayment = paymentsMap.get(clinic.id);
         
         if (existingPayment) {
+          // Update amount if it doesn't match the current fee calculation
+          if (existingPayment.amount !== totalAmount) {
+            await supabase
+              .from("clinic_payments")
+              .update({ amount: totalAmount, doctor_count: requestedDoctors })
+              .eq("id", existingPayment.id);
+            existingPayment.amount = totalAmount;
+            existingPayment.doctor_count = requestedDoctors;
+          }
           allPayments.push({
             ...existingPayment,
             clinic: clinic as any,
           });
         } else {
-          const amount = requestedDoctors * doctorMonthlyFee;
           const { data: newPayment, error: insertError } = await supabase
             .from("clinic_payments")
             .insert({
               clinic_id: clinic.id,
               month: selectedMonth,
-              amount,
+              amount: totalAmount,
               doctor_count: requestedDoctors,
               status: "pending",
             })
@@ -207,6 +225,7 @@ const AdminFinance = () => {
           specialization,
           city,
           created_at,
+          payment_plan,
           profiles(full_name, email, phone)
         `)
         .is("clinic_id", null)
@@ -236,22 +255,35 @@ const AdminFinance = () => {
       
       const allPayments: DoctorPayment[] = [];
       
+      // Fixed pricing: 5999 monthly, 4979 yearly (17% discount)
+      const MONTHLY_FEE = 5999;
+      const YEARLY_FEE = 4979;
+      
       for (const doctor of eligibleDoctors) {
         const existingPayment = paymentsMap.get(doctor.id);
+        // Calculate fee based on doctor's payment plan
+        const doctorFee = doctor.payment_plan === "yearly" ? YEARLY_FEE : MONTHLY_FEE;
         
         if (existingPayment) {
+          // Update amount if it doesn't match the current fee calculation
+          if (existingPayment.amount !== doctorFee) {
+            await supabase
+              .from("doctor_payments")
+              .update({ amount: doctorFee })
+              .eq("id", existingPayment.id);
+            existingPayment.amount = doctorFee;
+          }
           allPayments.push({
             ...existingPayment,
             doctor: doctor as any,
           });
         } else {
-          const amount = singleDoctorFee || doctorMonthlyFee;
           const { data: newPayment, error: insertError } = await supabase
             .from("doctor_payments")
             .insert({
               doctor_id: doctor.id,
               month: selectedMonth,
-              amount,
+              amount: doctorFee,
               status: "pending",
             })
             .select()
@@ -347,19 +379,10 @@ const AdminFinance = () => {
     }
   };
 
-  // Combined statistics - use requested_doctors for estimated amounts
-  const clinicTotalAmount = clinicPayments.reduce((sum, p) => {
-    const requestedDoctors = p.clinic?.requested_doctors || p.doctor_count;
-    return sum + (requestedDoctors * doctorMonthlyFee);
-  }, 0);
-  const clinicPendingAmount = clinicPayments.filter(p => p.status === "pending").reduce((sum, p) => {
-    const requestedDoctors = p.clinic?.requested_doctors || p.doctor_count;
-    return sum + (requestedDoctors * doctorMonthlyFee);
-  }, 0);
-  const clinicPaidAmount = clinicPayments.filter(p => p.status === "paid").reduce((sum, p) => {
-    const requestedDoctors = p.clinic?.requested_doctors || p.doctor_count;
-    return sum + (requestedDoctors * doctorMonthlyFee);
-  }, 0);
+  // Combined statistics - use payment.amount which already has correct pricing
+  const clinicTotalAmount = clinicPayments.reduce((sum, p) => sum + p.amount, 0);
+  const clinicPendingAmount = clinicPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
+  const clinicPaidAmount = clinicPayments.filter(p => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
   
   const doctorTotalAmount = doctorPayments.reduce((sum, p) => sum + p.amount, 0);
   const doctorPendingAmount = doctorPayments.filter(p => p.status === "pending").reduce((sum, p) => sum + p.amount, 0);
@@ -550,6 +573,7 @@ const AdminFinance = () => {
                           <TableHead>Email</TableHead>
                           <TableHead>Phone</TableHead>
                           <TableHead className="text-center">Doctors</TableHead>
+                          <TableHead className="text-center">Plan</TableHead>
                           <TableHead className="text-right">Amount</TableHead>
                           <TableHead className="text-center">Status</TableHead>
                           <TableHead>Payment Date</TableHead>
@@ -568,8 +592,15 @@ const AdminFinance = () => {
                                 {payment.clinic?.requested_doctors || payment.doctor_count}
                               </Badge>
                             </TableCell>
+                            <TableCell className="text-center">
+                              {payment.clinic?.payment_plan === "yearly" ? (
+                                <Badge className="bg-green-600 text-white">Yearly</Badge>
+                              ) : (
+                                <Badge variant="outline">Monthly</Badge>
+                              )}
+                            </TableCell>
                             <TableCell className="text-right font-semibold">
-                              {((payment.clinic?.requested_doctors || payment.doctor_count) * doctorMonthlyFee).toLocaleString()}
+                              {payment.amount.toLocaleString()}
                             </TableCell>
                             <TableCell className="text-center">
                               {payment.status === "paid" ? (
@@ -649,6 +680,7 @@ const AdminFinance = () => {
                           <TableHead>Specialization</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>City</TableHead>
+                          <TableHead className="text-center">Plan</TableHead>
                           <TableHead className="text-right">Amount</TableHead>
                           <TableHead className="text-center">Status</TableHead>
                           <TableHead>Payment Date</TableHead>
@@ -662,6 +694,13 @@ const AdminFinance = () => {
                             <TableCell className="text-muted-foreground">{payment.doctor?.specialization || "N/A"}</TableCell>
                             <TableCell className="text-muted-foreground">{payment.doctor?.profiles?.email || "N/A"}</TableCell>
                             <TableCell className="text-muted-foreground">{payment.doctor?.city || "N/A"}</TableCell>
+                            <TableCell className="text-center">
+                              {payment.doctor?.payment_plan === "yearly" ? (
+                                <Badge className="bg-green-600 text-white">Yearly</Badge>
+                              ) : (
+                                <Badge variant="outline">Monthly</Badge>
+                              )}
+                            </TableCell>
                             <TableCell className="text-right font-semibold">{payment.amount.toLocaleString()}</TableCell>
                             <TableCell className="text-center">
                               {payment.status === "paid" ? (
