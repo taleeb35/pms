@@ -47,7 +47,7 @@ const Pricing = () => {
   const faqs = [
     {
       question: "How does the pricing work?",
-      answer: "You pay Rs. 5,999 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same."
+      answer: "You pay PKR 5,999 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same."
     },
     {
       question: "Is there a free trial?",
@@ -55,7 +55,7 @@ const Pricing = () => {
     },
     {
       question: "What's the yearly discount?",
-      answer: "When you choose annual billing, you get 17% off - that's Rs. 4,979 per doctor per month instead of Rs. 5,999."
+      answer: "When you choose annual billing, you get 17% off - that's PKR 4,979 per doctor per month instead of PKR 5,999."
     },
     {
       question: "Can I switch between monthly and yearly?",
@@ -99,7 +99,7 @@ const Pricing = () => {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Rs. 5,999 per doctor per month. Save 17% with yearly billing.
+            PKR 5,999 per doctor per month. Save 17% with yearly billing.
           </p>
 
           {/* Billing Toggle */}

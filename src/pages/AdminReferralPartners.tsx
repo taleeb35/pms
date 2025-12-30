@@ -314,7 +314,7 @@ const AdminReferralPartners = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-purple-700">Total Payouts</p>
-                <p className="text-3xl font-bold text-purple-700">Rs. {stats.totalEarnings.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-purple-700">PKR {stats.totalEarnings.toLocaleString()}</p>
               </div>
               <Coins className="h-8 w-8 text-purple-600" />
             </div>
@@ -395,7 +395,7 @@ const AdminReferralPartners = () => {
                           {partner.total_referrals}
                         </div>
                       </TableCell>
-                      <TableCell>Rs. {partner.total_earnings.toLocaleString()}</TableCell>
+                      <TableCell>PKR {partner.total_earnings.toLocaleString()}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {format(new Date(partner.created_at), "MMM d, yyyy")}
                       </TableCell>
@@ -495,7 +495,7 @@ const AdminReferralPartners = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Earnings</p>
-                  <p className="font-medium">Rs. {selectedPartner.total_earnings.toLocaleString()}</p>
+                  <p className="font-medium">PKR {selectedPartner.total_earnings.toLocaleString()}</p>
                 </div>
               </div>
 
