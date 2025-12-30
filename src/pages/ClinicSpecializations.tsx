@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useClinicId } from "@/hooks/useClinicId";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface Specialization {
   id: string;
@@ -47,6 +48,7 @@ const ClinicSpecializations = () => {
   const [saving, setSaving] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingSpec, setDeletingSpec] = useState<Specialization | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Pagination & Search
   const [currentPage, setCurrentPage] = useState(1);
@@ -149,6 +151,9 @@ const ClinicSpecializations = () => {
   const handleDelete = async () => {
     if (!deletingSpec) return;
 
+    setDeleteDialogOpen(false);
+    setIsDeleting(true);
+    
     try {
       const { error } = await supabase
         .from("specializations")
@@ -158,7 +163,6 @@ const ClinicSpecializations = () => {
       if (error) throw error;
 
       toast({ title: "Specialization deleted successfully" });
-      setDeleteDialogOpen(false);
       setDeletingSpec(null);
       fetchSpecializations();
     } catch (error: any) {
@@ -167,6 +171,8 @@ const ClinicSpecializations = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -196,7 +202,9 @@ const ClinicSpecializations = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={isDeleting} message="Deleting Specialization..." />
+      <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -398,7 +406,8 @@ const ClinicSpecializations = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -38,6 +38,7 @@ import { differenceInYears } from "date-fns";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface Doctor {
   id: string;
@@ -329,7 +330,9 @@ const Doctors = () => {
   const uniqueSpecializations = Array.from(new Set(doctors.map(d => d.specialization).filter(Boolean)));
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={deleting} message="Deleting Doctor..." />
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold">Doctors</h2>
@@ -903,7 +906,8 @@ const Doctors = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </>
   );
 };
 

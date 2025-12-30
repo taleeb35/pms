@@ -45,6 +45,7 @@ import { useClinicId } from "@/hooks/useClinicId";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { VisitHistory } from "@/components/VisitHistory";
 import { TablePagination } from "@/components/TablePagination";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface Patient {
   id: string;
@@ -165,6 +166,7 @@ const ClinicPatients = () => {
   // Delete Patient Dialog State
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Medical History Dialog States
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
@@ -520,31 +522,55 @@ const ClinicPatients = () => {
   const handleDeletePatient = async () => {
     if (!patientToDelete) return;
 
-    const { error } = await supabase
-      .from("patients")
-      .delete()
-      .eq("id", patientToDelete.id);
+    setIsDeleteDialogOpen(false);
+    setIsDeleting(true);
 
-    if (error) {
+    try {
+      // Delete related medical documents first
+      await supabase.from("medical_documents").delete().eq("patient_id", patientToDelete.id);
+      
+      // Delete related prescriptions
+      await supabase.from("prescriptions").delete().eq("patient_id", patientToDelete.id);
+      
+      // Delete related medical records
+      await supabase.from("medical_records").delete().eq("patient_id", patientToDelete.id);
+      
+      // Delete related visit records
+      await supabase.from("visit_records").delete().eq("patient_id", patientToDelete.id);
+      
+      // Delete related appointments
+      await supabase.from("appointments").delete().eq("patient_id", patientToDelete.id);
+      
+      // Delete related wait list entries
+      await supabase.from("wait_list").delete().eq("patient_id", patientToDelete.id);
+
+      // Finally delete the patient
+      const { error } = await supabase
+        .from("patients")
+        .delete()
+        .eq("id", patientToDelete.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Patient and all related data deleted successfully",
+      });
+
+      setPatientToDelete(null);
+      if (selectedPatient?.id === patientToDelete.id) {
+        setSelectedPatient(null);
+      }
+      fetchPatients();
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to delete patient",
+        description: error.message || "Failed to delete patient",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsDeleting(false);
     }
-
-    toast({
-      title: "Success",
-      description: "Patient deleted successfully",
-    });
-
-    setIsDeleteDialogOpen(false);
-    setPatientToDelete(null);
-    if (selectedPatient?.id === patientToDelete.id) {
-      setSelectedPatient(null);
-    }
-    fetchPatients();
   };
 
   const handleAddHistory = async () => {
@@ -879,7 +905,9 @@ const ClinicPatients = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={isDeleting} message="Deleting Patient..." />
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
@@ -1972,7 +2000,8 @@ const ClinicPatients = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 };
 

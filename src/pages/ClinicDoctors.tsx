@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CitySelect } from "@/components/CitySelect";
 import { validateName, validatePhone, validateEmail, handleNameInput, handlePhoneInput, handleNumberInput } from "@/lib/validations";
 import { useClinicId } from "@/hooks/useClinicId";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface Doctor {
   id: string;
@@ -216,47 +217,33 @@ const ClinicDoctors = () => {
   const handleDeleteDoctor = async () => {
     if (!selectedDoctor) return;
     
+    setIsDeleteDialogOpen(false);
     setIsDeleting(true);
+    
     try {
-      // Delete all appointments for this doctor
-      const { error: appointmentsError } = await supabase
-        .from("appointments")
-        .delete()
-        .eq("doctor_id", selectedDoctor.id);
+      // Delete medical documents first (depends on patients)
+      await supabase.from("medical_documents").delete().eq("uploaded_by", selectedDoctor.id);
       
-      if (appointmentsError) throw appointmentsError;
+      // Delete prescriptions (depends on medical records)
+      await supabase.from("prescriptions").delete().eq("doctor_id", selectedDoctor.id);
+      
+      // Delete medical records
+      await supabase.from("medical_records").delete().eq("doctor_id", selectedDoctor.id);
+      
+      // Delete all appointments for this doctor
+      await supabase.from("appointments").delete().eq("doctor_id", selectedDoctor.id);
 
       // Delete all visit records for this doctor
-      const { error: visitRecordsError } = await supabase
-        .from("visit_records")
-        .delete()
-        .eq("doctor_id", selectedDoctor.id);
-      
-      if (visitRecordsError) throw visitRecordsError;
+      await supabase.from("visit_records").delete().eq("doctor_id", selectedDoctor.id);
 
       // Delete all patients created by this doctor
-      const { error: patientsError } = await supabase
-        .from("patients")
-        .delete()
-        .eq("created_by", selectedDoctor.id);
-      
-      if (patientsError) throw patientsError;
+      await supabase.from("patients").delete().eq("created_by", selectedDoctor.id);
 
       // Delete doctor schedules
-      const { error: schedulesError } = await supabase
-        .from("doctor_schedules")
-        .delete()
-        .eq("doctor_id", selectedDoctor.id);
-      
-      if (schedulesError) throw schedulesError;
+      await supabase.from("doctor_schedules").delete().eq("doctor_id", selectedDoctor.id);
 
       // Delete doctor leaves
-      const { error: leavesError } = await supabase
-        .from("doctor_leaves")
-        .delete()
-        .eq("doctor_id", selectedDoctor.id);
-      
-      if (leavesError) throw leavesError;
+      await supabase.from("doctor_leaves").delete().eq("doctor_id", selectedDoctor.id);
 
       // Delete doctor templates
       await supabase.from("doctor_disease_templates").delete().eq("doctor_id", selectedDoctor.id);
@@ -266,20 +253,16 @@ const ClinicDoctors = () => {
       await supabase.from("doctor_work_leave_templates").delete().eq("doctor_id", selectedDoctor.id);
 
       // Delete procedures
-      const { error: proceduresError } = await supabase
-        .from("procedures")
-        .delete()
-        .eq("doctor_id", selectedDoctor.id);
-      
-      if (proceduresError) throw proceduresError;
+      await supabase.from("procedures").delete().eq("doctor_id", selectedDoctor.id);
 
       // Delete wait list entries
-      const { error: waitListError } = await supabase
-        .from("wait_list")
-        .delete()
-        .eq("doctor_id", selectedDoctor.id);
-      
-      if (waitListError) throw waitListError;
+      await supabase.from("wait_list").delete().eq("doctor_id", selectedDoctor.id);
+
+      // Delete doctor payments
+      await supabase.from("doctor_payments").delete().eq("doctor_id", selectedDoctor.id);
+
+      // Delete user role
+      await supabase.from("user_roles").delete().eq("user_id", selectedDoctor.id);
 
       // Delete the doctor record
       const { error: doctorError } = await supabase
@@ -289,20 +272,11 @@ const ClinicDoctors = () => {
       
       if (doctorError) throw doctorError;
 
-      // Delete user role
-      const { error: roleError } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", selectedDoctor.id);
-      
-      if (roleError) throw roleError;
-
       toast({
         title: "Doctor Deleted",
         description: "Doctor and all associated data have been deleted successfully",
       });
 
-      setIsDeleteDialogOpen(false);
       setSelectedDoctor(null);
       fetchDoctors();
     } catch (error: any) {
@@ -317,7 +291,9 @@ const ClinicDoctors = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={isDeleting} message="Deleting Doctor..." />
+      <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
@@ -656,33 +632,35 @@ const ClinicDoctors = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Doctor</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p>Are you sure you want to delete <strong>{selectedDoctor?.profiles?.full_name}</strong>?</p>
-              <p className="text-destructive font-medium">
-                This will permanently delete:
-              </p>
-              <ul className="list-disc list-inside text-destructive text-sm">
-                <li>All patients created by this doctor</li>
-                <li>All appointments</li>
-                <li>All visit records</li>
-                <li>All templates and schedules</li>
-              </ul>
-              <p className="font-medium">This action cannot be undone.</p>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2">
+                <p>Are you sure you want to delete <strong>{selectedDoctor?.profiles?.full_name}</strong>?</p>
+                <p className="text-destructive font-medium">
+                  This will permanently delete:
+                </p>
+                <ul className="list-disc list-inside text-destructive text-sm">
+                  <li>All patients created by this doctor</li>
+                  <li>All appointments</li>
+                  <li>All visit records</li>
+                  <li>All templates and schedules</li>
+                </ul>
+                <p className="font-medium">This action cannot be undone.</p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteDoctor}
-              disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete Doctor"}
+              Delete Doctor
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </>
   );
 };
 
