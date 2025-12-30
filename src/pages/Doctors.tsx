@@ -733,6 +733,32 @@ const Doctors = () => {
                   {!selectedDoctor.clinic_id && (
                     <>
                       <div>
+                        <p className="text-sm font-medium text-muted-foreground">Payment Plan</p>
+                        <div className="mt-1">
+                          <Select 
+                            value={selectedDoctor.payment_plan} 
+                            onValueChange={async (value) => {
+                              const { error } = await supabase.from("doctors").update({ payment_plan: value }).eq("id", selectedDoctor.id);
+                              if (error) {
+                                toast({ title: "Error", description: "Failed to update payment plan", variant: "destructive" });
+                                return;
+                              }
+                              toast({ title: "Success", description: "Payment plan updated" });
+                              setSelectedDoctor({ ...selectedDoctor, payment_plan: value });
+                              fetchDoctors();
+                            }}
+                          >
+                            <SelectTrigger className="w-[200px]">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="monthly">Monthly (PKR 5,999)</SelectItem>
+                              <SelectItem value="yearly">Yearly (PKR 4,979 - 17% off)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
                         <p className="text-sm font-medium text-muted-foreground">Trial Status</p>
                         <p className={`text-sm ${getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "text-destructive font-semibold" : ""}`}>
                           {getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null 
