@@ -453,7 +453,7 @@ export type Database = {
           clinic_id: string | null
           created_at: string
           disease_name: string
-          doctor_id: string
+          doctor_id: string | null
           id: string
           prescription_template: string
           updated_at: string
@@ -462,7 +462,7 @@ export type Database = {
           clinic_id?: string | null
           created_at?: string
           disease_name: string
-          doctor_id: string
+          doctor_id?: string | null
           id?: string
           prescription_template: string
           updated_at?: string
@@ -471,7 +471,7 @@ export type Database = {
           clinic_id?: string | null
           created_at?: string
           disease_name?: string
-          doctor_id?: string
+          doctor_id?: string | null
           id?: string
           prescription_template?: string
           updated_at?: string
@@ -579,7 +579,7 @@ export type Database = {
         Row: {
           clinic_id: string | null
           created_at: string
-          doctor_id: string
+          doctor_id: string | null
           fields: Json
           id: string
           template_name: string
@@ -588,7 +588,7 @@ export type Database = {
         Insert: {
           clinic_id?: string | null
           created_at?: string
-          doctor_id: string
+          doctor_id?: string | null
           fields?: Json
           id?: string
           template_name: string
@@ -597,7 +597,7 @@ export type Database = {
         Update: {
           clinic_id?: string | null
           created_at?: string
-          doctor_id?: string
+          doctor_id?: string | null
           fields?: Json
           id?: string
           template_name?: string
@@ -707,7 +707,7 @@ export type Database = {
           clinic_id: string | null
           created_at: string
           description: string
-          doctor_id: string
+          doctor_id: string | null
           id: string
           title: string
           updated_at: string
@@ -716,7 +716,7 @@ export type Database = {
           clinic_id?: string | null
           created_at?: string
           description: string
-          doctor_id: string
+          doctor_id?: string | null
           id?: string
           title: string
           updated_at?: string
@@ -725,7 +725,7 @@ export type Database = {
           clinic_id?: string | null
           created_at?: string
           description?: string
-          doctor_id?: string
+          doctor_id?: string | null
           id?: string
           title?: string
           updated_at?: string
