@@ -726,7 +726,7 @@ const Doctors = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Consultation Fee</p>
-                    <p className="text-sm">{selectedDoctor.consultation_fee ? `$${selectedDoctor.consultation_fee}` : "N/A"}</p>
+                    <p className="text-sm">{selectedDoctor.consultation_fee ? `Rs. ${selectedDoctor.consultation_fee.toLocaleString()}` : "N/A"}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">License Number</p>
