@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X, HeartPulse, Briefcase } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X, HeartPulse, Briefcase, Copy } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import type { Json } from "@/integrations/supabase/types";
 import TableSkeleton from "@/components/TableSkeleton";
@@ -19,7 +19,8 @@ import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface DiseaseTemplate {
   id: string;
-  doctor_id: string;
+  doctor_id: string | null;
+  clinic_id: string | null;
   disease_name: string;
   prescription_template: string;
   created_at: string;
@@ -28,7 +29,8 @@ interface DiseaseTemplate {
 
 interface TestTemplate {
   id: string;
-  doctor_id: string;
+  doctor_id: string | null;
+  clinic_id: string | null;
   title: string;
   description: string;
   created_at: string;
@@ -42,7 +44,8 @@ interface ReportField {
 
 interface ReportTemplate {
   id: string;
-  doctor_id: string;
+  doctor_id: string | null;
+  clinic_id: string | null;
   template_name: string;
   fields: ReportField[];
   created_at: string;
@@ -523,6 +526,78 @@ const DoctorTemplates = () => {
     }
   };
 
+  // Copy clinic template to personal template
+  const handleCopyDiseaseTemplate = async (template: DiseaseTemplate) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { error } = await supabase
+      .from("doctor_disease_templates")
+      .insert({
+        doctor_id: session.user.id,
+        clinic_id: clinicId,
+        disease_name: `${template.disease_name} (Copy)`,
+        prescription_template: template.prescription_template,
+      });
+
+    if (error) {
+      toast.error("Failed to copy template");
+      console.error(error);
+    } else {
+      toast.success("Template copied to your personal templates");
+      fetchAllTemplates();
+    }
+  };
+
+  const handleCopyTestTemplate = async (template: TestTemplate) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { error } = await supabase
+      .from("doctor_test_templates")
+      .insert({
+        doctor_id: session.user.id,
+        clinic_id: clinicId,
+        title: `${template.title} (Copy)`,
+        description: template.description,
+      });
+
+    if (error) {
+      toast.error("Failed to copy template");
+      console.error(error);
+    } else {
+      toast.success("Template copied to your personal templates");
+      fetchAllTemplates();
+    }
+  };
+
+  const handleCopyReportTemplate = async (template: ReportTemplate) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+
+    const { error } = await supabase
+      .from("doctor_report_templates")
+      .insert({
+        doctor_id: session.user.id,
+        clinic_id: clinicId,
+        template_name: `${template.template_name} (Copy)`,
+        fields: template.fields as unknown as Json,
+      });
+
+    if (error) {
+      toast.error("Failed to copy template");
+      console.error(error);
+    } else {
+      toast.success("Template copied to your personal templates");
+      fetchAllTemplates();
+    }
+  };
+
+  // Check if a template is owned by the current user
+  const isOwnTemplate = (template: { doctor_id: string | null }) => {
+    return template.doctor_id !== null;
+  };
+
   const filteredDiseaseTemplates = diseaseTemplates.filter(
     (t) =>
       t.disease_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -694,27 +769,48 @@ const DoctorTemplates = () => {
                     <TableBody>
                       {paginatedDiseaseTemplates.map((template) => (
                         <TableRow key={template.id}>
-                          <TableCell className="font-medium">{template.disease_name}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {template.disease_name}
+                              {!isOwnTemplate(template) && (
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Clinic</span>
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell className="max-w-md">
                             <div className="truncate">{template.prescription_template}</div>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenDialog(template, "disease")}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDeleteDisease(template.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              {!isOwnTemplate(template) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleCopyDiseaseTemplate(template)}
+                                  title="Copy to my templates"
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {isOwnTemplate(template) && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenDialog(template, "disease")}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDeleteDisease(template.id)}
+                                    className="text-destructive hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -788,27 +884,48 @@ const DoctorTemplates = () => {
                     <TableBody>
                       {paginatedTestTemplates.map((template) => (
                         <TableRow key={template.id}>
-                          <TableCell className="font-medium">{template.title}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {template.title}
+                              {!isOwnTemplate(template) && (
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Clinic</span>
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell className="max-w-md">
                             <div className="truncate">{template.description}</div>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenDialog(template, "test")}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDeleteTest(template.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              {!isOwnTemplate(template) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleCopyTestTemplate(template)}
+                                  title="Copy to my templates"
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {isOwnTemplate(template) && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenDialog(template, "test")}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDeleteTest(template.id)}
+                                    className="text-destructive hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -882,7 +999,14 @@ const DoctorTemplates = () => {
                     <TableBody>
                       {paginatedReportTemplates.map((template) => (
                         <TableRow key={template.id}>
-                          <TableCell className="font-medium">{template.template_name}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {template.template_name}
+                              {!isOwnTemplate(template) && (
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Clinic</span>
+                              )}
+                            </div>
+                          </TableCell>
                           <TableCell className="max-w-md">
                             <div className="text-sm text-muted-foreground">
                               {template.fields.length} field(s): {template.fields.slice(0, 3).map(f => f.title).join(", ")}
@@ -891,21 +1015,35 @@ const DoctorTemplates = () => {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleOpenDialog(template, "report")}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDeleteReport(template.id)}
-                                className="text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              {!isOwnTemplate(template) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleCopyReportTemplate(template)}
+                                  title="Copy to my templates"
+                                >
+                                  <Copy className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {isOwnTemplate(template) && (
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleOpenDialog(template, "report")}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDeleteReport(template.id)}
+                                    className="text-destructive hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
