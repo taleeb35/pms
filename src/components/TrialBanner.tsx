@@ -11,8 +11,6 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
   const [trialDaysRemaining, setTrialDaysRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [isPaid, setIsPaid] = useState(false);
-
   useEffect(() => {
     const fetchTrialInfo = async () => {
       try {
@@ -22,25 +20,22 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
         if (userType === "clinic") {
           const { data: clinic } = await supabase
             .from("clinics")
-            .select("trial_end_date, fee_status")
+            .select("trial_end_date")
             .eq("id", user.id)
             .maybeSingle();
 
-          // If payment is confirmed, don't show trial banner
-          if (clinic?.fee_status === "paid") {
-            setIsPaid(true);
+          // If trial_end_date is null, trial has been ended - don't show banner
+          if (!clinic?.trial_end_date) {
             setLoading(false);
             return;
           }
 
-          if (clinic?.trial_end_date) {
-            const trialEnd = new Date(clinic.trial_end_date + "T00:00:00");
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const diffTime = trialEnd.getTime() - today.getTime();
-            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            setTrialDaysRemaining(diffDays);
-          }
+          const trialEnd = new Date(clinic.trial_end_date + "T00:00:00");
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const diffTime = trialEnd.getTime() - today.getTime();
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+          setTrialDaysRemaining(diffDays);
         } else if (userType === "doctor") {
           // Check if this is a single doctor (no clinic_id)
           const { data: doctor } = await supabase
@@ -49,7 +44,7 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
             .eq("id", user.id)
             .maybeSingle();
 
-          // Only show trial banner for single doctors (no clinic)
+          // Only show trial banner for single doctors (no clinic) with active trial
           if (doctor && !doctor.clinic_id && doctor.trial_end_date) {
             const trialEnd = new Date(doctor.trial_end_date + "T00:00:00");
             const today = new Date();
@@ -69,8 +64,8 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
     fetchTrialInfo();
   }, [userType]);
 
-  // Don't show banner if loading, paid, or no trial info
-  if (loading || isPaid || trialDaysRemaining === null) {
+  // Don't show banner if loading or no trial info (trial ended or never had one)
+  if (loading || trialDaysRemaining === null) {
     return null;
   }
 
