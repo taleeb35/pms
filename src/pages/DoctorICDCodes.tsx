@@ -16,7 +16,6 @@ interface ICDCode {
   id: string;
   code: string;
   description: string;
-  clinic_id: string;
   created_at: string;
 }
 
@@ -25,6 +24,8 @@ const DoctorICDCodes = () => {
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [clinicId, setClinicId] = useState<string | null>(null);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [isSingleDoctor, setIsSingleDoctor] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [editingCode, setEditingCode] = useState<ICDCode | null>(null);
@@ -33,84 +34,119 @@ const DoctorICDCodes = () => {
   const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => {
-    fetchClinicId();
+    fetchDoctorInfo();
   }, []);
 
   useEffect(() => {
-    if (clinicId) {
+    if (clinicId || isSingleDoctor) {
       fetchICDCodes();
     }
-  }, [clinicId]);
+  }, [clinicId, isSingleDoctor]);
 
-  const fetchClinicId = async () => {
+  const fetchDoctorInfo = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: doctorData } = await supabase
+    const { data } = await supabase
       .from("doctors")
-      .select("clinic_id")
+      .select("id, clinic_id")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (doctorData?.clinic_id) {
-      setClinicId(doctorData.clinic_id);
+    if (data) {
+      setDoctorId(data.id);
+      if (data.clinic_id) {
+        setClinicId(data.clinic_id);
+      } else {
+        setIsSingleDoctor(true);
+      }
     } else {
       setLoading(false);
     }
   };
 
   const fetchICDCodes = async () => {
-    if (!clinicId) return;
+    try {
+      let data, error;
+      
+      if (isSingleDoctor && doctorId) {
+        const result = await supabase
+          .from("doctor_icd_codes")
+          .select("id, code, description, created_at")
+          .eq("doctor_id", doctorId)
+          .order("code");
+        data = result.data;
+        error = result.error;
+      } else if (clinicId) {
+        const result = await supabase
+          .from("clinic_icd_codes")
+          .select("id, code, description, created_at")
+          .eq("clinic_id", clinicId)
+          .order("code");
+        data = result.data;
+        error = result.error;
+      }
 
-    const { data, error } = await supabase
-      .from("clinic_icd_codes")
-      .select("*")
-      .eq("clinic_id", clinicId)
-      .order("code");
-
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      setIcdCodes(data || []);
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        setIcdCodes(data || []);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clinicId) return;
 
-    if (editingCode) {
-      const { error } = await supabase
-        .from("clinic_icd_codes")
-        .update({ code: formData.code, description: formData.description })
-        .eq("id", editingCode.id);
+    try {
+      if (editingCode) {
+        const tableName = isSingleDoctor ? "doctor_icd_codes" : "clinic_icd_codes";
+        const { error } = await supabase
+          .from(tableName)
+          .update({ code: formData.code, description: formData.description })
+          .eq("id", editingCode.id);
 
-      if (error) {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+        if (error) {
+          toast({ title: "Error", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Success", description: "ICD code updated successfully" });
+          fetchICDCodes();
+          closeDialog();
+        }
       } else {
-        toast({ title: "Success", description: "ICD code updated successfully" });
-        fetchICDCodes();
-        closeDialog();
-      }
-    } else {
-      const { error } = await supabase
-        .from("clinic_icd_codes")
-        .insert({ clinic_id: clinicId, code: formData.code, description: formData.description });
+        let error;
+        
+        if (isSingleDoctor && doctorId) {
+          const result = await supabase
+            .from("doctor_icd_codes")
+            .insert({ doctor_id: doctorId, code: formData.code, description: formData.description });
+          error = result.error;
+        } else if (clinicId) {
+          const result = await supabase
+            .from("clinic_icd_codes")
+            .insert({ clinic_id: clinicId, code: formData.code, description: formData.description });
+          error = result.error;
+        }
 
-      if (error) {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
-      } else {
-        toast({ title: "Success", description: "ICD code added successfully" });
-        fetchICDCodes();
-        closeDialog();
+        if (error) {
+          toast({ title: "Error", description: error.message, variant: "destructive" });
+        } else {
+          toast({ title: "Success", description: "ICD code added successfully" });
+          fetchICDCodes();
+          closeDialog();
+        }
       }
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     }
   };
 
   const handleDelete = async (id: string) => {
+    const tableName = isSingleDoctor ? "doctor_icd_codes" : "clinic_icd_codes";
     const { error } = await supabase
-      .from("clinic_icd_codes")
+      .from(tableName)
       .delete()
       .eq("id", id);
 
@@ -142,20 +178,6 @@ const DoctorICDCodes = () => {
 
   const totalPages = Math.ceil(filteredCodes.length / pageSize);
   const paginatedCodes = filteredCodes.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-  // No early return for loading - show skeleton in table instead
-
-  if (!clinicId) {
-    return (
-      <div className="p-8">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">You are not associated with any clinic.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="p-8 space-y-6">
@@ -251,7 +273,7 @@ const DoctorICDCodes = () => {
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
               <span className="text-sm">Page {currentPage} of {totalPages || 1}</span>
-              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages}>Next</Button>
+              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages || totalPages === 0}>Next</Button>
             </div>
           </div>
         </CardContent>

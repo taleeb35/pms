@@ -33,7 +33,6 @@ import {
 interface Allergy {
   id: string;
   name: string;
-  clinic_id: string;
   created_at: string;
 }
 
@@ -50,47 +49,68 @@ const DoctorAllergies = () => {
   const [deletingAllergy, setDeletingAllergy] = useState<Allergy | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [clinicId, setClinicId] = useState<string | null>(null);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [isSingleDoctor, setIsSingleDoctor] = useState(false);
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => {
-    fetchClinicId();
+    fetchDoctorInfo();
   }, []);
 
   useEffect(() => {
-    if (clinicId) {
+    if (clinicId || isSingleDoctor) {
       fetchAllergies();
     }
-  }, [clinicId]);
+  }, [clinicId, isSingleDoctor]);
 
-  const fetchClinicId = async () => {
+  const fetchDoctorInfo = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data } = await supabase
       .from("doctors")
-      .select("clinic_id")
+      .select("id, clinic_id")
       .eq("id", user.id)
       .maybeSingle();
 
-    if (data?.clinic_id) {
-      setClinicId(data.clinic_id);
+    if (data) {
+      setDoctorId(data.id);
+      if (data.clinic_id) {
+        setClinicId(data.clinic_id);
+      } else {
+        setIsSingleDoctor(true);
+      }
     } else {
       setLoading(false);
     }
   };
 
   const fetchAllergies = async () => {
-    if (!clinicId) return;
-
     try {
-      const { data, error } = await supabase
-        .from("clinic_allergies")
-        .select("*")
-        .eq("clinic_id", clinicId)
-        .order("name");
+      let data, error;
+      
+      if (isSingleDoctor && doctorId) {
+        // Fetch from doctor_allergies for single doctors
+        const result = await supabase
+          .from("doctor_allergies")
+          .select("id, name, created_at")
+          .eq("doctor_id", doctorId)
+          .order("name");
+        data = result.data;
+        error = result.error;
+      } else if (clinicId) {
+        // Fetch from clinic_allergies for clinic doctors
+        const result = await supabase
+          .from("clinic_allergies")
+          .select("id, name, created_at")
+          .eq("clinic_id", clinicId)
+          .order("name");
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
       setAllergies(data || []);
@@ -106,14 +126,25 @@ const DoctorAllergies = () => {
   };
 
   const handleAddAllergy = async () => {
-    if (!newAllergyName.trim() || !clinicId) return;
+    if (!newAllergyName.trim()) return;
     setSubmitting(true);
 
     try {
-      const { error } = await supabase.from("clinic_allergies").insert({
-        clinic_id: clinicId,
-        name: newAllergyName.trim(),
-      });
+      let error;
+      
+      if (isSingleDoctor && doctorId) {
+        const result = await supabase.from("doctor_allergies").insert({
+          doctor_id: doctorId,
+          name: newAllergyName.trim(),
+        });
+        error = result.error;
+      } else if (clinicId) {
+        const result = await supabase.from("clinic_allergies").insert({
+          clinic_id: clinicId,
+          name: newAllergyName.trim(),
+        });
+        error = result.error;
+      }
 
       if (error) throw error;
 
@@ -137,8 +168,9 @@ const DoctorAllergies = () => {
     setSubmitting(true);
 
     try {
+      const tableName = isSingleDoctor ? "doctor_allergies" : "clinic_allergies";
       const { error } = await supabase
-        .from("clinic_allergies")
+        .from(tableName)
         .update({ name: editingAllergy.name.trim() })
         .eq("id", editingAllergy.id);
 
@@ -164,8 +196,9 @@ const DoctorAllergies = () => {
     setSubmitting(true);
 
     try {
+      const tableName = isSingleDoctor ? "doctor_allergies" : "clinic_allergies";
       const { error } = await supabase
-        .from("clinic_allergies")
+        .from(tableName)
         .delete()
         .eq("id", deletingAllergy.id);
 
@@ -214,20 +247,6 @@ const DoctorAllergies = () => {
       ))}
     </>
   );
-
-  if (!clinicId) {
-    return (
-      <div className="p-6">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              You are not associated with any clinic. Please contact support.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -345,13 +364,13 @@ const DoctorAllergies = () => {
                   Previous
                 </Button>
                 <span className="text-sm">
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} of {totalPages || 1}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
+                  disabled={currentPage === totalPages || totalPages === 0}
                 >
                   Next
                 </Button>
