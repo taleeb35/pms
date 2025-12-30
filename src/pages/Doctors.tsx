@@ -588,6 +588,8 @@ const Doctors = () => {
                       <TableCell>
                         {doctor.clinic_id ? (
                           <span className="text-muted-foreground text-xs">Clinic Dr</span>
+                        ) : doctor.trial_end_date === null ? (
+                          <Badge className="bg-green-500">Subscribed</Badge>
                         ) : trialDays !== null ? (
                           trialDays <= 0 ? (
                             <Badge variant="destructive">Expired</Badge>
@@ -760,22 +762,26 @@ const Doctors = () => {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Trial Status</p>
-                        <p className={`text-sm ${getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "text-destructive font-semibold" : ""}`}>
-                          {getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null 
-                            ? (getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "Expired" : `${getTrialDaysRemaining(selectedDoctor.trial_end_date)} days left`)
-                            : "N/A"}
-                        </p>
+                        {selectedDoctor.trial_end_date === null ? (
+                          <Badge className="bg-green-500 mt-1">Subscribed</Badge>
+                        ) : (
+                          <p className={`text-sm ${getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "text-destructive font-semibold" : ""}`}>
+                            {getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null 
+                              ? (getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 ? "Expired" : `${getTrialDaysRemaining(selectedDoctor.trial_end_date)} days left`)
+                              : "N/A"}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Trial End Date</p>
-                        <p className="text-sm">{selectedDoctor.trial_end_date ? new Date(selectedDoctor.trial_end_date).toLocaleDateString() : "N/A"}</p>
+                        <p className="text-sm">{selectedDoctor.trial_end_date === null ? "N/A (Subscribed)" : (selectedDoctor.trial_end_date ? new Date(selectedDoctor.trial_end_date).toLocaleDateString() : "N/A")}</p>
                       </div>
                     </>
                   )}
                 </div>
                 
-                {/* Extend Trial Section for Single Doctors */}
-                {!selectedDoctor.clinic_id && (
+                {/* Extend Trial Section for Single Doctors - only show if not subscribed */}
+                {!selectedDoctor.clinic_id && selectedDoctor.trial_end_date !== null && (
                   <div className="bg-muted/50 border rounded-lg p-4">
                     <p className="text-sm font-medium text-muted-foreground mb-2">Extend Trial (Days)</p>
                     <div className="flex gap-2">
