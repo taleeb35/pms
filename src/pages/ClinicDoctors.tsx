@@ -272,12 +272,32 @@ const ClinicDoctors = () => {
       
       if (doctorError) throw doctorError;
 
-      // Update the clinic's requested_doctors count (reduce by 1)
-      if (clinicId && requestedDoctors > 0) {
-        await supabase
-          .from("clinics")
-          .update({ requested_doctors: requestedDoctors - 1 })
-          .eq("id", clinicId);
+      // Sync the clinic's doctor limit with actual doctors count (reduce only)
+      if (clinicId) {
+        const [{ data: clinicRow, error: clinicRowError }, { count, error: countError }] = await Promise.all([
+          supabase.from("clinics").select("requested_doctors").eq("id", clinicId).single(),
+          supabase.from("doctors").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId),
+        ]);
+
+        if (clinicRowError) throw clinicRowError;
+        if (countError) throw countError;
+
+        const currentLimit = clinicRow?.requested_doctors ?? requestedDoctors;
+        const currentDoctorCount = count ?? 0;
+
+        if (currentDoctorCount < currentLimit) {
+          const { error: clinicUpdateError } = await supabase
+            .from("clinics")
+            .update({
+              requested_doctors: currentDoctorCount,
+              no_of_doctors: currentDoctorCount,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", clinicId);
+
+          if (clinicUpdateError) throw clinicUpdateError;
+          setRequestedDoctors(currentDoctorCount);
+        }
       }
 
       toast({
