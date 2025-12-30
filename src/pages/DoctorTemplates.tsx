@@ -15,6 +15,7 @@ import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X,
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import type { Json } from "@/integrations/supabase/types";
 import TableSkeleton from "@/components/TableSkeleton";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface DiseaseTemplate {
   id: string;
@@ -69,6 +70,7 @@ const DoctorTemplates = () => {
   const [sickLeaveTemplates, setSickLeaveTemplates] = useState<LeaveTemplate[]>([]);
   const [workLeaveTemplates, setWorkLeaveTemplates] = useState<LeaveTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -432,11 +434,13 @@ const DoctorTemplates = () => {
   const handleDeleteDisease = async (id: string) => {
     if (!confirm("Are you sure you want to delete this template?")) return;
 
+    setIsDeleting(true);
     const { error } = await supabase
       .from("doctor_disease_templates")
       .delete()
       .eq("id", id);
 
+    setIsDeleting(false);
     if (error) {
       toast.error("Failed to delete template");
       console.error(error);
@@ -449,11 +453,13 @@ const DoctorTemplates = () => {
   const handleDeleteTest = async (id: string) => {
     if (!confirm("Are you sure you want to delete this template?")) return;
 
+    setIsDeleting(true);
     const { error } = await supabase
       .from("doctor_test_templates")
       .delete()
       .eq("id", id);
 
+    setIsDeleting(false);
     if (error) {
       toast.error("Failed to delete template");
       console.error(error);
@@ -466,11 +472,13 @@ const DoctorTemplates = () => {
   const handleDeleteReport = async (id: string) => {
     if (!confirm("Are you sure you want to delete this template?")) return;
 
+    setIsDeleting(true);
     const { error } = await supabase
       .from("doctor_report_templates")
       .delete()
       .eq("id", id);
 
+    setIsDeleting(false);
     if (error) {
       toast.error("Failed to delete template");
       console.error(error);
@@ -483,11 +491,13 @@ const DoctorTemplates = () => {
   const handleDeleteSickLeave = async (id: string) => {
     if (!confirm("Are you sure you want to delete this template?")) return;
 
+    setIsDeleting(true);
     const { error } = await supabase
       .from("doctor_sick_leave_templates")
       .delete()
       .eq("id", id);
 
+    setIsDeleting(false);
     if (error) {
       toast.error("Failed to delete template");
       console.error(error);
@@ -500,11 +510,13 @@ const DoctorTemplates = () => {
   const handleDeleteWorkLeave = async (id: string) => {
     if (!confirm("Are you sure you want to delete this template?")) return;
 
+    setIsDeleting(true);
     const { error } = await supabase
       .from("doctor_work_leave_templates")
       .delete()
       .eq("id", id);
 
+    setIsDeleting(false);
     if (error) {
       toast.error("Failed to delete template");
       console.error(error);
@@ -600,7 +612,9 @@ const DoctorTemplates = () => {
   const labels = getFieldLabels();
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={isDeleting} message="Deleting template..." />
+      <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Templates</h1>
@@ -1247,7 +1261,8 @@ const DoctorTemplates = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 };
 
