@@ -15,6 +15,7 @@ import { Plus, Pencil, Trash2, Search, FileText, FlaskConical, ClipboardList, X 
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import type { Json } from "@/integrations/supabase/types";
 import TableSkeleton from "@/components/TableSkeleton";
+import DeletingOverlay from "@/components/DeletingOverlay";
 
 interface DiseaseTemplate {
   id: string;
@@ -62,6 +63,7 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
   const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -330,6 +332,8 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
     if (!confirm("Are you sure you want to delete this template?")) return;
     if (!clinicId) return;
 
+    setIsDeleting(true);
+    
     const tableName = type === "disease" 
       ? "doctor_disease_templates" 
       : type === "test" 
@@ -341,6 +345,8 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
       .delete()
       .eq("id", id);
 
+    setIsDeleting(false);
+    
     if (error) {
       toast.error("Failed to delete template");
     } else {
@@ -430,7 +436,9 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
   );
 
   return (
-    <div className="space-y-6">
+    <>
+      <DeletingOverlay isVisible={isDeleting} message="Deleting template..." />
+      <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Templates</h1>
@@ -751,7 +759,8 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 };
 
