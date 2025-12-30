@@ -137,7 +137,12 @@ const DoctorWalkIn = () => {
 
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
-      toast({ title: "Please fix the validation errors", variant: "destructive" });
+      const missingFields = Object.values(errors).join(", ");
+      toast({ 
+        title: "Missing Required Fields", 
+        description: missingFields,
+        variant: "destructive" 
+      });
       return;
     }
 
