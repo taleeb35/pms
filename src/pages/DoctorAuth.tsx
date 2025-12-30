@@ -229,6 +229,7 @@ const DoctorAuth = () => {
         clinic_id: null,
         approved: true,
         referred_by: validatedReferralCode,
+        payment_plan: paymentPlan,
       });
 
       if (doctorError) throw doctorError;
