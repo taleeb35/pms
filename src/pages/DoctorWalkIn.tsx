@@ -423,8 +423,6 @@ const DoctorWalkIn = () => {
                     <SelectContent className="bg-background z-50">
                       <SelectItem value="single">Single</SelectItem>
                       <SelectItem value="married">Married</SelectItem>
-                      <SelectItem value="divorced">Divorced</SelectItem>
-                      <SelectItem value="widowed">Widowed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
