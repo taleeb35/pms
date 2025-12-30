@@ -272,33 +272,8 @@ const ClinicDoctors = () => {
       
       if (doctorError) throw doctorError;
 
-      // Sync the clinic's doctor limit with actual doctors count (reduce only)
-      if (clinicId) {
-        const [{ data: clinicRow, error: clinicRowError }, { count, error: countError }] = await Promise.all([
-          supabase.from("clinics").select("requested_doctors").eq("id", clinicId).single(),
-          supabase.from("doctors").select("id", { count: "exact", head: true }).eq("clinic_id", clinicId),
-        ]);
 
-        if (clinicRowError) throw clinicRowError;
-        if (countError) throw countError;
-
-        const currentLimit = clinicRow?.requested_doctors ?? requestedDoctors;
-        const currentDoctorCount = count ?? 0;
-
-        if (currentDoctorCount < currentLimit) {
-          const { error: clinicUpdateError } = await supabase
-            .from("clinics")
-            .update({
-              requested_doctors: currentDoctorCount,
-              no_of_doctors: currentDoctorCount,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", clinicId);
-
-          if (clinicUpdateError) throw clinicUpdateError;
-          setRequestedDoctors(currentDoctorCount);
-        }
-      }
+      // Clinic doctor limit is a configured cap (e.g., 5). Deleting doctors must NOT reduce that limit.
 
       toast({
         title: "Doctor Deleted",
