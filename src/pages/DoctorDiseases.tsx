@@ -33,7 +33,6 @@ import {
 interface Disease {
   id: string;
   name: string;
-  clinic_id: string;
   created_at: string;
 }
 
@@ -50,47 +49,66 @@ const DoctorDiseases = () => {
   const [deletingDisease, setDeletingDisease] = useState<Disease | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [clinicId, setClinicId] = useState<string | null>(null);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [isSingleDoctor, setIsSingleDoctor] = useState(false);
   
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
   useEffect(() => {
-    fetchClinicId();
+    fetchDoctorInfo();
   }, []);
 
   useEffect(() => {
-    if (clinicId) {
+    if (clinicId || isSingleDoctor) {
       fetchDiseases();
     }
-  }, [clinicId]);
+  }, [clinicId, isSingleDoctor]);
 
-  const fetchClinicId = async () => {
+  const fetchDoctorInfo = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const { data } = await supabase
       .from("doctors")
-      .select("clinic_id")
+      .select("id, clinic_id")
       .eq("id", user.id)
       .maybeSingle();
 
-    if (data?.clinic_id) {
-      setClinicId(data.clinic_id);
+    if (data) {
+      setDoctorId(data.id);
+      if (data.clinic_id) {
+        setClinicId(data.clinic_id);
+      } else {
+        setIsSingleDoctor(true);
+      }
     } else {
       setLoading(false);
     }
   };
 
   const fetchDiseases = async () => {
-    if (!clinicId) return;
-
     try {
-      const { data, error } = await supabase
-        .from("clinic_diseases")
-        .select("*")
-        .eq("clinic_id", clinicId)
-        .order("name");
+      let data, error;
+      
+      if (isSingleDoctor && doctorId) {
+        const result = await supabase
+          .from("doctor_diseases")
+          .select("id, name, created_at")
+          .eq("doctor_id", doctorId)
+          .order("name");
+        data = result.data;
+        error = result.error;
+      } else if (clinicId) {
+        const result = await supabase
+          .from("clinic_diseases")
+          .select("id, name, created_at")
+          .eq("clinic_id", clinicId)
+          .order("name");
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) throw error;
       setDiseases(data || []);
@@ -106,14 +124,25 @@ const DoctorDiseases = () => {
   };
 
   const handleAddDisease = async () => {
-    if (!newDiseaseName.trim() || !clinicId) return;
+    if (!newDiseaseName.trim()) return;
     setSubmitting(true);
 
     try {
-      const { error } = await supabase.from("clinic_diseases").insert({
-        clinic_id: clinicId,
-        name: newDiseaseName.trim(),
-      });
+      let error;
+      
+      if (isSingleDoctor && doctorId) {
+        const result = await supabase.from("doctor_diseases").insert({
+          doctor_id: doctorId,
+          name: newDiseaseName.trim(),
+        });
+        error = result.error;
+      } else if (clinicId) {
+        const result = await supabase.from("clinic_diseases").insert({
+          clinic_id: clinicId,
+          name: newDiseaseName.trim(),
+        });
+        error = result.error;
+      }
 
       if (error) throw error;
 
@@ -137,8 +166,9 @@ const DoctorDiseases = () => {
     setSubmitting(true);
 
     try {
+      const tableName = isSingleDoctor ? "doctor_diseases" : "clinic_diseases";
       const { error } = await supabase
-        .from("clinic_diseases")
+        .from(tableName)
         .update({ name: editingDisease.name.trim() })
         .eq("id", editingDisease.id);
 
@@ -164,8 +194,9 @@ const DoctorDiseases = () => {
     setSubmitting(true);
 
     try {
+      const tableName = isSingleDoctor ? "doctor_diseases" : "clinic_diseases";
       const { error } = await supabase
-        .from("clinic_diseases")
+        .from(tableName)
         .delete()
         .eq("id", deletingDisease.id);
 
@@ -195,22 +226,6 @@ const DoctorDiseases = () => {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-
-  // No early return for loading - show skeleton in table instead
-
-  if (!clinicId) {
-    return (
-      <div className="p-6">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">
-              You are not associated with any clinic. Please contact support.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -328,13 +343,13 @@ const DoctorDiseases = () => {
                   Previous
                 </Button>
                 <span className="text-sm">
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} of {totalPages || 1}
                 </span>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
+                  disabled={currentPage === totalPages || totalPages === 0}
                 >
                   Next
                 </Button>
