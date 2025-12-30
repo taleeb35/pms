@@ -11,6 +11,8 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
   const [trialDaysRemaining, setTrialDaysRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [isPaid, setIsPaid] = useState(false);
+
   useEffect(() => {
     const fetchTrialInfo = async () => {
       try {
@@ -20,9 +22,16 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
         if (userType === "clinic") {
           const { data: clinic } = await supabase
             .from("clinics")
-            .select("trial_end_date")
+            .select("trial_end_date, fee_status")
             .eq("id", user.id)
             .maybeSingle();
+
+          // If payment is confirmed, don't show trial banner
+          if (clinic?.fee_status === "paid") {
+            setIsPaid(true);
+            setLoading(false);
+            return;
+          }
 
           if (clinic?.trial_end_date) {
             const trialEnd = new Date(clinic.trial_end_date + "T00:00:00");
@@ -60,7 +69,8 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
     fetchTrialInfo();
   }, [userType]);
 
-  if (loading || trialDaysRemaining === null) {
+  // Don't show banner if loading, paid, or no trial info
+  if (loading || isPaid || trialDaysRemaining === null) {
     return null;
   }
 
