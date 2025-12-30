@@ -44,11 +44,28 @@ const pakistanCities = [
 import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 
+const MONTHLY_PRICE_PER_DOCTOR = 5999;
+const YEARLY_DISCOUNT = 0.17; // 17% discount
+
 const DoctorAuth = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [paymentPlan, setPaymentPlan] = useState<"monthly" | "yearly">("monthly");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Pricing calculations
+  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
+  const yearlySavings = (MONTHLY_PRICE_PER_DOCTOR - yearlyMonthlyRate) * 12;
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-PK', {
+      style: 'currency',
+      currency: 'PKR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
 
   // Signup form state
   const [signupData, setSignupData] = useState({
@@ -552,6 +569,63 @@ const DoctorAuth = () => {
                 )}
                 {referralCodeStatus === "inactive" && (
                   <p className="text-xs text-destructive">This code is not active</p>
+                )}
+              </div>
+            </div>
+
+            {/* Payment Plan Selection */}
+            <div className="col-span-1 md:col-span-2 space-y-3 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-200">
+              <Label className="text-xs font-semibold">Payment Plan <span className="text-destructive">*</span></Label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan("monthly")}
+                  className={`p-3 rounded-lg border-2 transition-all text-left ${
+                    paymentPlan === "monthly"
+                      ? "border-teal-500 bg-teal-50"
+                      : "border-gray-200 hover:border-teal-300"
+                  }`}
+                >
+                  <div className="font-semibold text-sm">Monthly</div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatPrice(MONTHLY_PRICE_PER_DOCTOR)}/month
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan("yearly")}
+                  className={`p-3 rounded-lg border-2 transition-all text-left relative ${
+                    paymentPlan === "yearly"
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-200 hover:border-green-300"
+                  }`}
+                >
+                  <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                    Save 17%
+                  </span>
+                  <div className="font-semibold text-sm">Yearly</div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatPrice(yearlyMonthlyRate)}/month
+                  </div>
+                </button>
+              </div>
+              {/* Pricing Summary */}
+              <div className="bg-white/80 rounded-lg p-3 border border-teal-100">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-muted-foreground">Monthly Fee:</span>
+                  <span className="font-semibold">{formatPrice(paymentPlan === "yearly" ? yearlyMonthlyRate : MONTHLY_PRICE_PER_DOCTOR)}</span>
+                </div>
+                {paymentPlan === "yearly" && (
+                  <>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">Yearly Total:</span>
+                      <span className="font-semibold">{formatPrice(yearlyMonthlyRate * 12)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>You Save:</span>
+                      <span className="font-semibold">{formatPrice(yearlySavings)}/year</span>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
