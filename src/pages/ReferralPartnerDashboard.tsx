@@ -241,7 +241,7 @@ const ReferralPartnerDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-emerald-100 text-sm font-medium">Total Earnings</p>
-                  <p className="text-3xl font-bold mt-1">Rs. {partner.total_earnings.toLocaleString()}</p>
+                  <p className="text-3xl font-bold mt-1">PKR {partner.total_earnings.toLocaleString()}</p>
                 </div>
                 <div className="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
                   <Coins className="h-6 w-6 text-white" />
