@@ -816,6 +816,36 @@ const Doctors = () => {
                   </div>
                 )}
 
+                {/* End Trial & Activate Subscription for single doctors with active trial */}
+                {!selectedDoctor.clinic_id && 
+                 selectedDoctor.trial_end_date !== null && 
+                 getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
+                 getTrialDaysRemaining(selectedDoctor.trial_end_date)! > 0 && 
+                 selectedDoctor.approved && (
+                  <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                    <p className="text-sm text-green-700 font-medium mb-3">💳 First Payment Received? End trial to convert to subscription.</p>
+                    <Button 
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      size="sm" 
+                      onClick={async () => {
+                        const { error } = await supabase.from("doctors").update({ 
+                          trial_end_date: null,
+                          approved: true 
+                        }).eq("id", selectedDoctor.id);
+                        if (error) {
+                          toast({ title: "Error", description: "Failed to end trial", variant: "destructive" });
+                          return;
+                        }
+                        toast({ title: "Success", description: "Trial ended - doctor is now subscribed" });
+                        setSelectedDoctor({ ...selectedDoctor, trial_end_date: null, approved: true });
+                        fetchDoctors();
+                      }}
+                    >
+                      ✓ End Trial & Activate Subscription
+                    </Button>
+                  </div>
+                )}
+
                 {selectedDoctor.introduction && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-2">Introduction</p>
@@ -826,6 +856,7 @@ const Doctors = () => {
 
               {/* End Trial Button for expired single doctors - set to inactive */}
               {!selectedDoctor.clinic_id && 
+               selectedDoctor.trial_end_date !== null &&
                getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
                getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 && 
                selectedDoctor.approved && (
