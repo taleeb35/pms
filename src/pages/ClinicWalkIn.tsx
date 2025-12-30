@@ -100,6 +100,71 @@ const ClinicWalkIn = () => {
     }
   };
 
+  // Real-time validation handlers
+  const validateField = (field: string, value: string) => {
+    let error = "";
+    
+    switch (field) {
+      case "full_name":
+        const nameValidation = validateName(value);
+        if (!nameValidation.isValid) error = nameValidation.message;
+        break;
+      case "father_name":
+        if (value) {
+          const fatherValidation = validateName(value);
+          if (!fatherValidation.isValid) error = fatherValidation.message;
+        }
+        break;
+      case "phone":
+        const phoneValidation = validatePhone(value);
+        if (!phoneValidation.isValid) error = phoneValidation.message;
+        break;
+      case "email":
+        if (value) {
+          const emailValidation = validateEmail(value, false);
+          if (!emailValidation.isValid) error = emailValidation.message;
+        }
+        break;
+      case "cnic":
+        if (value) {
+          const cnicValidation = validateCNIC(value);
+          if (!cnicValidation.isValid) error = cnicValidation.message;
+        }
+        break;
+      case "date_of_birth":
+        if (!value) error = "Date of birth is required";
+        break;
+      case "doctor_id":
+        if (!value) error = "Please select a doctor";
+        break;
+      case "appointment_time":
+        if (!value) error = "Please select appointment time";
+        break;
+    }
+    
+    setFormErrors(prev => {
+      if (error) {
+        return { ...prev, [field]: error };
+      } else {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+    });
+  };
+
+  const handleFieldBlur = (field: string, value: string) => {
+    validateField(field, value);
+  };
+
+  const clearFieldError = (field: string) => {
+    setFormErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
+  };
+
   const generatePatientId = () => {
     const timestamp = Date.now().toString(36).toUpperCase();
     const random = Math.random().toString(36).substring(2, 6).toUpperCase();
@@ -281,7 +346,11 @@ const ClinicWalkIn = () => {
                   <Input
                     id="full_name"
                     value={patientForm.full_name}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, full_name: handleNameInput(e) }))}
+                    onChange={(e) => {
+                      setPatientForm(prev => ({ ...prev, full_name: handleNameInput(e) }));
+                      clearFieldError("full_name");
+                    }}
+                    onBlur={() => handleFieldBlur("full_name", patientForm.full_name)}
                     placeholder="Enter patient name"
                     required
                     className={formErrors.full_name ? "border-destructive" : ""}
@@ -293,7 +362,11 @@ const ClinicWalkIn = () => {
                   <Input
                     id="father_name"
                     value={patientForm.father_name}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, father_name: handleNameInput(e) }))}
+                    onChange={(e) => {
+                      setPatientForm(prev => ({ ...prev, father_name: handleNameInput(e) }));
+                      clearFieldError("father_name");
+                    }}
+                    onBlur={() => handleFieldBlur("father_name", patientForm.father_name)}
                     placeholder="Enter father name"
                     className={formErrors.father_name ? "border-destructive" : ""}
                   />
@@ -307,7 +380,11 @@ const ClinicWalkIn = () => {
                   <Input
                     id="phone"
                     value={patientForm.phone}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, phone: handlePhoneInput(e) }))}
+                    onChange={(e) => {
+                      setPatientForm(prev => ({ ...prev, phone: handlePhoneInput(e) }));
+                      clearFieldError("phone");
+                    }}
+                    onBlur={() => handleFieldBlur("phone", patientForm.phone)}
                     placeholder="Enter phone number"
                     required
                     className={formErrors.phone ? "border-destructive" : ""}
@@ -320,7 +397,11 @@ const ClinicWalkIn = () => {
                     id="email"
                     type="email"
                     value={patientForm.email}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) => {
+                      setPatientForm(prev => ({ ...prev, email: e.target.value }));
+                      clearFieldError("email");
+                    }}
+                    onBlur={() => handleFieldBlur("email", patientForm.email)}
                     placeholder="Enter email"
                     className={formErrors.email ? "border-destructive" : ""}
                   />
@@ -351,6 +432,7 @@ const ClinicWalkIn = () => {
                         onSelect={(date) => {
                           setDobDate(date);
                           setDobPopoverOpen(false);
+                          clearFieldError("date_of_birth");
                         }}
                         disabled={(date) => date > new Date()}
                         captionLayout="dropdown-buttons"
@@ -366,7 +448,11 @@ const ClinicWalkIn = () => {
                   <Input
                     id="cnic"
                     value={patientForm.cnic}
-                    onChange={(e) => setPatientForm(prev => ({ ...prev, cnic: handleCNICInput(e) }))}
+                    onChange={(e) => {
+                      setPatientForm(prev => ({ ...prev, cnic: handleCNICInput(e) }));
+                      clearFieldError("cnic");
+                    }}
+                    onBlur={() => handleFieldBlur("cnic", patientForm.cnic)}
                     placeholder="Enter CNIC (13 digits)"
                     maxLength={15}
                     className={formErrors.cnic ? "border-destructive" : ""}
@@ -491,9 +577,12 @@ const ClinicWalkIn = () => {
                 <Label>Select Doctor *</Label>
                 <Select
                   value={appointmentForm.doctor_id}
-                  onValueChange={(value) => setAppointmentForm(prev => ({ ...prev, doctor_id: value }))}
+                  onValueChange={(value) => {
+                    setAppointmentForm(prev => ({ ...prev, doctor_id: value }));
+                    clearFieldError("doctor_id");
+                  }}
                 >
-                  <SelectTrigger className="bg-background">
+                  <SelectTrigger className={cn("bg-background", formErrors.doctor_id && "border-destructive")}>
                     <SelectValue placeholder="Select a doctor" />
                   </SelectTrigger>
                   <SelectContent className="bg-background z-50">
@@ -504,6 +593,7 @@ const ClinicWalkIn = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {formErrors.doctor_id && <p className="text-sm text-destructive">{formErrors.doctor_id}</p>}
               </div>
 
               <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
@@ -517,9 +607,13 @@ const ClinicWalkIn = () => {
                   doctorId={appointmentForm.doctor_id}
                   selectedDate={new Date()}
                   value={appointmentForm.appointment_time}
-                  onValueChange={(value) => setAppointmentForm(prev => ({ ...prev, appointment_time: value }))}
+                  onValueChange={(value) => {
+                    setAppointmentForm(prev => ({ ...prev, appointment_time: value }));
+                    clearFieldError("appointment_time");
+                  }}
                   required
                 />
+                {formErrors.appointment_time && <p className="text-sm text-destructive">{formErrors.appointment_time}</p>}
               </div>
 
               <div className="space-y-2">
