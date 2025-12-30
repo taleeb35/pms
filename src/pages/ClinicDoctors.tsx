@@ -272,6 +272,14 @@ const ClinicDoctors = () => {
       
       if (doctorError) throw doctorError;
 
+      // Update the clinic's requested_doctors count (reduce by 1)
+      if (clinicId && requestedDoctors > 0) {
+        await supabase
+          .from("clinics")
+          .update({ requested_doctors: requestedDoctors - 1 })
+          .eq("id", clinicId);
+      }
+
       toast({
         title: "Doctor Deleted",
         description: "Doctor and all associated data have been deleted successfully",
