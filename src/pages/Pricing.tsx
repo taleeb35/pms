@@ -6,119 +6,64 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { 
   Check, 
-  X, 
   Sparkles, 
-  Building2, 
   Users, 
-  Crown,
   Zap,
   Shield,
   HeadphonesIcon,
   ArrowRight,
-  Star
+  Star,
+  Calculator
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const [isAnnual, setIsAnnual] = useState(true);
+  const [isAnnual, setIsAnnual] = useState(false);
+  const [doctorCount, setDoctorCount] = useState(1);
 
-  const plans = [
-    {
-      name: "Starter",
-      description: "Perfect for small clinics just getting started",
-      icon: Building2,
-      monthlyPrice: 2999,
-      annualPrice: 2499,
-      color: "from-blue-500 to-cyan-500",
-      bgColor: "from-blue-50 to-cyan-50",
-      borderColor: "border-blue-200",
-      popular: false,
-      features: [
-        { name: "Up to 3 Doctors", included: true },
-        { name: "Up to 500 Patients", included: true },
-        { name: "Appointment Management", included: true },
-        { name: "Basic Patient Records", included: true },
-        { name: "Email Support", included: true },
-        { name: "Basic Reports", included: true },
-        { name: "Activity Logs", included: false },
-        { name: "Finance Management", included: false },
-        { name: "Custom Templates", included: false },
-        { name: "Priority Support", included: false },
-      ],
-      cta: "Start Free Trial"
-    },
-    {
-      name: "Professional",
-      description: "For growing clinics that need more power",
-      icon: Users,
-      monthlyPrice: 5999,
-      annualPrice: 4999,
-      color: "from-purple-500 to-pink-500",
-      bgColor: "from-purple-50 to-pink-50",
-      borderColor: "border-purple-300",
-      popular: true,
-      features: [
-        { name: "Up to 10 Doctors", included: true },
-        { name: "Up to 2,000 Patients", included: true },
-        { name: "Appointment Management", included: true },
-        { name: "Complete Patient Records", included: true },
-        { name: "Priority Email Support", included: true },
-        { name: "Advanced Reports", included: true },
-        { name: "Activity Logs", included: true },
-        { name: "Finance Management", included: true },
-        { name: "Custom Templates", included: true },
-        { name: "Priority Support", included: false },
-      ],
-      cta: "Start Free Trial"
-    },
-    {
-      name: "Enterprise",
-      description: "For large clinics and hospital chains",
-      icon: Crown,
-      monthlyPrice: 9999,
-      annualPrice: 8499,
-      color: "from-orange-500 to-red-500",
-      bgColor: "from-orange-50 to-red-50",
-      borderColor: "border-orange-200",
-      popular: false,
-      features: [
-        { name: "Unlimited Doctors", included: true },
-        { name: "Unlimited Patients", included: true },
-        { name: "Appointment Management", included: true },
-        { name: "Complete Patient Records", included: true },
-        { name: "24/7 Phone & Email Support", included: true },
-        { name: "Custom Reports & Analytics", included: true },
-        { name: "Activity Logs", included: true },
-        { name: "Finance Management", included: true },
-        { name: "Custom Templates", included: true },
-        { name: "Dedicated Account Manager", included: true },
-      ],
-      cta: "Contact Sales"
-    }
+  const MONTHLY_PRICE_PER_DOCTOR = 5999;
+  const YEARLY_DISCOUNT = 0.17; // 17% discount
+
+  const monthlyTotal = doctorCount * MONTHLY_PRICE_PER_DOCTOR;
+  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
+  const yearlyTotal = doctorCount * yearlyMonthlyRate;
+  const yearlySavings = (monthlyTotal - yearlyTotal) * 12;
+
+  const features = [
+    "Unlimited Patients",
+    "Appointment Management",
+    "Complete Patient Records",
+    "Visit Records & History",
+    "Prescription Management",
+    "Finance & Revenue Tracking",
+    "Custom Templates",
+    "Activity Logs",
+    "Email Support",
+    "Data Security & Backups",
   ];
 
   const faqs = [
     {
-      question: "Can I switch plans anytime?",
-      answer: "Yes, you can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle."
+      question: "How does the pricing work?",
+      answer: "You pay Rs. 5,999 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same."
     },
     {
       question: "Is there a free trial?",
-      answer: "Yes! All plans come with a 14-day free trial. No credit card required to start."
+      answer: "Yes! All signups come with a 14-day free trial. No credit card required to start."
+    },
+    {
+      question: "What's the yearly discount?",
+      answer: "When you choose annual billing, you get 17% off - that's Rs. 4,979 per doctor per month instead of Rs. 5,999."
+    },
+    {
+      question: "Can I switch between monthly and yearly?",
+      answer: "Yes, you can switch your billing cycle at any time. Changes will be reflected in your next billing period."
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards, debit cards, and bank transfers for annual plans."
-    },
-    {
-      question: "Can I cancel anytime?",
-      answer: "Absolutely. You can cancel your subscription at any time with no hidden fees or penalties."
-    },
-    {
-      question: "Do you offer discounts for annual billing?",
-      answer: "Yes, you save up to 17% when you choose annual billing over monthly billing."
+      answer: "We accept all major bank transfers, JazzCash, EasyPaisa, and can arrange other payment methods for clinics."
     },
     {
       question: "Is my data secure?",
@@ -142,23 +87,23 @@ const Pricing = () => {
       <div className="container mx-auto px-4 py-8">
         
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4" />
             Simple, Transparent Pricing
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-            Choose the Perfect{" "}
+            One Plan,{" "}
             <span className="bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
-              Plan for Your Clinic
+              Simple Pricing
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Start with a 14-day free trial. No credit card required. Cancel anytime.
+            Rs. 5,999 per doctor per month. Save 17% with yearly billing.
           </p>
 
           {/* Billing Toggle */}
-          <div className="flex items-center justify-center gap-4 mb-12">
+          <div className="flex items-center justify-center gap-4 mb-8">
             <span className={`text-sm font-medium transition-colors ${!isAnnual ? "text-foreground" : "text-muted-foreground"}`}>
               Monthly
             </span>
@@ -168,7 +113,7 @@ const Pricing = () => {
               className="data-[state=checked]:bg-primary"
             />
             <span className={`text-sm font-medium transition-colors ${isAnnual ? "text-foreground" : "text-muted-foreground"}`}>
-              Annual
+              Yearly
             </span>
             {isAnnual && (
               <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
@@ -178,89 +123,119 @@ const Pricing = () => {
           </div>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-20">
-          {plans.map((plan, index) => (
-            <Card 
-              key={index}
-              className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
-                plan.popular 
-                  ? "border-2 border-primary shadow-xl scale-105 z-10" 
-                  : `border-2 ${plan.borderColor}`
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-center py-2 text-sm font-semibold">
-                  <Star className="w-4 h-4 inline mr-1" />
-                  Most Popular
+        {/* Main Pricing Card */}
+        <div className="max-w-lg mx-auto mb-16">
+          <Card className="relative overflow-hidden border-2 border-primary shadow-2xl">
+            <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-center py-2 text-sm font-semibold">
+              <Star className="w-4 h-4 inline mr-1" />
+              14-Day Free Trial Included
+            </div>
+            
+            <CardHeader className="pt-12 pb-4 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground">Per Doctor</h3>
+              <p className="text-muted-foreground text-sm">For individual doctors & clinics</p>
+            </CardHeader>
+            
+            <CardContent className="pb-8">
+              {/* Price Display */}
+              <div className="text-center mb-6">
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-5xl font-bold text-foreground">
+                    {formatPrice(isAnnual ? yearlyMonthlyRate : MONTHLY_PRICE_PER_DOCTOR)}
+                  </span>
+                  <span className="text-muted-foreground">/doctor/month</span>
                 </div>
-              )}
-              
-              <CardHeader className={`pt-${plan.popular ? '12' : '6'} pb-4`}>
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center mb-4`}>
-                  <plan.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground">{plan.name}</h3>
-                <p className="text-muted-foreground text-sm">{plan.description}</p>
-              </CardHeader>
-              
-              <CardContent className="pb-8">
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold text-foreground">
-                      {formatPrice(isAnnual ? plan.annualPrice : plan.monthlyPrice)}
+                {isAnnual && (
+                  <div className="mt-2">
+                    <span className="text-sm text-muted-foreground line-through mr-2">
+                      {formatPrice(MONTHLY_PRICE_PER_DOCTOR)}
                     </span>
-                    <span className="text-muted-foreground">/month</span>
+                    <span className="text-sm text-green-600 font-medium">
+                      Save {formatPrice(MONTHLY_PRICE_PER_DOCTOR - yearlyMonthlyRate)}/month
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Calculator */}
+              <div className="bg-muted/50 rounded-xl p-4 mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calculator className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Calculate Your Cost</span>
+                </div>
+                <div className="flex items-center gap-3 mb-3">
+                  <Label className="text-sm text-muted-foreground">Number of Doctors:</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setDoctorCount(Math.max(1, doctorCount - 1))}
+                    >
+                      -
+                    </Button>
+                    <span className="w-8 text-center font-bold">{doctorCount}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setDoctorCount(Math.min(50, doctorCount + 1))}
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+                <div className="border-t pt-3 space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Monthly Total:</span>
+                    <span className="font-semibold">{formatPrice(isAnnual ? yearlyTotal : monthlyTotal)}</span>
                   </div>
                   {isAnnual && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Billed annually ({formatPrice(plan.annualPrice * 12)}/year)
-                    </p>
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Yearly Total:</span>
+                        <span className="font-semibold">{formatPrice(yearlyTotal * 12)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-green-600">
+                        <span>You Save:</span>
+                        <span className="font-semibold">{formatPrice(yearlySavings)}/year</span>
+                      </div>
+                    </>
                   )}
                 </div>
+              </div>
 
-                <Button 
-                  className={`w-full mb-6 ${
-                    plan.popular 
-                      ? "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70" 
-                      : ""
-                  }`}
-                  variant={plan.popular ? "default" : "outline"}
-                  size="lg"
-                  onClick={() => navigate("/login")}
-                >
-                  {plan.cta}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+              <Button 
+                className="w-full mb-6 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                size="lg"
+                onClick={() => navigate("/login")}
+              >
+                Start Free Trial
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
 
-                <div className="space-y-3">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-center gap-3">
-                      {feature.included ? (
-                        <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                          <Check className="w-3 h-3 text-green-600" />
-                        </div>
-                      ) : (
-                        <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                          <X className="w-3 h-3 text-muted-foreground" />
-                        </div>
-                      )}
-                      <span className={`text-sm ${feature.included ? "text-foreground" : "text-muted-foreground"}`}>
-                        {feature.name}
-                      </span>
+              <div className="space-y-3">
+                {features.map((feature, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3 h-3 text-green-600" />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    <span className="text-sm text-foreground">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Features Comparison */}
         <div className="max-w-4xl mx-auto mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">All Plans Include</h2>
-            <p className="text-muted-foreground">Essential features available in every plan</p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Everything You Need</h2>
+            <p className="text-muted-foreground">All features included for every doctor</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-6">
@@ -301,7 +276,7 @@ const Pricing = () => {
         <div className="max-w-4xl mx-auto text-center pb-12">
           <Card className="bg-gradient-to-br from-primary to-primary/80 border-0 p-12">
             <h2 className="text-3xl font-bold text-primary-foreground mb-4">
-              Ready to Transform Your Clinic?
+              Ready to Transform Your Practice?
             </h2>
             <p className="text-primary-foreground/80 mb-8 text-lg">
               Start your 14-day free trial today. No credit card required.
@@ -322,7 +297,7 @@ const Pricing = () => {
                 className="text-lg px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
                 onClick={() => navigate("/contact")}
               >
-                Contact Sales
+                Contact Us
               </Button>
             </div>
           </Card>
@@ -348,5 +323,10 @@ const Pricing = () => {
     </div>
   );
 };
+
+// Label component for calculator
+const Label = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <span className={className}>{children}</span>
+);
 
 export default Pricing;
