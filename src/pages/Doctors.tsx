@@ -53,6 +53,7 @@ interface Doctor {
   approved: boolean;
   clinic_id: string | null;
   trial_end_date: string | null;
+  payment_plan: string;
   profiles: {
     full_name: string;
     email: string;
@@ -60,6 +61,13 @@ interface Doctor {
     date_of_birth: string | null;
   };
 }
+
+const getPaymentPlanBadge = (plan: string) => {
+  if (plan === "yearly") {
+    return <Badge className="bg-green-600 text-white">Yearly</Badge>;
+  }
+  return <Badge variant="outline">Monthly</Badge>;
+};
 
 const getTrialDaysRemaining = (trialEndDate: string | null): number | null => {
   if (!trialEndDate) return null;
@@ -552,7 +560,7 @@ const Doctors = () => {
                   <TableHead>Email</TableHead>
                   <TableHead>City</TableHead>
                   <TableHead>Specialization</TableHead>
-                  <TableHead>Age</TableHead>
+                  <TableHead>Plan</TableHead>
                   <TableHead>Trial Days</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Action</TableHead>
@@ -570,7 +578,13 @@ const Doctors = () => {
                       <TableCell>{doctor.profiles?.email || "N/A"}</TableCell>
                       <TableCell>{doctor.city || "N/A"}</TableCell>
                       <TableCell>{doctor.specialization}</TableCell>
-                      <TableCell>{age !== null ? `${age} years` : "N/A"}</TableCell>
+                      <TableCell>
+                        {doctor.clinic_id ? (
+                          <span className="text-muted-foreground text-xs">Via Clinic</span>
+                        ) : (
+                          getPaymentPlanBadge(doctor.payment_plan)
+                        )}
+                      </TableCell>
                       <TableCell>
                         {doctor.clinic_id ? (
                           <span className="text-muted-foreground text-xs">Clinic Dr</span>
