@@ -116,11 +116,10 @@ const DoctorTemplates = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    // Fetch disease templates
+    // Fetch disease templates (RLS handles visibility - own templates + clinic templates)
     const { data: diseaseData, error: diseaseError } = await supabase
       .from("doctor_disease_templates")
       .select("*")
-      .eq("doctor_id", session.user.id)
       .order("created_at", { ascending: false });
 
     if (diseaseError) {
@@ -129,11 +128,10 @@ const DoctorTemplates = () => {
       setDiseaseTemplates(diseaseData || []);
     }
 
-    // Fetch test templates
+    // Fetch test templates (RLS handles visibility - own templates + clinic templates)
     const { data: testData, error: testError } = await supabase
       .from("doctor_test_templates")
       .select("*")
-      .eq("doctor_id", session.user.id)
       .order("created_at", { ascending: false });
 
     if (testError) {
@@ -142,11 +140,10 @@ const DoctorTemplates = () => {
       setTestTemplates(testData || []);
     }
 
-    // Fetch report templates
+    // Fetch report templates (RLS handles visibility - own templates + clinic templates)
     const { data: reportData, error: reportError } = await supabase
       .from("doctor_report_templates")
       .select("*")
-      .eq("doctor_id", session.user.id)
       .order("created_at", { ascending: false });
 
     if (reportError) {
@@ -159,7 +156,7 @@ const DoctorTemplates = () => {
       setReportTemplates(transformedData);
     }
 
-    // Fetch sick leave templates
+    // Fetch sick leave templates (doctor's own only - no clinic sharing)
     const { data: sickLeaveData, error: sickLeaveError } = await supabase
       .from("doctor_sick_leave_templates")
       .select("*")
@@ -172,7 +169,7 @@ const DoctorTemplates = () => {
       setSickLeaveTemplates(sickLeaveData || []);
     }
 
-    // Fetch work leave templates
+    // Fetch work leave templates (doctor's own only - no clinic sharing)
     const { data: workLeaveData, error: workLeaveError } = await supabase
       .from("doctor_work_leave_templates")
       .select("*")
