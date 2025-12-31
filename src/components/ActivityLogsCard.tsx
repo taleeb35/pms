@@ -37,10 +37,68 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      
-      const { data, error } = await supabase
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Clinic dashboard card
+      if (clinicId) {
+        const { data: doctors, error: doctorsError } = await supabase
+          .from("doctors")
+          .select("id")
+          .eq("clinic_id", clinicId);
+        if (doctorsError) throw doctorsError;
+
+        const doctorIds = doctors?.map((d) => d.id) || [];
+        const userIds = [clinicId, ...doctorIds];
+
+        const { data, error } = await supabase
+          .from("activity_logs")
+          .select(
+            `
+            id,
+            action,
+            entity_type,
+            entity_id,
+            details,
+            created_at,
+            user_id,
+            profiles:user_id (
+              full_name
+            )
+          `
+          )
+          .in("user_id", userIds)
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (error) throw error;
+        setLogs((data || []) as unknown as ActivityLog[]);
+        return;
+      }
+
+      // Doctor dashboard card (default)
+      const effectiveDoctorId = doctorId || user?.id;
+      if (!effectiveDoctorId) {
+        setLogs([]);
+        return;
+      }
+
+      const { data: receptionists, error: receptionistsError } = await supabase
+        .from("doctor_receptionists")
+        .select("user_id")
+        .eq("doctor_id", effectiveDoctorId)
+        .eq("status", "active");
+      if (receptionistsError) throw receptionistsError;
+
+      const receptionistIds = receptionists?.map((r) => r.user_id) || [];
+      const userIds = [effectiveDoctorId, ...receptionistIds];
+
+      const query1 = supabase
         .from("activity_logs")
-        .select(`
+        .select(
+          `
           id,
           action,
           entity_type,
@@ -51,12 +109,41 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
           profiles:user_id (
             full_name
           )
-        `)
+        `
+        )
+        .in("user_id", userIds)
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(30);
 
-      if (error) throw error;
-      setLogs((data || []) as unknown as ActivityLog[]);
+      const query2 = supabase
+        .from("activity_logs")
+        .select(
+          `
+          id,
+          action,
+          entity_type,
+          entity_id,
+          details,
+          created_at,
+          user_id,
+          profiles:user_id (
+            full_name
+          )
+        `
+        )
+        .eq("entity_id", effectiveDoctorId)
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      const [r1, r2] = await Promise.all([query1, query2]);
+      if (r1.error) throw r1.error;
+      if (r2.error) throw r2.error;
+
+      const combined = [...(r1.data || []), ...(r2.data || [])];
+      const unique = Array.from(new Map(combined.map((l) => [l.id, l])).values());
+      unique.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setLogs(unique.slice(0, 20) as unknown as ActivityLog[]);
     } catch (error) {
       console.error("Error fetching activity logs:", error);
     } finally {
@@ -103,27 +190,36 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
 
   const formatDetails = (log: ActivityLog): string => {
     const details = log.details as Record<string, unknown> | null;
-    if (!details || typeof details !== 'object') return "";
+    if (!details || typeof details !== "object") return "";
 
     const parts: string[] = [];
-    
+
+    if (details.doctorName) {
+      parts.push(`Doctor: ${String(details.doctorName)}`);
+    }
     if (details.patient_name) {
-      parts.push(`Patient: ${details.patient_name}`);
+      parts.push(`Patient: ${String(details.patient_name)}`);
+    }
+    if (details.leaveDate) {
+      parts.push(`Date: ${String(details.leaveDate)}`);
+    }
+    if (details.leaveType) {
+      parts.push(`Type: ${String(details.leaveType) === "full_day" ? "Full Day" : String(details.leaveType)}`);
     }
     if (details.procedure_name) {
-      parts.push(`Procedure: ${details.procedure_name}`);
+      parts.push(`Procedure: ${String(details.procedure_name)}`);
     }
     if (details.procedure_fee !== undefined) {
-      parts.push(`Fee: Rs. ${details.procedure_fee}`);
+      parts.push(`Fee: Rs. ${String(details.procedure_fee)}`);
     }
     if (details.discount_amount !== undefined) {
-      parts.push(`Discount: Rs. ${details.discount_amount}`);
+      parts.push(`Discount: Rs. ${String(details.discount_amount)}`);
     }
     if (details.refund_amount !== undefined) {
-      parts.push(`Refund: Rs. ${details.refund_amount}`);
+      parts.push(`Refund: Rs. ${String(details.refund_amount)}`);
     }
     if (details.total_fee !== undefined) {
-      parts.push(`Total: Rs. ${details.total_fee}`);
+      parts.push(`Total: Rs. ${String(details.total_fee)}`);
     }
 
     return parts.join(" • ");

@@ -237,12 +237,12 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
       }
 
       // Log activity
-      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      const doctorName = doctors.find((d) => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
       await logActivity({
         action: "schedule_updated",
         entityType: "schedule",
         entityId: selectedDoctorId,
-        details: { doctorName },
+        details: { doctorId: selectedDoctorId, doctorName },
       });
 
       toast({
@@ -284,12 +284,17 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
       if (error) throw error;
 
       // Log activity
-      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      const doctorName = doctors.find((d) => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
       await logActivity({
         action: "leave_added",
         entityType: "leave",
         entityId: selectedDoctorId,
-        details: { doctorName, leaveDate: format(leaveDate, "yyyy-MM-dd"), leaveType },
+        details: {
+          doctorId: selectedDoctorId,
+          doctorName,
+          leaveDate: format(leaveDate, "yyyy-MM-dd"),
+          leaveType,
+        },
       });
 
       toast({
@@ -320,12 +325,19 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
       if (error) throw error;
 
       // Log activity
-      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      const doctorName = doctors.find((d) => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      const leaveInfo = leaves.find((l) => l.id === leaveId);
       await logActivity({
         action: "leave_deleted",
         entityType: "leave",
-        entityId: leaveId,
-        details: { doctorName },
+        entityId: selectedDoctorId,
+        details: {
+          doctorId: selectedDoctorId,
+          doctorName,
+          leaveId,
+          leaveDate: leaveInfo?.leave_date,
+          leaveType: leaveInfo?.leave_type,
+        },
       });
 
       toast({
@@ -360,12 +372,17 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
       if (error) throw error;
 
       // Log activity
-      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      const doctorName = doctors.find((d) => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
       await logActivity({
         action: "leave_added",
         entityType: "leave",
         entityId: selectedDoctorId,
-        details: { doctorName, leaveDate: format(tomorrow, "yyyy-MM-dd"), leaveType: "full_day" },
+        details: {
+          doctorId: selectedDoctorId,
+          doctorName,
+          leaveDate: format(tomorrow, "yyyy-MM-dd"),
+          leaveType: "full_day",
+        },
       });
 
       toast({

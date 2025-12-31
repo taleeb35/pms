@@ -79,7 +79,7 @@ const DoctorActivityLogs = () => {
         query1 = query1.eq("action", actionFilter);
       }
 
-      // Fetch logs where doctorId in details matches the current doctor (clinic owner actions)
+      // Fetch logs that are about this doctor (e.g., clinic owner updating schedule/leaves)
       let query2 = supabase
         .from("activity_logs")
         .select(
@@ -88,7 +88,7 @@ const DoctorActivityLogs = () => {
           profiles:user_id (full_name)
         `
         )
-        .contains("details", { doctorId: user.id })
+        .eq("entity_id", user.id)
         .order("created_at", { ascending: false })
         .range((page - 1) * pageSize, page * pageSize - 1);
 
