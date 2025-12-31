@@ -40,6 +40,7 @@ const DoctorReceptionists = () => {
   const [selectedReceptionist, setSelectedReceptionist] = useState<Receptionist | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [formLoading, setFormLoading] = useState(false);
+  const [isClinicDoctor, setIsClinicDoctor] = useState(false);
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -58,8 +59,26 @@ const DoctorReceptionists = () => {
   const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    checkDoctorType();
     fetchReceptionists();
   }, []);
+
+  const checkDoctorType = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: doctorData } = await supabase
+        .from("doctors")
+        .select("clinic_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      setIsClinicDoctor(!!doctorData?.clinic_id);
+    } catch (error) {
+      console.error("Error checking doctor type:", error);
+    }
+  };
 
   const fetchReceptionists = async () => {
     try {
@@ -338,6 +357,32 @@ const DoctorReceptionists = () => {
     const query = searchQuery.toLowerCase();
     return name.includes(query) || email.includes(query);
   });
+
+  // If doctor is linked to a clinic, show message
+  if (isClinicDoctor) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold">Receptionists</h1>
+          <p className="text-muted-foreground">Manage your receptionists</p>
+        </div>
+        <Card>
+          <CardContent className="py-12">
+            <div className="text-center space-y-4">
+              <UserCog className="h-12 w-12 mx-auto text-muted-foreground" />
+              <div>
+                <h3 className="text-lg font-semibold">Not Available</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  As a doctor linked to a clinic, receptionists are managed by your clinic owner. 
+                  Please contact your clinic administrator for receptionist access.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
