@@ -103,18 +103,21 @@ const Layout = ({ children }: LayoutProps) => {
 
   const [userRole, setUserRole] = useState<string | null>(null);
   const [clinicId, setClinicId] = useState<string | null>(null);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
       if (!user) {
         setUserRole(null);
         setClinicId(null);
+        setDoctorId(null);
         return;
       }
       
       // Reset role when user changes to prevent stale data
       setUserRole(null);
       setClinicId(null);
+      setDoctorId(null);
       
       // Then check if user is a clinic FIRST (before receptionist check)
       // This is important because clinic owner's session should show clinic menu
@@ -141,16 +144,29 @@ const Layout = ({ children }: LayoutProps) => {
         return;
       }
 
-      // Check if user is a receptionist
-      const { data: receptionistData } = await supabase
+      // Check if user is a clinic receptionist
+      const { data: clinicReceptionistData } = await supabase
         .from("clinic_receptionists")
         .select("clinic_id")
         .eq("user_id", user.id)
         .maybeSingle();
       
-      if (receptionistData) {
+      if (clinicReceptionistData) {
         setUserRole("receptionist");
-        setClinicId(receptionistData.clinic_id);
+        setClinicId(clinicReceptionistData.clinic_id);
+        return;
+      }
+
+      // Check if user is a doctor's receptionist
+      const { data: doctorReceptionistData } = await supabase
+        .from("doctor_receptionists")
+        .select("doctor_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      if (doctorReceptionistData) {
+        setUserRole("doctor_receptionist");
+        setDoctorId(doctorReceptionistData.doctor_id);
         return;
       }
       
@@ -360,12 +376,45 @@ const Layout = ({ children }: LayoutProps) => {
     },
   ];
 
+  // Doctor's receptionist menu
+  const doctorReceptionistMenuGroups: MenuGroup[] = [
+    {
+      label: "Overview",
+      icon: LayoutDashboard,
+      items: [
+        { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      ],
+    },
+    {
+      label: "Patient Care",
+      icon: Users,
+      items: [
+        { path: "/doctor-receptionist/patients", icon: Users, label: "Patients" },
+        { path: "/doctor-receptionist/waitlist", icon: Clock, label: "Waitlist" },
+        { path: "/doctor-receptionist/appointments", icon: Calendar, label: "Appointments" },
+        { path: "/doctor-receptionist/walk-in", icon: Sparkles, label: "Walk-In" },
+      ],
+    },
+    {
+      label: "Clinical Data",
+      icon: Database,
+      items: [
+        { path: "/doctor-receptionist/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/doctor-receptionist/diseases", icon: HeartPulse, label: "Diseases" },
+        { path: "/doctor-receptionist/icd-codes", icon: FileCode, label: "ICD Codes" },
+        { path: "/doctor-receptionist/procedures", icon: Stethoscope, label: "Procedures" },
+      ],
+    },
+  ];
+
   const menuGroups = userRole === "doctor" 
     ? doctorMenuGroups 
     : userRole === "clinic" 
     ? clinicMenuGroups 
     : userRole === "receptionist"
     ? receptionistMenuGroups
+    : userRole === "doctor_receptionist"
+    ? doctorReceptionistMenuGroups
     : adminMenuGroups;
 
   // Auto-expand group containing the active route on initial load only
