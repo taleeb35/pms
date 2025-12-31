@@ -101,8 +101,20 @@ const ClinicReceptionists = () => {
     }
   };
 
+  const MAX_RECEPTIONISTS = 2;
+
   const handleAddReceptionist = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check receptionist limit
+    if (receptionists.length >= MAX_RECEPTIONISTS) {
+      toast({
+        title: "Limit Reached",
+        description: `You can only add up to ${MAX_RECEPTIONISTS} receptionists.`,
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Validation
     const errors: string[] = [];
@@ -376,9 +388,9 @@ const ClinicReceptionists = () => {
         </div>
         <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2" disabled={receptionists.length >= MAX_RECEPTIONISTS}>
               <Plus className="h-4 w-4" />
-              Add Receptionist
+              Add Receptionist ({receptionists.length}/{MAX_RECEPTIONISTS})
             </Button>
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
