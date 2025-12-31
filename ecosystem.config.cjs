@@ -1,12 +1,12 @@
 module.exports = {
   apps: [
     {
-      name: "myclinichq",
-      cwd: "/home/myclinichq/htdocs/myclinichq.com",
+      name: "zonoir",
+      cwd: "/home/zonoir/htdocs/zonoir.com",
       script: "./pm2-start.sh",
       env: {
         NODE_ENV: "production",
-        PORT: "3000",
+        PORT: "3035",
       },
       autorestart: true,
       max_restarts: 10,

@@ -1,7 +1,7 @@
 # #!/usr/bin/env bash
 # set -e
 
-# cd /home/myclinichq/htdocs/myclinichq.com
+# cd /home/zonoir/htdocs/zonoir.com
 
 # # Load Node 22 (NVM)
 # export NVM_DIR="$HOME/.nvm"
@@ -19,7 +19,7 @@
 # npm run build
 
 # export NODE_ENV=production
-# export PORT=3000
+# export PORT=3035
 
 # npm run preview
 
@@ -33,7 +33,7 @@ cd "$(dirname "$0")"
 export NODE_ENV=production
 
 # Port for the Vite preview server / app
-export PORT=3000
+export PORT=3035
 
 # Start Vite preview for the built app
-npm run preview -- --host 0.0.0.0 --port 3000
+npm run preview -- --host 0.0.0.0 --port 3035

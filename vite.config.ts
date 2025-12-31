@@ -21,8 +21,8 @@ export default defineConfig(({ mode }) => ({
   // production preview (what PM2 runs)
   preview: {
     host: "0.0.0.0",
-    port: 3000,
+    port: 3035,
     strictPort: true,
-    allowedHosts: ["myclinichq.com", "www.myclinichq.com"],
+    allowedHosts: ["zonoir.com", "www.zonoir.com"],
   },
 }));
