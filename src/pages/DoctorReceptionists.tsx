@@ -186,13 +186,7 @@ const DoctorReceptionists = () => {
         refresh_token: doctorSession.refresh_token,
       });
 
-      if (formData.phone) {
-        await supabase
-          .from("profiles")
-          .update({ phone: formData.phone })
-          .eq("id", newReceptionistId);
-      }
-
+      // Create receptionist link FIRST (so RLS policy allows profile update)
       const { error: receptionistError } = await supabase
         .from("doctor_receptionists")
         .insert({
@@ -203,6 +197,7 @@ const DoctorReceptionists = () => {
 
       if (receptionistError) throw receptionistError;
 
+      // Assign receptionist role
       const { error: roleError } = await supabase
         .from("user_roles")
         .insert({
@@ -211,6 +206,18 @@ const DoctorReceptionists = () => {
         });
 
       if (roleError) throw roleError;
+
+      // Update profile with phone if provided (AFTER doctor_receptionists record exists for RLS)
+      if (formData.phone) {
+        const { error: profileUpdateError } = await supabase
+          .from("profiles")
+          .update({ phone: formData.phone })
+          .eq("id", newReceptionistId);
+
+        if (profileUpdateError) {
+          console.error("Error updating profile phone:", profileUpdateError);
+        }
+      }
 
       toast({
         title: "Receptionist Added",
