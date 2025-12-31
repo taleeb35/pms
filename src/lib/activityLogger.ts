@@ -4,6 +4,7 @@ export type ActivityAction =
   | "patient_created"
   | "appointment_created"
   | "appointment_updated"
+  | "fee_updated"
   | "procedure_set"
   | "discount_applied"
   | "refund_applied";
@@ -48,6 +49,7 @@ export const getActionLabel = (action: string): string => {
     patient_created: "Added Patient",
     appointment_created: "Created Appointment",
     appointment_updated: "Updated Appointment",
+    fee_updated: "Updated Fee",
     procedure_set: "Set Procedure",
     discount_applied: "Applied Discount",
     refund_applied: "Applied Refund",

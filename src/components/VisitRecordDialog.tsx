@@ -815,6 +815,23 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
 
       if (feeError) throw feeError;
 
+      // Log activity for fee update (when editing existing record)
+      if (existingRecord) {
+        await logActivity({
+          action: "fee_updated",
+          entityType: "appointment",
+          entityId: appointment.id,
+          details: {
+            patient_name: appointment.patients?.full_name || "Unknown",
+            consultation_fee: consultationFee,
+            other_fee: otherFee,
+            procedure_fee: procFee,
+            refund: refundAmount,
+            total_fee: totalFee,
+          },
+        });
+      }
+
       // Log activity for procedure set
       if (selectedProcedure) {
         const selectedProcedureDetails = procedures.find(p => p.id === selectedProcedure);
