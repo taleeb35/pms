@@ -287,13 +287,18 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
                     </div>
                     <p className="text-sm mt-1">
                       <span className="font-medium">
-                        {log.profiles?.full_name || "Unknown User"}
+                        {(() => {
+                          const details = (log.details as unknown as Record<string, unknown>) || {};
+                          return (
+                            (details.actorName as string) ||
+                            log.profiles?.full_name ||
+                            "Unknown User"
+                          );
+                        })()}
                       </span>
                     </p>
                     {formatDetails(log) && (
-                      <p className="text-xs text-muted-foreground mt-1 truncate">
-                        {formatDetails(log)}
-                      </p>
+                      <p className="text-xs text-muted-foreground mt-1 truncate">{formatDetails(log)}</p>
                     )}
                   </div>
                 </div>
