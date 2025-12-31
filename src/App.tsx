@@ -80,6 +80,8 @@ import DoctorReceptionistDiseases from "./pages/DoctorReceptionistDiseases";
 import DoctorReceptionistICDCodes from "./pages/DoctorReceptionistICDCodes";
 import DoctorReceptionistProcedures from "./pages/DoctorReceptionistProcedures";
 import DoctorReceptionistPatientDetail from "./pages/DoctorReceptionistPatientDetail";
+import ClinicActivityLogs from "./pages/ClinicActivityLogs";
+import DoctorActivityLogs from "./pages/DoctorActivityLogs";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -281,6 +283,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorReceptionists />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/activity-logs"
+              element={
+                <Layout>
+                  <DoctorActivityLogs />
                 </Layout>
               }
             />
@@ -497,6 +507,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicSubscription />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/activity-logs"
+              element={
+                <Layout>
+                  <ClinicActivityLogs />
                 </Layout>
               }
             />

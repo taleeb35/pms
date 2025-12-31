@@ -27,6 +27,7 @@ import { useClinicId } from "@/hooks/useClinicId";
 import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Doctor {
   id: string;
@@ -295,6 +296,17 @@ const ClinicWalkIn = () => {
         });
 
       if (appointmentError) throw appointmentError;
+
+      // Log walk-in activity
+      await logActivity({
+        action: "walkin_created",
+        entityType: "appointment",
+        entityId: patientData.id,
+        details: {
+          patient_name: patientForm.full_name,
+          patient_id: patientId,
+        },
+      });
 
       toast({
         title: "Walk-In Registered Successfully",
