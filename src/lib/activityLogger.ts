@@ -2,14 +2,32 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type ActivityAction = 
   | "patient_created"
+  | "patient_updated"
+  | "patient_deleted"
   | "appointment_created"
   | "appointment_updated"
+  | "appointment_cancelled"
+  | "appointment_completed"
   | "fee_updated"
   | "procedure_set"
   | "discount_applied"
-  | "refund_applied";
+  | "refund_applied"
+  | "visit_record_created"
+  | "visit_record_updated"
+  | "waitlist_added"
+  | "waitlist_removed"
+  | "walkin_created"
+  | "procedure_created"
+  | "procedure_updated"
+  | "procedure_deleted"
+  | "doctor_added"
+  | "doctor_removed"
+  | "receptionist_added"
+  | "receptionist_removed"
+  | "document_uploaded"
+  | "document_deleted";
 
-export type EntityType = "patient" | "appointment";
+export type EntityType = "patient" | "appointment" | "visit_record" | "waitlist" | "procedure" | "doctor" | "receptionist" | "document";
 
 interface LogActivityParams {
   action: ActivityAction;
@@ -47,12 +65,46 @@ export const logActivity = async ({
 export const getActionLabel = (action: string): string => {
   const labels: Record<string, string> = {
     patient_created: "Added Patient",
+    patient_updated: "Updated Patient",
+    patient_deleted: "Deleted Patient",
     appointment_created: "Created Appointment",
     appointment_updated: "Updated Appointment",
+    appointment_cancelled: "Cancelled Appointment",
+    appointment_completed: "Completed Appointment",
     fee_updated: "Updated Fee",
     procedure_set: "Set Procedure",
     discount_applied: "Applied Discount",
     refund_applied: "Applied Refund",
+    visit_record_created: "Created Visit Record",
+    visit_record_updated: "Updated Visit Record",
+    waitlist_added: "Added to Waitlist",
+    waitlist_removed: "Removed from Waitlist",
+    walkin_created: "Created Walk-in",
+    procedure_created: "Created Procedure",
+    procedure_updated: "Updated Procedure",
+    procedure_deleted: "Deleted Procedure",
+    doctor_added: "Added Doctor",
+    doctor_removed: "Removed Doctor",
+    receptionist_added: "Added Receptionist",
+    receptionist_removed: "Removed Receptionist",
+    document_uploaded: "Uploaded Document",
+    document_deleted: "Deleted Document",
   };
   return labels[action] || action;
+};
+
+export const getActionColor = (action: string): string => {
+  if (action.includes("created") || action.includes("added") || action.includes("uploaded")) {
+    return "text-green-600 bg-green-100";
+  }
+  if (action.includes("deleted") || action.includes("removed") || action.includes("cancelled")) {
+    return "text-red-600 bg-red-100";
+  }
+  if (action.includes("updated") || action.includes("completed")) {
+    return "text-blue-600 bg-blue-100";
+  }
+  if (action.includes("refund") || action.includes("discount")) {
+    return "text-orange-600 bg-orange-100";
+  }
+  return "text-gray-600 bg-gray-100";
 };

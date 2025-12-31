@@ -28,6 +28,7 @@ import { useClinicId } from "@/hooks/useClinicId";
 import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { TablePagination } from "@/components/TablePagination";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Appointment {
   id: string;
@@ -289,6 +290,19 @@ const ClinicAppointments = () => {
       });
 
       if (error) throw error;
+
+      // Log activity
+      const selectedPatient = patients.find(p => p.id === selectedPatientId);
+      await logActivity({
+        action: "appointment_created",
+        entityType: "appointment",
+        entityId: selectedPatientId,
+        details: {
+          patient_name: selectedPatient?.full_name || "Unknown",
+          appointment_date: appointmentDate,
+          appointment_time: appointmentTime,
+        },
+      });
 
       // Remove patient from waitlist if they were in it
       await supabase
