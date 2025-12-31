@@ -25,9 +25,30 @@ export type ActivityAction =
   | "receptionist_added"
   | "receptionist_removed"
   | "document_uploaded"
-  | "document_deleted";
+  | "document_deleted"
+  | "schedule_updated"
+  | "leave_added"
+  | "leave_deleted"
+  | "allergy_created"
+  | "allergy_updated"
+  | "allergy_deleted"
+  | "disease_created"
+  | "disease_updated"
+  | "disease_deleted"
+  | "icd_code_created"
+  | "icd_code_updated"
+  | "icd_code_deleted"
+  | "template_created"
+  | "template_updated"
+  | "template_deleted"
+  | "expense_created"
+  | "expense_updated"
+  | "expense_deleted"
+  | "specialization_created"
+  | "specialization_updated"
+  | "specialization_deleted";
 
-export type EntityType = "patient" | "appointment" | "visit_record" | "waitlist" | "procedure" | "doctor" | "receptionist" | "document";
+export type EntityType = "patient" | "appointment" | "visit_record" | "waitlist" | "procedure" | "doctor" | "receptionist" | "document" | "schedule" | "leave" | "allergy" | "disease" | "icd_code" | "template" | "expense" | "specialization";
 
 interface LogActivityParams {
   action: ActivityAction;
@@ -89,6 +110,27 @@ export const getActionLabel = (action: string): string => {
     receptionist_removed: "Removed Receptionist",
     document_uploaded: "Uploaded Document",
     document_deleted: "Deleted Document",
+    schedule_updated: "Updated Schedule",
+    leave_added: "Added Leave",
+    leave_deleted: "Deleted Leave",
+    allergy_created: "Created Allergy",
+    allergy_updated: "Updated Allergy",
+    allergy_deleted: "Deleted Allergy",
+    disease_created: "Created Disease",
+    disease_updated: "Updated Disease",
+    disease_deleted: "Deleted Disease",
+    icd_code_created: "Created ICD Code",
+    icd_code_updated: "Updated ICD Code",
+    icd_code_deleted: "Deleted ICD Code",
+    template_created: "Created Template",
+    template_updated: "Updated Template",
+    template_deleted: "Deleted Template",
+    expense_created: "Created Expense",
+    expense_updated: "Updated Expense",
+    expense_deleted: "Deleted Expense",
+    specialization_created: "Created Specialization",
+    specialization_updated: "Updated Specialization",
+    specialization_deleted: "Deleted Specialization",
   };
   return labels[action] || action;
 };
