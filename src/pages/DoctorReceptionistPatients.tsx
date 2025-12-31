@@ -15,6 +15,7 @@ import { validateName, validateEmail, validatePhone, handleNameInput, handlePhon
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
 import { CitySelect } from "@/components/CitySelect";
 import { DashboardSkeleton } from "@/components/DashboardSkeleton";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Patient {
   id: string;
@@ -120,10 +121,11 @@ const DoctorReceptionistPatients = () => {
     }
 
     setFormLoading(true);
+    const patientIdGenerated = generatePatientId();
 
     try {
-      const { error } = await supabase.from("patients").insert({
-        patient_id: generatePatientId(),
+      const { data, error } = await supabase.from("patients").insert({
+        patient_id: patientIdGenerated,
         full_name: formData.fullName,
         email: formData.email || null,
         phone: formData.phone,
@@ -136,9 +138,23 @@ const DoctorReceptionistPatients = () => {
         marital_status: formData.maritalStatus || null,
         cnic: formData.cnic || null,
         created_by: doctorId,
-      });
+      }).select();
 
       if (error) throw error;
+
+      // Log activity with doctorId
+      if (data && data[0]) {
+        await logActivity({
+          action: "patient_created",
+          entityType: "patient",
+          entityId: data[0].id,
+          details: {
+            doctorId: doctorId,
+            patient_name: formData.fullName,
+            patient_id: patientIdGenerated,
+          },
+        });
+      }
 
       toast({ title: "Success", description: "Patient added successfully" });
       setFormData({
