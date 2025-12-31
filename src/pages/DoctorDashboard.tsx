@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import TrialBanner from "@/components/TrialBanner";
+import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -162,6 +163,9 @@ const DoctorDashboard = () => {
 
       {/* Analytics Charts */}
       <DoctorAnalyticsCharts />
+
+      {/* Activity Logs - Only show for single doctors */}
+      {isSingleDoctor && <ActivityLogsCard />}
 
       {/* Quick Actions */}
       <Card className="border-border/40">
