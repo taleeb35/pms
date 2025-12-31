@@ -98,7 +98,7 @@ const UnifiedLogin = () => {
           setLoading(false);
           return;
         }
-        navigate("/receptionist/dashboard");
+        navigate(result.path ?? "/receptionist/dashboard");
         return;
       }
 
@@ -229,56 +229,145 @@ const UnifiedLogin = () => {
     return { success: true };
   };
 
-  const handleReceptionistLogin = async (userId: string) => {
-    const { data: receptionistData, error: receptionistError } = await supabase
+  const handleReceptionistLogin = async (
+    userId: string
+  ): Promise<{ success: boolean; path?: string }> => {
+    // 1) Clinic receptionist
+    const { data: clinicReceptionist, error: clinicReceptionistError } = await supabase
       .from("clinic_receptionists")
       .select("clinic_id, status")
       .eq("user_id", userId)
       .maybeSingle();
 
-    if (receptionistError) {
+    if (clinicReceptionistError) {
       await supabase.auth.signOut();
-      throw receptionistError;
+      throw clinicReceptionistError;
     }
 
-    if (!receptionistData) {
+    if (clinicReceptionist) {
+      if (clinicReceptionist.status !== "active") {
+        await supabase.auth.signOut();
+        setDialogMessage(
+          "Your receptionist account is currently inactive. Please contact your clinic administrator."
+        );
+        setShowAccountNotFoundDialog(true);
+        return { success: false };
+      }
+
+      const { data: clinicData, error: clinicError } = await supabase
+        .from("clinics")
+        .select("status")
+        .eq("id", clinicReceptionist.clinic_id)
+        .single();
+
+      if (clinicError) {
+        await supabase.auth.signOut();
+        throw clinicError;
+      }
+
+      if (clinicData.status !== "active") {
+        await supabase.auth.signOut();
+        setShowClinicInactiveDialog(true);
+        return { success: false };
+      }
+
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      return { success: true, path: "/receptionist/dashboard" };
+    }
+
+    // 2) Doctor receptionist (single doctor OR clinic doctor)
+    const { data: doctorReceptionist, error: doctorReceptionistError } = await supabase
+      .from("doctor_receptionists")
+      .select("doctor_id, status")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (doctorReceptionistError) {
+      await supabase.auth.signOut();
+      throw doctorReceptionistError;
+    }
+
+    if (!doctorReceptionist) {
       await supabase.auth.signOut();
       setDialogMessage("Receptionist account not found. Please contact support.");
       setShowAccountNotFoundDialog(true);
       return { success: false };
     }
 
-    // Check if receptionist account is active
-    if (receptionistData.status !== "active") {
+    if (doctorReceptionist.status !== "active") {
       await supabase.auth.signOut();
-      setDialogMessage("Your receptionist account is currently inactive. Please contact your clinic administrator.");
+      setDialogMessage(
+        "Your receptionist account is currently inactive. Please contact your doctor administrator."
+      );
       setShowAccountNotFoundDialog(true);
       return { success: false };
     }
 
-    // Check if clinic is active
-    const { data: clinicData, error: clinicError } = await supabase
-      .from("clinics")
-      .select("status")
-      .eq("id", receptionistData.clinic_id)
-      .single();
+    const { data: doctorData, error: doctorError } = await supabase
+      .from("doctors")
+      .select("approved, clinic_id, trial_end_date")
+      .eq("id", doctorReceptionist.doctor_id)
+      .maybeSingle();
 
-    if (clinicError) {
+    if (doctorError || !doctorData) {
       await supabase.auth.signOut();
-      throw clinicError;
+      setDialogMessage(
+        "Assigned doctor account not found. Please contact your doctor administrator."
+      );
+      setShowAccountNotFoundDialog(true);
+      return { success: false };
     }
 
-    if (clinicData.status !== "active") {
+    if (!doctorData.approved) {
       await supabase.auth.signOut();
-      setShowClinicInactiveDialog(true);
+      setDialogMessage(
+        "Assigned doctor account is not active yet. Please contact your doctor administrator."
+      );
+      setShowAccountNotFoundDialog(true);
       return { success: false };
+    }
+
+    // Single doctor: check trial expiry
+    if (!doctorData.clinic_id && doctorData.trial_end_date) {
+      const trialEnd = new Date(doctorData.trial_end_date + "T00:00:00");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (trialEnd < today) {
+        await supabase.auth.signOut();
+        setShowTrialExpiredDialog(true);
+        return { success: false };
+      }
+    }
+
+    // Clinic doctor: ensure clinic is active
+    if (doctorData.clinic_id) {
+      const { data: isActive, error: clinicActiveError } = await supabase.rpc(
+        "is_clinic_active",
+        { _clinic_id: doctorData.clinic_id }
+      );
+
+      if (clinicActiveError) {
+        await supabase.auth.signOut();
+        setDialogMessage("Unable to verify clinic status. Please contact support.");
+        setShowAccountNotFoundDialog(true);
+        return { success: false };
+      }
+
+      if (!isActive) {
+        await supabase.auth.signOut();
+        setShowClinicInactiveDialog(true);
+        return { success: false };
+      }
     }
 
     toast({
       title: "Login successful",
       description: "Welcome back!",
     });
-    return { success: true };
+    return { success: true, path: "/doctor-receptionist/dashboard" };
   };
 
   return (
