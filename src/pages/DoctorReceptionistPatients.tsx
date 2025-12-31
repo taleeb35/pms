@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,12 +9,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Eye, FileText } from "lucide-react";
-import { format, differenceInYears, parseISO } from "date-fns";
+import { Plus, Search, Eye } from "lucide-react";
+import { differenceInYears, parseISO } from "date-fns";
 import { validateName, validateEmail, validatePhone, handleNameInput, handlePhoneInput } from "@/lib/validations";
-import { TablePagination } from "@/components/TablePagination";
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
 import { CitySelect } from "@/components/CitySelect";
+import { DashboardSkeleton } from "@/components/DashboardSkeleton";
 
 interface Patient {
   id: string;
@@ -39,7 +39,7 @@ const DoctorReceptionistPatients = () => {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [pageSize, setPageSize] = useState(10);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -167,13 +167,14 @@ const DoctorReceptionistPatients = () => {
     );
   });
 
+  const totalPages = Math.ceil(filteredPatients.length / pageSize);
   const paginatedPatients = filteredPatients.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
   if (doctorLoading || loading) {
-    return <TableSkeleton columns={7} rows={5} />;
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -253,8 +254,7 @@ const DoctorReceptionistPatients = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>City</Label>
-                  <CitySelect value={formData.city} onChange={(v) => setFormData({ ...formData, city: v })} />
+                  <CitySelect value={formData.city} onValueChange={(v) => setFormData({ ...formData, city: v })} />
                 </div>
                 <div className="space-y-2">
                   <Label>Father's Name</Label>
@@ -331,12 +331,32 @@ const DoctorReceptionistPatients = () => {
                   ))}
                 </TableBody>
               </Table>
-              <TablePagination
-                currentPage={currentPage}
-                totalItems={filteredPatients.length}
-                itemsPerPage={itemsPerPage}
-                onPageChange={setCurrentPage}
-              />
+              <div className="flex items-center justify-between py-4 px-2 border-t">
+                <div className="text-sm text-muted-foreground">
+                  Showing {paginatedPatients.length} of {filteredPatients.length} patients
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages || 1}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage >= totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </>
           )}
         </CardContent>
