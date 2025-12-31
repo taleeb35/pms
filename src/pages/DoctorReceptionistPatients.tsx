@@ -5,17 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Eye } from "lucide-react";
 import { differenceInYears, parseISO } from "date-fns";
-import { validateName, validateEmail, validatePhone, handleNameInput, handlePhoneInput } from "@/lib/validations";
+import { validateName, validateEmail, validatePhone, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
 import { CitySelect } from "@/components/CitySelect";
 import { DashboardSkeleton } from "@/components/DashboardSkeleton";
 import { logActivity } from "@/lib/activityLogger";
+import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 
 interface Patient {
   id: string;
@@ -42,25 +44,58 @@ const DoctorReceptionistPatients = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Allergy and disease options
+  const [allergyOptions, setAllergyOptions] = useState<{ value: string; label: string }[]>([]);
+  const [diseaseOptions, setDiseaseOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
+  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+
   const [formData, setFormData] = useState({
     fullName: "",
+    fatherName: "",
     email: "",
     phone: "",
+    cnic: "",
     dateOfBirth: "",
     gender: "male",
     bloodGroup: "",
     city: "",
     address: "",
-    fatherName: "",
     maritalStatus: "",
-    cnic: "",
   });
 
   useEffect(() => {
     if (doctorId) {
       fetchPatients();
+      fetchAllergyAndDiseaseOptions();
     }
   }, [doctorId]);
+
+  const fetchAllergyAndDiseaseOptions = async () => {
+    if (!doctorId) return;
+
+    // Fetch doctor allergies
+    const { data: allergies } = await supabase
+      .from("doctor_allergies")
+      .select("name")
+      .eq("doctor_id", doctorId)
+      .order("name");
+
+    if (allergies) {
+      setAllergyOptions(allergies.map(a => ({ value: a.name, label: a.name })));
+    }
+
+    // Fetch doctor diseases
+    const { data: diseases } = await supabase
+      .from("doctor_diseases")
+      .select("name")
+      .eq("doctor_id", doctorId)
+      .order("name");
+
+    if (diseases) {
+      setDiseaseOptions(diseases.map(d => ({ value: d.name, label: d.name })));
+    }
+  };
 
   const fetchPatients = async () => {
     if (!doctorId) return;
@@ -91,6 +126,24 @@ const DoctorReceptionistPatients = () => {
     return `P-${timestamp}${random}`;
   };
 
+  const resetForm = () => {
+    setFormData({
+      fullName: "",
+      fatherName: "",
+      email: "",
+      phone: "",
+      cnic: "",
+      dateOfBirth: "",
+      gender: "male",
+      bloodGroup: "",
+      city: "",
+      address: "",
+      maritalStatus: "",
+    });
+    setSelectedAllergies([]);
+    setSelectedDiseases([]);
+  };
+
   const handleAddPatient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!doctorId) return;
@@ -115,6 +168,14 @@ const DoctorReceptionistPatients = () => {
       return;
     }
 
+    if (formData.cnic) {
+      const cnicValidation = validateCNIC(formData.cnic);
+      if (!cnicValidation.isValid) {
+        toast({ title: "Validation Error", description: cnicValidation.message, variant: "destructive" });
+        return;
+      }
+    }
+
     if (!formData.dateOfBirth) {
       toast({ title: "Validation Error", description: "Date of birth is required", variant: "destructive" });
       return;
@@ -127,16 +188,18 @@ const DoctorReceptionistPatients = () => {
       const { data, error } = await supabase.from("patients").insert({
         patient_id: patientIdGenerated,
         full_name: formData.fullName,
+        father_name: formData.fatherName || null,
         email: formData.email || null,
         phone: formData.phone,
+        cnic: formData.cnic || null,
         date_of_birth: formData.dateOfBirth,
         gender: formData.gender as "male" | "female" | "other",
         blood_group: formData.bloodGroup || null,
         city: formData.city || null,
         address: formData.address || null,
-        father_name: formData.fatherName || null,
         marital_status: formData.maritalStatus || null,
-        cnic: formData.cnic || null,
+        allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
+        major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
         created_by: doctorId,
       }).select();
 
@@ -157,10 +220,7 @@ const DoctorReceptionistPatients = () => {
       }
 
       toast({ title: "Success", description: "Patient added successfully" });
-      setFormData({
-        fullName: "", email: "", phone: "", dateOfBirth: "", gender: "male",
-        bloodGroup: "", city: "", address: "", fatherName: "", maritalStatus: "", cnic: "",
-      });
+      resetForm();
       setAddDialogOpen(false);
       fetchPatients();
     } catch (error: any) {
@@ -200,14 +260,17 @@ const DoctorReceptionistPatients = () => {
           <h1 className="text-2xl font-bold">Patients</h1>
           <p className="text-muted-foreground">Manage patient records</p>
         </div>
-        <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+        <Dialog open={addDialogOpen} onOpenChange={(open) => {
+          setAddDialogOpen(open);
+          if (!open) resetForm();
+        }}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
               Add Patient
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Patient</DialogTitle>
               <DialogDescription>Enter patient details</DialogDescription>
@@ -220,6 +283,13 @@ const DoctorReceptionistPatients = () => {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: handleNameInput(e) })}
                     required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Father's Name</Label>
+                  <Input
+                    value={formData.fatherName}
+                    onChange={(e) => setFormData({ ...formData, fatherName: handleNameInput(e) })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -236,6 +306,15 @@ const DoctorReceptionistPatients = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>CNIC</Label>
+                  <Input
+                    value={formData.cnic}
+                    onChange={(e) => setFormData({ ...formData, cnic: handleCNICInput(e) })}
+                    placeholder="00000-0000000-0"
+                    maxLength={15}
                   />
                 </div>
                 <div className="space-y-2">
@@ -259,6 +338,16 @@ const DoctorReceptionistPatients = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
+                  <Label>Marital Status</Label>
+                  <Select value={formData.maritalStatus} onValueChange={(v) => setFormData({ ...formData, maritalStatus: v })}>
+                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="single">Single</SelectItem>
+                      <SelectItem value="married">Married</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
                   <Label>Blood Group</Label>
                   <Select value={formData.bloodGroup} onValueChange={(v) => setFormData({ ...formData, bloodGroup: v })}>
                     <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
@@ -272,14 +361,41 @@ const DoctorReceptionistPatients = () => {
                 <div className="space-y-2">
                   <CitySelect value={formData.city} onValueChange={(v) => setFormData({ ...formData, city: v })} />
                 </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Address</Label>
+                <Textarea
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="Enter full address"
+                  rows={2}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Father's Name</Label>
-                  <Input
-                    value={formData.fatherName}
-                    onChange={(e) => setFormData({ ...formData, fatherName: handleNameInput(e) })}
+                  <Label>Allergies</Label>
+                  <MultiSelectSearchable
+                    options={allergyOptions}
+                    values={selectedAllergies}
+                    onValuesChange={setSelectedAllergies}
+                    placeholder="Select allergies..."
+                    emptyMessage="No allergies found"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Major Diseases</Label>
+                  <MultiSelectSearchable
+                    options={diseaseOptions}
+                    values={selectedDiseases}
+                    onValuesChange={setSelectedDiseases}
+                    placeholder="Select diseases..."
+                    emptyMessage="No diseases found"
                   />
                 </div>
               </div>
+
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setAddDialogOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={formLoading}>{formLoading ? "Adding..." : "Add Patient"}</Button>
