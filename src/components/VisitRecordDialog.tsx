@@ -822,6 +822,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           entityType: "appointment",
           entityId: appointment.id,
           details: {
+            doctorId: appointment.doctor_id,
             patient_name: appointment.patients?.full_name || "Unknown",
             consultation_fee: consultationFee,
             other_fee: otherFee,
@@ -840,6 +841,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           entityType: "appointment",
           entityId: appointment.id,
           details: {
+            doctorId: appointment.doctor_id,
             patient_name: appointment.patients?.full_name || "Unknown",
             procedure_name: selectedProcedureDetails?.name || "Unknown",
             procedure_fee: procedureFee ? parseFloat(procedureFee) : 0,
@@ -854,6 +856,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           entityType: "appointment",
           entityId: appointment.id,
           details: {
+            doctorId: appointment.doctor_id,
             patient_name: appointment.patients?.full_name || "Unknown",
             refund_amount: refundAmount,
             total_fee: totalFee,

@@ -883,6 +883,7 @@ const ClinicPatients = () => {
         entityType: "patient",
         entityId: data[0].id,
         details: {
+          doctorId: addForm.doctor_id,
           patient_name: addForm.full_name,
           patient_id: patientId,
         },

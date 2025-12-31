@@ -298,6 +298,7 @@ const ClinicAppointments = () => {
         entityType: "appointment",
         entityId: selectedPatientId,
         details: {
+          doctorId: selectedDoctorId,
           patient_name: selectedPatient?.full_name || "Unknown",
           appointment_date: appointmentDate,
           appointment_time: appointmentTime,
