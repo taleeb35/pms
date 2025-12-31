@@ -8,6 +8,8 @@ export type ActivityAction =
   | "appointment_updated"
   | "appointment_cancelled"
   | "appointment_completed"
+  | "appointment_deleted"
+  | "appointment_status_changed"
   | "fee_updated"
   | "procedure_set"
   | "discount_applied"
@@ -114,6 +116,8 @@ export const getActionLabel = (action: string): string => {
     appointment_updated: "Updated Appointment",
     appointment_cancelled: "Cancelled Appointment",
     appointment_completed: "Completed Appointment",
+    appointment_deleted: "Deleted Appointment",
+    appointment_status_changed: "Changed Status",
     fee_updated: "Updated Fee",
     procedure_set: "Set Procedure",
     discount_applied: "Applied Discount",
