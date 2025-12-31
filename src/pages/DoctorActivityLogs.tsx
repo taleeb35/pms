@@ -195,6 +195,27 @@ const DoctorActivityLogs = () => {
       parts.push(`Document: ${String(details.document_name)}`);
     }
 
+    // Appointment date/time
+    if (details.appointment_date) {
+      parts.push(`Date: ${String(details.appointment_date)}`);
+    }
+    if (details.appointment_time) {
+      parts.push(`Time: ${String(details.appointment_time)}`);
+    }
+
+    // Status change
+    if (details.new_status) {
+      const statusLabels: Record<string, string> = {
+        scheduled: "Scheduled",
+        confirmed: "Confirmed",
+        in_progress: "In Progress",
+        completed: "Completed",
+        cancelled: "Cancelled",
+        no_show: "No Show",
+      };
+      parts.push(`Status: ${statusLabels[String(details.new_status)] || String(details.new_status)}`);
+    }
+
     return parts.join(" • ");
   };
 
@@ -220,6 +241,9 @@ const DoctorActivityLogs = () => {
     "appointment_created",
     "appointment_updated",
     "appointment_cancelled",
+    "appointment_completed",
+    "appointment_deleted",
+    "appointment_status_changed",
     "fee_updated",
     "procedure_set",
     "refund_applied",

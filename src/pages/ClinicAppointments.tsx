@@ -375,6 +375,20 @@ const ClinicAppointments = () => {
       }).eq("id", editingAppointment.id);
 
       if (error) throw error;
+
+      // Log appointment update
+      await logActivity({
+        action: "appointment_updated",
+        entityType: "appointment",
+        entityId: editingAppointment.id,
+        details: {
+          doctorId: editSelectedDoctorId,
+          patient_name: editingAppointment.patients?.full_name || "Unknown",
+          appointment_date: appointmentDate,
+          appointment_time: appointmentTime,
+        },
+      });
+
       toast({ title: "Success", description: "Appointment updated successfully" });
       setShowEditDialog(false);
       setEditingAppointment(null);
@@ -387,19 +401,54 @@ const ClinicAppointments = () => {
   };
 
   const handleUpdateStatus = async (appointmentId: string, newStatus: string) => {
+    // Find the appointment to get doctor info for logging
+    const apt = appointments.find(a => a.id === appointmentId);
+    
     const { error } = await supabase.from("appointments").update({ status: newStatus as any }).eq("id", appointmentId);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
+
+    // Log status change
+    const action = newStatus === "cancelled" ? "appointment_cancelled" 
+      : newStatus === "completed" ? "appointment_completed" 
+      : "appointment_status_changed";
+    
+    await logActivity({
+      action,
+      entityType: "appointment",
+      entityId: appointmentId,
+      details: {
+        doctorId: apt?.doctor_id,
+        patient_name: apt?.patients?.full_name || "Unknown",
+        new_status: newStatus,
+      },
+    });
+
     toast({ title: "Success", description: "Appointment status updated" });
     fetchAppointments();
   };
 
   const handleDeleteAppointment = async (appointmentId: string) => {
+    // Find the appointment to get doctor info for logging
+    const apt = appointments.find(a => a.id === appointmentId);
+    
     try {
       const { error } = await supabase.from("appointments").delete().eq("id", appointmentId);
       if (error) throw error;
+
+      // Log appointment deletion
+      await logActivity({
+        action: "appointment_deleted",
+        entityType: "appointment",
+        entityId: appointmentId,
+        details: {
+          doctorId: apt?.doctor_id,
+          patient_name: apt?.patients?.full_name || "Unknown",
+        },
+      });
+
       toast({ title: "Success", description: "Appointment deleted successfully" });
       fetchAppointments();
     } catch (error: any) {
