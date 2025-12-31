@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { CalendarIcon, Clock, Plus, Trash2, Save } from "lucide-react";
 import { format, addDays, isBefore, startOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { logActivity } from "@/lib/activityLogger";
 
 interface DaySchedule {
   id?: string;
@@ -177,6 +178,14 @@ const DoctorSchedule = () => {
         }
       }
 
+      // Log activity
+      await logActivity({
+        action: "schedule_updated",
+        entityType: "schedule",
+        entityId: user.id,
+        details: { doctorId: user.id },
+      });
+
       toast({
         title: "Schedule Saved",
         description: "Your weekly schedule has been updated successfully.",
@@ -208,6 +217,18 @@ const DoctorSchedule = () => {
 
       if (error) throw error;
 
+      // Log activity
+      await logActivity({
+        action: "leave_added",
+        entityType: "leave",
+        entityId: user.id,
+        details: {
+          doctorId: user.id,
+          leaveDate: format(newLeave.leave_date, "yyyy-MM-dd"),
+          leaveType: newLeave.leave_type,
+        },
+      });
+
       toast({
         title: "Leave Added",
         description: `Leave on ${format(newLeave.leave_date, "PPP")} has been scheduled.`,
@@ -231,8 +252,26 @@ const DoctorSchedule = () => {
 
   const deleteLeave = async (id: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const leaveInfo = leaves.find((l) => l.id === id);
+      
       const { error } = await supabase.from("doctor_leaves").delete().eq("id", id);
       if (error) throw error;
+
+      // Log activity
+      await logActivity({
+        action: "leave_deleted",
+        entityType: "leave",
+        entityId: user.id,
+        details: {
+          doctorId: user.id,
+          leaveId: id,
+          leaveDate: leaveInfo?.leave_date,
+          leaveType: leaveInfo?.leave_type,
+        },
+      });
 
       toast({
         title: "Leave Cancelled",
@@ -263,6 +302,18 @@ const DoctorSchedule = () => {
       });
 
       if (error) throw error;
+
+      // Log activity
+      await logActivity({
+        action: "leave_added",
+        entityType: "leave",
+        entityId: user.id,
+        details: {
+          doctorId: user.id,
+          leaveDate: format(targetDate, "yyyy-MM-dd"),
+          leaveType: "full_day",
+        },
+      });
 
       toast({
         title: "Leave Added",
