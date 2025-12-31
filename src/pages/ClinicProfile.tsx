@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building2, User, Mail, Phone, MapPin, Calendar } from "lucide-react";
+import { Building2, User, Mail, Phone, MapPin, Calendar, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,13 @@ import { Badge } from "@/components/ui/badge";
 const ClinicProfile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const { toast } = useToast();
+
+  const [passwords, setPasswords] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
   
   const [profile, setProfile] = useState({
     full_name: "",
@@ -30,7 +36,10 @@ const ClinicProfile = () => {
     city: "",
     status: "",
     no_of_doctors: 0,
+    requested_doctors: 0,
   });
+
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -75,7 +84,23 @@ const ClinicProfile = () => {
         city: clinicData.city || "",
         status: clinicData.status || "",
         no_of_doctors: clinicData.no_of_doctors || 0,
+        requested_doctors: clinicData.requested_doctors || 0,
       });
+
+      // Fetch doctor monthly fee from system settings
+      const { data: feeData, error: feeError } = await supabase
+        .from("system_settings")
+        .select("value")
+        .eq("key", "doctor_monthly_fee")
+        .single();
+
+      if (feeError) {
+        console.error("Error fetching doctor fee:", feeError);
+      }
+
+      if (feeData) {
+        setDoctorMonthlyFee(parseFloat(feeData.value) || 0);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -129,6 +154,49 @@ const ClinicProfile = () => {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (passwords.newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwords.newPassword,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Password updated successfully",
+      });
+      setPasswords({ newPassword: "", confirmPassword: "" });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -295,16 +363,80 @@ const ClinicProfile = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Member Since</p>
-              <p className="font-semibold">
-                {format(new Date(profile.created_at), "MMMM dd, yyyy")}
-              </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Member Since</p>
+                <p className="font-semibold">
+                  {format(new Date(profile.created_at), "MMMM dd, yyyy")}
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Building2 className="h-6 w-6 text-primary" />
+              </div>
             </div>
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-primary" />
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Monthly Fee</p>
+                <p className="font-semibold text-2xl text-success">
+                  PKR {(doctorMonthlyFee * clinic.requested_doctors).toLocaleString()}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {doctorMonthlyFee.toLocaleString()} × {clinic.requested_doctors} doctors
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-success" />
+              </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Change Password */}
+      <Card className="border-border/40">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl font-semibold">
+            <Lock className="h-5 w-5 text-primary" />
+            Change Password
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword" className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+                New Password
+              </Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={passwords.newPassword}
+                onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-muted-foreground" />
+                Confirm Password
+              </Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={passwords.confirmPassword}
+                onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button 
+              onClick={handlePasswordChange} 
+              disabled={changingPassword || !passwords.newPassword || !passwords.confirmPassword}
+              variant="outline"
+            >
+              {changingPassword ? "Updating..." : "Update Password"}
+            </Button>
           </div>
         </CardContent>
       </Card>

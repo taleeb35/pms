@@ -2,3 +2,45 @@ project_id = "anqhnkcppujulkugcpee"
 
 [functions.setup-admin]
 verify_jwt = false
+
+[functions.reset-clinic-payments]
+verify_jwt = false
+
+[functions.send-clinic-welcome-email]
+verify_jwt = false
+
+[functions.send-clinic-approval-email]
+verify_jwt = false
+
+[functions.send-doctor-signup-email]
+verify_jwt = false
+
+[functions.send-doctor-approval-email]
+verify_jwt = false
+
+[functions.delete-user]
+verify_jwt = false
+
+[functions.send-password-reset-email]
+verify_jwt = false
+
+[functions.update-admin-email]
+verify_jwt = false
+
+[functions.cleanup-orphaned-users]
+verify_jwt = false
+
+[functions.send-clinic-doctor-welcome-email]
+verify_jwt = false
+
+[functions.send-trial-expiry-reminder]
+verify_jwt = false
+
+[functions.send-clinic-status-email]
+verify_jwt = false
+
+[functions.send-referral-partner-email]
+verify_jwt = false
+
+[functions.send-trial-expired-notification]
+verify_jwt = false

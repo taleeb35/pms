@@ -15,7 +15,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
     props.onMonthChange?.(newMonth);
   };
 
-  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 102 }, (_, i) => currentYear + 1 - i); // 1 year ahead + 100 years back
   const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
@@ -77,7 +78,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
           day_range_end: "day-range-end",
           day_selected:
             "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-          day_today: "bg-accent text-accent-foreground",
+          day_today: "bg-accent/50 text-accent-foreground font-semibold",
           day_outside:
             "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
           day_disabled: "text-muted-foreground opacity-50",

@@ -1,0 +1,6 @@
+/* Email badge in header - high contrast for readability */
+span.new_bg {
+    background-color: hsl(231 48% 48%) !important;
+    color: hsl(0 0% 100%) !important;
+    font-weight: 500;
+}

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Search } from "lucide-react";
+import PatientImportExport from "@/components/PatientImportExport";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -29,10 +30,16 @@ const Patients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string>("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setUserId(user.id);
+    };
+    getUser();
     fetchPatients();
   }, []);
 
@@ -70,10 +77,18 @@ const Patients = () => {
           <h2 className="text-3xl font-bold">Patients</h2>
           <p className="text-muted-foreground">Manage patient records</p>
         </div>
-        <Button onClick={() => navigate("/patients/new")}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Patient
-        </Button>
+        <div className="flex gap-2">
+          {userId && (
+            <PatientImportExport 
+              createdBy={userId} 
+              onImportComplete={fetchPatients} 
+            />
+          )}
+          <Button onClick={() => navigate("/patients/new")}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Patient
+          </Button>
+        </div>
       </div>
 
       <Card>

@@ -1,17 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Clock, CheckCircle2, MapPin, Phone, Mail, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -21,20 +13,34 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { Eye, Trash2, Building2, CheckCircle2, Clock, Search } from "lucide-react";
+import { TablePagination } from "@/components/TablePagination";
+import ClinicMonthlyPayments from "@/components/ClinicMonthlyPayments";
 
 interface Clinic {
   id: string;
@@ -42,451 +48,309 @@ interface Clinic {
   city: string;
   phone_number: string;
   address: string;
+  status: string;
+  fee_status: string;
   no_of_doctors: number;
   requested_doctors: number;
-  status: string;
   created_at: string;
-  profiles: {
-    full_name: string;
+  updated_at: string;
+  trial_end_date: string | null;
+  payment_plan: string;
+  profile?: {
     email: string;
+    full_name: string;
   };
+  activeDoctorCount?: number;
 }
+
+const getPaymentPlanBadge = (plan: string) => {
+  if (plan === "yearly") {
+    return <Badge className="bg-green-600 text-white">Yearly</Badge>;
+  }
+  return <Badge variant="outline">Monthly</Badge>;
+};
+
+const getTrialDaysRemaining = (trialEndDate: string | null): number | null => {
+  if (!trialEndDate) return null;
+  const trialEnd = new Date(trialEndDate + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffTime = trialEnd.getTime() - today.getTime();
+  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+};
 
 const AdminClinics = () => {
   const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [filteredClinics, setFilteredClinics] = useState<Clinic[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [selectedClinic, setSelectedClinic] = useState<Clinic | null>(null);
-  const { toast } = useToast();
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [clinicToDelete, setClinicToDelete] = useState<Clinic | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [doctorMonthlyFee, setDoctorMonthlyFee] = useState<number>(6000);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchClinics();
+    fetchSystemSettings();
   }, []);
+
+  useEffect(() => {
+    let filtered = clinics;
+    
+    // Status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((clinic) => clinic.status === statusFilter);
+    }
+    
+    // Search filter
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((clinic) => {
+        return (
+          clinic.clinic_name.toLowerCase().includes(query) ||
+          clinic.city.toLowerCase().includes(query) ||
+          clinic.phone_number.toLowerCase().includes(query) ||
+          (clinic.profile?.email?.toLowerCase().includes(query) ?? false)
+        );
+      });
+    }
+    
+    setFilteredClinics(filtered);
+    setCurrentPage(1);
+
+    // Update selectedClinic if it exists in the refreshed list
+    if (selectedClinic) {
+      const updated = clinics.find((c) => c.id === selectedClinic.id);
+      if (updated) {
+        setSelectedClinic(updated);
+      }
+    }
+  }, [searchQuery, clinics, statusFilter]);
+
+  const fetchSystemSettings = async () => {
+    const { data, error } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "doctor_monthly_fee")
+      .maybeSingle();
+    if (!error && data) {
+      setDoctorMonthlyFee(Number(data.value) || 6000);
+    }
+  };
 
   const fetchClinics = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("clinics")
-      .select(`
-        *,
-        profiles(full_name, email)
-      `)
-      .order("created_at", { ascending: false });
+    try {
+      const { data: clinicsData, error } = await supabase
+        .from("clinics")
+        .select(`*, profile:profiles!clinics_id_fkey(email, full_name)`)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
 
-    if (!error && data) {
-      // Fetch doctor counts for each clinic
-      const clinicsWithCounts = await Promise.all(
-        data.map(async (clinic) => {
-          const { count } = await supabase
-            .from("doctors")
-            .select("id", { count: "exact", head: true })
-            .eq("clinic_id", clinic.id);
-          return { ...clinic, no_of_doctors: count || 0 };
-        })
-      );
-      setClinics(clinicsWithCounts);
+      // Fetch actual approved doctor counts for each clinic
+      const { data: doctorCounts, error: doctorError } = await supabase
+        .from("doctors")
+        .select("clinic_id")
+        .eq("approved", true)
+        .not("clinic_id", "is", null);
+
+      if (doctorError) throw doctorError;
+
+      // Count approved doctors per clinic
+      const countMap: Record<string, number> = {};
+      doctorCounts?.forEach((doc) => {
+        if (doc.clinic_id) {
+          countMap[doc.clinic_id] = (countMap[doc.clinic_id] || 0) + 1;
+        }
+      });
+
+      // Normalize status: if trial expired -> Pending (draft). Also remove legacy 'suspended'.
+      const idsToSetPending: string[] = [];
+      const clinicsNormalized = (clinicsData || []).map((clinic) => {
+        const trialDays = getTrialDaysRemaining(clinic.trial_end_date);
+        const shouldBePending =
+          clinic.status === "suspended" || (trialDays !== null && trialDays <= 0);
+
+        if (shouldBePending && clinic.status !== "draft") {
+          idsToSetPending.push(clinic.id);
+        }
+
+        return {
+          ...clinic,
+          status: shouldBePending ? "draft" : clinic.status,
+          activeDoctorCount: countMap[clinic.id] || 0,
+        };
+      });
+
+      // Persist auto change so filtering & other screens stay consistent
+      if (idsToSetPending.length > 0) {
+        await supabase
+          .from("clinics")
+          .update({ status: "draft", updated_at: new Date().toISOString() })
+          .in("id", idsToSetPending);
+      }
+
+      setClinics(clinicsNormalized);
+      setFilteredClinics(clinicsNormalized);
+    } catch (error: any) {
+      toast.error("Failed to fetch clinics: " + error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const updateClinicStatus = async (clinicId: string, newStatus: string) => {
-    setUpdating(clinicId);
-    const { error } = await supabase
-      .from("clinics")
-      .update({ status: newStatus })
-      .eq("id", clinicId);
+  const updateClinic = async (clinicId: string, status: string, doctorLimit: number, paymentPlan: string) => {
+    try {
+      // Get the original status before update
+      const originalClinic = clinics.find(c => c.id === clinicId);
+      const originalStatus = originalClinic?.status;
 
-    if (error) {
-      toast({
-        title: "Error updating status",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Status updated",
-        description: `Clinic status changed to ${newStatus}`,
-      });
+      const { error } = await supabase.from("clinics").update({ 
+        status, 
+        requested_doctors: doctorLimit,
+        payment_plan: paymentPlan,
+        updated_at: new Date().toISOString() 
+      }).eq("id", clinicId);
+      if (error) throw error;
+
+      // Send email notification if status changed to active
+      if (originalStatus !== status && status === "active" && originalClinic?.profile?.email) {
+        try {
+          await supabase.functions.invoke("send-clinic-status-email", {
+            body: {
+              clinicName: originalClinic.clinic_name,
+              email: originalClinic.profile.email,
+              ownerName: originalClinic.profile.full_name || "Clinic Owner",
+              status: status,
+            },
+          });
+          console.log("Status notification email sent");
+        } catch (emailError) {
+          console.error("Failed to send status email:", emailError);
+        }
+      }
+
+      toast.success("Clinic updated successfully");
       fetchClinics();
+      setIsDetailOpen(false);
+    } catch (error: any) {
+      toast.error("Failed to update clinic: " + error.message);
     }
-    setUpdating(null);
   };
 
-  const stats = {
-    total: clinics.length,
-    active: clinics.filter(c => c.status === 'active').length,
-    draft: clinics.filter(c => c.status === 'draft').length,
+  const handleDeleteClinic = async () => {
+    if (!clinicToDelete) return;
+    setIsDeleting(true);
+    try {
+      const clinicId = clinicToDelete.id;
+      await supabase.from("clinic_allergies").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_diseases").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_icd_codes").delete().eq("clinic_id", clinicId);
+      await supabase.from("specializations").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_payments").delete().eq("clinic_id", clinicId);
+      await supabase.from("clinic_expenses").delete().eq("clinic_id", clinicId);
+      await supabase.from("support_tickets").delete().eq("clinic_id", clinicId);
+      const { data: doctors } = await supabase.from("doctors").select("id").eq("clinic_id", clinicId);
+      if (doctors && doctors.length > 0) {
+        const doctorIds = doctors.map((d) => d.id);
+        for (const doctorId of doctorIds) {
+          await supabase.from("doctor_schedules").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_leaves").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_disease_templates").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_test_templates").delete().eq("doctor_id", doctorId);
+          await supabase.from("doctor_report_templates").delete().eq("doctor_id", doctorId);
+          await supabase.from("procedures").delete().eq("doctor_id", doctorId);
+          await supabase.from("wait_list").delete().eq("doctor_id", doctorId);
+          const { data: patients } = await supabase.from("patients").select("id").eq("created_by", doctorId);
+          if (patients && patients.length > 0) {
+            const patientIds = patients.map((p) => p.id);
+            await supabase.from("appointments").delete().in("patient_id", patientIds);
+            await supabase.from("visit_records").delete().in("patient_id", patientIds);
+            await supabase.from("medical_records").delete().in("patient_id", patientIds);
+            await supabase.from("prescriptions").delete().in("patient_id", patientIds);
+            await supabase.from("medical_documents").delete().in("patient_id", patientIds);
+            await supabase.from("patients").delete().in("id", patientIds);
+          }
+          await supabase.from("appointments").delete().eq("doctor_id", doctorId);
+          await supabase.from("visit_records").delete().eq("doctor_id", doctorId);
+          await supabase.from("medical_records").delete().eq("doctor_id", doctorId);
+          await supabase.from("prescriptions").delete().eq("doctor_id", doctorId);
+        }
+        await supabase.from("doctors").delete().eq("clinic_id", clinicId);
+        await supabase.from("user_roles").delete().in("user_id", doctorIds);
+        await supabase.from("profiles").delete().in("id", doctorIds);
+        for (const doctorId of doctorIds) {
+          await supabase.functions.invoke("delete-user", { body: { userId: doctorId } });
+        }
+      }
+      const { data: receptionists } = await supabase.from("clinic_receptionists").select("user_id").eq("clinic_id", clinicId);
+      if (receptionists && receptionists.length > 0) {
+        const receptionistIds = receptionists.map((r) => r.user_id);
+        await supabase.from("clinic_receptionists").delete().eq("clinic_id", clinicId);
+        await supabase.from("user_roles").delete().in("user_id", receptionistIds);
+        await supabase.from("profiles").delete().in("id", receptionistIds);
+        for (const receptionistId of receptionistIds) {
+          await supabase.functions.invoke("delete-user", { body: { userId: receptionistId } });
+        }
+      }
+      await supabase.from("user_roles").delete().eq("user_id", clinicId);
+      const { error: clinicError } = await supabase.from("clinics").delete().eq("id", clinicId);
+      if (clinicError) throw clinicError;
+      await supabase.from("profiles").delete().eq("id", clinicId);
+      await supabase.functions.invoke("delete-user", { body: { userId: clinicId } });
+      toast.success("Clinic and all related data deleted successfully");
+      setIsDeleteOpen(false);
+      setClinicToDelete(null);
+      fetchClinics();
+    } catch (error: any) {
+      toast.error("Failed to delete clinic: " + error.message);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
-  // Pagination logic
-  const totalPages = Math.ceil(clinics.length / itemsPerPage);
+  const getStatusBadge = (status: string, trialEndDate: string | null) => {
+    const trialDays = getTrialDaysRemaining(trialEndDate);
+    // If trial expired, always show Pending
+    if (trialDays !== null && trialDays <= 0) {
+      return <Badge className="bg-yellow-500">Pending</Badge>;
+    }
+    switch (status) {
+      case "active": return <Badge className="bg-green-500">Active</Badge>;
+      case "draft": return <Badge className="bg-yellow-500">Pending</Badge>;
+      default: return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+
+  const totalPages = Math.ceil(filteredClinics.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentClinics = clinics.slice(startIndex, endIndex);
+  const paginatedClinics = filteredClinics.slice(startIndex, startIndex + itemsPerPage);
+  const totalClinics = clinics.length;
+  const activeClinics = clinics.filter((c) => c.status === "active").length;
+  const pendingClinics = clinics.filter((c) => c.status === "draft").length;
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handleItemsPerPageChange = (value: string) => {
-    setItemsPerPage(Number(value));
-    setCurrentPage(1);
-  };
+  if (loading) {
+    return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-4xl font-bold tracking-tight mb-2">Manage Clinics</h2>
-        <p className="text-muted-foreground text-base">
-          Review and approve clinic registrations, manage clinic status
-        </p>
+      <h1 className="text-2xl font-bold">Clinic Management</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Total Clinics</CardTitle><Building2 className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{totalClinics}</div></CardContent></Card>
+        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Active Clinics</CardTitle><CheckCircle2 className="h-4 w-4 text-green-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{activeClinics}</div></CardContent></Card>
+        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Pending Clinics</CardTitle><Clock className="h-4 w-4 text-yellow-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{pendingClinics}</div></CardContent></Card>
       </div>
-
-      {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
-            <Building2 className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{stats.total}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active</CardTitle>
-            <CheckCircle2 className="h-5 w-5 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-success">{stats.active}</div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border/40">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending Approval</CardTitle>
-            <Clock className="h-5 w-5 text-warning" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-warning">{stats.draft}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Clinics Table */}
-      <Card className="border-border/40">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-            <Building2 className="h-5 w-5 text-primary" />
-            All Clinics
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Show:</span>
-            <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-              <SelectTrigger className="w-[100px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="15">15</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="45">45</SelectItem>
-                <SelectItem value="60">60</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <p className="text-center text-muted-foreground py-8">Loading clinics...</p>
-          ) : clinics.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No clinics registered yet</p>
-          ) : (
-            <>
-              <div className="rounded-md border border-border/40">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="font-semibold">Clinic Name</TableHead>
-                      <TableHead className="font-semibold">Email</TableHead>
-                      <TableHead className="font-semibold">Phone</TableHead>
-                      <TableHead className="font-semibold">City</TableHead>
-                      <TableHead className="font-semibold text-center">Requested</TableHead>
-                      <TableHead className="font-semibold text-center">Created</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                      <TableHead className="font-semibold">Registered</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {currentClinics.map((clinic) => (
-                      <TableRow 
-                        key={clinic.id} 
-                        className="hover:bg-accent/50 cursor-pointer transition-colors"
-                        onClick={() => setSelectedClinic(clinic)}
-                      >
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{clinic.clinic_name}</p>
-                            <p className="text-xs text-muted-foreground">{clinic.profiles.full_name}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">{clinic.profiles.email}</TableCell>
-                        <TableCell className="text-sm">{clinic.phone_number}</TableCell>
-                        <TableCell className="text-sm">{clinic.city}</TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="outline" className="font-semibold text-primary border-primary/30">
-                            {clinic.requested_doctors}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Badge variant="secondary" className="font-semibold">
-                            {clinic.no_of_doctors}
-                          </Badge>
-                        </TableCell>
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Select
-                            value={clinic.status}
-                            onValueChange={(value) => updateClinicStatus(clinic.id, value)}
-                            disabled={updating === clinic.id}
-                          >
-                            <SelectTrigger className="w-[120px] h-8">
-                              <SelectValue>
-                                {clinic.status === "active" && (
-                                  <span className="flex items-center gap-1 text-success">
-                                    <CheckCircle2 className="h-3 w-3" />
-                                    Active
-                                  </span>
-                                )}
-                                {clinic.status === "draft" && (
-                                  <span className="flex items-center gap-1 text-warning">
-                                    <Clock className="h-3 w-3" />
-                                    Draft
-                                  </span>
-                                )}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="draft">
-                                <span className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4 text-warning" />
-                                  Draft
-                                </span>
-                              </SelectItem>
-                              <SelectItem value="active">
-                                <span className="flex items-center gap-2">
-                                  <CheckCircle2 className="h-4 w-4 text-success" />
-                                  Active
-                                </span>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {format(new Date(clinic.created_at), "MMM dd, yyyy")}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {startIndex + 1} to {Math.min(endIndex, clinics.length)} of {clinics.length} clinics
-                  </p>
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                      
-                      {[...Array(totalPages)].map((_, index) => {
-                        const page = index + 1;
-                        if (
-                          page === 1 ||
-                          page === totalPages ||
-                          (page >= currentPage - 1 && page <= currentPage + 1)
-                        ) {
-                          return (
-                            <PaginationItem key={page}>
-                              <PaginationLink
-                                onClick={() => handlePageChange(page)}
-                                isActive={currentPage === page}
-                                className="cursor-pointer"
-                              >
-                                {page}
-                              </PaginationLink>
-                            </PaginationItem>
-                          );
-                        } else if (page === currentPage - 2 || page === currentPage + 2) {
-                          return <PaginationItem key={page}>...</PaginationItem>;
-                        }
-                        return null;
-                      })}
-                      
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Clinic Details Modal */}
-      <Dialog open={!!selectedClinic} onOpenChange={() => setSelectedClinic(null)}>
-        <DialogContent className="max-w-3xl animate-scale-in">
-          {selectedClinic && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    <Building2 className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <DialogTitle className="text-2xl font-bold mb-1">
-                      {selectedClinic.clinic_name}
-                    </DialogTitle>
-                    <DialogDescription className="text-base">
-                      Managed by {selectedClinic.profiles.full_name}
-                    </DialogDescription>
-                  </div>
-                  {selectedClinic.status === "active" ? (
-                    <Badge className="bg-success/10 text-success border-success/20 px-3 py-1">
-                      <CheckCircle2 className="h-4 w-4 mr-1" />
-                      Active
-                    </Badge>
-                  ) : (
-                    <Badge className="bg-warning/10 text-warning border-warning/20 px-3 py-1">
-                      <Clock className="h-4 w-4 mr-1" />
-                      Pending Approval
-                    </Badge>
-                  )}
-                </div>
-              </DialogHeader>
-
-              <div className="space-y-6 mt-6">
-                {/* Contact Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-primary" />
-                    Contact Information
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4 bg-accent/30 p-4 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <Mail className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">Email</p>
-                        <p className="font-medium">{selectedClinic.profiles.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div>
-                        <p className="text-xs text-muted-foreground mb-1">Phone</p>
-                        <p className="font-medium">{selectedClinic.phone_number}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Location */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    Location
-                  </h3>
-                  <div className="bg-accent/30 p-4 rounded-lg">
-                    <p className="font-medium mb-1">{selectedClinic.address}</p>
-                    <p className="text-sm text-muted-foreground">{selectedClinic.city}</p>
-                  </div>
-                </div>
-
-                {/* Doctor Statistics */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    Doctor Statistics
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Card className="border-border/40 bg-gradient-to-br from-primary/5 to-transparent">
-                      <CardContent className="pt-6">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground mb-2">Requested Doctors</p>
-                          <p className="text-4xl font-bold text-primary">{selectedClinic.requested_doctors}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="border-border/40 bg-gradient-to-br from-success/5 to-transparent">
-                      <CardContent className="pt-6">
-                        <div className="text-center">
-                          <p className="text-sm text-muted-foreground mb-2">Doctors Created</p>
-                          <p className="text-4xl font-bold text-success">{selectedClinic.no_of_doctors}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                {/* Registration Date */}
-                <div className="bg-accent/30 p-4 rounded-lg flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Registered On</p>
-                    <p className="font-semibold">{format(new Date(selectedClinic.created_at), "MMMM dd, yyyy 'at' HH:mm")}</p>
-                  </div>
-                  <Clock className="h-8 w-8 text-muted-foreground" />
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3 pt-4 border-t">
-                  <span className="text-sm text-muted-foreground">Change Status:</span>
-                  <Select
-                    value={selectedClinic.status}
-                    onValueChange={(value) => {
-                      updateClinicStatus(selectedClinic.id, value);
-                      setSelectedClinic({ ...selectedClinic, status: value });
-                    }}
-                    disabled={updating === selectedClinic.id}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">
-                        <span className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-warning" />
-                          Draft
-                        </span>
-                      </SelectItem>
-                      <SelectItem value="active">
-                        <span className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                          Active
-                        </span>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <Card><CardContent className="pt-6"><div className="flex flex-wrap gap-4 items-center"><div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search by clinic name, city, email, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" /></div><div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Status:</span><Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}><SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="draft">Pending</SelectItem></SelectContent></Select></div></div>{searchQuery && <p className="text-sm text-muted-foreground mt-2">Found {filteredClinics.length} clinic{filteredClinics.length !== 1 ? "s" : ""}</p>}</CardContent></Card>
+      <Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Clinic Name</TableHead><TableHead>Email</TableHead><TableHead>City</TableHead><TableHead>Status</TableHead><TableHead>Plan</TableHead><TableHead>Trial Status</TableHead><TableHead>Doctors</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader><TableBody>{paginatedClinics.length === 0 ? <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">{searchQuery ? "No clinics found matching your search" : "No clinics found"}</TableCell></TableRow> : paginatedClinics.map((clinic) => { const trialDays = getTrialDaysRemaining(clinic.trial_end_date); return (<TableRow key={clinic.id}><TableCell className="font-medium">{clinic.clinic_name}</TableCell><TableCell>{clinic.profile?.email || "N/A"}</TableCell><TableCell>{clinic.city}</TableCell><TableCell>{getStatusBadge(clinic.status, clinic.trial_end_date)}</TableCell><TableCell>{getPaymentPlanBadge(clinic.payment_plan)}</TableCell><TableCell>{clinic.trial_end_date === null ? <Badge className="bg-green-500">Subscribed</Badge> : (trialDays !== null ? (trialDays <= 0 ? <Badge variant="destructive">Expired</Badge> : <Badge variant="outline">{trialDays} days left</Badge>) : <span className="text-muted-foreground">N/A</span>)}</TableCell><TableCell>{clinic.activeDoctorCount ?? 0} / {clinic.requested_doctors}</TableCell><TableCell><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => { setSelectedClinic(clinic); setIsDetailOpen(true); }}><Eye className="h-4 w-4" /></Button><Button variant="destructive" size="sm" onClick={() => { setClinicToDelete(clinic); setIsDeleteOpen(true); }}><Trash2 className="h-4 w-4" /></Button></div></TableCell></TableRow>);})}</TableBody></Table><TablePagination currentPage={currentPage} totalPages={totalPages} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} /></CardContent></Card>
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}><DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>{selectedClinic?.clinic_name}</DialogTitle><DialogDescription>Clinic details and management</DialogDescription></DialogHeader>{selectedClinic && <div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><label className="text-sm font-medium text-muted-foreground">Email</label><p>{selectedClinic.profile?.email || "N/A"}</p></div><div><label className="text-sm font-medium text-muted-foreground">Phone</label><p>{selectedClinic.phone_number}</p></div><div><label className="text-sm font-medium text-muted-foreground">City</label><p>{selectedClinic.city}</p></div><div><label className="text-sm font-medium text-muted-foreground">Address</label><p>{selectedClinic.address}</p></div><div><label className="text-sm font-medium text-muted-foreground">Registered On</label><p>{format(new Date(selectedClinic.created_at), "PPP")}</p></div><div><label className="text-sm font-medium text-muted-foreground">Active Doctors</label><p className="font-semibold">{selectedClinic.activeDoctorCount ?? 0}</p></div><div><label className="text-sm font-medium text-muted-foreground">Monthly Fee (based on active doctors)</label><p className="font-semibold text-primary">PKR {((selectedClinic.activeDoctorCount ?? 0) * (selectedClinic.payment_plan === "yearly" ? 4979 : 5999)).toLocaleString()}</p></div><div><label className="text-sm font-medium text-muted-foreground">Trial Status</label><p className={selectedClinic.trial_end_date === null ? "text-green-600 font-semibold" : (getTrialDaysRemaining(selectedClinic.trial_end_date) !== null && getTrialDaysRemaining(selectedClinic.trial_end_date)! <= 0 ? "text-destructive font-semibold" : "")}>{selectedClinic.trial_end_date === null ? "Subscribed (Trial Ended)" : (getTrialDaysRemaining(selectedClinic.trial_end_date) !== null ? (getTrialDaysRemaining(selectedClinic.trial_end_date)! <= 0 ? "Expired" : `${getTrialDaysRemaining(selectedClinic.trial_end_date)} days left`) : "N/A")}</p></div><div><label className="text-sm font-medium text-muted-foreground">Trial End Date</label><p>{selectedClinic.trial_end_date === null ? "N/A (Subscribed)" : (selectedClinic.trial_end_date ? format(new Date(selectedClinic.trial_end_date), "PPP") : "N/A")}</p></div></div>{selectedClinic.trial_end_date !== null && (<div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4"><p className="text-sm text-green-700 font-medium mb-3">💳 First Payment Received? End trial to convert to subscription.</p><Button className="bg-green-600 hover:bg-green-700 text-white" size="sm" onClick={async () => { const { error } = await supabase.from("clinics").update({ status: "active", trial_end_date: null }).eq("id", selectedClinic.id); if (error) { toast.error("Failed to end trial"); return; } toast.success("Trial ended - clinic is now subscribed"); setSelectedClinic({ ...selectedClinic, status: "active", trial_end_date: null }); fetchClinics(); }}>✓ End Trial & Activate Subscription</Button></div>)}{selectedClinic.trial_end_date !== null && (<div className="bg-muted/50 border rounded-lg p-4"><label className="text-sm font-medium text-muted-foreground mb-2 block">Extend Trial (Days)</label><div className="flex gap-2"><Input type="number" min={1} placeholder="Enter days" id="extendClinicTrialDays" className="w-32" /><Button variant="outline" size="sm" onClick={async () => { const input = document.getElementById("extendClinicTrialDays") as HTMLInputElement; const days = parseInt(input?.value) || 0; if (days <= 0) { toast.error("Please enter a valid number of days"); return; } const currentEndDate = selectedClinic.trial_end_date ? new Date(selectedClinic.trial_end_date) : new Date(); const newEndDate = new Date(currentEndDate); newEndDate.setDate(newEndDate.getDate() + days); const { error } = await supabase.from("clinics").update({ trial_end_date: newEndDate.toISOString().split("T")[0] }).eq("id", selectedClinic.id); if (error) { toast.error("Failed to extend trial"); return; } toast.success(`Trial extended by ${days} days`); setSelectedClinic({ ...selectedClinic, trial_end_date: newEndDate.toISOString().split("T")[0] }); fetchClinics(); if (input) input.value = ""; }}>Extend Trial</Button></div></div>)}{selectedClinic.trial_end_date === null && (<div className="border rounded-lg p-4 bg-muted/30"><ClinicMonthlyPayments clinicId={selectedClinic.id} doctorCount={selectedClinic.activeDoctorCount ?? 0} monthlyFeePerDoctor={selectedClinic.payment_plan === "yearly" ? 4979 : 5999} onPaymentUpdate={fetchClinics} /></div>)}<div><label className="text-sm font-medium text-muted-foreground mb-2 block">Payment Plan</label><Select value={selectedClinic.payment_plan} onValueChange={(value) => setSelectedClinic({ ...selectedClinic, payment_plan: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="monthly">Monthly (PKR 5,999/doctor)</SelectItem><SelectItem value="yearly">Yearly (PKR 4,979/doctor - 17% off)</SelectItem></SelectContent></Select></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Status</label><Select value={selectedClinic.status} onValueChange={(value) => setSelectedClinic({ ...selectedClinic, status: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Pending</SelectItem><SelectItem value="active">Active</SelectItem></SelectContent></Select></div><div><label className="text-sm font-medium text-muted-foreground mb-2 block">Doctor Limit (max allowed)</label><Input type="number" min={1} value={selectedClinic.requested_doctors} onChange={(e) => { const newLimit = parseInt(e.target.value) || 1; setSelectedClinic({ ...selectedClinic, requested_doctors: newLimit }); }} className="w-24" /></div><div className="flex justify-end pt-4"><Button onClick={() => updateClinic(selectedClinic.id, selectedClinic.status, selectedClinic.requested_doctors, selectedClinic.payment_plan)}>Update</Button></div></div>}</DialogContent></Dialog>
+      <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Delete Clinic</AlertDialogTitle><AlertDialogDescription>Are you sure you want to delete "{clinicToDelete?.clinic_name}"? This action cannot be undone and will permanently delete the clinic along with all associated data including doctors, patients, appointments, and records.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel><AlertDialogAction onClick={handleDeleteClinic} disabled={isDeleting} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{isDeleting ? "Deleting..." : "Delete Clinic"}</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </div>
   );
 };

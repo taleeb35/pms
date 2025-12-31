@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, ArrowLeft, Eye } from "lucide-react";
+import { Search, ArrowLeft, Eye, Calendar as CalendarIcon, X, FileSpreadsheet } from "lucide-react";
+import PatientImportExport from "@/components/PatientImportExport";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -15,7 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { differenceInYears } from "date-fns";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { differenceInYears, format, subMonths, startOfDay, endOfDay } from "date-fns";
+import { cn } from "@/lib/utils";
+import { TablePagination } from "@/components/TablePagination";
 
 interface Patient {
   id: string;
@@ -30,6 +35,7 @@ interface Patient {
   address: string | null;
   city: string | null;
   major_diseases: string | null;
+  created_at: string;
 }
 
 interface Doctor {
@@ -51,6 +57,10 @@ const AdminDoctorPatients = () => {
   const [filterGender, setFilterGender] = useState("all");
   const [filterCity, setFilterCity] = useState("all");
   const [cities, setCities] = useState<string[]>([]);
+  const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
+  const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
+  const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
+  const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (doctorId) {
@@ -156,6 +166,20 @@ const AdminDoctorPatients = () => {
       filtered = filtered.filter((patient) => patient.city === filterCity);
     }
 
+    // Added date filter
+    if (filterAddedDateFrom) {
+      filtered = filtered.filter((patient) => {
+        const createdAt = new Date(patient.created_at);
+        return createdAt >= startOfDay(filterAddedDateFrom);
+      });
+    }
+    if (filterAddedDateTo) {
+      filtered = filtered.filter((patient) => {
+        const createdAt = new Date(patient.created_at);
+        return createdAt <= endOfDay(filterAddedDateTo);
+      });
+    }
+
     // Pagination
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
@@ -187,23 +211,31 @@ const AdminDoctorPatients = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate("/dashboard")}
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Dashboard
-        </Button>
-        <div>
-          <h2 className="text-3xl font-bold">
-            {doctor ? `Dr. ${doctor.full_name}'s Patients` : "Doctor's Patients"}
-          </h2>
-          <p className="text-muted-foreground">
-            {doctor && `Specialization: ${doctor.specialization}`}
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h2 className="text-3xl font-bold">
+              {doctor ? `Dr. ${doctor.full_name}'s Patients` : "Doctor's Patients"}
+            </h2>
+            <p className="text-muted-foreground">
+              {doctor && `Specialization: ${doctor.specialization}`}
+            </p>
+          </div>
         </div>
+        {doctorId && (
+          <PatientImportExport 
+            createdBy={doctorId} 
+            onImportComplete={fetchPatients} 
+          />
+        )}
       </div>
 
       <Card>
@@ -280,6 +312,52 @@ const AdminDoctorPatients = () => {
                 <SelectItem value="100">100 per page</SelectItem>
               </SelectContent>
             </Select>
+
+            <div className="flex gap-2 items-center">
+              <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filterAddedDateFrom ? format(filterAddedDateFrom, "PP") : "From Date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filterAddedDateFrom}
+                    onSelect={(date) => { setFilterAddedDateFrom(date); setAddedDateFromPopoverOpen(false); }}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    fromDate={subMonths(new Date(), 12)}
+                    toDate={new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover open={addedDateToPopoverOpen} onOpenChange={setAddedDateToPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateTo && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {filterAddedDateTo ? format(filterAddedDateTo, "PP") : "To Date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={filterAddedDateTo}
+                    onSelect={(date) => { setFilterAddedDateTo(date); setAddedDateToPopoverOpen(false); }}
+                    disabled={(date) => date > new Date() || (filterAddedDateFrom && date < filterAddedDateFrom)}
+                    initialFocus
+                    fromDate={subMonths(new Date(), 12)}
+                    toDate={new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+              {(filterAddedDateFrom || filterAddedDateTo) && (
+                <Button variant="ghost" size="icon" onClick={() => { setFilterAddedDateFrom(undefined); setFilterAddedDateTo(undefined); }}>
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -302,13 +380,14 @@ const AdminDoctorPatients = () => {
                 <TableHead>City</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Blood Group</TableHead>
+                <TableHead>Added Date</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPatients.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground">
+                  <TableCell colSpan={10} className="text-center text-muted-foreground">
                     No patients found
                   </TableCell>
                 </TableRow>
@@ -325,6 +404,7 @@ const AdminDoctorPatients = () => {
                     <TableCell>{patient.city || "N/A"}</TableCell>
                     <TableCell>{patient.phone}</TableCell>
                     <TableCell>{patient.blood_group || "N/A"}</TableCell>
+                    <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
@@ -342,31 +422,13 @@ const AdminDoctorPatients = () => {
           </Table>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+          />
         </CardContent>
       </Card>
     </div>

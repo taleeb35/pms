@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
-import { Building2, Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText } from "lucide-react";
+import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText } from "lucide-react";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -26,14 +26,12 @@ const DoctorProfile = () => {
     experience_years: "",
     consultation_fee: "",
     contact_number: "",
+    pmdc_number: "",
   });
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
     confirmPassword: "",
   });
-  const [letterheadFile, setLetterheadFile] = useState<File | null>(null);
-  const [letterheadUrl, setLetterheadUrl] = useState<string>("");
-  const [uploadingLetterhead, setUploadingLetterhead] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -42,7 +40,7 @@ const DoctorProfile = () => {
   const fetchProfile = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      navigate("/doctor-auth");
+      navigate("/login");
       return;
     }
 
@@ -78,16 +76,12 @@ const DoctorProfile = () => {
         experience_years: doctorData.experience_years !== null && doctorData.experience_years !== undefined ? doctorData.experience_years.toString() : "",
         consultation_fee: doctorData.consultation_fee !== null && doctorData.consultation_fee !== undefined ? doctorData.consultation_fee.toString() : "",
         contact_number: doctorData.contact_number || "",
+        pmdc_number: doctorData.pmdc_number || "",
       };
       
       console.log("Setting profile state to:", newProfile);
       setProfile(newProfile);
       
-      // Load letterhead image URL
-      const savedUrl = localStorage.getItem(`letterhead_url_${user.id}`);
-      if (savedUrl) {
-        setLetterheadUrl(savedUrl);
-      }
     }
   };
 
@@ -140,6 +134,7 @@ const DoctorProfile = () => {
           experience_years: profile.experience_years ? parseInt(profile.experience_years) : null,
           consultation_fee: profile.consultation_fee ? parseFloat(profile.consultation_fee) : null,
           contact_number: profile.contact_number,
+          pmdc_number: profile.pmdc_number || null,
         })
         .eq("id", user.id);
 
@@ -202,71 +197,6 @@ const DoctorProfile = () => {
     setPasswordData({ newPassword: "", confirmPassword: "" });
   };
 
-  const handleLetterheadUpload = async () => {
-    if (!letterheadFile) {
-      toast({ title: "Please select a file first", variant: "destructive" });
-      return;
-    }
-
-    setUploadingLetterhead(true);
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({ title: "Not authenticated", variant: "destructive" });
-        setUploadingLetterhead(false);
-        return;
-      }
-
-      const fileExt = letterheadFile.name.split(".").pop();
-      const fileName = `letterheads/${user.id}-${Date.now()}.${fileExt}`;
-      
-      console.log("Uploading letterhead:", fileName);
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from("medical-documents")
-        .upload(fileName, letterheadFile, { upsert: true });
-      
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        toast({
-          title: "Upload Error",
-          description: uploadError.message || "Failed to upload letterhead",
-          variant: "destructive",
-        });
-        setUploadingLetterhead(false);
-        return;
-      }
-      
-      console.log("Upload successful:", uploadData);
-      
-      const { data: urlData } = supabase.storage
-        .from("medical-documents")
-        .getPublicUrl(fileName);
-      
-      const uploadedUrl = urlData.publicUrl;
-      console.log("Public URL:", uploadedUrl);
-      
-      setLetterheadUrl(uploadedUrl);
-      localStorage.setItem(`letterhead_url_${user.id}`, uploadedUrl);
-      
-      toast({ title: "Success", description: "Letterhead uploaded successfully" });
-      
-      // Reset file input
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-      if (fileInput) fileInput.value = "";
-      setLetterheadFile(null);
-    } catch (error: any) {
-      console.error("Exception during upload:", error);
-      toast({
-        title: "Error",
-        description: error.message || "An error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingLetterhead(false);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -408,6 +338,22 @@ const DoctorProfile = () => {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  PMDC Number
+                </Label>
+                <Input
+                  value={profile.pmdc_number}
+                  onChange={(e) => setProfile({ ...profile, pmdc_number: e.target.value })}
+                  placeholder="e.g., 12345-P"
+                  className="border-primary/20 focus:border-primary"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pakistan Medical & Dental Council registration number
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
                   Introduction
                 </Label>
@@ -429,53 +375,6 @@ const DoctorProfile = () => {
 
         {/* Right Column */}
         <div className="space-y-6">
-          {/* Letterhead Settings Card */}
-          <Card className="border-secondary/20 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-secondary/10 to-secondary/5">
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-secondary" />
-                Upload Letterhead
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Select Letterhead Image</Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setLetterheadFile(e.target.files?.[0] || null)}
-                    className="border-secondary/20 focus:border-secondary"
-                  />
-                </div>
-
-                <Button 
-                  onClick={handleLetterheadUpload} 
-                  disabled={uploadingLetterhead || !letterheadFile}
-                  className="w-full"
-                  variant="secondary"
-                >
-                  {uploadingLetterhead ? "Uploading..." : "Upload Letterhead"}
-                </Button>
-
-                {letterheadUrl && (
-                  <div className="mt-4">
-                    <p className="text-sm text-muted-foreground mb-2">Current Letterhead:</p>
-                    <img 
-                      src={letterheadUrl} 
-                      alt="Letterhead" 
-                      className="w-full border rounded"
-                    />
-                  </div>
-                )}
-
-                <p className="text-sm text-muted-foreground">
-                  This letterhead will appear on printed visit records
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Password Change Card */}
           <Card className="border-accent/20 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-accent/10 to-accent/5">
@@ -508,7 +407,7 @@ const DoctorProfile = () => {
                   />
                 </div>
 
-                <Button type="submit" variant="secondary" className="w-full">
+                <Button type="submit" className="w-full">
                   Update Password
                 </Button>
               </form>

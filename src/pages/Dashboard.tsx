@@ -3,143 +3,66 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Building2, Users, ChevronRight, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { Stethoscope, Building2, Users, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
-
-interface Clinic {
-  id: string;
-  clinic_name: string;
-  city: string;
-  phone_number: string;
-  address: string;
-  no_of_doctors: number;
-  profiles: {
-    full_name: string;
-    email: string;
-  };
-}
-
-interface DoctorWithPatientCount {
-  id: string;
-  specialization: string;
-  approved: boolean;
-  clinic_id: string | null;
-  profiles: {
-    full_name: string;
-    email: string;
-  };
-  patient_count: number;
-}
+import AdminAnalyticsCharts from "@/components/AdminAnalyticsCharts";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [approvedDoctors, setApprovedDoctors] = useState(0);
   const [pendingDoctors, setPendingDoctors] = useState(0);
   const [totalClinics, setTotalClinics] = useState(0);
   const [totalPatients, setTotalPatients] = useState(0);
-  const [clinics, setClinics] = useState<Clinic[]>([]);
-  const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
-  const [clinicDoctors, setClinicDoctors] = useState<DoctorWithPatientCount[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchStats();
-    fetchClinics();
   }, []);
 
-  useEffect(() => {
-    if (selectedClinic) {
-      fetchClinicDoctors(selectedClinic);
-    }
-  }, [selectedClinic]);
-
   const fetchStats = async () => {
-    const { count: totalCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true });
-
-    const { count: approvedCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true })
-      .eq("approved", true);
-
-    const { count: pendingCount } = await supabase
-      .from("doctors")
-      .select("id", { count: "exact", head: true })
-      .eq("approved", false);
-
-    const { count: clinicCount } = await supabase
-      .from("clinics")
-      .select("id", { count: "exact", head: true });
-
-    const { count: patientCount } = await supabase
-      .from("patients")
-      .select("id", { count: "exact", head: true });
-
-    setTotalDoctors(totalCount || 0);
-    setApprovedDoctors(approvedCount || 0);
-    setPendingDoctors(pendingCount || 0);
-    setTotalClinics(clinicCount || 0);
-    setTotalPatients(patientCount || 0);
-  };
-
-  const fetchClinics = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("clinics")
-      .select(`
-        *,
-        profiles(full_name, email)
-      `)
-      .order("created_at", { ascending: false });
+    try {
+      const { count: totalCount } = await supabase
+        .from("doctors")
+        .select("id", { count: "exact", head: true });
 
-    if (!error && data) {
-      // Fetch doctor counts for each clinic
-      const clinicsWithCounts = await Promise.all(
-        data.map(async (clinic) => {
-          const { count } = await supabase
-            .from("doctors")
-            .select("id", { count: "exact", head: true })
-            .eq("clinic_id", clinic.id);
-          return { ...clinic, no_of_doctors: count || 0 };
-        })
-      );
-      setClinics(clinicsWithCounts);
-    }
-    setLoading(false);
-  };
+      const { count: approvedCount } = await supabase
+        .from("doctors")
+        .select("id", { count: "exact", head: true })
+        .eq("approved", true);
 
-  const fetchClinicDoctors = async (clinicId: string) => {
-    const { data: doctors, error } = await supabase
-      .from("doctors")
-      .select(`
-        id,
-        specialization,
-        approved,
-        clinic_id,
-        profiles(full_name, email)
-      `)
-      .eq("clinic_id", clinicId);
+      const { count: pendingCount } = await supabase
+        .from("doctors")
+        .select("id", { count: "exact", head: true })
+        .eq("approved", false);
 
-    if (!error && doctors) {
-      // Fetch patient counts for each doctor
-      const doctorsWithCounts = await Promise.all(
-        doctors.map(async (doctor) => {
-          const { count } = await supabase
-            .from("patients")
-            .select("id", { count: "exact", head: true })
-            .eq("created_by", doctor.id);
-          return { ...doctor, patient_count: count || 0 };
-        })
-      );
-      setClinicDoctors(doctorsWithCounts);
+      const { count: clinicCount } = await supabase
+        .from("clinics")
+        .select("id", { count: "exact", head: true });
+
+      const { count: patientCount } = await supabase
+        .from("patients")
+        .select("id", { count: "exact", head: true });
+
+      setTotalDoctors(totalCount || 0);
+      setApprovedDoctors(approvedCount || 0);
+      setPendingDoctors(pendingCount || 0);
+      setTotalClinics(clinicCount || 0);
+      setTotalPatients(patientCount || 0);
+    } finally {
+      setLoading(false);
     }
   };
 
   const today = format(new Date(), "EEEE, dd MMM yyyy");
+
+  if (loading) {
+    return <DashboardSkeleton statsCount={5} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -170,7 +93,7 @@ const Dashboard = () => {
                 <span className="text-xs font-medium text-muted-foreground">{today}</span>
               </div>
               <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text">
-                Admin Dashboard
+                Welcome Admin
               </h2>
               <p className="text-muted-foreground text-base max-w-2xl">
                 Complete system overview and clinic hierarchy management
@@ -269,119 +192,8 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Clinic Hierarchy */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Clinics List */}
-        <Card className="border-border/40">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-              <Building2 className="h-5 w-5 text-primary" />
-              Registered Clinics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p className="text-center text-muted-foreground py-8">Loading clinics...</p>
-            ) : clinics.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No clinics registered yet</p>
-            ) : (
-              <div className="space-y-2">
-                {clinics.map((clinic) => (
-                  <div
-                    key={clinic.id}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedClinic === clinic.id 
-                        ? "bg-primary/10 border-primary shadow-sm" 
-                        : "border-border/40 hover:bg-accent/30 hover:shadow-sm"
-                    }`}
-                    onClick={() => setSelectedClinic(clinic.id)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <Building2 className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-base mb-0.5">{clinic.clinic_name}</h3>
-                          <p className="text-sm text-muted-foreground">{clinic.city}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <Stethoscope className="h-3 w-3" />
-                          {clinic.no_of_doctors}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Doctors under selected clinic */}
-        <Card className="border-border/40">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-              <Stethoscope className="h-5 w-5 text-info" />
-              {selectedClinic ? "Clinic Doctors" : "Select a Clinic"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {!selectedClinic ? (
-              <div className="text-center py-12">
-                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                  <Stethoscope className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <p className="text-muted-foreground">Select a clinic to view its doctors</p>
-              </div>
-            ) : clinicDoctors.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="h-16 w-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-                  <Stethoscope className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <p className="text-muted-foreground">No doctors registered yet</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {clinicDoctors.map((doctor) => (
-                  <div
-                    key={doctor.id}
-                    className="p-4 rounded-xl border border-border/40 hover:bg-accent/30 hover:shadow-sm transition-all cursor-pointer"
-                    onClick={() => navigate(`/admin/doctor-patients/${doctor.id}`)}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="h-10 w-10 rounded-full bg-info/10 flex items-center justify-center shrink-0">
-                          <Stethoscope className="h-5 w-5 text-info" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-semibold text-base">{doctor.profiles.full_name}</h4>
-                            <Badge variant={doctor.approved ? "default" : "secondary"} className="text-xs">
-                              {doctor.approved ? "Active" : "Pending"}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="flex items-center gap-1">
-                          <Users className="h-3 w-3" />
-                          {doctor.patient_count}
-                        </Badge>
-                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Revenue Analytics */}
+      <AdminAnalyticsCharts />
 
       {/* Quick Actions */}
       <Card className="border-border/40">

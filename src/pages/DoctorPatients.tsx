@@ -14,12 +14,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet } from "lucide-react";
+import PatientImportExport from "@/components/PatientImportExport";
 import { VisitHistory } from "@/components/VisitHistory";
-import { format, differenceInYears } from "date-fns";
+import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
+import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
+import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
+import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
+import { TablePagination } from "@/components/TablePagination";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Patient {
   id: string;
@@ -28,6 +34,7 @@ interface Patient {
   father_name: string | null;
   email: string | null;
   phone: string;
+  cnic: string | null;
   date_of_birth: string;
   gender: string;
   blood_group: string | null;
@@ -37,6 +44,8 @@ interface Patient {
   medical_history: string | null;
   city: string | null;
   major_diseases: string | null;
+  pregnancy_start_date: string | null;
+  created_at: string;
 }
 
 interface Document {
@@ -66,11 +75,13 @@ const DoctorPatients = () => {
   const [isEditHistoryDialogOpen, setIsEditHistoryDialogOpen] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
   const [waitlistPatientIds, setWaitlistPatientIds] = useState<Set<string>>(new Set());
+  const [doctorId, setDoctorId] = useState<string>("");
   const [addForm, setAddForm] = useState<{
     full_name: string;
     father_name: string;
     email: string;
     phone: string;
+    cnic: string;
     date_of_birth: string;
     gender: "male" | "female" | "other";
     blood_group: string;
@@ -79,11 +90,13 @@ const DoctorPatients = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    added_date: string;
   }>({
     full_name: "",
     father_name: "",
     email: "",
     phone: "",
+    cnic: "",
     date_of_birth: "",
     gender: "male",
     blood_group: "",
@@ -92,7 +105,10 @@ const DoctorPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    added_date: "",
   });
+  const [addedDate, setAddedDate] = useState<Date>();
+  const [addedDatePopoverOpen, setAddedDatePopoverOpen] = useState(false);
   const [dobDate, setDobDate] = useState<Date>();
   const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [editDobDate, setEditDobDate] = useState<Date>();
@@ -111,17 +127,30 @@ const DoctorPatients = () => {
       setEditForm(prev => ({ ...prev, date_of_birth: format(editDobDate, 'yyyy-MM-dd') }));
     }
   }, [editDobDate]);
+
+  // Sync addedDate with addForm.added_date
+  useEffect(() => {
+    if (addedDate) {
+      setAddForm(prev => ({ ...prev, added_date: format(addedDate, 'yyyy-MM-dd\'T\'HH:mm:ss') }));
+    }
+  }, [addedDate]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [totalCount, setTotalCount] = useState(0);
   const [filterAge, setFilterAge] = useState("");
   const [filterGender, setFilterGender] = useState("");
   const [filterCity, setFilterCity] = useState("");
+  const [filterDelivery, setFilterDelivery] = useState("");
+  const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
+  const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
+  const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
+  const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
   const [editForm, setEditForm] = useState<{
     full_name: string;
     father_name: string;
     email: string;
     phone: string;
+    cnic: string;
     date_of_birth: string;
     gender: "male" | "female" | "other";
     blood_group: string;
@@ -135,6 +164,7 @@ const DoctorPatients = () => {
     father_name: "",
     email: "",
     phone: "",
+    cnic: "",
     date_of_birth: "",
     gender: "male",
     blood_group: "",
@@ -155,17 +185,91 @@ const DoctorPatients = () => {
   const [documentTitle, setDocumentTitle] = useState("");
   const [documentDate, setDocumentDate] = useState("");
   const [documentDatePopoverOpen, setDocumentDatePopoverOpen] = useState(false);
+  const [isGynecologist, setIsGynecologist] = useState(false);
+  const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
+  const [pregnancyStartDatePopoverOpen, setPregnancyStartDatePopoverOpen] = useState(false);
+  const [editPregnancyStartDate, setEditPregnancyStartDate] = useState<Date>();
+  const [editPregnancyStartDatePopoverOpen, setEditPregnancyStartDatePopoverOpen] = useState(false);
+  const [allergyOptions, setAllergyOptions] = useState<{ value: string; label: string }[]>([]);
+  const [diseaseOptions, setDiseaseOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedAllergies, setSelectedAllergies] = useState<string[]>([]);
+  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([]);
+  const [editSelectedAllergies, setEditSelectedAllergies] = useState<string[]>([]);
+  const [editSelectedDiseases, setEditSelectedDiseases] = useState<string[]>([]);
+  const [addFormErrors, setAddFormErrors] = useState<Record<string, string>>({});
+  const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     checkAuth();
+    checkDoctorSpecialization();
+    fetchAllergyAndDiseaseOptions();
   }, []);
+
+  const fetchAllergyAndDiseaseOptions = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Get doctor's clinic_id
+    const { data: doctorData } = await supabase
+      .from("doctors")
+      .select("clinic_id")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!doctorData?.clinic_id) return;
+
+    // Fetch allergies
+    const { data: allergies } = await supabase
+      .from("clinic_allergies")
+      .select("name")
+      .eq("clinic_id", doctorData.clinic_id)
+      .order("name");
+
+    if (allergies) {
+      setAllergyOptions(allergies.map(a => ({ value: a.name, label: a.name })));
+    }
+
+    // Fetch diseases
+    const { data: diseases } = await supabase
+      .from("clinic_diseases")
+      .select("name")
+      .eq("clinic_id", doctorData.clinic_id)
+      .order("name");
+
+    if (diseases) {
+      setDiseaseOptions(diseases.map(d => ({ value: d.name, label: d.name })));
+    }
+  };
+
+  const checkDoctorSpecialization = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("doctors")
+      .select("specialization")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const isGyn = data?.specialization?.toLowerCase().includes("gynecologist") || false;
+    setIsGynecologist(isGyn);
+    // For gynecologists, default gender to female in add form
+    if (isGyn) {
+      setAddForm(prev => ({ ...prev, gender: "female" }));
+    }
+  };
 
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, searchTerm]);
+  
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const fetchWaitlistPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -185,9 +289,11 @@ const DoctorPatients = () => {
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      navigate("/doctor-auth");
+      navigate("/login");
       return;
     }
+
+    setDoctorId(session.user.id);
 
     const { data: roles } = await supabase
       .from("user_roles")
@@ -205,37 +311,29 @@ const DoctorPatients = () => {
     if (!user) return;
 
     try {
-      // @ts-ignore - Supabase query builder types can be overly complex
-      const baseQuery = supabase
+      // Build the query with search term
+      let query = supabase
         .from("patients")
         .select("*", { count: "exact" })
         .eq("created_by", user.id)
         .order("created_at", { ascending: false });
 
-      let result;
+      // Add search filter if search term exists
+      if (searchTerm.trim()) {
+        query = query.or(`full_name.ilike.%${searchTerm.trim()}%,patient_id.ilike.%${searchTerm.trim()}%`);
+      }
+
       const hasGenderFilter = filterGender && filterGender !== "all";
       const hasCityFilter = filterCity && filterCity !== "all";
       
-      if (hasGenderFilter && hasCityFilter) {
-        // @ts-ignore
-        result = await baseQuery
-          .eq("gender", filterGender as any)
-          .eq("city", filterCity)
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else if (hasGenderFilter) {
-        // @ts-ignore
-        result = await baseQuery
-          .eq("gender", filterGender as any)
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else if (hasCityFilter) {
-        // @ts-ignore
-        result = await baseQuery
-          .eq("city", filterCity)
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
-      } else {
-        result = await baseQuery
-          .range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      if (hasGenderFilter) {
+        query = query.eq("gender", filterGender as any);
       }
+      if (hasCityFilter) {
+        query = query.eq("city", filterCity);
+      }
+
+      const result = await query.range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
 
       if (result.error) {
         console.error("Error fetching patients:", result.error);
@@ -260,6 +358,41 @@ const DoctorPatients = () => {
           if (filterAge === "41-60") return age >= 41 && age <= 60;
           if (filterAge === "60+") return age > 60;
           return true;
+        });
+      }
+
+      // Apply delivery date filter for gynecologists
+      if (filterDelivery && filterDelivery !== "all") {
+        filteredData = filteredData.filter(patient => {
+          if (!patient.pregnancy_start_date) return false;
+          
+          const pregnancyStart = new Date(patient.pregnancy_start_date);
+          const expectedDelivery = new Date(pregnancyStart);
+          expectedDelivery.setDate(expectedDelivery.getDate() + 280); // 40 weeks
+          
+          const today = new Date();
+          const daysUntilDelivery = Math.ceil((expectedDelivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (filterDelivery === "7") return daysUntilDelivery >= 0 && daysUntilDelivery <= 7;
+          if (filterDelivery === "14") return daysUntilDelivery >= 0 && daysUntilDelivery <= 14;
+          if (filterDelivery === "30") return daysUntilDelivery >= 0 && daysUntilDelivery <= 30;
+          if (filterDelivery === "60") return daysUntilDelivery >= 0 && daysUntilDelivery <= 60;
+          if (filterDelivery === "90") return daysUntilDelivery >= 0 && daysUntilDelivery <= 90;
+          return true;
+        });
+      }
+
+      // Apply added date filter
+      if (filterAddedDateFrom) {
+        filteredData = filteredData.filter(patient => {
+          const createdAt = new Date(patient.created_at);
+          return createdAt >= startOfDay(filterAddedDateFrom);
+        });
+      }
+      if (filterAddedDateTo) {
+        filteredData = filteredData.filter(patient => {
+          const createdAt = new Date(patient.created_at);
+          return createdAt <= endOfDay(filterAddedDateTo);
         });
       }
 
@@ -409,6 +542,7 @@ const DoctorPatients = () => {
       father_name: patient.father_name || "",
       email: patient.email || "",
       phone: patient.phone,
+      cnic: patient.cnic || "",
       date_of_birth: patient.date_of_birth,
       gender: patient.gender as "male" | "female" | "other",
       blood_group: patient.blood_group || "",
@@ -419,12 +553,43 @@ const DoctorPatients = () => {
       major_diseases: patient.major_diseases || "",
     });
     setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
+    setEditPregnancyStartDate(patient.pregnancy_start_date ? new Date(patient.pregnancy_start_date) : undefined);
     setSelectedPatient(patient);
     setIsEditDialogOpen(true);
   };
 
   const handleUpdatePatient = async () => {
     if (!selectedPatient) return;
+
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(editForm.full_name);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const phoneValidation = validatePhone(editForm.phone);
+    if (!phoneValidation.isValid) errors.push(`Phone: ${phoneValidation.message}`);
+    
+    if (!editForm.date_of_birth) errors.push("Date of Birth is required");
+    
+    if (editForm.email) {
+      const emailValidation = validateEmail(editForm.email, false);
+      if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    }
+    
+    if (editForm.cnic) {
+      const cnicValidation = validateCNIC(editForm.cnic);
+      if (!cnicValidation.isValid) errors.push(`CNIC: ${cnicValidation.message}`);
+    }
+    
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
+        variant: "destructive",
+      });
+      return;
+    }
 
     console.log("Update Patient - Form data:", editForm);
     console.log("Selected patient ID:", selectedPatient.id);
@@ -436,14 +601,18 @@ const DoctorPatients = () => {
         father_name: editForm.father_name || null,
         email: editForm.email || null,
         phone: editForm.phone,
+        cnic: editForm.cnic || null,
         date_of_birth: editForm.date_of_birth,
         gender: editForm.gender,
         blood_group: editForm.blood_group || null,
         address: editForm.address || null,
-        allergies: editForm.allergies || null,
+        allergies: editSelectedAllergies.length > 0 ? editSelectedAllergies.join(", ") : null,
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
-        major_diseases: editForm.major_diseases || null,
+        major_diseases: editSelectedDiseases.length > 0 ? editSelectedDiseases.join(", ") : null,
+        pregnancy_start_date: isGynecologist && editForm.gender === "female" && editPregnancyStartDate 
+          ? format(editPregnancyStartDate, "yyyy-MM-dd") 
+          : null,
       })
       .eq("id", selectedPatient.id)
       .select();
@@ -624,15 +793,31 @@ const DoctorPatients = () => {
   const handleAddPatient = async () => {
     console.log("Add Patient - Form data:", addForm);
     
-    if (!addForm.full_name || !addForm.phone || !addForm.date_of_birth) {
-      console.log("Validation failed:", { 
-        full_name: addForm.full_name, 
-        phone: addForm.phone, 
-        date_of_birth: addForm.date_of_birth 
-      });
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(addForm.full_name);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const phoneValidation = validatePhone(addForm.phone);
+    if (!phoneValidation.isValid) errors.push(`Phone: ${phoneValidation.message}`);
+    
+    if (!addForm.date_of_birth) errors.push("Date of Birth is required");
+    
+    if (addForm.email) {
+      const emailValidation = validateEmail(addForm.email, false);
+      if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    }
+    
+    if (addForm.cnic) {
+      const cnicValidation = validateCNIC(addForm.cnic);
+      if (!cnicValidation.isValid) errors.push(`CNIC: ${cnicValidation.message}`);
+    }
+    
+    if (errors.length > 0) {
       toast({
-        title: "Error",
-        description: "Please fill in all required fields (Name, Phone, Date of Birth)",
+        title: "Validation Error",
+        description: errors[0],
         variant: "destructive",
       });
       return;
@@ -659,16 +844,21 @@ const DoctorPatients = () => {
           father_name: addForm.father_name || null,
           email: addForm.email || null,
           phone: addForm.phone,
+          cnic: addForm.cnic || null,
           date_of_birth: addForm.date_of_birth,
           gender: addForm.gender,
           blood_group: addForm.blood_group || null,
           address: addForm.address || null,
-          allergies: addForm.allergies || null,
+          allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
           marital_status: addForm.marital_status || null,
           city: addForm.city || null,
-          major_diseases: addForm.major_diseases || null,
+          major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
           patient_id: patientId,
           created_by: user.id,
+          pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
+            ? format(pregnancyStartDate, "yyyy-MM-dd") 
+            : null,
+          created_at: addForm.added_date || new Date().toISOString(),
         },
       ])
       .select();
@@ -685,6 +875,20 @@ const DoctorPatients = () => {
 
     console.log("Patient added successfully:", data);
 
+    // Log activity
+    if (data && data[0]) {
+      await logActivity({
+        action: "patient_created",
+        entityType: "patient",
+        entityId: data[0].id,
+        details: {
+          doctorId: user.id,
+          patient_name: addForm.full_name,
+          patient_id: patientId,
+        },
+      });
+    }
+
     toast({
       title: "Success",
       description: "Patient added successfully",
@@ -695,6 +899,7 @@ const DoctorPatients = () => {
       father_name: "",
       email: "",
       phone: "",
+      cnic: "",
       date_of_birth: "",
       gender: "male",
       blood_group: "",
@@ -703,8 +908,11 @@ const DoctorPatients = () => {
       marital_status: "",
       city: "",
       major_diseases: "",
+      added_date: "",
     });
+    setAddedDate(undefined);
     setDobDate(undefined);
+    setPregnancyStartDate(undefined);
     setIsAddDialogOpen(false);
     fetchPatients();
   };
@@ -736,10 +944,8 @@ const DoctorPatients = () => {
     return age;
   };
 
-  const filteredPatients = patients.filter((patient) =>
-    patient.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.patient_id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Search is now server-side, so we just use patients directly
+  const filteredPatients = patients;
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -755,10 +961,18 @@ const DoctorPatients = () => {
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <CardTitle>Patients List</CardTitle>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Patient
-              </Button>
+              <div className="flex gap-2">
+                {doctorId && (
+                  <PatientImportExport 
+                    createdBy={doctorId} 
+                    onImportComplete={fetchPatients} 
+                  />
+                )}
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Patient
+                </Button>
+              </div>
             </div>
             <div className="flex gap-2 items-center flex-wrap">
               <div className="relative w-64">
@@ -799,6 +1013,66 @@ const DoctorPatients = () => {
                 label=""
                 showAllOption={true}
               />
+              {isGynecologist && (
+                <Select value={filterDelivery} onValueChange={setFilterDelivery}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Delivery Due" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Patients</SelectItem>
+                    <SelectItem value="7">Delivery in 7 days</SelectItem>
+                    <SelectItem value="14">Delivery in 14 days</SelectItem>
+                    <SelectItem value="30">Delivery in 30 days</SelectItem>
+                    <SelectItem value="60">Delivery in 2 months</SelectItem>
+                    <SelectItem value="90">Delivery in 3 months</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              <div className="flex gap-2 items-center">
+                <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filterAddedDateFrom ? format(filterAddedDateFrom, "PP") : "From Date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filterAddedDateFrom}
+                      onSelect={(date) => { setFilterAddedDateFrom(date); setAddedDateFromPopoverOpen(false); }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+                <Popover open={addedDateToPopoverOpen} onOpenChange={setAddedDateToPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateTo && "text-muted-foreground")}>
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {filterAddedDateTo ? format(filterAddedDateTo, "PP") : "To Date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={filterAddedDateTo}
+                      onSelect={(date) => { setFilterAddedDateTo(date); setAddedDateToPopoverOpen(false); }}
+                      disabled={(date) => date > new Date() || (filterAddedDateFrom && date < filterAddedDateFrom)}
+                      initialFocus
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {(filterAddedDateFrom || filterAddedDateTo) && (
+                  <Button variant="ghost" size="icon" onClick={() => { setFilterAddedDateFrom(undefined); setFilterAddedDateTo(undefined); }}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -814,12 +1088,13 @@ const DoctorPatients = () => {
                   <TableHead>Gender</TableHead>
                   <TableHead>Age</TableHead>
                   <TableHead>Blood Group</TableHead>
+                  <TableHead>Added Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center text-muted-foreground">
                       No patients found
                     </TableCell>
                   </TableRow>
@@ -851,10 +1126,11 @@ const DoctorPatients = () => {
                         <TableCell className="capitalize">{patient.gender}</TableCell>
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                         <TableCell>{patient.blood_group || "N/A"}</TableCell>
+                        <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
-                          <TableCell colSpan={7} className="p-0">
+                          <TableCell colSpan={8} className="p-0">
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
@@ -925,6 +1201,12 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Phone</p>
                                       <p className="font-medium">{selectedPatient.phone}</p>
                                     </div>
+                                    {selectedPatient.cnic && (
+                                      <div>
+                                        <p className="text-sm text-muted-foreground">CNIC</p>
+                                        <p className="font-medium">{selectedPatient.cnic}</p>
+                                      </div>
+                                    )}
                                     <div>
                                       <p className="text-sm text-muted-foreground">Date of Birth</p>
                                       <p className="font-medium">{format(new Date(selectedPatient.date_of_birth), "PPP")}</p>
@@ -953,6 +1235,22 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Allergies</p>
                                       <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
                                     </div>
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && (
+                                      <>
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
+                                          <p className="font-medium text-primary">{calculatePregnancyDuration(selectedPatient.pregnancy_start_date)}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-sm text-muted-foreground">Expected Delivery Date</p>
+                                          <p className="font-medium text-primary">
+                                            {calculateExpectedDueDate(selectedPatient.pregnancy_start_date) 
+                                              ? format(calculateExpectedDueDate(selectedPatient.pregnancy_start_date)!, "PPP")
+                                              : "N/A"}
+                                          </p>
+                                        </div>
+                                      </>
+                                    )}
                                   </div>
                                 </TabsContent>
                                 <TabsContent value="history" className="space-y-4">
@@ -1254,17 +1552,53 @@ const DoctorPatients = () => {
                 <Input
                   type="email"
                   value={addForm.email}
-                  onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                  onChange={(e) => {
+                    setAddForm({ ...addForm, email: e.target.value });
+                    if (e.target.value) {
+                      const validation = validateEmail(e.target.value, false);
+                      setAddFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setAddFormErrors(prev => ({ ...prev, email: "" }));
+                    }
+                  }}
                   placeholder="Enter email"
+                  className={addFormErrors.email ? "border-destructive" : ""}
                 />
+                {addFormErrors.email && <p className="text-sm text-destructive">{addFormErrors.email}</p>}
               </div>
               <div>
                 <Label>Phone *</Label>
                 <Input
                   value={addForm.phone}
-                  onChange={(e) => setAddForm({ ...addForm, phone: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setAddForm({ ...addForm, phone: value });
+                    const validation = validatePhone(value);
+                    setAddFormErrors(prev => ({ ...prev, phone: validation.isValid ? "" : validation.message }));
+                  }}
                   placeholder="Enter phone number"
+                  className={addFormErrors.phone ? "border-destructive" : ""}
                 />
+                {addFormErrors.phone && <p className="text-sm text-destructive">{addFormErrors.phone}</p>}
+              </div>
+              <div>
+                <Label>CNIC</Label>
+                <Input
+                  value={addForm.cnic}
+                  onChange={(e) => {
+                    const value = handleCNICInput(e);
+                    setAddForm({ ...addForm, cnic: value });
+                    if (value) {
+                      const validation = validateCNIC(value);
+                      setAddFormErrors(prev => ({ ...prev, cnic: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setAddFormErrors(prev => ({ ...prev, cnic: "" }));
+                    }
+                  }}
+                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  className={addFormErrors.cnic ? "border-destructive" : ""}
+                />
+                {addFormErrors.cnic && <p className="text-sm text-destructive">{addFormErrors.cnic}</p>}
               </div>
               <div>
                 <Label>Date of Birth *</Label>
@@ -1291,6 +1625,7 @@ const DoctorPatients = () => {
                           setDobPopoverOpen(false);
                         }
                       }}
+                      disabled={(date) => date > new Date()}
                       initialFocus
                       className="pointer-events-auto"
                       captionLayout="dropdown-buttons"
@@ -1301,20 +1636,56 @@ const DoctorPatients = () => {
                 </Popover>
               </div>
               <div>
+                <Label>Added Date</Label>
+                <Popover open={addedDatePopoverOpen} onOpenChange={setAddedDatePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !addedDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {addedDate ? format(addedDate, "PPP") : <span>Today (default)</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={addedDate}
+                      onSelect={(date) => {
+                        setAddedDate(date);
+                        setAddedDatePopoverOpen(false);
+                      }}
+                      disabled={(date) => date > new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                      fromDate={subMonths(new Date(), 12)}
+                      toDate={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
                 <Label>Gender *</Label>
-                <Select
-                  value={addForm.gender}
-                  onValueChange={(value: "male" | "female" | "other") => setAddForm({ ...addForm, gender: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                {isGynecologist ? (
+                  <Input value="Female" disabled className="bg-muted" />
+                ) : (
+                  <Select
+                    value={addForm.gender}
+                    onValueChange={(value: "male" | "female" | "other") => setAddForm({ ...addForm, gender: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div>
                 <Label>Blood Group</Label>
@@ -1334,6 +1705,7 @@ const DoctorPatients = () => {
                     <SelectItem value="O-">O-</SelectItem>
                     <SelectItem value="AB+">AB+</SelectItem>
                     <SelectItem value="AB-">AB-</SelectItem>
+                    <SelectItem value="Don't Know">Don't Know</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1360,21 +1732,25 @@ const DoctorPatients = () => {
                 />
               </div>
               <div className="col-span-2">
-                <Label>Allergies</Label>
-                <Textarea
-                  value={addForm.allergies}
-                  onChange={(e) => setAddForm({ ...addForm, allergies: e.target.value })}
-                  placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={selectedAllergies}
+                  onValuesChange={setSelectedAllergies}
+                  options={allergyOptions}
+                  label="Allergies"
+                  placeholder="Select allergies"
+                  searchPlaceholder="Search allergies..."
+                  emptyMessage="No allergies found. Ask clinic to add allergies."
                 />
               </div>
               <div className="col-span-2">
-                <Label>Major Diseases</Label>
-                <Textarea
-                  value={addForm.major_diseases}
-                  onChange={(e) => setAddForm({ ...addForm, major_diseases: e.target.value })}
-                  placeholder="List any major diseases"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={selectedDiseases}
+                  onValuesChange={setSelectedDiseases}
+                  options={diseaseOptions}
+                  label="Major Diseases"
+                  placeholder="Select diseases"
+                  searchPlaceholder="Search diseases..."
+                  emptyMessage="No diseases found. Ask clinic to add diseases."
                 />
               </div>
               <div className="col-span-2">
@@ -1386,6 +1762,64 @@ const DoctorPatients = () => {
                   rows={2}
                 />
               </div>
+              {/* Pregnancy Start Date - Only for Gynecologists */}
+              {isGynecologist && (
+                <div className="col-span-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <Label>Pregnancy Start Date (Optional)</Label>
+                  <Popover open={pregnancyStartDatePopoverOpen} onOpenChange={setPregnancyStartDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal mt-2",
+                          !pregnancyStartDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {pregnancyStartDate ? format(pregnancyStartDate, "PPP") : "Set pregnancy start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={pregnancyStartDate}
+                        onSelect={(date) => {
+                          setPregnancyStartDate(date);
+                          if (date) setPregnancyStartDatePopoverOpen(false);
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          const maxPastDate = new Date();
+                          maxPastDate.setDate(maxPastDate.getDate() - 280);
+                          return date > today || date < maxPastDate;
+                        }}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Can only select dates within the last 9 months (280 days)
+                  </p>
+                  {pregnancyStartDate && (
+                    <div className="mt-2 p-2 bg-background rounded border">
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Duration: </span>
+                        <span className="font-semibold text-primary">
+                          {calculatePregnancyDuration(format(pregnancyStartDate, "yyyy-MM-dd"))}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Expected Due Date: </span>
+                        <span className="font-semibold text-primary">
+                          {calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd")) 
+                            ? format(calculateExpectedDueDate(format(pregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                            : "-"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
@@ -1426,17 +1860,53 @@ const DoctorPatients = () => {
                 <Input
                   type="email"
                   value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  onChange={(e) => {
+                    setEditForm({ ...editForm, email: e.target.value });
+                    if (e.target.value) {
+                      const validation = validateEmail(e.target.value, false);
+                      setEditFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setEditFormErrors(prev => ({ ...prev, email: "" }));
+                    }
+                  }}
                   placeholder="Enter email"
+                  className={editFormErrors.email ? "border-destructive" : ""}
                 />
+                {editFormErrors.email && <p className="text-sm text-destructive">{editFormErrors.email}</p>}
               </div>
               <div>
                 <Label>Phone *</Label>
                 <Input
                   value={editForm.phone}
-                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setEditForm({ ...editForm, phone: value });
+                    const validation = validatePhone(value);
+                    setEditFormErrors(prev => ({ ...prev, phone: validation.isValid ? "" : validation.message }));
+                  }}
                   placeholder="Enter phone number"
+                  className={editFormErrors.phone ? "border-destructive" : ""}
                 />
+                {editFormErrors.phone && <p className="text-sm text-destructive">{editFormErrors.phone}</p>}
+              </div>
+              <div>
+                <Label>CNIC</Label>
+                <Input
+                  value={editForm.cnic}
+                  onChange={(e) => {
+                    const value = handleCNICInput(e);
+                    setEditForm({ ...editForm, cnic: value });
+                    if (value) {
+                      const validation = validateCNIC(value);
+                      setEditFormErrors(prev => ({ ...prev, cnic: validation.isValid ? "" : validation.message }));
+                    } else {
+                      setEditFormErrors(prev => ({ ...prev, cnic: "" }));
+                    }
+                  }}
+                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  className={editFormErrors.cnic ? "border-destructive" : ""}
+                />
+                {editFormErrors.cnic && <p className="text-sm text-destructive">{editFormErrors.cnic}</p>}
               </div>
               <div>
                 <Label>Date of Birth *</Label>
@@ -1463,6 +1933,7 @@ const DoctorPatients = () => {
                           setEditDobPopoverOpen(false);
                         }
                       }}
+                      disabled={(date) => date > new Date()}
                       initialFocus
                       className="pointer-events-auto"
                       captionLayout="dropdown-buttons"
@@ -1506,6 +1977,7 @@ const DoctorPatients = () => {
                     <SelectItem value="O-">O-</SelectItem>
                     <SelectItem value="AB+">AB+</SelectItem>
                     <SelectItem value="AB-">AB-</SelectItem>
+                    <SelectItem value="Don't Know">Don't Know</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1532,21 +2004,25 @@ const DoctorPatients = () => {
                 />
               </div>
               <div className="col-span-2">
-                <Label>Allergies</Label>
-                <Textarea
-                  value={editForm.allergies}
-                  onChange={(e) => setEditForm({ ...editForm, allergies: e.target.value })}
-                  placeholder="List any allergies (e.g., Penicillin, Peanuts, Latex)"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={editSelectedAllergies}
+                  onValuesChange={setEditSelectedAllergies}
+                  options={allergyOptions}
+                  label="Allergies"
+                  placeholder="Select allergies"
+                  searchPlaceholder="Search allergies..."
+                  emptyMessage="No allergies found. Ask clinic to add allergies."
                 />
               </div>
               <div className="col-span-2">
-                <Label>Major Diseases</Label>
-                <Textarea
-                  value={editForm.major_diseases}
-                  onChange={(e) => setEditForm({ ...editForm, major_diseases: e.target.value })}
-                  placeholder="List any major diseases"
-                  rows={2}
+                <MultiSelectSearchable
+                  values={editSelectedDiseases}
+                  onValuesChange={setEditSelectedDiseases}
+                  options={diseaseOptions}
+                  label="Major Diseases"
+                  placeholder="Select diseases"
+                  searchPlaceholder="Search diseases..."
+                  emptyMessage="No diseases found. Ask clinic to add diseases."
                 />
               </div>
               <div className="col-span-2">
@@ -1558,6 +2034,64 @@ const DoctorPatients = () => {
                   rows={2}
                 />
               </div>
+              {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
+              {isGynecologist && editForm.gender === "female" && (
+                <div className="col-span-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                  <Label>Pregnancy Start Date (Optional)</Label>
+                  <Popover open={editPregnancyStartDatePopoverOpen} onOpenChange={setEditPregnancyStartDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal mt-2",
+                          !editPregnancyStartDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editPregnancyStartDate ? format(editPregnancyStartDate, "PPP") : "Set pregnancy start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={editPregnancyStartDate}
+                        onSelect={(date) => {
+                          setEditPregnancyStartDate(date);
+                          if (date) setEditPregnancyStartDatePopoverOpen(false);
+                        }}
+                        disabled={(date) => {
+                          const today = new Date();
+                          const maxPastDate = new Date();
+                          maxPastDate.setDate(maxPastDate.getDate() - 280);
+                          return date > today || date < maxPastDate;
+                        }}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Can only select dates within the last 9 months (280 days)
+                  </p>
+                  {editPregnancyStartDate && (
+                    <div className="mt-2 p-2 bg-background rounded border">
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Duration: </span>
+                        <span className="font-semibold text-primary">
+                          {calculatePregnancyDuration(format(editPregnancyStartDate, "yyyy-MM-dd"))}
+                        </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="text-muted-foreground">Expected Due Date: </span>
+                        <span className="font-semibold text-primary">
+                          {calculateExpectedDueDate(format(editPregnancyStartDate, "yyyy-MM-dd")) 
+                            ? format(calculateExpectedDueDate(format(editPregnancyStartDate, "yyyy-MM-dd"))!, "PPP")
+                            : "-"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>

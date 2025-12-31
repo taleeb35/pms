@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Calendar, Clock, UserPlus, ClipboardList, Activity } from "lucide-react";
+import { Users, Calendar, Clock, UserPlus, ClipboardList, Activity, CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
+import TrialBanner from "@/components/TrialBanner";
+import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
+  const [doctorName, setDoctorName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [paymentPlan, setPaymentPlan] = useState<string | null>(null);
+  const [isSingleDoctor, setIsSingleDoctor] = useState(false);
   const [stats, setStats] = useState({
     totalPatients: 0,
     todayAppointments: 0,
@@ -20,36 +28,57 @@ const DoctorDashboard = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      setLoading(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
 
-      const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes] = await Promise.all([
-        supabase.from("patients").select("id", { count: "exact", head: true }),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
-        supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
-      ]);
+        const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes, profileRes, doctorRes] = await Promise.all([
+          supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),
+          supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
+          supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
+          supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
+          supabase.from("profiles").select("full_name").eq("id", user.id).single(),
+          supabase.from("doctors").select("payment_plan, clinic_id").eq("id", user.id).single(),
+        ]);
 
-      setStats({
-        totalPatients: patientsRes.count || 0,
-        todayAppointments: todayAppointmentsRes.count || 0,
-        totalAppointments: totalAppointmentsRes.count || 0,
-        pendingAppointments: 0,
-        totalRecords: 0,
-        waitlistPatients: waitlistRes.count || 0,
-      });
+        if (doctorRes.data) {
+          setPaymentPlan(doctorRes.data.payment_plan);
+          setIsSingleDoctor(!doctorRes.data.clinic_id);
+        }
+
+        if (profileRes.data) {
+          setDoctorName(profileRes.data.full_name);
+        }
+
+        setStats({
+          totalPatients: patientsRes.count || 0,
+          todayAppointments: todayAppointmentsRes.count || 0,
+          totalAppointments: totalAppointmentsRes.count || 0,
+          pendingAppointments: 0,
+          totalRecords: 0,
+          waitlistPatients: waitlistRes.count || 0,
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchStats();
   }, []);
 
   const today = format(new Date(), "EEEE, dd MMM yyyy");
+
+  if (loading) {
+    return <DashboardSkeleton statsCount={4} />;
+  }
   
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Trial Banner for Single Doctors */}
+      <TrialBanner userType="doctor" />
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -57,8 +86,14 @@ const DoctorDashboard = () => {
               <Activity className="h-3 w-3 mr-1" />
               Doctor Mode
             </Badge>
+            {isSingleDoctor && paymentPlan && (
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                <CreditCard className="h-3 w-3 mr-1" />
+                {paymentPlan === "yearly" ? "Yearly Plan" : "Monthly Plan"}
+              </Badge>
+            )}
           </div>
-          <h2 className="text-4xl font-bold tracking-tight mb-1">Doctor Dashboard</h2>
+          <h2 className="text-4xl font-bold tracking-tight mb-1">Welcome Dr. {doctorName}</h2>
           <p className="text-muted-foreground text-base">
             Overview of your patients, appointments & waitlist in one glance.
           </p>
@@ -125,6 +160,12 @@ const DoctorDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Analytics Charts */}
+      <DoctorAnalyticsCharts />
+
+      {/* Activity Logs - Only show for single doctors */}
+      {isSingleDoctor && <ActivityLogsCard />}
 
       {/* Quick Actions */}
       <Card className="border-border/40">

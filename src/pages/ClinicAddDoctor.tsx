@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Textarea } from "@/components/ui/textarea";
+import { SearchableSelect } from "@/components/SearchableSelect";
+import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput, handleNumberInput } from "@/lib/validations";
 
 const ClinicAddDoctor = () => {
   const navigate = useNavigate();
@@ -17,30 +19,66 @@ const ClinicAddDoctor = () => {
   const [checkingLimit, setCheckingLimit] = useState(true);
   const [canAddDoctor, setCanAddDoctor] = useState(false);
   const [currentCount, setCurrentCount] = useState(0);
+  const [requestedDoctors, setRequestedDoctors] = useState(0);
+  const [specializations, setSpecializations] = useState<string[]>([]);
   
-  const DOCTOR_LIMIT = 5;
+  const DOCTOR_LIMIT = requestedDoctors; // Dynamic limit based on clinic's requested doctors
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     password: "",
     specialization: "",
-    qualification: "",
     contactNumber: "",
     experienceYears: "",
     consultationFee: "",
+    clinicPercentage: "",
     introduction: "",
+    pmdcNumber: "",
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     checkDoctorLimit();
+    fetchSpecializations();
   }, []);
+
+  const fetchSpecializations = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("specializations")
+        .select("name")
+        .eq("clinic_id", user.id)
+        .order("name");
+
+      if (error) throw error;
+      setSpecializations(data?.map(s => s.name) || []);
+    } catch (error: any) {
+      console.error("Error fetching specializations:", error);
+    }
+  };
 
   const checkDoctorLimit = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Fetch clinic's requested doctor limit
+      const { data: clinicData, error: clinicError } = await supabase
+        .from("clinics")
+        .select("requested_doctors")
+        .eq("id", user.id)
+        .single();
+
+      if (clinicError) throw clinicError;
+      
+      const requestedLimit = clinicData.requested_doctors || 0;
+      setRequestedDoctors(requestedLimit);
+
+      // Count current doctors
       const { count, error } = await supabase
         .from("doctors")
         .select("id", { count: "exact", head: true })
@@ -49,7 +87,7 @@ const ClinicAddDoctor = () => {
       if (error) throw error;
 
       setCurrentCount(count || 0);
-      setCanAddDoctor((count || 0) < DOCTOR_LIMIT);
+      setCanAddDoctor((count || 0) < requestedLimit);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -67,7 +105,35 @@ const ClinicAddDoctor = () => {
     if (!canAddDoctor) {
       toast({
         title: "Doctor Limit Reached",
-        description: "You've reached the maximum limit of 5 doctors. Please contact support to increase your limit.",
+        description: `You've reached the maximum limit of ${requestedDoctors} doctors. Please contact support to increase your limit.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(formData.fullName);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) errors.push(`Password: ${passwordValidation.message}`);
+    
+    const phoneValidation = validatePhone(formData.contactNumber);
+    if (!phoneValidation.isValid) errors.push(`Contact Number: ${phoneValidation.message}`);
+    
+    if (!formData.specialization) errors.push("Specialization is required");
+    if (!formData.experienceYears) errors.push("Experience is required");
+    if (!formData.consultationFee) errors.push("Consultation Fee is required");
+    
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
         variant: "destructive",
       });
       return;
@@ -76,8 +142,24 @@ const ClinicAddDoctor = () => {
     setLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
+      const user = session.user;
+
+      // Fetch clinic details for the email
+      const { data: clinicData } = await supabase
+        .from("clinics")
+        .select("clinic_name, address, city, phone_number")
+        .eq("id", user.id)
+        .single();
+
+      const clinicName = clinicData?.clinic_name || "Your Clinic";
+      const clinicAddress = clinicData?.address || "";
+      const clinicCity = clinicData?.city || "";
+      const clinicPhone = clinicData?.phone_number || "";
+
+      // Store clinic owner's session
+      const clinicSession = session;
 
       // Create auth user for the doctor
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -97,23 +179,52 @@ const ClinicAddDoctor = () => {
       const { error: doctorError } = await supabase.from("doctors").insert({
         id: authData.user.id,
         specialization: formData.specialization,
-        qualification: formData.qualification,
+        qualification: "Medical Doctor", // Default value since qualification field is removed
         contact_number: formData.contactNumber,
         experience_years: formData.experienceYears ? parseInt(formData.experienceYears) : null,
         consultation_fee: formData.consultationFee ? parseFloat(formData.consultationFee) : null,
+        clinic_percentage: formData.clinicPercentage ? parseFloat(formData.clinicPercentage) : 0,
         introduction: formData.introduction || null,
+        pmdc_number: formData.pmdcNumber || null,
         clinic_id: user.id,
-        approved: false, // Requires admin approval
+        approved: true, // Doctors are active by default
       });
 
       if (doctorError) throw doctorError;
 
-      toast({
-        title: "Success",
-        description: "Doctor added successfully! Waiting for admin approval.",
+      // Send welcome email with credentials to the doctor
+      try {
+        await supabase.functions.invoke('send-clinic-doctor-welcome-email', {
+          body: {
+            doctorName: formData.fullName,
+            doctorEmail: formData.email,
+            password: formData.password,
+            clinicName: clinicName,
+            clinicAddress: clinicAddress,
+            clinicCity: clinicCity,
+            clinicPhone: clinicPhone,
+            specialization: formData.specialization,
+          },
+        });
+        console.log("Doctor welcome email sent successfully");
+      } catch (emailError) {
+        console.error("Failed to send doctor welcome email:", emailError);
+        // Don't throw - email failure shouldn't block the registration
+      }
+
+      // Sign out the newly created doctor and restore clinic owner's session
+      await supabase.auth.signOut();
+      await supabase.auth.setSession({
+        access_token: clinicSession.access_token,
+        refresh_token: clinicSession.refresh_token,
       });
 
-      navigate("/clinic/dashboard");
+      toast({
+        title: "✓ Doctor Added Successfully!",
+        description: "The doctor has been registered and a welcome email with login credentials has been sent.",
+      });
+
+      navigate("/clinic/doctors");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -187,9 +298,17 @@ const ClinicAddDoctor = () => {
                 <Input
                   id="fullName"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  onChange={(e) => {
+                    const value = handleNameInput(e);
+                    setFormData({ ...formData, fullName: value });
+                    const validation = validateName(value);
+                    setFormErrors(prev => ({ ...prev, fullName: validation.isValid ? "" : validation.message }));
+                  }}
                   required
+                  placeholder="Dr. John Smith"
+                  className={formErrors.fullName ? "border-destructive" : ""}
                 />
+                {formErrors.fullName && <p className="text-sm text-destructive">{formErrors.fullName}</p>}
               </div>
 
               <div className="space-y-2">
@@ -198,9 +317,16 @@ const ClinicAddDoctor = () => {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    const validation = validateEmail(e.target.value);
+                    setFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                  }}
                   required
+                  placeholder="doctor@example.com"
+                  className={formErrors.email ? "border-destructive" : ""}
                 />
+                {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -209,63 +335,115 @@ const ClinicAddDoctor = () => {
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    const validation = validatePassword(e.target.value);
+                    setFormErrors(prev => ({ ...prev, password: validation.isValid ? "" : validation.message }));
+                  }}
                   required
                   minLength={6}
+                  className={formErrors.password ? "border-destructive" : ""}
                 />
+                {formErrors.password && <p className="text-sm text-destructive">{formErrors.password}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="contactNumber">Contact Number</Label>
+                <Label htmlFor="contactNumber">Contact Number *</Label>
                 <Input
                   id="contactNumber"
                   type="tel"
                   value={formData.contactNumber}
-                  onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setFormData({ ...formData, contactNumber: value });
+                    const validation = validatePhone(value);
+                    setFormErrors(prev => ({ ...prev, contactNumber: validation.isValid ? "" : validation.message }));
+                  }}
+                  required
+                  placeholder="+92 300 1234567"
+                  className={formErrors.contactNumber ? "border-destructive" : ""}
                 />
+                {formErrors.contactNumber && <p className="text-sm text-destructive">{formErrors.contactNumber}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="specialization">Specialization *</Label>
-                <Input
-                  id="specialization"
+                <SearchableSelect
                   value={formData.specialization}
-                  onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
+                  onValueChange={(value) => setFormData({ ...formData, specialization: value })}
+                  options={specializations.map(spec => ({ value: spec, label: spec }))}
+                  label="Specialization"
                   required
+                  disabled={specializations.length === 0}
+                  placeholder={specializations.length === 0 ? "Add specializations first" : "Select specialization"}
+                  searchPlaceholder="Search specialization..."
+                  emptyMessage="No specialization found."
                 />
+                {specializations.length === 0 && (
+                  <p className="text-sm text-amber-600">
+                    Please <a href="/clinic/specializations" className="underline">add specializations</a> before adding a doctor.
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="qualification">Qualification *</Label>
-                <Input
-                  id="qualification"
-                  value={formData.qualification}
-                  onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="experienceYears">Experience (Years)</Label>
+                <Label htmlFor="experienceYears">Experience *</Label>
                 <Input
                   id="experienceYears"
                   type="number"
                   min="0"
                   value={formData.experienceYears}
                   onChange={(e) => setFormData({ ...formData, experienceYears: e.target.value })}
+                  required
+                  placeholder="Years of experience"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="consultationFee">Consultation Fee</Label>
+                <Label htmlFor="consultationFee">Fee *</Label>
                 <Input
                   id="consultationFee"
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="100"
                   value={formData.consultationFee}
                   onChange={(e) => setFormData({ ...formData, consultationFee: e.target.value })}
+                  required
+                  placeholder="PKR 2000"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="clinicPercentage">Clinic Share (%)</Label>
+                <Input
+                  id="clinicPercentage"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.clinicPercentage}
+                  onChange={(e) => {
+                    const val = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+                    setFormData({ ...formData, clinicPercentage: val.toString() });
+                  }}
+                  placeholder="e.g., 30 (means 30% for clinic, 70% for doctor)"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Percentage of doctor's earnings that goes to the clinic
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="pmdcNumber">PMDC Number</Label>
+                <Input
+                  id="pmdcNumber"
+                  value={formData.pmdcNumber}
+                  onChange={(e) => setFormData({ ...formData, pmdcNumber: e.target.value })}
+                  placeholder="e.g., 12345-P"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Pakistan Medical & Dental Council registration number
+                </p>
               </div>
             </div>
 
@@ -276,7 +454,7 @@ const ClinicAddDoctor = () => {
                 value={formData.introduction}
                 onChange={(e) => setFormData({ ...formData, introduction: e.target.value })}
                 rows={4}
-                placeholder="Brief introduction about the doctor..."
+                placeholder="Brief introduction about the doctor's expertise and background..."
               />
             </div>
 

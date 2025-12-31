@@ -1,56 +1,273 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Home, Stethoscope, Sparkles, Loader2 } from "lucide-react";
+import { Home, Stethoscope, Sparkles, Loader2, UserPlus, Check, ChevronsUpDown, CheckCircle, XCircle, LogIn } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import clinicLogo from "@/assets/clinic-logo.png";
 
+const pakistanCities = [
+  "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",
+  "Multan", "Gujranwala", "Peshawar", "Quetta", "Sialkot",
+  "Sargodha", "Bahawalpur", "Sukkur", "Larkana", "Hyderabad",
+  "Mardan", "Mingora", "Abbottabad", "Dera Ghazi Khan", "Sahiwal",
+  "Nawabshah", "Jhang", "Rahim Yar Khan", "Kasur", "Gujrat",
+  "Sheikhupura", "Dera Ismail Khan", "Mirpur Khas", "Okara", "Chiniot",
+  "Kamoke", "Mandi Bahauddin", "Jhelum", "Sadiqabad", "Jacobabad",
+  "Shikarpur", "Khanewal", "Hafizabad", "Kohat", "Muzaffargarh",
+  "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari"
+].sort();
+import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput } from "@/lib/validations";
+import { cn } from "@/lib/utils";
+
+const MONTHLY_PRICE_PER_DOCTOR = 5999;
+const YEARLY_DISCOUNT = 0.17; // 17% discount
+
 const DoctorAuth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [paymentPlan, setPaymentPlan] = useState<"monthly" | "yearly">("monthly");
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Pricing calculations
+  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
+  const yearlySavings = (MONTHLY_PRICE_PER_DOCTOR - yearlyMonthlyRate) * 12;
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-PK', {
+      style: 'currency',
+      currency: 'PKR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
+  // Signup form state
+  const [signupData, setSignupData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    specialization: "",
+    city: "",
+    contactNumber: "",
+    experienceYears: "",
+    consultationFee: "",
+    introduction: "",
+    pmdcNumber: "",
+    referralCode: "",
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [specializations, setSpecializations] = useState<string[]>([]);
+  const cities = pakistanCities;
+  const [specializationOpen, setSpecializationOpen] = useState(false);
+  const [cityOpen, setCityOpen] = useState(false);
+  const [monthlyFee, setMonthlyFee] = useState<number>(0);
+  const [referralCodeStatus, setReferralCodeStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "inactive">("idle");
+
+  // Debounced referral code validation
+  useEffect(() => {
+    if (!signupData.referralCode.trim()) {
+      setReferralCodeStatus("idle");
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setReferralCodeStatus("checking");
+      
+      const { data, error } = await supabase
+        .from("referral_partners")
+        .select("status")
+        .eq("referral_code", signupData.referralCode.trim().toUpperCase())
+        .maybeSingle();
+
+      if (error || !data) {
+        setReferralCodeStatus("invalid");
+      } else if (data.status !== "approved") {
+        setReferralCodeStatus("inactive");
+      } else {
+        setReferralCodeStatus("valid");
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [signupData.referralCode]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch specializations
+      const { data: specData } = await supabase
+        .from("specializations")
+        .select("name")
+        .order("name");
+      
+      if (specData) {
+        const uniqueSpecs = [...new Set(specData.map(s => s.name))];
+        setSpecializations(uniqueSpecs);
+      }
+
+      // Fetch monthly fee from system settings
+      const { data: feeData } = await supabase
+        .from("system_settings")
+        .select("value")
+        .eq("key", "doctor_monthly_fee")
+        .maybeSingle();
+      
+      if (feeData) {
+        setMonthlyFee(parseFloat(feeData.value) || 0);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Comprehensive validation
+    const errors: string[] = [];
+    
+    const nameValidation = validateName(signupData.fullName);
+    if (!nameValidation.isValid) errors.push(`Name: ${nameValidation.message}`);
+    
+    const emailValidation = validateEmail(signupData.email);
+    if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
+    
+    const passwordValidation = validatePassword(signupData.password);
+    if (!passwordValidation.isValid) errors.push(`Password: ${passwordValidation.message}`);
+    
+    const phoneValidation = validatePhone(signupData.contactNumber);
+    if (!phoneValidation.isValid) errors.push(`Contact Number: ${phoneValidation.message}`);
+    
+    if (!signupData.specialization) errors.push("Specialization is required");
+    if (!signupData.experienceYears) errors.push("Experience is required");
+    if (!signupData.consultationFee) errors.push("Consultation Fee is required");
+    
+    if (errors.length > 0) {
+      toast({
+        title: "Validation Error",
+        description: errors[0],
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const redirectUrl = `${window.location.origin}/login`;
+
+      // Create auth user for the doctor
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: signupData.email,
+        password: signupData.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: signupData.fullName,
+          },
+        },
       });
 
       if (authError) throw authError;
+      if (!authData.user) throw new Error("Failed to create account");
 
-      // Check if doctor is approved
-      const { data: doctorData, error: doctorError } = await supabase
-        .from("doctors")
-        .select("approved")
-        .eq("id", authData.user.id)
-        .single();
+      // Validate referral code if provided
+      let validatedReferralCode: string | null = null;
+      if (signupData.referralCode.trim()) {
+        const { data: partnerData, error: partnerError } = await supabase
+          .from("referral_partners")
+          .select("status")
+          .eq("referral_code", signupData.referralCode.trim().toUpperCase())
+          .maybeSingle();
 
-      if (doctorError || !doctorData) {
-        await supabase.auth.signOut();
-        throw new Error("Doctor profile not found. Please contact your clinic.");
+        if (partnerError || !partnerData) {
+          throw new Error("Invalid referral code");
+        }
+
+        if (partnerData.status !== "approved") {
+          throw new Error("This referral code is not active");
+        }
+        validatedReferralCode = signupData.referralCode.trim().toUpperCase();
       }
 
-      if (!doctorData.approved) {
-        await supabase.auth.signOut();
-        throw new Error("Your account is pending approval. Please contact your clinic.");
-      }
-
-      toast({
-        title: "Success",
-        description: "Logged in successfully",
+      // Create doctor profile with auto-approved status and 14-day trial
+      const { error: doctorError } = await supabase.from("doctors").insert({
+        id: authData.user.id,
+        specialization: signupData.specialization,
+        qualification: "Medical Doctor",
+        contact_number: signupData.contactNumber,
+        experience_years: signupData.experienceYears ? parseInt(signupData.experienceYears) : null,
+        consultation_fee: signupData.consultationFee ? parseFloat(signupData.consultationFee) : null,
+        clinic_percentage: 0,
+        introduction: signupData.introduction || null,
+        pmdc_number: signupData.pmdcNumber || null,
+        city: signupData.city || null,
+        clinic_id: null,
+        approved: true,
+        referred_by: validatedReferralCode,
+        payment_plan: paymentPlan,
       });
 
-      navigate("/doctor/dashboard");
+      if (doctorError) throw doctorError;
+
+      // Send signup email with monthly fee info
+      try {
+        await supabase.functions.invoke("send-doctor-signup-email", {
+          body: {
+            doctorName: signupData.fullName,
+            email: signupData.email,
+            specialization: signupData.specialization,
+            city: signupData.city,
+            monthlyFee: monthlyFee,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send signup email:", emailError);
+      }
+
+      // Sign out immediately
+      await supabase.auth.signOut();
+
+      setShowSuccessDialog(true);
+      
+      // Reset form
+      setSignupData({
+        fullName: "",
+        email: "",
+        password: "",
+        specialization: "",
+        city: "",
+        contactNumber: "",
+        experienceYears: "",
+        consultationFee: "",
+        introduction: "",
+        pmdcNumber: "",
+        referralCode: "",
+      });
     } catch (error: any) {
       toast({
         title: "Error",
@@ -82,78 +299,414 @@ const DoctorAuth = () => {
         <span className="font-semibold text-teal-600">Back to Home</span>
       </Button>
 
-      <Card className="w-full max-w-md relative z-10 border-2 border-teal-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
-        <CardHeader className="space-y-4 text-center pb-6">
+      <Card className="w-full max-w-lg relative z-10 border-2 border-teal-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
+        <CardHeader className="space-y-4 text-center pb-4">
           <div className="flex justify-center mb-2 animate-fade-in">
             <div className="relative">
-              <img src={clinicLogo} alt="Clinic Logo" className="h-20 w-20 hover-scale" />
-              <Stethoscope className="absolute -bottom-1 -right-1 h-8 w-8 text-teal-600 bg-white rounded-full p-1 shadow-lg" />
+              <img src={clinicLogo} alt="Clinic Logo" className="h-16 w-16 hover-scale" />
+              <Stethoscope className="absolute -bottom-1 -right-1 h-6 w-6 text-teal-600 bg-white rounded-full p-1 shadow-lg" />
             </div>
           </div>
           <div>
-            <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-green-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-              Doctor Login
+            <CardTitle className="text-2xl font-extrabold bg-gradient-to-r from-green-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mb-1">
+              Doctor Registration
             </CardTitle>
-            <CardDescription className="text-base text-muted-foreground">
-              Sign in to access your dashboard and manage patients
+            <CardDescription className="text-sm text-muted-foreground">
+              Create your doctor account to get started
             </CardDescription>
-          </div>
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-100 to-cyan-100 px-4 py-2 rounded-full border border-teal-200">
-            <Stethoscope className="h-4 w-4 text-teal-600" />
-            <span className="text-sm font-semibold text-teal-900">Doctor Portal</span>
           </div>
         </CardHeader>
         
         <CardContent className="pt-0">
-          <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-4 mb-6 border border-amber-200 animate-fade-in">
+          <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg p-3 border border-amber-200 mb-4">
             <div className="flex items-start gap-2">
-              <Sparkles className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-amber-900 mb-1">Need an Account?</p>
-                <p className="text-xs text-muted-foreground">Contact your clinic administrator to create your doctor account.</p>
-              </div>
+              <Sparkles className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-amber-800">
+                Your account will be reviewed by admin before activation. Monthly fee applies as per system settings.
+              </p>
             </div>
           </div>
-          
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2 animate-fade-in">
-              <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="doctor@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="border-2 border-teal-200 focus:border-teal-400 transition-colors"
+
+          <form onSubmit={handleSignup} className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="fullName" className="text-xs">Full Name *</Label>
+                <Input
+                  id="fullName"
+                  value={signupData.fullName}
+                  onChange={(e) => {
+                    const value = handleNameInput(e);
+                    setSignupData({ ...signupData, fullName: value });
+                    const validation = validateName(value);
+                    setFormErrors(prev => ({ ...prev, fullName: validation.isValid ? "" : validation.message }));
+                  }}
+                  required
+                  placeholder="Dr. John Smith"
+                  className={`text-sm ${formErrors.fullName ? "border-destructive" : "border-teal-200"}`}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="signupEmail" className="text-xs">Email *</Label>
+                <Input
+                  id="signupEmail"
+                  type="email"
+                  value={signupData.email}
+                  onChange={(e) => {
+                    setSignupData({ ...signupData, email: e.target.value });
+                    const validation = validateEmail(e.target.value);
+                    setFormErrors(prev => ({ ...prev, email: validation.isValid ? "" : validation.message }));
+                  }}
+                  required
+                  placeholder="doctor@example.com"
+                  className={`text-sm ${formErrors.email ? "border-destructive" : "border-teal-200"}`}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="signupPassword" className="text-xs">Password *</Label>
+                <Input
+                  id="signupPassword"
+                  type="password"
+                  value={signupData.password}
+                  onChange={(e) => {
+                    setSignupData({ ...signupData, password: e.target.value });
+                    const validation = validatePassword(e.target.value);
+                    setFormErrors(prev => ({ ...prev, password: validation.isValid ? "" : validation.message }));
+                  }}
+                  required
+                  minLength={6}
+                  className={`text-sm ${formErrors.password ? "border-destructive" : "border-teal-200"}`}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="contactNumber" className="text-xs">Contact Number *</Label>
+                <Input
+                  id="contactNumber"
+                  type="tel"
+                  value={signupData.contactNumber}
+                  onChange={(e) => {
+                    const value = handlePhoneInput(e);
+                    setSignupData({ ...signupData, contactNumber: value });
+                    const validation = validatePhone(value);
+                    setFormErrors(prev => ({ ...prev, contactNumber: validation.isValid ? "" : validation.message }));
+                  }}
+                  required
+                  placeholder="+92 300 1234567"
+                  className={`text-sm ${formErrors.contactNumber ? "border-destructive" : "border-teal-200"}`}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="specialization" className="text-xs">Specialization *</Label>
+                <Popover open={specializationOpen} onOpenChange={setSpecializationOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={specializationOpen}
+                      className={cn(
+                        "w-full justify-between text-sm font-normal border-teal-200 hover:border-teal-400",
+                        !signupData.specialization && "text-muted-foreground"
+                      )}
+                    >
+                      {signupData.specialization || "Select specialization..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] p-0 z-50 bg-background border shadow-lg" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search specialization..." className="h-9" />
+                      <CommandList>
+                        <CommandEmpty>No specialization found.</CommandEmpty>
+                        <CommandGroup className="max-h-[200px] overflow-auto">
+                          {specializations.map((spec) => (
+                            <CommandItem
+                              key={spec}
+                              value={spec}
+                              onSelect={() => {
+                                setSignupData({ ...signupData, specialization: spec });
+                                setSpecializationOpen(false);
+                              }}
+                            >
+                              {spec}
+                              <Check
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  signupData.specialization === spec ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="city" className="text-xs">City *</Label>
+                <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={cityOpen}
+                      className={cn(
+                        "w-full justify-between text-sm font-normal border-teal-200 hover:border-teal-400",
+                        !signupData.city && "text-muted-foreground"
+                      )}
+                    >
+                      {signupData.city || "Select city..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] p-0 z-50 bg-background border shadow-lg" align="start">
+                    <Command>
+                      <CommandInput placeholder="Search city..." className="h-9" />
+                      <CommandList>
+                        <CommandEmpty>No city found.</CommandEmpty>
+                        <CommandGroup className="max-h-[200px] overflow-auto">
+                          {cities.map((c) => (
+                            <CommandItem
+                              key={c}
+                              value={c}
+                              onSelect={() => {
+                                setSignupData({ ...signupData, city: c });
+                                setCityOpen(false);
+                              }}
+                            >
+                              {c}
+                              <Check
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  signupData.city === c ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="experienceYears" className="text-xs">Experience (years) *</Label>
+                <Input
+                  id="experienceYears"
+                  type="number"
+                  min={0}
+                  max={50}
+                  value={signupData.experienceYears}
+                  onChange={(e) => setSignupData({ ...signupData, experienceYears: e.target.value })}
+                  required
+                  placeholder="5"
+                  className="text-sm border-teal-200"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="consultationFee" className="text-xs">Consultation Fee (PKR) *</Label>
+                <Input
+                  id="consultationFee"
+                  type="number"
+                  min={0}
+                  value={signupData.consultationFee}
+                  onChange={(e) => setSignupData({ ...signupData, consultationFee: e.target.value })}
+                  required
+                  placeholder="1500"
+                  className="text-sm border-teal-200"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="pmdcNumber" className="text-xs">PMDC Number</Label>
+                <Input
+                  id="pmdcNumber"
+                  value={signupData.pmdcNumber}
+                  onChange={(e) => setSignupData({ ...signupData, pmdcNumber: e.target.value })}
+                  placeholder="12345-P"
+                  className="text-sm border-teal-200"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <Label htmlFor="referralCode" className="text-xs">Referral Code</Label>
+                <div className="relative">
+                  <Input
+                    id="referralCode"
+                    value={signupData.referralCode}
+                    onChange={(e) => setSignupData({ ...signupData, referralCode: e.target.value.toUpperCase() })}
+                    placeholder="XXXX1234"
+                    className={cn(
+                      "text-sm uppercase pr-8",
+                      referralCodeStatus === "valid" ? "border-green-400" : 
+                      referralCodeStatus === "invalid" || referralCodeStatus === "inactive" ? "border-destructive" : 
+                      "border-teal-200"
+                    )}
+                    maxLength={10}
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                    {referralCodeStatus === "checking" && (
+                      <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                    {referralCodeStatus === "valid" && (
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                    )}
+                    {(referralCodeStatus === "invalid" || referralCodeStatus === "inactive") && (
+                      <XCircle className="h-4 w-4 text-destructive" />
+                    )}
+                  </div>
+                </div>
+                {referralCodeStatus === "valid" && (
+                  <p className="text-xs text-green-600">Valid referral code!</p>
+                )}
+                {referralCodeStatus === "invalid" && (
+                  <p className="text-xs text-destructive">Invalid referral code</p>
+                )}
+                {referralCodeStatus === "inactive" && (
+                  <p className="text-xs text-destructive">This code is not active</p>
+                )}
+              </div>
+            </div>
+
+            {/* Payment Plan Selection */}
+            <div className="col-span-1 md:col-span-2 space-y-3 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-200">
+              <Label className="text-xs font-semibold">Payment Plan <span className="text-destructive">*</span></Label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan("monthly")}
+                  className={`p-3 rounded-lg border-2 transition-all text-left ${
+                    paymentPlan === "monthly"
+                      ? "border-teal-500 bg-teal-50"
+                      : "border-gray-200 hover:border-teal-300"
+                  }`}
+                >
+                  <div className="font-semibold text-sm">Monthly</div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatPrice(MONTHLY_PRICE_PER_DOCTOR)}/month
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentPlan("yearly")}
+                  className={`p-3 rounded-lg border-2 transition-all text-left relative ${
+                    paymentPlan === "yearly"
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-200 hover:border-green-300"
+                  }`}
+                >
+                  <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                    Save 17%
+                  </span>
+                  <div className="font-semibold text-sm">Yearly</div>
+                  <div className="text-xs text-muted-foreground">
+                    {formatPrice(yearlyMonthlyRate)}/month
+                  </div>
+                </button>
+              </div>
+              {/* Pricing Summary */}
+              <div className="bg-white/80 rounded-lg p-3 border border-teal-100">
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-muted-foreground">Monthly Fee:</span>
+                  <span className="font-semibold">{formatPrice(paymentPlan === "yearly" ? yearlyMonthlyRate : MONTHLY_PRICE_PER_DOCTOR)}</span>
+                </div>
+                {paymentPlan === "yearly" && (
+                  <>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">Yearly Total:</span>
+                      <span className="font-semibold">{formatPrice(yearlyMonthlyRate * 12)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>You Save:</span>
+                      <span className="font-semibold">{formatPrice(yearlySavings)}/year</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="introduction" className="text-xs">Introduction</Label>
+              <Textarea
+                id="introduction"
+                value={signupData.introduction}
+                onChange={(e) => setSignupData({ ...signupData, introduction: e.target.value })}
+                rows={2}
+                placeholder="Brief introduction about your expertise..."
+                className="text-sm border-teal-200"
               />
             </div>
-            
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '50ms' }}>
-              <Label htmlFor="password" className="text-sm font-semibold">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="border-2 border-teal-200 focus:border-teal-400 transition-colors"
-              />
-            </div>
-            
+
             <Button 
               type="submit" 
-              className="w-full bg-gradient-to-r from-green-600 via-teal-600 to-cyan-600 hover:from-green-700 hover:via-teal-700 hover:to-cyan-700 text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105" 
+              className="w-full bg-gradient-to-r from-green-600 via-teal-600 to-cyan-600 hover:from-green-700 hover:via-teal-700 hover:to-cyan-700 text-white font-semibold py-5 shadow-lg hover:shadow-xl transition-all duration-300" 
               disabled={loading}
             >
               {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
-              {!loading && <Stethoscope className="mr-2 h-5 w-5" />}
-              {loading ? "Signing in..." : "Sign In to Dashboard"}
+              {!loading && <UserPlus className="mr-2 h-5 w-5" />}
+              {loading ? "Creating Account..." : "Register as Doctor"}
             </Button>
           </form>
+
+          <div className="mt-6 pt-6 border-t border-teal-200">
+            <p className="text-sm text-center text-muted-foreground mb-3">
+              Already have an account?
+            </p>
+            <Button
+              variant="outline"
+              className="w-full border-2 border-teal-200 hover:border-teal-400"
+              onClick={() => navigate("/login")}
+            >
+              <LogIn className="mr-2 h-4 w-4" />
+              Go to Login
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+                <Sparkles className="h-10 w-10 text-green-600" />
+              </div>
+            </div>
+            <DialogTitle className="text-center text-2xl">Welcome to MyClinicHQ! 🎉</DialogTitle>
+            <DialogDescription className="text-center text-base space-y-3 pt-4">
+              <p className="font-semibold text-foreground">
+                Your account is now active with a 14-day free trial!
+              </p>
+              <p className="text-muted-foreground">
+                You can now login and start using all features. A welcome email with details has been sent to your inbox.
+              </p>
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 border border-green-200 rounded-lg p-3 mt-4">
+                <p className="text-sm text-green-700 font-medium">
+                  🎁 Enjoy 14 days of full access - completely free!
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => {
+                setShowSuccessDialog(false);
+                navigate("/login");
+              }}
+              className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700"
+            >
+              Go to Login
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

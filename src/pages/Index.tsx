@@ -1,10 +1,23 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Calendar, Users, FileText, Activity, Shield, Clock, Heart, Stethoscope, Sparkles, UserPlus, BarChart3, TrendingUp, DollarSign, Eye, ChartBar } from "lucide-react";
-import clinicLogo from "@/assets/clinic-logo.png";
+import { Calendar, Users, FileText, Shield, Stethoscope, Sparkles, UserPlus, TrendingUp, Coins, Eye, ChartBar, Activity, Clock, LogIn } from "lucide-react";
+import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 
 const Index = () => {
   const navigate = useNavigate();
+
+  // Check for password recovery redirect from Supabase
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get("type");
+    
+    if (type === "recovery") {
+      // Redirect to reset-password page with the hash intact
+      navigate(`/reset-password${window.location.hash}`, { replace: true });
+    }
+  }, [navigate]);
 
   const features = [
     {
@@ -26,7 +39,7 @@ const Index = () => {
       color: "from-green-500 to-emerald-500"
     },
     {
-      icon: DollarSign,
+      icon: Coins,
       title: "Finance Management",
       description: "Track clinic revenue, doctor earnings, patient payments, and maintain complete financial records.",
       color: "from-orange-500 to-amber-500"
@@ -65,38 +78,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Header/Navbar */}
-      <header className="border-b bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3 animate-fade-in">
-            <img src={clinicLogo} alt="Clinic Logo" className="h-12 w-12 hover-scale" />
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                MedCare Pro
-              </h1>
-              <p className="text-xs text-muted-foreground">Complete Clinic Management</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button 
-              onClick={() => navigate("/auth")} 
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              Clinic Login
-            </Button>
-            <Button 
-              onClick={() => navigate("/doctor-auth")} 
-              size="lg"
-              variant="outline"
-              className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Stethoscope className="mr-2 h-5 w-5" />
-              Doctor Login
-            </Button>
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center relative overflow-hidden">
@@ -141,21 +123,21 @@ const Index = () => {
           </div>
           <div className="flex gap-4 justify-center pt-6">
             <Button 
-              onClick={() => navigate("/auth")} 
+              onClick={() => navigate("/login")} 
               size="lg" 
               className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110"
             >
-              Clinic Sign Up
+              Get Started
               <Sparkles className="ml-2 h-5 w-5" />
             </Button>
             <Button 
-              onClick={() => navigate("/doctor-auth")} 
+              onClick={() => navigate("/login")} 
               size="lg" 
               variant="outline"
               className="text-lg px-10 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110"
             >
-              <Stethoscope className="mr-2 h-5 w-5" />
-              Doctor Login
+              <LogIn className="mr-2 h-5 w-5" />
+              Login
             </Button>
           </div>
         </div>
@@ -278,7 +260,7 @@ const Index = () => {
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 border-2 border-emerald-200 hover:shadow-xl transition-all duration-300 animate-fade-in" style={{ animationDelay: '200ms' }}>
               <div className="flex items-start gap-4">
                 <div className="p-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl shadow-lg">
-                  <DollarSign className="h-8 w-8 text-white" />
+                  <Coins className="h-8 w-8 text-white" />
                 </div>
                 <div>
                   <h4 className="text-xl font-bold mb-2 text-foreground">Financial Management</h4>
@@ -328,7 +310,7 @@ const Index = () => {
             </p>
             <div className="flex gap-4 justify-center">
               <Button 
-                onClick={() => navigate("/auth")} 
+                onClick={() => navigate("/login")} 
                 size="lg" 
                 className="text-lg px-12 py-7 bg-white text-purple-600 hover:bg-gray-50 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
               >
@@ -336,7 +318,7 @@ const Index = () => {
                 <Sparkles className="ml-2 h-5 w-5" />
               </Button>
               <Button 
-                onClick={() => navigate("/doctor-auth")} 
+                onClick={() => navigate("/login")} 
                 size="lg" 
                 variant="outline"
                 className="text-lg px-12 py-7 bg-white/20 backdrop-blur-sm border-2 border-white text-white hover:bg-white/30 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
@@ -365,22 +347,7 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center justify-center gap-4 mb-6">
-            <img src={clinicLogo} alt="Clinic Logo" className="h-16 w-16" />
-            <div className="text-center">
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                MedCare Pro
-              </span>
-              <p className="text-sm text-muted-foreground mt-1">Complete Clinic Management Solution</p>
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="text-muted-foreground text-sm">&copy; 2025 MedCare Pro. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 };
