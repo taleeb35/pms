@@ -67,6 +67,8 @@ import ReferralProgram from "./pages/ReferralProgram";
 import ReferralPartnerAuth from "./pages/ReferralPartnerAuth";
 import ReferralPartnerDashboard from "./pages/ReferralPartnerDashboard";
 import AdminReferralPartners from "./pages/AdminReferralPartners";
+import ClinicSubscription from "./pages/ClinicSubscription";
+import DoctorSubscription from "./pages/DoctorSubscription";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -252,6 +254,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorSchedule />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/subscription"
+              element={
+                <Layout>
+                  <DoctorSubscription />
                 </Layout>
               }
             />
@@ -460,6 +470,14 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicDoctorSchedules />
+                </Layout>
+              }
+            />
+            <Route
+              path="/clinic/subscription"
+              element={
+                <Layout>
+                  <ClinicSubscription />
                 </Layout>
               }
             />

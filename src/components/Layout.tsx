@@ -29,6 +29,7 @@ import {
   Database,
   FolderCog,
   Share2,
+  CreditCard,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -251,6 +252,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
         { path: "/doctor/finance", icon: Banknote, label: "Finance" },
+        { path: "/doctor/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/doctor/profile", icon: UserCog, label: "Profile" },
         { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
       ],
@@ -302,6 +304,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/clinic/finance", icon: Banknote, label: "Finance" },
         { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
+        { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/clinic/profile", icon: UserCog, label: "Profile" },
         { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
       ],
