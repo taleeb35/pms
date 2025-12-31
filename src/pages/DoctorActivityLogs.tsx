@@ -62,7 +62,8 @@ const DoctorActivityLogs = () => {
       const receptionistIds = receptionists?.map((r) => r.user_id) || [];
       const userIds = [user.id, ...receptionistIds];
 
-      let query = supabase
+      // Fetch logs by user IDs (doctor and their receptionists)
+      let query1 = supabase
         .from("activity_logs")
         .select(
           `
@@ -75,24 +76,107 @@ const DoctorActivityLogs = () => {
         .range((page - 1) * pageSize, page * pageSize - 1);
 
       if (actionFilter !== "all") {
-        query = query.eq("action", actionFilter);
+        query1 = query1.eq("action", actionFilter);
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
+      // Fetch logs where doctorId in details matches the current doctor (clinic owner actions)
+      let query2 = supabase
+        .from("activity_logs")
+        .select(
+          `
+          *,
+          profiles:user_id (full_name)
+        `
+        )
+        .contains("details", { doctorId: user.id })
+        .order("created_at", { ascending: false })
+        .range((page - 1) * pageSize, page * pageSize - 1);
+
+      if (actionFilter !== "all") {
+        query2 = query2.eq("action", actionFilter);
+      }
+
+      const [result1, result2] = await Promise.all([query1, query2]);
+
+      if (result1.error) throw result1.error;
+      if (result2.error) throw result2.error;
+
+      // Combine and deduplicate logs by id
+      const combinedLogs = [...(result1.data || []), ...(result2.data || [])];
+      const uniqueLogs = Array.from(
+        new Map(combinedLogs.map((log) => [log.id, log])).values()
+      );
+
+      // Sort by created_at descending
+      uniqueLogs.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      // Paginate the combined results
+      const paginatedLogs = uniqueLogs.slice(0, pageSize);
 
       if (page === 1) {
-        setLogs(data || []);
+        setLogs(paginatedLogs);
       } else {
-        setLogs((prev) => [...prev, ...(data || [])]);
+        setLogs((prev) => {
+          const combined = [...prev, ...paginatedLogs];
+          return Array.from(new Map(combined.map((log) => [log.id, log])).values());
+        });
       }
 
-      setHasMore((data?.length || 0) === pageSize);
+      setHasMore(paginatedLogs.length === pageSize);
     } catch (error) {
       console.error("Error fetching logs:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const getLogDescription = (log: ActivityLog): string => {
+    const details = log.details as Record<string, unknown> | null;
+    if (!details) return "";
+
+    const parts: string[] = [];
+
+    // Patient related
+    if (details.patient_name) {
+      parts.push(`Patient: ${String(details.patient_name)}`);
+    }
+
+    // Fee related
+    if (details.total_fee !== undefined) {
+      parts.push(`Total: Rs. ${String(details.total_fee)}`);
+    }
+
+    // Procedure related
+    if (details.procedure_name) {
+      parts.push(`Procedure: ${String(details.procedure_name)}`);
+    }
+
+    // Refund related
+    if (details.refund_amount) {
+      parts.push(`Refund: Rs. ${String(details.refund_amount)}`);
+    }
+
+    // Leave related
+    if (details.leaveDate) {
+      parts.push(`Date: ${String(details.leaveDate)}`);
+    }
+    if (details.leaveType) {
+      parts.push(`Type: ${String(details.leaveType) === "full_day" ? "Full Day" : String(details.leaveType)}`);
+    }
+
+    // Receptionist related
+    if (details.receptionist_name) {
+      parts.push(`Receptionist: ${String(details.receptionist_name)}`);
+    }
+
+    // Document related
+    if (details.document_name) {
+      parts.push(`Document: ${String(details.document_name)}`);
+    }
+
+    return parts.join(" • ");
   };
 
   const filteredLogs = logs.filter((log) => {
@@ -123,6 +207,9 @@ const DoctorActivityLogs = () => {
     "procedure_deleted",
     "receptionist_added",
     "document_uploaded",
+    "schedule_updated",
+    "leave_added",
+    "leave_deleted",
   ];
 
   const handleRefresh = () => {
@@ -207,31 +294,7 @@ const DoctorActivityLogs = () => {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium">{log.profiles?.full_name || "Unknown User"}</p>
                     <p className="text-sm text-muted-foreground">
-                      {log.details && typeof log.details === "object" && (
-                        <>
-                          {(log.details as Record<string, unknown>).patient_name && (
-                            <span>
-                              Patient: {String((log.details as Record<string, unknown>).patient_name)}
-                            </span>
-                          )}
-                          {(log.details as Record<string, unknown>).total_fee !== undefined && (
-                            <span className="ml-2">
-                              • Total: Rs. {String((log.details as Record<string, unknown>).total_fee)}
-                            </span>
-                          )}
-                          {(log.details as Record<string, unknown>).procedure_name && (
-                            <span className="ml-2">
-                              • Procedure:{" "}
-                              {String((log.details as Record<string, unknown>).procedure_name)}
-                            </span>
-                          )}
-                          {(log.details as Record<string, unknown>).refund_amount && (
-                            <span className="ml-2">
-                              • Refund: Rs. {String((log.details as Record<string, unknown>).refund_amount)}
-                            </span>
-                          )}
-                        </>
-                      )}
+                      {getLogDescription(log)}
                     </p>
                   </div>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
