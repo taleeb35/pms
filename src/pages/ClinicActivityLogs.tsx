@@ -123,7 +123,62 @@ const ClinicActivityLogs = () => {
     "doctor_added",
     "receptionist_added",
     "document_uploaded",
+    "schedule_updated",
+    "leave_added",
+    "leave_deleted",
   ];
+
+  const getLogDescription = (log: ActivityLog): string => {
+    const details = log.details as Record<string, unknown> | null;
+    if (!details) return "";
+
+    const parts: string[] = [];
+
+    // Doctor related
+    if (details.doctorName) {
+      parts.push(`Doctor: ${String(details.doctorName)}`);
+    }
+
+    // Patient related
+    if (details.patient_name) {
+      parts.push(`Patient: ${String(details.patient_name)}`);
+    }
+
+    // Fee related
+    if (details.total_fee !== undefined) {
+      parts.push(`Total: Rs. ${String(details.total_fee)}`);
+    }
+
+    // Procedure related
+    if (details.procedure_name) {
+      parts.push(`Procedure: ${String(details.procedure_name)}`);
+    }
+
+    // Refund related
+    if (details.refund_amount) {
+      parts.push(`Refund: Rs. ${String(details.refund_amount)}`);
+    }
+
+    // Leave related
+    if (details.leaveDate) {
+      parts.push(`Date: ${String(details.leaveDate)}`);
+    }
+    if (details.leaveType) {
+      parts.push(`Type: ${String(details.leaveType) === "full_day" ? "Full Day" : String(details.leaveType)}`);
+    }
+
+    // Receptionist related
+    if (details.receptionist_name) {
+      parts.push(`Receptionist: ${String(details.receptionist_name)}`);
+    }
+
+    // Document related
+    if (details.document_name) {
+      parts.push(`Document: ${String(details.document_name)}`);
+    }
+
+    return parts.join(" • ");
+  };
 
   const handleRefresh = () => {
     setPage(1);
@@ -207,31 +262,7 @@ const ClinicActivityLogs = () => {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium">{log.profiles?.full_name || "Unknown User"}</p>
                     <p className="text-sm text-muted-foreground">
-                      {log.details && typeof log.details === "object" && (
-                        <>
-                          {(log.details as Record<string, unknown>).patient_name && (
-                            <span>
-                              Patient: {String((log.details as Record<string, unknown>).patient_name)}
-                            </span>
-                          )}
-                          {(log.details as Record<string, unknown>).total_fee !== undefined && (
-                            <span className="ml-2">
-                              • Total: Rs. {String((log.details as Record<string, unknown>).total_fee)}
-                            </span>
-                          )}
-                          {(log.details as Record<string, unknown>).procedure_name && (
-                            <span className="ml-2">
-                              • Procedure:{" "}
-                              {String((log.details as Record<string, unknown>).procedure_name)}
-                            </span>
-                          )}
-                          {(log.details as Record<string, unknown>).refund_amount && (
-                            <span className="ml-2">
-                              • Refund: Rs. {String((log.details as Record<string, unknown>).refund_amount)}
-                            </span>
-                          )}
-                        </>
-                      )}
+                      {getLogDescription(log)}
                     </p>
                   </div>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
