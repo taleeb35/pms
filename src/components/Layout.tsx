@@ -338,6 +338,7 @@ const Layout = ({ children }: LayoutProps) => {
       icon: LayoutDashboard,
       items: [
         { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
       ],
     },
     {
@@ -386,6 +387,7 @@ const Layout = ({ children }: LayoutProps) => {
       icon: LayoutDashboard,
       items: [
         { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/doctor-receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
       ],
     },
     {
