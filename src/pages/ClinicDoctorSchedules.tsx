@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { format, addDays } from "date-fns";
 import { Calendar as CalendarIcon, Clock, Trash2, Plus, User, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Doctor {
   id: string;
@@ -235,6 +236,15 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
         }
       }
 
+      // Log activity
+      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      await logActivity({
+        action: "schedule_updated",
+        entityType: "schedule",
+        entityId: selectedDoctorId,
+        details: { doctorName },
+      });
+
       toast({
         title: "Success",
         description: "Doctor schedule saved successfully",
@@ -273,6 +283,15 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
 
       if (error) throw error;
 
+      // Log activity
+      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      await logActivity({
+        action: "leave_added",
+        entityType: "leave",
+        entityId: selectedDoctorId,
+        details: { doctorName, leaveDate: format(leaveDate, "yyyy-MM-dd"), leaveType },
+      });
+
       toast({
         title: "Success",
         description: "Leave added successfully",
@@ -299,6 +318,15 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
         .eq("id", leaveId);
 
       if (error) throw error;
+
+      // Log activity
+      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      await logActivity({
+        action: "leave_deleted",
+        entityType: "leave",
+        entityId: leaveId,
+        details: { doctorName },
+      });
 
       toast({
         title: "Success",
@@ -330,6 +358,15 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
         });
 
       if (error) throw error;
+
+      // Log activity
+      const doctorName = doctors.find(d => d.id === selectedDoctorId)?.profiles?.full_name || "Doctor";
+      await logActivity({
+        action: "leave_added",
+        entityType: "leave",
+        entityId: selectedDoctorId,
+        details: { doctorName, leaveDate: format(tomorrow, "yyyy-MM-dd"), leaveType: "full_day" },
+      });
 
       toast({
         title: "Success",
