@@ -95,6 +95,7 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
       const receptionistIds = receptionists?.map((r) => r.user_id) || [];
       const userIds = [effectiveDoctorId, ...receptionistIds];
 
+      // Query 1: logs by user IDs (doctor and their receptionists)
       const query1 = supabase
         .from("activity_logs")
         .select(
@@ -115,6 +116,7 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
         .order("created_at", { ascending: false })
         .limit(30);
 
+      // Query 2: logs where entity_id is this doctor (e.g., clinic owner updating schedule/leaves)
       const query2 = supabase
         .from("activity_logs")
         .select(
@@ -135,11 +137,33 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
         .order("created_at", { ascending: false })
         .limit(30);
 
-      const [r1, r2] = await Promise.all([query1, query2]);
+      // Query 3: logs where details.doctorId matches this doctor
+      const query3 = supabase
+        .from("activity_logs")
+        .select(
+          `
+          id,
+          action,
+          entity_type,
+          entity_id,
+          details,
+          created_at,
+          user_id,
+          profiles:user_id (
+            full_name
+          )
+        `
+        )
+        .contains("details", { doctorId: effectiveDoctorId })
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      const [r1, r2, r3] = await Promise.all([query1, query2, query3]);
       if (r1.error) throw r1.error;
       if (r2.error) throw r2.error;
+      if (r3.error) throw r3.error;
 
-      const combined = [...(r1.data || []), ...(r2.data || [])];
+      const combined = [...(r1.data || []), ...(r2.data || []), ...(r3.data || [])];
       const unique = Array.from(new Map(combined.map((l) => [l.id, l])).values());
       unique.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 

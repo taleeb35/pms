@@ -303,6 +303,7 @@ const ClinicWalkIn = () => {
         entityType: "appointment",
         entityId: patientData.id,
         details: {
+          doctorId: appointmentForm.doctor_id,
           patient_name: patientForm.full_name,
           patient_id: patientId,
         },

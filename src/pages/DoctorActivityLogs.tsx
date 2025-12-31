@@ -62,7 +62,7 @@ const DoctorActivityLogs = () => {
       const receptionistIds = receptionists?.map((r) => r.user_id) || [];
       const userIds = [user.id, ...receptionistIds];
 
-      // Fetch logs by user IDs (doctor and their receptionists)
+      // Query 1: Fetch logs by user IDs (doctor and their receptionists)
       let query1 = supabase
         .from("activity_logs")
         .select(
@@ -79,7 +79,7 @@ const DoctorActivityLogs = () => {
         query1 = query1.eq("action", actionFilter);
       }
 
-      // Fetch logs that are about this doctor (e.g., clinic owner updating schedule/leaves)
+      // Query 2: Fetch logs where entity_id is this doctor (e.g., clinic owner updating schedule/leaves)
       let query2 = supabase
         .from("activity_logs")
         .select(
@@ -96,13 +96,32 @@ const DoctorActivityLogs = () => {
         query2 = query2.eq("action", actionFilter);
       }
 
-      const [result1, result2] = await Promise.all([query1, query2]);
+      // Query 3: Fetch logs where details.doctorId matches this doctor
+      // (e.g., clinic owner creating appointments, updating fees, adding patients for this doctor)
+      let query3 = supabase
+        .from("activity_logs")
+        .select(
+          `
+          *,
+          profiles:user_id (full_name)
+        `
+        )
+        .contains("details", { doctorId: user.id })
+        .order("created_at", { ascending: false })
+        .range((page - 1) * pageSize, page * pageSize - 1);
+
+      if (actionFilter !== "all") {
+        query3 = query3.eq("action", actionFilter);
+      }
+
+      const [result1, result2, result3] = await Promise.all([query1, query2, query3]);
 
       if (result1.error) throw result1.error;
       if (result2.error) throw result2.error;
+      if (result3.error) throw result3.error;
 
       // Combine and deduplicate logs by id
-      const combinedLogs = [...(result1.data || []), ...(result2.data || [])];
+      const combinedLogs = [...(result1.data || []), ...(result2.data || []), ...(result3.data || [])];
       const uniqueLogs = Array.from(
         new Map(combinedLogs.map((log) => [log.id, log])).values()
       );
