@@ -69,6 +69,7 @@ import ReferralPartnerDashboard from "./pages/ReferralPartnerDashboard";
 import AdminReferralPartners from "./pages/AdminReferralPartners";
 import ClinicSubscription from "./pages/ClinicSubscription";
 import DoctorSubscription from "./pages/DoctorSubscription";
+import DoctorReceptionists from "./pages/DoctorReceptionists";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -262,6 +263,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorSubscription />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/receptionists"
+              element={
+                <Layout>
+                  <DoctorReceptionists />
                 </Layout>
               }
             />

@@ -250,6 +250,7 @@ const Layout = ({ children }: LayoutProps) => {
       label: "Settings",
       icon: Settings,
       items: [
+        { path: "/doctor/receptionists", icon: UserCog, label: "Receptionists" },
         { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
         { path: "/doctor/finance", icon: Banknote, label: "Finance" },
         { path: "/doctor/subscription", icon: CreditCard, label: "Subscription" },

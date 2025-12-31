@@ -677,6 +677,41 @@ export type Database = {
           },
         ]
       }
+      doctor_receptionists: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_receptionists_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_report_templates: {
         Row: {
           clinic_id: string | null
@@ -1744,6 +1779,10 @@ export type Database = {
     }
     Functions: {
       get_doctor_clinic_id: { Args: { _doctor_id: string }; Returns: string }
+      get_doctor_receptionist_doctor_id: {
+        Args: { _user_id: string }
+        Returns: string
+      }
       get_receptionist_clinic_id: {
         Args: { _user_id: string }
         Returns: string
