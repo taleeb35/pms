@@ -406,18 +406,14 @@ const Layout = ({ children }: LayoutProps) => {
     }
   };
 
-  // Activity Logs item (shown at end)
+  // Activity Logs item (shown at end) - only for doctors and clinics, not receptionists
   const getActivityLogsItem = () => {
     if (userRole === "doctor") {
       return { path: "/doctor/activity-logs", icon: Activity, label: "Activity Logs" };
     } else if (userRole === "clinic") {
       return { path: "/clinic/activity-logs", icon: Activity, label: "Activity Logs" };
-    } else if (userRole === "receptionist") {
-      return { path: "/receptionist/activity-logs", icon: Activity, label: "Activity Logs" };
-    } else if (userRole === "doctor_receptionist") {
-      return { path: "/doctor-receptionist/activity-logs", icon: Activity, label: "Activity Logs" };
     } else {
-      return null; // Admin doesn't have activity logs
+      return null; // Receptionists and admin don't have activity logs
     }
   };
 
