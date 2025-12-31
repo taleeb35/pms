@@ -105,6 +105,7 @@ const Layout = ({ children }: LayoutProps) => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [clinicId, setClinicId] = useState<string | null>(null);
   const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [doctorClinicId, setDoctorClinicId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -112,6 +113,7 @@ const Layout = ({ children }: LayoutProps) => {
         setUserRole(null);
         setClinicId(null);
         setDoctorId(null);
+        setDoctorClinicId(null);
         return;
       }
       
@@ -119,6 +121,7 @@ const Layout = ({ children }: LayoutProps) => {
       setUserRole(null);
       setClinicId(null);
       setDoctorId(null);
+      setDoctorClinicId(null);
       
       // Then check if user is a clinic FIRST (before receptionist check)
       // This is important because clinic owner's session should show clinic menu
@@ -136,12 +139,13 @@ const Layout = ({ children }: LayoutProps) => {
       // Check if user is a doctor
       const { data: doctorData } = await supabase
         .from("doctors")
-        .select("id")
+        .select("id, clinic_id")
         .eq("id", user.id)
         .maybeSingle();
       
       if (doctorData) {
         setUserRole("doctor");
+        setDoctorClinicId(doctorData.clinic_id);
         return;
       }
 
@@ -233,7 +237,18 @@ const Layout = ({ children }: LayoutProps) => {
     }
   }, [user, userRole]);
 
-  // Doctor menu - grouped
+  // Doctor menu - grouped (conditionally include receptionists for single doctors only)
+  const doctorSettingsItems = [
+    // Only show Receptionists for single doctors (not linked to a clinic)
+    ...(doctorClinicId ? [] : [{ path: "/doctor/receptionists", icon: UserCog, label: "Receptionists" }]),
+    { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
+    { path: "/doctor/finance", icon: Banknote, label: "Finance" },
+    // Only show Subscription for single doctors (not linked to a clinic)
+    ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
+    { path: "/doctor/profile", icon: UserCog, label: "Profile" },
+    { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
+  ];
+
   const doctorMenuGroups: MenuGroup[] = [
     {
       label: "Overview",
@@ -267,14 +282,7 @@ const Layout = ({ children }: LayoutProps) => {
     {
       label: "Settings",
       icon: Settings,
-      items: [
-        { path: "/doctor/receptionists", icon: UserCog, label: "Receptionists" },
-        { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
-        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
-        { path: "/doctor/subscription", icon: CreditCard, label: "Subscription" },
-        { path: "/doctor/profile", icon: UserCog, label: "Profile" },
-        { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
-      ],
+      items: doctorSettingsItems,
     },
   ];
 
