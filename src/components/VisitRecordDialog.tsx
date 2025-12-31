@@ -18,6 +18,7 @@ import { PatientMedicalDocsView } from "./PatientMedicalDocsView";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "./DoctorTimeSelect";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Procedure {
   id: string;
@@ -813,6 +814,35 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         .eq("id", appointment.id);
 
       if (feeError) throw feeError;
+
+      // Log activity for procedure set
+      if (selectedProcedure) {
+        const selectedProcedureDetails = procedures.find(p => p.id === selectedProcedure);
+        await logActivity({
+          action: "procedure_set",
+          entityType: "appointment",
+          entityId: appointment.id,
+          details: {
+            patient_name: appointment.patients?.full_name || "Unknown",
+            procedure_name: selectedProcedureDetails?.name || "Unknown",
+            procedure_fee: procedureFee ? parseFloat(procedureFee) : 0,
+          },
+        });
+      }
+
+      // Log activity for discount/refund applied
+      if (refundAmount > 0) {
+        await logActivity({
+          action: "refund_applied",
+          entityType: "appointment",
+          entityId: appointment.id,
+          details: {
+            patient_name: appointment.patients?.full_name || "Unknown",
+            refund_amount: refundAmount,
+            total_fee: totalFee,
+          },
+        });
+      }
 
       // Update pregnancy start date if gynecologist
       if (isGynecologist && pregnancyStartDate) {

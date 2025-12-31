@@ -28,6 +28,7 @@ import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { TablePagination } from "@/components/TablePagination";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Appointment {
   id: string;
@@ -264,7 +265,7 @@ const DoctorAppointments = () => {
         return;
       }
       
-      const { error } = await supabase.from("appointments").insert({
+      const { data, error } = await supabase.from("appointments").insert({
         doctor_id: user?.id, 
         patient_id: patientId,
         appointment_date: appointmentDate, 
@@ -275,8 +276,23 @@ const DoctorAppointments = () => {
         status: "scheduled" as const,
         created_by: user?.id || null,
         appointment_type: selectedAppointmentType,
-      });
+      }).select();
       if (error) throw error;
+
+      // Log activity
+      if (data && data[0]) {
+        const selectedPatient = patients.find(p => p.id === patientId);
+        await logActivity({
+          action: "appointment_created",
+          entityType: "appointment",
+          entityId: data[0].id,
+          details: {
+            patient_name: selectedPatient?.full_name || "Unknown",
+            appointment_date: appointmentDate,
+            appointment_time: appointmentTime,
+          },
+        });
+      }
 
       // Remove patient from waitlist if they were in it
       await supabase

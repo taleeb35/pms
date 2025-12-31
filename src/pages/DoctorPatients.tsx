@@ -25,6 +25,7 @@ import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/preg
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 import { TablePagination } from "@/components/TablePagination";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Patient {
   id: string;
@@ -873,6 +874,19 @@ const DoctorPatients = () => {
     }
 
     console.log("Patient added successfully:", data);
+
+    // Log activity
+    if (data && data[0]) {
+      await logActivity({
+        action: "patient_created",
+        entityType: "patient",
+        entityId: data[0].id,
+        details: {
+          patient_name: addForm.full_name,
+          patient_id: patientId,
+        },
+      });
+    }
 
     toast({
       title: "Success",

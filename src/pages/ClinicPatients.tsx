@@ -46,6 +46,7 @@ import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { VisitHistory } from "@/components/VisitHistory";
 import { TablePagination } from "@/components/TablePagination";
 import DeletingOverlay from "@/components/DeletingOverlay";
+import { logActivity } from "@/lib/activityLogger";
 
 interface Patient {
   id: string;
@@ -842,7 +843,7 @@ const ClinicPatients = () => {
     // Generate patient ID
     const patientId = `PAT${Date.now().toString().slice(-8)}`;
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("patients")
       .insert([
         {
@@ -863,7 +864,8 @@ const ClinicPatients = () => {
           created_by: addForm.doctor_id,
           created_at: addForm.added_date || new Date().toISOString(),
         },
-      ]);
+      ])
+      .select();
 
     if (error) {
       toast({
@@ -872,6 +874,19 @@ const ClinicPatients = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // Log activity
+    if (data && data[0]) {
+      await logActivity({
+        action: "patient_created",
+        entityType: "patient",
+        entityId: data[0].id,
+        details: {
+          patient_name: addForm.full_name,
+          patient_id: patientId,
+        },
+      });
     }
 
     toast({

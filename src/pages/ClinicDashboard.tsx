@@ -12,6 +12,7 @@ import clinicLogo from "@/assets/clinic-logo.png";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import TrialBanner from "@/components/TrialBanner";
+import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
 interface Clinic {
   clinic_name: string;
@@ -259,6 +260,9 @@ const ClinicDashboard = () => {
 
       {/* Analytics Charts */}
       <ClinicAnalyticsCharts />
+
+      {/* Activity Logs */}
+      <ActivityLogsCard clinicId={user?.id} />
 
       {/* Quick Actions */}
       <Card className="border-border/40">
