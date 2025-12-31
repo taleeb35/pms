@@ -64,16 +64,38 @@ export const logActivity = async ({
   details = {},
 }: LogActivityParams): Promise<void> => {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { error } = await supabase.from("activity_logs").insert([{
-      user_id: user.id,
-      action,
-      entity_type: entityType,
-      entity_id: entityId,
-      details: JSON.parse(JSON.stringify(details)),
-    }]);
+    // Best-effort actor name (so viewers don't rely on profiles RLS)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const actorName =
+      profile?.full_name ||
+      (user.user_metadata && (user.user_metadata as any).full_name) ||
+      user.email ||
+      "Unknown User";
+
+    const enrichedDetails = {
+      actorName,
+      ...details,
+    };
+
+    const { error } = await supabase.from("activity_logs").insert([
+      {
+        user_id: user.id,
+        action,
+        entity_type: entityType,
+        entity_id: entityId,
+        details: JSON.parse(JSON.stringify(enrichedDetails)),
+      },
+    ]);
 
     if (error) {
       console.error("Error logging activity:", error);

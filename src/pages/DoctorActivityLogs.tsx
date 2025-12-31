@@ -182,9 +182,16 @@ const DoctorActivityLogs = () => {
   const filteredLogs = logs.filter((log) => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
-    const details = JSON.stringify(log.details).toLowerCase();
+    const detailsText = JSON.stringify(log.details).toLowerCase();
+    const details = (log.details as unknown as Record<string, unknown>) || {};
+    const actorName = String(details.actorName || "").toLowerCase();
     const userName = log.profiles?.full_name?.toLowerCase() || "";
-    return details.includes(search) || userName.includes(search) || log.action.includes(search);
+    return (
+      detailsText.includes(search) ||
+      actorName.includes(search) ||
+      userName.includes(search) ||
+      log.action.includes(search)
+    );
   });
 
   const actionTypes = [
@@ -292,10 +299,17 @@ const DoctorActivityLogs = () => {
                     {getActionLabel(log.action)}
                   </Badge>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium">{log.profiles?.full_name || "Unknown User"}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {getLogDescription(log)}
+                    <p className="font-medium">
+                      {(() => {
+                        const details = (log.details as unknown as Record<string, unknown>) || {};
+                        return (
+                          (details.actorName as string) ||
+                          log.profiles?.full_name ||
+                          "Unknown User"
+                        );
+                      })()}
                     </p>
+                    <p className="text-sm text-muted-foreground">{getLogDescription(log)}</p>
                   </div>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
                     {format(new Date(log.created_at), "dd MMM yyyy, hh:mm a")}
