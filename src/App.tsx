@@ -70,6 +70,16 @@ import AdminReferralPartners from "./pages/AdminReferralPartners";
 import ClinicSubscription from "./pages/ClinicSubscription";
 import DoctorSubscription from "./pages/DoctorSubscription";
 import DoctorReceptionists from "./pages/DoctorReceptionists";
+import DoctorReceptionistDashboard from "./pages/DoctorReceptionistDashboard";
+import DoctorReceptionistPatients from "./pages/DoctorReceptionistPatients";
+import DoctorReceptionistAppointments from "./pages/DoctorReceptionistAppointments";
+import DoctorReceptionistWalkIn from "./pages/DoctorReceptionistWalkIn";
+import DoctorReceptionistWaitlist from "./pages/DoctorReceptionistWaitlist";
+import DoctorReceptionistAllergies from "./pages/DoctorReceptionistAllergies";
+import DoctorReceptionistDiseases from "./pages/DoctorReceptionistDiseases";
+import DoctorReceptionistICDCodes from "./pages/DoctorReceptionistICDCodes";
+import DoctorReceptionistProcedures from "./pages/DoctorReceptionistProcedures";
+import DoctorReceptionistPatientDetail from "./pages/DoctorReceptionistPatientDetail";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -608,6 +618,87 @@ const App = () => (
               element={
                 <Layout>
                   <ClinicTemplates userType="receptionist" />
+                </Layout>
+              }
+            />
+            {/* Doctor Receptionist Routes */}
+            <Route
+              path="/doctor-receptionist/dashboard"
+              element={
+                <Layout>
+                  <DoctorReceptionistDashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/patients"
+              element={
+                <Layout>
+                  <DoctorReceptionistPatients />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/patients/:id"
+              element={
+                <Layout>
+                  <DoctorReceptionistPatientDetail />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/appointments"
+              element={
+                <Layout>
+                  <DoctorReceptionistAppointments />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/walk-in"
+              element={
+                <Layout>
+                  <DoctorReceptionistWalkIn />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/waitlist"
+              element={
+                <Layout>
+                  <DoctorReceptionistWaitlist />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/allergies"
+              element={
+                <Layout>
+                  <DoctorReceptionistAllergies />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/diseases"
+              element={
+                <Layout>
+                  <DoctorReceptionistDiseases />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/icd-codes"
+              element={
+                <Layout>
+                  <DoctorReceptionistICDCodes />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/procedures"
+              element={
+                <Layout>
+                  <DoctorReceptionistProcedures />
                 </Layout>
               }
             />

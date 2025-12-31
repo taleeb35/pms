@@ -1795,6 +1795,10 @@ export type Database = {
         Returns: boolean
       }
       is_clinic_active: { Args: { _clinic_id: string }; Returns: boolean }
+      is_doctor_receptionist: {
+        Args: { _doctor_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_receptionist_of_clinic: {
         Args: { _clinic_id: string; _user_id: string }
         Returns: boolean
