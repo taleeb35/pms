@@ -391,36 +391,38 @@ const Layout = ({ children }: LayoutProps) => {
     ? doctorReceptionistMenuGroups
     : adminMenuGroups;
 
-  // Standalone menu items (Dashboard and Activity Logs)
-  const getStandaloneItems = () => {
+  // Dashboard item (shown at top)
+  const getDashboardItem = () => {
     if (userRole === "doctor") {
-      return [
-        { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/doctor/activity-logs", icon: Activity, label: "Activity Logs" },
-      ];
+      return { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     } else if (userRole === "clinic") {
-      return [
-        { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/clinic/activity-logs", icon: Activity, label: "Activity Logs" },
-      ];
+      return { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     } else if (userRole === "receptionist") {
-      return [
-        { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
-      ];
+      return { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     } else if (userRole === "doctor_receptionist") {
-      return [
-        { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/doctor-receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
-      ];
+      return { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     } else {
-      return [
-        { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-      ];
+      return { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     }
   };
 
-  const standaloneItems = getStandaloneItems();
+  // Activity Logs item (shown at end)
+  const getActivityLogsItem = () => {
+    if (userRole === "doctor") {
+      return { path: "/doctor/activity-logs", icon: Activity, label: "Activity Logs" };
+    } else if (userRole === "clinic") {
+      return { path: "/clinic/activity-logs", icon: Activity, label: "Activity Logs" };
+    } else if (userRole === "receptionist") {
+      return { path: "/receptionist/activity-logs", icon: Activity, label: "Activity Logs" };
+    } else if (userRole === "doctor_receptionist") {
+      return { path: "/doctor-receptionist/activity-logs", icon: Activity, label: "Activity Logs" };
+    } else {
+      return null; // Admin doesn't have activity logs
+    }
+  };
+
+  const dashboardItem = getDashboardItem();
+  const activityLogsItem = getActivityLogsItem();
 
   // Auto-expand group containing the active route on initial load only
   const initializedGroupsRef = useRef(false);
@@ -514,12 +516,12 @@ const Layout = ({ children }: LayoutProps) => {
           } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
         >
           <nav className="space-y-1 p-3">
-            {/* Standalone items (Dashboard and Activity Logs) */}
-            {standaloneItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+            {/* Dashboard item (at top) */}
+            {(() => {
+              const Icon = dashboardItem.icon;
+              const isActive = location.pathname === dashboardItem.path;
               return (
-                <Link key={item.path} to={item.path}>
+                <Link to={dashboardItem.path}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
                     className={`w-full justify-start transition-all ${
@@ -528,11 +530,11 @@ const Layout = ({ children }: LayoutProps) => {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Icon className="mr-2 h-4 w-4" />
-                    {item.label}
+                    {dashboardItem.label}
                   </Button>
                 </Link>
               );
-            })}
+            })()}
             
             {/* Grouped menu items */}
             {menuGroups.map((group) => {
@@ -609,6 +611,26 @@ const Layout = ({ children }: LayoutProps) => {
                 </Collapsible>
               );
             })}
+
+            {/* Activity Logs item (at end) */}
+            {activityLogsItem && (() => {
+              const Icon = activityLogsItem.icon;
+              const isActive = location.pathname === activityLogsItem.path;
+              return (
+                <Link to={activityLogsItem.path}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start transition-all ${
+                      isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Icon className="mr-2 h-4 w-4" />
+                    {activityLogsItem.label}
+                  </Button>
+                </Link>
+              );
+            })()}
           </nav>
         </aside>
 
