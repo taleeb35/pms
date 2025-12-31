@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +8,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sparkles, UserPlus } from "lucide-react";
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
-import TableSkeleton from "@/components/TableSkeleton";
+import { DashboardSkeleton } from "@/components/DashboardSkeleton";
 import { validateName, validatePhone, handleNameInput, handlePhoneInput } from "@/lib/validations";
-import PatientSearchSelect from "@/components/PatientSearchSelect";
+import { PatientSearchSelect } from "@/components/PatientSearchSelect";
+
+interface Patient {
+  id: string;
+  patient_id: string;
+  full_name: string;
+  phone: string;
+}
 
 const DoctorReceptionistWalkIn = () => {
   const { toast } = useToast();
@@ -18,6 +25,7 @@ const DoctorReceptionistWalkIn = () => {
   const [formLoading, setFormLoading] = useState(false);
   const [isNewPatient, setIsNewPatient] = useState(true);
   const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+  const [patients, setPatients] = useState<Patient[]>([]);
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -27,6 +35,29 @@ const DoctorReceptionistWalkIn = () => {
     reason: "",
     consultationFee: "",
   });
+
+  useEffect(() => {
+    if (doctorId) {
+      fetchPatients();
+    }
+  }, [doctorId]);
+
+  const fetchPatients = async () => {
+    if (!doctorId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from("patients")
+        .select("id, patient_id, full_name, phone")
+        .eq("created_by", doctorId)
+        .order("full_name");
+
+      if (error) throw error;
+      setPatients(data || []);
+    } catch (error: any) {
+      console.error("Error fetching patients:", error);
+    }
+  };
 
   const generatePatientId = () => {
     const timestamp = Date.now().toString(36).toUpperCase();
@@ -101,6 +132,7 @@ const DoctorReceptionistWalkIn = () => {
       toast({ title: "Success", description: "Walk-in patient registered successfully" });
       setFormData({ fullName: "", phone: "", dateOfBirth: "", gender: "male", reason: "", consultationFee: "" });
       setSelectedPatientId("");
+      fetchPatients();
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
@@ -109,7 +141,7 @@ const DoctorReceptionistWalkIn = () => {
   };
 
   if (doctorLoading) {
-    return <TableSkeleton columns={4} rows={3} />;
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -188,9 +220,9 @@ const DoctorReceptionistWalkIn = () => {
               <div className="space-y-2">
                 <Label>Select Patient</Label>
                 <PatientSearchSelect
+                  patients={patients}
                   value={selectedPatientId}
                   onValueChange={setSelectedPatientId}
-                  doctorId={doctorId || undefined}
                 />
               </div>
             )}
