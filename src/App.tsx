@@ -82,6 +82,8 @@ import DoctorReceptionistProcedures from "./pages/DoctorReceptionistProcedures";
 import DoctorReceptionistPatientDetail from "./pages/DoctorReceptionistPatientDetail";
 import ClinicActivityLogs from "./pages/ClinicActivityLogs";
 import DoctorActivityLogs from "./pages/DoctorActivityLogs";
+import ReceptionistActivityLogs from "./pages/ReceptionistActivityLogs";
+import DoctorReceptionistActivityLogs from "./pages/DoctorReceptionistActivityLogs";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -639,6 +641,14 @@ const App = () => (
                 </Layout>
               }
             />
+            <Route
+              path="/receptionist/activity-logs"
+              element={
+                <Layout>
+                  <ReceptionistActivityLogs />
+                </Layout>
+              }
+            />
             {/* Doctor Receptionist Routes */}
             <Route
               path="/doctor-receptionist/dashboard"
@@ -717,6 +727,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorReceptionistProcedures />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/activity-logs"
+              element={
+                <Layout>
+                  <DoctorReceptionistActivityLogs />
                 </Layout>
               }
             />
