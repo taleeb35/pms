@@ -190,13 +190,6 @@ const Layout = ({ children }: LayoutProps) => {
   // Admin menu - grouped
   const adminMenuGroups: MenuGroup[] = [
     {
-      label: "Overview",
-      icon: LayoutDashboard,
-      items: [
-        { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-      ],
-    },
-    {
       label: "Management",
       icon: FolderCog,
       items: [
@@ -251,14 +244,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   const doctorMenuGroups: MenuGroup[] = [
     {
-      label: "Overview",
-      icon: LayoutDashboard,
-      items: [
-        { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/doctor/activity-logs", icon: Activity, label: "Activity Logs" },
-      ],
-    },
-    {
       label: "Patient Care",
       icon: Users,
       items: [
@@ -288,14 +273,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   // Clinic menu - grouped
   const clinicMenuGroups: MenuGroup[] = [
-    {
-      label: "Overview",
-      icon: LayoutDashboard,
-      items: [
-        { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/clinic/activity-logs", icon: Activity, label: "Activity Logs" },
-      ],
-    },
     {
       label: "Staff",
       icon: Stethoscope,
@@ -342,14 +319,6 @@ const Layout = ({ children }: LayoutProps) => {
   // Receptionist menu - grouped
   const receptionistMenuGroups: MenuGroup[] = [
     {
-      label: "Overview",
-      icon: LayoutDashboard,
-      items: [
-        { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
-      ],
-    },
-    {
       label: "Staff",
       icon: Stethoscope,
       items: [
@@ -391,14 +360,6 @@ const Layout = ({ children }: LayoutProps) => {
   // Doctor's receptionist menu
   const doctorReceptionistMenuGroups: MenuGroup[] = [
     {
-      label: "Overview",
-      icon: LayoutDashboard,
-      items: [
-        { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-        { path: "/doctor-receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
-      ],
-    },
-    {
       label: "Patient Care",
       icon: Users,
       items: [
@@ -429,6 +390,37 @@ const Layout = ({ children }: LayoutProps) => {
     : userRole === "doctor_receptionist"
     ? doctorReceptionistMenuGroups
     : adminMenuGroups;
+
+  // Standalone menu items (Dashboard and Activity Logs)
+  const getStandaloneItems = () => {
+    if (userRole === "doctor") {
+      return [
+        { path: "/doctor/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/doctor/activity-logs", icon: Activity, label: "Activity Logs" },
+      ];
+    } else if (userRole === "clinic") {
+      return [
+        { path: "/clinic/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/clinic/activity-logs", icon: Activity, label: "Activity Logs" },
+      ];
+    } else if (userRole === "receptionist") {
+      return [
+        { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
+      ];
+    } else if (userRole === "doctor_receptionist") {
+      return [
+        { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+        { path: "/doctor-receptionist/activity-logs", icon: Activity, label: "Activity Logs" },
+      ];
+    } else {
+      return [
+        { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+      ];
+    }
+  };
+
+  const standaloneItems = getStandaloneItems();
 
   // Auto-expand group containing the active route on initial load only
   const initializedGroupsRef = useRef(false);
@@ -522,6 +514,27 @@ const Layout = ({ children }: LayoutProps) => {
           } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
         >
           <nav className="space-y-1 p-3">
+            {/* Standalone items (Dashboard and Activity Logs) */}
+            {standaloneItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <Link key={item.path} to={item.path}>
+                  <Button
+                    variant={isActive ? "default" : "ghost"}
+                    className={`w-full justify-start transition-all ${
+                      isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Button>
+                </Link>
+              );
+            })}
+            
+            {/* Grouped menu items */}
             {menuGroups.map((group) => {
               const GroupIcon = group.icon;
               const isOpen = openGroups[group.label] ?? false;
