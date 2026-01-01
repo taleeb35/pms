@@ -38,13 +38,8 @@ const PublicHeader = () => {
             className="flex items-center gap-2 sm:gap-3 animate-fade-in cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <img src={clinicLogo} alt="Clinic Logo" className="h-10 w-10 sm:h-12 sm:w-12 hover-scale" />
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                MedCare Pro
-              </h1>
-              <p className="text-[10px] sm:text-xs text-muted-foreground hidden sm:block">Complete Clinic Management</p>
-            </div>
+            <img src={clinicLogo} alt="Clinic Logo" className="main_logo hover-scale" />
+            
           </div>
 
           {/* Desktop Navigation */}
