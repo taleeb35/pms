@@ -478,22 +478,13 @@ const UnifiedLogin = () => {
               <p className="text-sm text-center text-muted-foreground mb-4">
                 Don't have an account?
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/doctor-auth?tab=signup")}
-                  className="border-2"
-                >
-                  Register as Doctor
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => navigate("/auth?tab=signup")}
-                  className="border-2"
-                >
-                  Register as Clinic
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                onClick={() => navigate("/auth?tab=signup")}
+                className="w-full border-2"
+              >
+                Register
+              </Button>
             </div>
           </CardContent>
         </Card>
