@@ -37,7 +37,7 @@ const ReferralPartnerAuth = () => {
         return;
       }
 
-      if (data.status !== "approved") {
+      if (data.status !== "approved" && data.status !== "active") {
         toast.error("Your partner account is pending approval. Please wait for admin verification.");
         return;
       }
