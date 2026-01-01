@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { Eye, Trash2, Building2, CheckCircle2, Clock, Search } from "lucide-react";
+import { Eye, Trash2, Building2, CheckCircle2, Search } from "lucide-react";
 import { TablePagination } from "@/components/TablePagination";
 import ClinicMonthlyPayments from "@/components/ClinicMonthlyPayments";
 
@@ -381,7 +381,6 @@ const AdminClinics = () => {
   const paginatedClinics = filteredClinics.slice(startIndex, startIndex + itemsPerPage);
   const totalClinics = clinics.length;
   const activeClinics = clinics.filter((c) => c.status === "active").length;
-  const pendingClinics = clinics.filter((c) => c.status === "draft").length;
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
@@ -390,10 +389,9 @@ const AdminClinics = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Clinic Management</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Total Clinics</CardTitle><Building2 className="h-4 w-4 text-muted-foreground" /></CardHeader><CardContent><div className="text-2xl font-bold">{totalClinics}</div></CardContent></Card>
         <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Active Clinics</CardTitle><CheckCircle2 className="h-4 w-4 text-green-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{activeClinics}</div></CardContent></Card>
-        <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Pending Clinics</CardTitle><Clock className="h-4 w-4 text-yellow-500" /></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-600">{pendingClinics}</div></CardContent></Card>
       </div>
       <Card><CardContent className="pt-6"><div className="flex flex-wrap gap-4 items-center"><div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search by clinic name, city, email, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" /></div><div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Status:</span><Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}><SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="draft">Pending</SelectItem></SelectContent></Select></div></div>{searchQuery && <p className="text-sm text-muted-foreground mt-2">Found {filteredClinics.length} clinic{filteredClinics.length !== 1 ? "s" : ""}</p>}</CardContent></Card>
       <Card><CardContent className="p-0"><Table><TableHeader><TableRow><TableHead>Clinic Name</TableHead><TableHead>Email</TableHead><TableHead>City</TableHead><TableHead>Status</TableHead><TableHead>Plan</TableHead><TableHead>Trial Status</TableHead><TableHead>Doctors</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader><TableBody>{paginatedClinics.length === 0 ? <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">{searchQuery ? "No clinics found matching your search" : "No clinics found"}</TableCell></TableRow> : paginatedClinics.map((clinic) => { const trialDays = getTrialDaysRemaining(clinic.trial_end_date); return (<TableRow key={clinic.id}><TableCell className="font-medium">{clinic.clinic_name}</TableCell><TableCell>{clinic.profile?.email || "N/A"}</TableCell><TableCell>{clinic.city}</TableCell><TableCell>{getStatusBadge(clinic.status, clinic.trial_end_date)}</TableCell><TableCell>{getPaymentPlanBadge(clinic.payment_plan)}</TableCell><TableCell>{clinic.trial_end_date === null ? <Badge className="bg-green-500">Subscribed</Badge> : (trialDays !== null ? (trialDays <= 0 ? <Badge variant="destructive">Expired</Badge> : <Badge variant="outline">{trialDays} days left</Badge>) : <span className="text-muted-foreground">N/A</span>)}</TableCell><TableCell>{clinic.activeDoctorCount ?? 0} / {clinic.requested_doctors}</TableCell><TableCell><div className="flex gap-2"><Button variant="outline" size="sm" onClick={() => { setSelectedClinic(clinic); setIsDetailOpen(true); }}><Eye className="h-4 w-4" /></Button><Button variant="destructive" size="sm" onClick={() => { setClinicToDelete(clinic); setIsDeleteOpen(true); }}><Trash2 className="h-4 w-4" /></Button></div></TableCell></TableRow>);})}</TableBody></Table><TablePagination currentPage={currentPage} totalPages={totalPages} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} /></CardContent></Card>
