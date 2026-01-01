@@ -266,7 +266,7 @@ const Auth = () => {
         <span className="font-semibold text-purple-600">Back to Home</span>
       </Button>
 
-      <Card className="w-full max-w-xl relative z-10 border-2 border-purple-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
+      <Card className="w-full max-w-xl relative z-10 border-2 border-purple-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in new_width">
         <CardHeader className="space-y-4 text-center pb-6">
           <div>
             <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
