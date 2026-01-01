@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
   Users, Copy, Coins, TrendingUp, LogOut, 
-  Building2, Stethoscope, Clock, CheckCircle2, XCircle, Calendar
+  Building2, Stethoscope, Clock, CheckCircle2, XCircle, Calendar, Filter
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -18,7 +18,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { format, subMonths, startOfMonth } from "date-fns";
 
 interface ReferralPartner {
   id: string;
@@ -59,6 +66,20 @@ const ReferralPartnerDashboard = () => {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [monthlyCommissions, setMonthlyCommissions] = useState<MonthlyCommission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+
+  // Generate last 12 months for filter
+  const getMonthOptions = () => {
+    const months = [];
+    for (let i = 0; i < 12; i++) {
+      const date = subMonths(startOfMonth(new Date()), i);
+      months.push({
+        value: format(date, "yyyy-MM-dd"),
+        label: format(date, "MMMM yyyy")
+      });
+    }
+    return months;
+  };
 
   useEffect(() => {
     const storedPartner = sessionStorage.getItem("referral_partner");
@@ -69,110 +90,110 @@ const ReferralPartnerDashboard = () => {
 
     const partnerData = JSON.parse(storedPartner);
     
-    // Fetch fresh data from database instead of using stale sessionStorage
-    const fetchPartnerData = async () => {
-      const { data: freshPartner, error } = await supabase
-        .from("referral_partners")
-        .select("*")
-        .eq("id", partnerData.id)
-        .single();
-      
-      if (error || !freshPartner) {
-        console.error("Error fetching partner data:", error);
-        setPartner(partnerData);
-      } else {
-        setPartner(freshPartner);
-        // Update sessionStorage with fresh data
-        sessionStorage.setItem("referral_partner", JSON.stringify(freshPartner));
+    const fetchAllData = async () => {
+      try {
+        // Fetch fresh partner data
+        const { data: freshPartner, error: partnerError } = await supabase
+          .from("referral_partners")
+          .select("*")
+          .eq("id", partnerData.id)
+          .single();
+        
+        if (partnerError) {
+          console.error("Error fetching partner data:", partnerError);
+          setPartner(partnerData);
+        } else if (freshPartner) {
+          setPartner(freshPartner);
+          sessionStorage.setItem("referral_partner", JSON.stringify(freshPartner));
+        }
+
+        const referralCode = freshPartner?.referral_code || partnerData.referral_code;
+        const partnerId = freshPartner?.id || partnerData.id;
+
+        // Fetch referral commissions
+        const { data: commissions, error: commissionsError } = await supabase
+          .from("referral_commissions")
+          .select("*")
+          .eq("referral_partner_id", partnerId)
+          .order("month", { ascending: false });
+
+        if (commissionsError) {
+          console.error("Error fetching commissions:", commissionsError);
+        } else {
+          setMonthlyCommissions(commissions || []);
+        }
+
+        // Fetch clinics with this referral code
+        const { data: clinics, error: clinicsError } = await supabase
+          .from("clinics")
+          .select("id, clinic_name, status, created_at")
+          .eq("referred_by", referralCode);
+
+        if (clinicsError) {
+          console.error("Error fetching clinics:", clinicsError);
+        }
+
+        // Get clinic emails from profiles
+        let clinicReferrals: Referral[] = [];
+        if (clinics && clinics.length > 0) {
+          const { data: clinicProfiles } = await supabase
+            .from("profiles")
+            .select("id, email")
+            .in("id", clinics.map(c => c.id));
+
+          clinicReferrals = clinics.map(clinic => ({
+            id: clinic.id,
+            name: clinic.clinic_name,
+            email: clinicProfiles?.find(p => p.id === clinic.id)?.email,
+            type: "clinic" as const,
+            status: clinic.status,
+            created_at: clinic.created_at,
+          }));
+        }
+
+        // Fetch doctors with this referral code
+        const { data: doctors, error: doctorsError } = await supabase
+          .from("doctors")
+          .select("id, specialization, approved, created_at")
+          .eq("referred_by", referralCode);
+
+        if (doctorsError) {
+          console.error("Error fetching doctors:", doctorsError);
+        }
+
+        // Get doctor names and emails from profiles
+        let doctorReferrals: Referral[] = [];
+        if (doctors && doctors.length > 0) {
+          const { data: profiles } = await supabase
+            .from("profiles")
+            .select("id, full_name, email")
+            .in("id", doctors.map(d => d.id));
+
+          doctorReferrals = doctors.map(doctor => ({
+            id: doctor.id,
+            name: profiles?.find(p => p.id === doctor.id)?.full_name || doctor.specialization,
+            email: profiles?.find(p => p.id === doctor.id)?.email,
+            type: "doctor" as const,
+            status: doctor.approved ? "active" : "pending",
+            created_at: doctor.created_at,
+          }));
+        }
+
+        const allReferrals = [...clinicReferrals, ...doctorReferrals].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        setReferrals(allReferrals);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("Failed to load data");
+      } finally {
+        setLoading(false);
       }
-      fetchReferrals(partnerData.referral_code);
-      fetchMonthlyCommissions(partnerData.id);
     };
     
-    fetchPartnerData();
+    fetchAllData();
   }, [navigate]);
-
-  const fetchMonthlyCommissions = async (partnerId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("referral_commissions")
-        .select("*")
-        .eq("referral_partner_id", partnerId)
-        .order("month", { ascending: false });
-
-      if (error) throw error;
-      setMonthlyCommissions(data || []);
-    } catch (error) {
-      console.error("Error fetching commissions:", error);
-    }
-  };
-
-  const fetchReferrals = async (code: string) => {
-    try {
-      // Fetch clinics with this referral code - include email from profiles
-      const { data: clinics, error: clinicsError } = await supabase
-        .from("clinics")
-        .select("id, clinic_name, status, created_at")
-        .eq("referred_by", code);
-
-      if (clinicsError) throw clinicsError;
-
-      // Get clinic emails from profiles
-      let clinicReferrals: Referral[] = [];
-      if (clinics && clinics.length > 0) {
-        const { data: clinicProfiles } = await supabase
-          .from("profiles")
-          .select("id, email")
-          .in("id", clinics.map(c => c.id));
-
-        clinicReferrals = clinics.map(clinic => ({
-          id: clinic.id,
-          name: clinic.clinic_name,
-          email: clinicProfiles?.find(p => p.id === clinic.id)?.email,
-          type: "clinic" as const,
-          status: clinic.status,
-          created_at: clinic.created_at,
-        }));
-      }
-
-      // Fetch doctors with this referral code
-      const { data: doctors, error: doctorsError } = await supabase
-        .from("doctors")
-        .select("id, specialization, approved, created_at")
-        .eq("referred_by", code);
-
-      if (doctorsError) throw doctorsError;
-
-      // Get doctor names and emails from profiles
-      let doctorReferrals: Referral[] = [];
-      if (doctors && doctors.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name, email")
-          .in("id", doctors.map(d => d.id));
-
-        doctorReferrals = doctors.map(doctor => ({
-          id: doctor.id,
-          name: profiles?.find(p => p.id === doctor.id)?.full_name || doctor.specialization,
-          email: profiles?.find(p => p.id === doctor.id)?.email,
-          type: "doctor" as const,
-          status: doctor.approved ? "approved" : "pending",
-          created_at: doctor.created_at,
-        }));
-      }
-
-      const allReferrals = [...clinicReferrals, ...doctorReferrals].sort(
-        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-
-      setReferrals(allReferrals);
-    } catch (error) {
-      console.error("Error fetching referrals:", error);
-      toast.error("Failed to load referrals");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const copyReferralCode = () => {
     if (partner) {
@@ -203,6 +224,14 @@ const ReferralPartnerDashboard = () => {
         return <Badge variant="secondary">{status}</Badge>;
     }
   };
+
+  // Filter commissions by selected month
+  const filteredCommissions = selectedMonth === "all" 
+    ? monthlyCommissions 
+    : monthlyCommissions.filter(c => c.month === selectedMonth);
+
+  // Calculate filtered earnings
+  const filteredEarnings = filteredCommissions.reduce((sum, c) => sum + c.amount, 0);
 
   if (loading) {
     return (
@@ -311,77 +340,8 @@ const ReferralPartnerDashboard = () => {
           </Card>
         </div>
 
-        {/* Monthly Earnings Table */}
+        {/* Referrals Table - Who signed up */}
         <Card className="border-0 shadow-lg mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-emerald-600" />
-              Monthly Earnings
-            </CardTitle>
-            <CardDescription>
-              Your commission earnings breakdown by month
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {monthlyCommissions.length === 0 ? (
-              <div className="text-center py-12">
-                <Coins className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground">No earnings yet</h3>
-                <p className="text-muted-foreground mt-1">
-                  Your commission will appear here when referred clinics or doctors subscribe
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Month</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Commission</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {monthlyCommissions.map((commission) => (
-                      <TableRow key={commission.id}>
-                        <TableCell className="font-medium">
-                          {format(new Date(commission.month), "MMMM yyyy")}
-                        </TableCell>
-                        <TableCell>
-                          {commission.entity_type === "clinic" 
-                            ? commission.clinic_name 
-                            : commission.doctor_name}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {commission.entity_type === "clinic" 
-                            ? commission.clinic_email 
-                            : commission.doctor_email}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="flex items-center gap-1 w-fit">
-                            {commission.entity_type === "clinic" ? (
-                              <><Building2 className="h-3 w-3" /> Clinic</>
-                            ) : (
-                              <><Stethoscope className="h-3 w-3" /> Doctor</>
-                            )}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-semibold text-emerald-600">
-                          PKR {commission.amount.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Referrals Table */}
-        <Card className="border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-purple-600" />
@@ -439,14 +399,118 @@ const ReferralPartnerDashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Monthly Earnings Table */}
+        <Card className="border-0 shadow-lg mb-6">
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-emerald-600" />
+                  Monthly Earnings
+                </CardTitle>
+                <CardDescription>
+                  Your commission earnings breakdown by month
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Months</SelectItem>
+                    {getMonthOptions().map(month => (
+                      <SelectItem key={month.value} value={month.value}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {selectedMonth !== "all" && (
+              <div className="mb-4 p-4 bg-emerald-50 rounded-lg">
+                <p className="text-sm text-muted-foreground">
+                  Filtered Earnings: <span className="font-bold text-emerald-600">PKR {filteredEarnings.toLocaleString()}</span>
+                </p>
+              </div>
+            )}
+            {filteredCommissions.length === 0 ? (
+              <div className="text-center py-12">
+                <Coins className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground">No earnings {selectedMonth !== "all" ? "for this month" : "yet"}</h3>
+                <p className="text-muted-foreground mt-1">
+                  Your commission will appear here when referred clinics or doctors make payments
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Month</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Commission</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCommissions.map((commission) => (
+                      <TableRow key={commission.id}>
+                        <TableCell className="font-medium">
+                          {format(new Date(commission.month), "MMMM yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          {commission.entity_type === "clinic" 
+                            ? commission.clinic_name 
+                            : commission.doctor_name}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {commission.entity_type === "clinic" 
+                            ? commission.clinic_email 
+                            : commission.doctor_email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                            {commission.entity_type === "clinic" ? (
+                              <><Building2 className="h-3 w-3" /> Clinic</>
+                            ) : (
+                              <><Stethoscope className="h-3 w-3" /> Doctor</>
+                            )}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold text-emerald-600">
+                          PKR {commission.amount.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {filteredCommissions.length > 0 && (
+                  <div className="mt-4 pt-4 border-t flex justify-end">
+                    <p className="text-sm font-medium">
+                      Total: <span className="text-emerald-600 font-bold">PKR {filteredEarnings.toLocaleString()}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Info Card */}
-        <Card className="border-0 shadow-lg mt-6 bg-gradient-to-r from-purple-50 to-indigo-50">
+        <Card className="border-0 shadow-lg bg-gradient-to-r from-purple-50 to-indigo-50">
           <CardContent className="p-6">
             <h3 className="font-semibold text-foreground mb-2">How Earnings Work</h3>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• You earn {partner.commission_rate}% commission on each successful referral</li>
-              <li>• Commission is calculated when the referred clinic or doctor completes their first payment</li>
-              <li>• Earnings are updated automatically and paid out monthly</li>
+              <li>• You earn {partner.commission_rate}% commission on each successful referral payment</li>
+              <li>• Commission is calculated each month when referred clinics or doctors pay their subscription</li>
+              <li>• Your referrals appear above as soon as they sign up with your code</li>
+              <li>• Earnings are recorded when payments are marked as paid by admin</li>
               <li>• Contact support for any questions about your earnings</li>
             </ul>
           </CardContent>
