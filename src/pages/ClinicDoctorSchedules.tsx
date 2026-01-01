@@ -31,8 +31,6 @@ interface Schedule {
   is_available: boolean;
   start_time: string | null;
   end_time: string | null;
-  break_start: string | null;
-  break_end: string | null;
 }
 
 interface Leave {
@@ -162,8 +160,6 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
             is_available: true,
             start_time: "09:00",
             end_time: "17:00",
-            break_start: null,
-            break_end: null,
           });
         }
       }
@@ -218,8 +214,8 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
           is_available: schedule.is_available,
           start_time: schedule.start_time,
           end_time: schedule.end_time,
-          break_start: schedule.break_start,
-          break_end: schedule.break_end,
+          break_start: null,
+          break_end: null,
         };
 
         if (schedule.id) {
@@ -544,27 +540,6 @@ const ClinicDoctorSchedules = ({ readOnly = false }: ClinicDoctorSchedulesProps)
                           value={schedule.end_time || ""}
                           onChange={(e) => updateSchedule(index, "end_time", e.target.value)}
                           className="w-32"
-                          disabled={isReadOnly}
-                        />
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <Label className="text-sm">Break:</Label>
-                        <Input
-                          type="time"
-                          value={schedule.break_start || ""}
-                          onChange={(e) => updateSchedule(index, "break_start", e.target.value)}
-                          className="w-28"
-                          placeholder="Start"
-                          disabled={isReadOnly}
-                        />
-                        <span>-</span>
-                        <Input
-                          type="time"
-                          value={schedule.break_end || ""}
-                          onChange={(e) => updateSchedule(index, "break_end", e.target.value)}
-                          className="w-28"
-                          placeholder="End"
                           disabled={isReadOnly}
                         />
                       </div>

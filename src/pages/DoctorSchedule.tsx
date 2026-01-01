@@ -24,8 +24,6 @@ interface DaySchedule {
   is_available: boolean;
   start_time: string;
   end_time: string;
-  break_start: string;
-  break_end: string;
 }
 
 interface Leave {
@@ -89,8 +87,6 @@ const DoctorSchedule = () => {
             is_available: existing.is_available,
             start_time: existing.start_time || "09:00",
             end_time: existing.end_time || "17:00",
-            break_start: existing.break_start || "13:00",
-            break_end: existing.break_end || "14:00",
           });
         } else {
           fullSchedule.push({
@@ -98,8 +94,6 @@ const DoctorSchedule = () => {
             is_available: i !== 0, // Sunday off by default
             start_time: "09:00",
             end_time: "17:00",
-            break_start: "13:00",
-            break_end: "14:00",
           });
         }
       }
@@ -160,8 +154,8 @@ const DoctorSchedule = () => {
           is_available: schedule.is_available,
           start_time: schedule.start_time,
           end_time: schedule.end_time,
-          break_start: schedule.break_start,
-          break_end: schedule.break_end,
+          break_start: null,
+          break_end: null,
         };
 
         if (schedule.id) {
@@ -385,7 +379,7 @@ const DoctorSchedule = () => {
                 <div
                   key={schedule.day_of_week}
                   className={cn(
-                    "grid grid-cols-1 md:grid-cols-6 gap-4 p-4 rounded-lg border",
+                    "grid grid-cols-1 md:grid-cols-4 gap-4 p-4 rounded-lg border",
                     schedule.is_available ? "bg-card" : "bg-muted/50"
                   )}
                 >
@@ -424,33 +418,11 @@ const DoctorSchedule = () => {
                           }
                         />
                       </div>
-
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Break Start</Label>
-                        <Input
-                          type="time"
-                          value={schedule.break_start}
-                          onChange={(e) =>
-                            handleScheduleChange(schedule.day_of_week, "break_start", e.target.value)
-                          }
-                        />
-                      </div>
-
-                      <div className="space-y-1">
-                        <Label className="text-xs text-muted-foreground">Break End</Label>
-                        <Input
-                          type="time"
-                          value={schedule.break_end}
-                          onChange={(e) =>
-                            handleScheduleChange(schedule.day_of_week, "break_end", e.target.value)
-                          }
-                        />
-                      </div>
                     </>
                   )}
 
                   {!schedule.is_available && (
-                    <div className="md:col-span-4 flex items-center text-muted-foreground">
+                    <div className="md:col-span-2 flex items-center text-muted-foreground">
                       Day Off
                     </div>
                   )}
