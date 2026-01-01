@@ -107,7 +107,7 @@ const DoctorAuth = () => {
 
       if (error || !data) {
         setReferralCodeStatus("invalid");
-      } else if (data.status !== "approved") {
+      } else if (!["approved", "active"].includes(data.status)) {
         setReferralCodeStatus("inactive");
       } else {
         setReferralCodeStatus("valid");
@@ -208,7 +208,7 @@ const DoctorAuth = () => {
           throw new Error("Invalid referral code");
         }
 
-        if (partnerData.status !== "approved") {
+        if (!["approved", "active"].includes(partnerData.status)) {
           throw new Error("This referral code is not active");
         }
         validatedReferralCode = signupData.referralCode.trim().toUpperCase();
