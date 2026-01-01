@@ -68,6 +68,19 @@ interface Referral {
   created_at: string;
 }
 
+interface Commission {
+  id: string;
+  month: string;
+  amount: number;
+  clinic_name: string | null;
+  clinic_email: string | null;
+  doctor_name: string | null;
+  doctor_email: string | null;
+  entity_type: string;
+  status: string;
+  paid_at: string | null;
+}
+
 const AdminReferralPartners = () => {
   const navigate = useNavigate();
   const [partners, setPartners] = useState<ReferralPartner[]>([]);
@@ -75,6 +88,7 @@ const AdminReferralPartners = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPartner, setSelectedPartner] = useState<ReferralPartner | null>(null);
   const [partnerReferrals, setPartnerReferrals] = useState<Referral[]>([]);
+  const [partnerCommissions, setPartnerCommissions] = useState<Commission[]>([]);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [partnerToDelete, setPartnerToDelete] = useState<ReferralPartner | null>(null);
@@ -144,9 +158,27 @@ const AdminReferralPartners = () => {
     }
   };
 
+  const fetchPartnerCommissions = async (partnerId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("referral_commissions")
+        .select("*")
+        .eq("referral_partner_id", partnerId)
+        .order("month", { ascending: false });
+
+      if (error) throw error;
+      setPartnerCommissions(data || []);
+    } catch (error) {
+      console.error("Error fetching commissions:", error);
+    }
+  };
+
   const handleViewDetails = async (partner: ReferralPartner) => {
     setSelectedPartner(partner);
-    await fetchPartnerReferrals(partner.referral_code);
+    await Promise.all([
+      fetchPartnerReferrals(partner.referral_code),
+      fetchPartnerCommissions(partner.id)
+    ]);
     setShowDetailsDialog(true);
   };
 
@@ -190,6 +222,31 @@ const AdminReferralPartners = () => {
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     toast.success("Referral code copied!");
+  };
+
+  const updateCommissionStatus = async (commissionId: string, newStatus: string) => {
+    setActionLoading(commissionId);
+    try {
+      const { error } = await supabase
+        .from("referral_commissions")
+        .update({ 
+          status: newStatus,
+          paid_at: newStatus === "paid" ? new Date().toISOString() : null
+        })
+        .eq("id", commissionId);
+
+      if (error) throw error;
+      
+      toast.success(`Commission marked as ${newStatus}`);
+      if (selectedPartner) {
+        await fetchPartnerCommissions(selectedPartner.id);
+      }
+    } catch (error) {
+      console.error("Error updating commission status:", error);
+      toast.error("Failed to update commission status");
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   const handleDeletePartner = async () => {
@@ -525,6 +582,78 @@ const AdminReferralPartners = () => {
                         ))}
                       </TableBody>
                     </Table>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <h4 className="font-semibold mb-3">Commission Payments ({partnerCommissions.length})</h4>
+                {partnerCommissions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No commission records yet</p>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Month</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Action</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {partnerCommissions.map((commission) => (
+                          <TableRow key={commission.id}>
+                            <TableCell>{format(new Date(commission.month), "MMM yyyy")}</TableCell>
+                            <TableCell>
+                              {commission.entity_type === "clinic" 
+                                ? commission.clinic_name 
+                                : commission.doctor_name}
+                            </TableCell>
+                            <TableCell className="capitalize">{commission.entity_type}</TableCell>
+                            <TableCell className="font-medium">PKR {commission.amount.toLocaleString()}</TableCell>
+                            <TableCell>
+                              {commission.status === "paid" ? (
+                                <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                                  <CheckCircle2 className="h-3 w-3 mr-1" /> Paid
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">
+                                  <Clock className="h-3 w-3 mr-1" /> Pending
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {commission.status === "pending" ? (
+                                <Button
+                                  size="sm"
+                                  className="bg-green-600 hover:bg-green-700"
+                                  onClick={() => updateCommissionStatus(commission.id, "paid")}
+                                  disabled={actionLoading === commission.id}
+                                >
+                                  Mark Paid
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateCommissionStatus(commission.id, "pending")}
+                                  disabled={actionLoading === commission.id}
+                                >
+                                  Revert
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <div className="mt-2 pt-2 border-t text-sm text-muted-foreground flex justify-between">
+                      <span>Pending: PKR {partnerCommissions.filter(c => c.status === "pending").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                      <span>Paid: PKR {partnerCommissions.filter(c => c.status === "paid").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                    </div>
                   </div>
                 )}
               </div>
