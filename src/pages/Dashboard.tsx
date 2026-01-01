@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Building2, Users, Activity, LifeBuoy, CheckCircle2, Clock, Sparkles } from "lucide-react";
+import { Stethoscope, Building2, Users, Activity, LifeBuoy, CheckCircle2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [totalDoctors, setTotalDoctors] = useState(0);
   const [approvedDoctors, setApprovedDoctors] = useState(0);
-  const [pendingDoctors, setPendingDoctors] = useState(0);
+  
   const [totalClinics, setTotalClinics] = useState(0);
   const [totalPatients, setTotalPatients] = useState(0);
 
@@ -35,11 +35,6 @@ const Dashboard = () => {
         .select("id", { count: "exact", head: true })
         .eq("approved", true);
 
-      const { count: pendingCount } = await supabase
-        .from("doctors")
-        .select("id", { count: "exact", head: true })
-        .eq("approved", false);
-
       const { count: clinicCount } = await supabase
         .from("clinics")
         .select("id", { count: "exact", head: true });
@@ -50,7 +45,6 @@ const Dashboard = () => {
 
       setTotalDoctors(totalCount || 0);
       setApprovedDoctors(approvedCount || 0);
-      setPendingDoctors(pendingCount || 0);
       setTotalClinics(clinicCount || 0);
       setTotalPatients(patientCount || 0);
     } finally {
@@ -125,7 +119,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="cursor-pointer hover:shadow-md transition-all border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
@@ -162,19 +156,6 @@ const Dashboard = () => {
           <CardContent>
             <div className="text-3xl font-bold mb-1">{approvedDoctors}</div>
             <p className="text-xs text-muted-foreground">Active & practicing</p>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/pending-doctors")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
-            <div className="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center">
-              <Clock className="h-5 w-5 text-warning" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{pendingDoctors}</div>
-            <p className="text-xs text-muted-foreground">Awaiting approval</p>
           </CardContent>
         </Card>
 
@@ -224,23 +205,7 @@ const Dashboard = () => {
               </div>
             </Button>
 
-            <Button 
-              variant="outline" 
-              onClick={() => navigate("/pending-doctors")} 
-              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
-            >
-              <div className="flex items-center gap-3 w-full">
-                <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
-                  <Clock className="h-5 w-5 text-warning" />
-                </div>
-                <div className="text-left flex-1">
-                  <div className="font-semibold text-base">Review pending doctors</div>
-                  <div className="text-sm text-muted-foreground">{pendingDoctors} awaiting approval</div>
-                </div>
-              </div>
-            </Button>
-
-            <Button 
+            <Button
               variant="outline" 
               onClick={() => navigate("/support-tickets")} 
               className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
