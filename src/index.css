@@ -140,3 +140,6 @@ All colors MUST be HSL.
 img.main_logo.hover-scale {
     width: 250px !important;
 }
+.new_width {
+    max-width: 50rem !important;
+}
