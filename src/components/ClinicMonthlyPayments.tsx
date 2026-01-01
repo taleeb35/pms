@@ -35,6 +35,7 @@ interface ClinicPayment {
 interface ClinicMonthlyPaymentsProps {
   clinicId: string;
   doctorCount: number;
+  doctorLimit: number;
   monthlyFeePerDoctor: number;
   onPaymentUpdate?: () => void;
 }
@@ -42,6 +43,7 @@ interface ClinicMonthlyPaymentsProps {
 const ClinicMonthlyPayments = ({
   clinicId,
   doctorCount,
+  doctorLimit,
   monthlyFeePerDoctor,
   onPaymentUpdate,
 }: ClinicMonthlyPaymentsProps) => {
@@ -89,7 +91,9 @@ const ClinicMonthlyPayments = ({
   };
 
   const addPaymentRecord = async (month: string) => {
-    const amount = doctorCount * monthlyFeePerDoctor;
+    // Use doctor limit (minimum 1) for billing, not just active doctor count
+    const billableDoctors = Math.max(doctorLimit, 1);
+    const amount = billableDoctors * monthlyFeePerDoctor;
     
     try {
       const { error } = await supabase.from("clinic_payments").insert({
@@ -179,7 +183,7 @@ const ClinicMonthlyPayments = ({
                       `PKR ${payment.amount.toLocaleString()}`
                     ) : (
                       <span className="text-muted-foreground">
-                        PKR {expectedAmount.toLocaleString()}
+                        PKR {(Math.max(doctorLimit, 1) * monthlyFeePerDoctor).toLocaleString()}
                       </span>
                     )}
                   </TableCell>
@@ -230,8 +234,8 @@ const ClinicMonthlyPayments = ({
       </div>
       
       <p className="text-xs text-muted-foreground">
-        Rate: PKR {monthlyFeePerDoctor.toLocaleString()} × {doctorCount} doctors = PKR{" "}
-        {(doctorCount * monthlyFeePerDoctor).toLocaleString()}/month
+        Rate: PKR {monthlyFeePerDoctor.toLocaleString()} × {Math.max(doctorLimit, 1)} doctor(s) = PKR{" "}
+        {(Math.max(doctorLimit, 1) * monthlyFeePerDoctor).toLocaleString()}/month
       </p>
     </div>
   );
