@@ -149,13 +149,11 @@ export const getDoctorScheduleForDay = async (
   isAvailable: boolean;
   startTime?: string;
   endTime?: string;
-  breakStart?: string;
-  breakEnd?: string;
 } | null> => {
   try {
     const { data, error } = await supabase
       .from("doctor_schedules")
-      .select("is_available, start_time, end_time, break_start, break_end")
+      .select("is_available, start_time, end_time")
       .eq("doctor_id", doctorId)
       .eq("day_of_week", dayOfWeek)
       .maybeSingle();
@@ -170,8 +168,6 @@ export const getDoctorScheduleForDay = async (
         isAvailable: data.is_available,
         startTime: data.start_time || undefined,
         endTime: data.end_time || undefined,
-        breakStart: data.break_start || undefined,
-        breakEnd: data.break_end || undefined,
       };
     }
 
@@ -237,13 +233,6 @@ export const getAvailableTimeSlots = async (
       // Check if within working hours
       if (schedule.startTime && schedule.endTime) {
         if (slotTime < schedule.startTime || slotTime >= schedule.endTime) {
-          return false;
-        }
-      }
-
-      // Check if during break time
-      if (schedule.breakStart && schedule.breakEnd) {
-        if (slotTime >= schedule.breakStart && slotTime < schedule.breakEnd) {
           return false;
         }
       }
