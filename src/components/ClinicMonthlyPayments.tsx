@@ -37,6 +37,7 @@ interface ClinicMonthlyPaymentsProps {
   doctorCount: number;
   doctorLimit: number;
   monthlyFeePerDoctor: number;
+  clinicCreatedAt: string;
   onPaymentUpdate?: () => void;
 }
 
@@ -45,6 +46,7 @@ const ClinicMonthlyPayments = ({
   doctorCount,
   doctorLimit,
   monthlyFeePerDoctor,
+  clinicCreatedAt,
   onPaymentUpdate,
 }: ClinicMonthlyPaymentsProps) => {
   const [payments, setPayments] = useState<ClinicPayment[]>([]);
@@ -76,11 +78,13 @@ const ClinicMonthlyPayments = ({
     const months: string[] = [];
     const today = new Date();
     const currentMonth = startOfMonth(today);
+    const registrationMonth = startOfMonth(new Date(clinicCreatedAt));
     
-    // Show last 6 months including current
-    for (let i = 0; i < 6; i++) {
-      const month = subMonths(currentMonth, i);
+    // Show months from registration date to current month
+    let month = currentMonth;
+    while (month >= registrationMonth) {
       months.push(format(month, "yyyy-MM-dd"));
+      month = subMonths(month, 1);
     }
     
     return months;
