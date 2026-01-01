@@ -71,7 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <li>Access financial reports and analytics</li>
                     </ul>
                     <div style="text-align: center; margin: 30px 0;">
-                      <a href="https://myclinichq.com/auth" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
+                      <a href="https://zonoir.com/auth" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
                         Login to Your Dashboard →
                       </a>
                     </div>
@@ -80,10 +80,10 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
                     <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
-                      Welcome to the MyClinicHQ family!
+                      Welcome to the Zonoir family!
                     </p>
                     <p style="margin: 0; color: #999; font-size: 12px;">
-                      © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                      © ${new Date().getFullYear()} Zonoir. All rights reserved.
                     </p>
                   </td>
                 </tr>
@@ -139,7 +139,7 @@ const handler = async (req: Request): Promise<Response> => {
                       If you believe this is an error or would like to resolve this issue, please contact our support team immediately.
                     </p>
                     <div style="text-align: center; margin: 30px 0;">
-                      <a href="mailto:support@myclinichq.com" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
+                      <a href="mailto:support@zonoir.com" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
                         Contact Support
                       </a>
                     </div>
@@ -151,7 +151,7 @@ const handler = async (req: Request): Promise<Response> => {
                       We hope to resolve this soon.
                     </p>
                     <p style="margin: 0; color: #999; font-size: 12px;">
-                      © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                      © ${new Date().getFullYear()} Zonoir. All rights reserved.
                     </p>
                   </td>
                 </tr>
@@ -168,7 +168,7 @@ const handler = async (req: Request): Promise<Response> => {
       : `⚠️ Your Clinic "${clinicName}" Has Been Suspended`;
 
     const emailResponse = await resend.emails.send({
-      from: "MyClinicHQ <noreply@zonoir.com>",
+      from: "Zonoir <noreply@zonoir.com>",
       to: [email],
       subject,
       html: emailHtml,

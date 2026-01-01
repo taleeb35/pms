@@ -34,10 +34,10 @@ const PublicFooter = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <img src={clinicLogo} alt="MedCare Pro" className="h-12 w-12" />
+              <img src={clinicLogo} alt="Zonoir" className="h-12 w-12" />
               <div>
                 <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  MedCare Pro
+                  Zonoir
                 </h3>
                 <p className="text-xs text-slate-400">Complete Clinic Management</p>
               </div>
@@ -106,8 +106,8 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Email</p>
-                  <a href="mailto:contact@myclinichq.com" className="text-sm hover:text-purple-400 transition-colors">
-                    contact@myclinichq.com
+                  <a href="mailto:contact@zonoir.com" className="text-sm hover:text-purple-400 transition-colors">
+                    contact@zonoir.com
                   </a>
                 </div>
               </li>
@@ -139,7 +139,7 @@ const PublicFooter = () => {
         <div className="border-t border-slate-700/50 mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-400 text-sm">
-              © {currentYear} MedCare Pro. All rights reserved.
+              © {currentYear} Zonoir. All rights reserved.
             </p>
             <p className="text-slate-500 text-sm">
               Made with ❤️ in Pakistan

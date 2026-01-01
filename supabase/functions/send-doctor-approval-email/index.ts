@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
                       
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 30px 0;">
-                        <a href="${Deno.env.get("SITE_URL") || "https://myclinichq.com"}/doctor-auth" 
+                        <a href="${Deno.env.get("SITE_URL") || "https://zonoir.com"}/doctor-auth" 
                            style="display: inline-block; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                           Login to Dashboard →
                         </a>
@@ -104,10 +104,10 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
                       <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
-                        Welcome to the MyClinicHQ family!
+                        Welcome to the Zonoir family!
                       </p>
                       <p style="margin: 0; color: #999; font-size: 12px;">
-                        © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                        © ${new Date().getFullYear()} Zonoir. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -162,7 +162,7 @@ const handler = async (req: Request): Promise<Response> => {
                       </h2>
                       
                       <p style="margin: 0 0 20px; color: #555; font-size: 16px; line-height: 1.6;">
-                        We wanted to inform you about an update to your account status on MyClinicHQ.
+                        We wanted to inform you about an update to your account status on Zonoir.
                       </p>
                       
                       <!-- Status Card -->
@@ -198,7 +198,7 @@ const handler = async (req: Request): Promise<Response> => {
                       
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 30px 0;">
-                        <a href="${Deno.env.get("SITE_URL") || "https://myclinichq.com"}/contact" 
+                        <a href="${Deno.env.get("SITE_URL") || "https://zonoir.com"}/contact" 
                            style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                           Contact Support →
                         </a>
@@ -214,10 +214,10 @@ const handler = async (req: Request): Promise<Response> => {
                   <tr>
                     <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
                       <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
-                        MyClinicHQ Support Team
+                        Zonoir Support Team
                       </p>
                       <p style="margin: 0; color: #999; font-size: 12px;">
-                        © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                        © ${new Date().getFullYear()} Zonoir. All rights reserved.
                       </p>
                     </td>
                   </tr>
@@ -232,7 +232,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     const emailResponse = await resend.emails.send({
-      from: "MyClinicHQ <noreply@zonoir.com>",
+      from: "Zonoir <noreply@zonoir.com>",
       to: [email],
       subject: subject,
       html: emailHtml,
