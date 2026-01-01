@@ -27,7 +27,7 @@ const handler = async (req: Request): Promise<Response> => {
     let html = "";
 
     if (type === "signup") {
-      subject = "🎉 Welcome to MyClinicHQ Referral Program - You're Approved!";
+      subject = "🎉 Welcome to Zonoir Referral Program - You're Approved!";
       html = `
         <!DOCTYPE html>
         <html>
@@ -45,7 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>✅ Welcome to MyClinicHQ!</h1>
+              <h1>✅ Welcome to Zonoir!</h1>
               <p>Your Referral Partner Account is Active</p>
             </div>
             <div class="content">
@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
               
               <p>Welcome aboard! Let's grow together.</p>
               
-              <p>Best regards,<br>The MyClinicHQ Team</p>
+              <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
               <p>This email was sent because you signed up for our referral program.</p>
@@ -118,7 +118,7 @@ const handler = async (req: Request): Promise<Response> => {
               
               <p>Welcome aboard! Let's grow together.</p>
               
-              <p>Best regards,<br>The Team</p>
+              <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
               <p>You're receiving this because your referral partner application was approved.</p>
@@ -154,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
               
               <p>If you have any questions, please don't hesitate to contact our support team.</p>
               
-              <p>Best regards,<br>The Team</p>
+              <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
               <p>You're receiving this because you applied to our referral program.</p>
@@ -192,7 +192,7 @@ const handler = async (req: Request): Promise<Response> => {
               
               <p>Thank you for your interest in our program.</p>
               
-              <p>Best regards,<br>The Team</p>
+              <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
               <p>You're receiving this because your referral partner account was removed.</p>
@@ -210,7 +210,7 @@ const handler = async (req: Request): Promise<Response> => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "MyClinicHQ <noreply@zonoir.com>",
+        from: "Zonoir <noreply@zonoir.com>",
         to: [email],
         subject,
         html,

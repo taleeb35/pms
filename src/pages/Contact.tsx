@@ -114,7 +114,7 @@ const Contact = () => {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have questions about MyClinicHQ? Want to schedule a demo? We're here to help you transform your clinic management.
+            Have questions about Zonoir? Want to schedule a demo? We're here to help you transform your clinic management.
           </p>
         </div>
 
@@ -131,8 +131,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email Us</h3>
                     <p className="text-muted-foreground text-sm mb-2">For general inquiries and support</p>
-                    <a href="mailto:contact@myclinichq.com" className="text-primary hover:underline font-medium">
-                      contact@myclinichq.com
+                    <a href="mailto:contact@zonoir.com" className="text-primary hover:underline font-medium">
+                      contact@zonoir.com
                     </a>
                   </div>
                 </div>
@@ -200,7 +200,7 @@ const Contact = () => {
                 <Calendar className="w-10 h-10 mb-4" />
                 <h3 className="font-semibold text-xl mb-2">Schedule a Demo</h3>
                 <p className="text-primary-foreground/80 text-sm mb-4">
-                  See MyClinicHQ in action with a personalized demo from our team.
+                  See Zonoir in action with a personalized demo from our team.
                 </p>
                 <Button 
                   variant="secondary" 
@@ -403,7 +403,7 @@ const Contact = () => {
                 <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <MapPin className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <h3 className="font-semibold text-foreground text-lg mb-2">MyClinicHQ Headquarters</h3>
+                <h3 className="font-semibold text-foreground text-lg mb-2">Zonoir Headquarters</h3>
                 <p className="text-muted-foreground">123 Healthcare Avenue, Gulberg III, Lahore, Pakistan 54000</p>
                 <Button variant="outline" className="mt-4" asChild>
                   <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">

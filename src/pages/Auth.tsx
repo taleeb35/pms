@@ -538,7 +538,7 @@ const Auth = () => {
                 <CheckCircle className="h-10 w-10 text-green-600" />
               </div>
             </div>
-            <DialogTitle className="text-center text-2xl">Welcome to MyClinicHQ! 🎉</DialogTitle>
+            <DialogTitle className="text-center text-2xl">Welcome to Zonoir! 🎉</DialogTitle>
             <DialogDescription className="text-center text-base space-y-3 pt-4">
               <p className="font-semibold text-foreground">
                 Your clinic account is now active with a 14-day free trial!

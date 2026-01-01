@@ -45,7 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
     const feePerDoctor = feeData ? parseInt(feeData.value) : 6000;
     const numberOfDoctors = requestedDoctors || 1;
     const totalMonthlyFee = feePerDoctor * numberOfDoctors;
-    const adminEmail = adminEmailData?.value || "admin@myclinichq.com";
+    const adminEmail = adminEmailData?.value || "admin@zonoir.com";
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Registration Received - MyClinicHQ</title>
+        <title>Registration Received - Zonoir</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
         <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -65,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
-                      🎉 Welcome to MyClinicHQ!
+                      🎉 Welcome to Zonoir!
                     </h1>
                     <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
                       Your 14-Day Free Trial Has Started
@@ -81,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
                     </h2>
                     
                     <p style="margin: 0 0 20px; color: #555; font-size: 16px; line-height: 1.6;">
-                      Congratulations! Your clinic has been <strong>automatically activated</strong> with a <strong>14-day free trial</strong>. You now have full access to all MyClinicHQ features!
+                      Congratulations! Your clinic has been <strong>automatically activated</strong> with a <strong>14-day free trial</strong>. You now have full access to all Zonoir features!
                     </p>
                     
                     <!-- Trial Banner -->
@@ -149,7 +149,7 @@ const handler = async (req: Request): Promise<Response> => {
                     <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 0 8px 8px 0; margin: 25px 0;">
                       <h4 style="margin: 0 0 10px; color: #1e40af; font-size: 16px;">📌 What Happens After Your Trial?</h4>
                       <p style="margin: 0; color: #1e40af; font-size: 14px; line-height: 1.6;">
-                        After your 14-day free trial ends, you will need to subscribe to continue using MyClinicHQ. We will send you a reminder before your trial expires with payment instructions.
+                        After your 14-day free trial ends, you will need to subscribe to continue using Zonoir. We will send you a reminder before your trial expires with payment instructions.
                       </p>
                     </div>
                     
@@ -166,7 +166,7 @@ const handler = async (req: Request): Promise<Response> => {
                     
                     <p style="margin: 20px 0 0; color: #555; font-size: 16px; line-height: 1.6;">
                       Best Regards,<br>
-                      <strong>The MyClinicHQ Team</strong>
+                      <strong>The Zonoir Team</strong>
                     </p>
                   </td>
                 </tr>
@@ -175,10 +175,10 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
                     <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
-                      Thank you for choosing MyClinicHQ!
+                      Thank you for choosing Zonoir!
                     </p>
                     <p style="margin: 0; color: #999; font-size: 12px;">
-                      © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                      © ${new Date().getFullYear()} Zonoir. All rights reserved.
                     </p>
                   </td>
                 </tr>
@@ -193,9 +193,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email to clinic
     const emailResponse = await resend.emails.send({
-      from: "MyClinicHQ <noreply@zonoir.com>",
+      from: "Zonoir <noreply@zonoir.com>",
       to: [email],
-      subject: `Registration Received - ${clinicName} | MyClinicHQ`,
+      subject: `Registration Received - ${clinicName} | Zonoir`,
       html: emailHtml,
       headers: {
         "X-Priority": "1",
@@ -213,7 +213,7 @@ const handler = async (req: Request): Promise<Response> => {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Clinic Registration - MyClinicHQ Admin</title>
+        <title>New Clinic Registration - Zonoir Admin</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
         <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -309,10 +309,10 @@ const handler = async (req: Request): Promise<Response> => {
                 <tr>
                   <td style="background-color: #1f2937; padding: 30px; text-align: center;">
                     <p style="margin: 0 0 10px; color: #9ca3af; font-size: 14px;">
-                      MyClinicHQ Admin Notification
+                      Zonoir Admin Notification
                     </p>
                     <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                      © ${new Date().getFullYear()} MyClinicHQ. All rights reserved.
+                      © ${new Date().getFullYear()} Zonoir. All rights reserved.
                     </p>
                   </td>
                 </tr>
@@ -326,7 +326,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const adminNotification = await resend.emails.send({
-      from: "MyClinicHQ System <noreply@zonoir.com>",
+      from: "Zonoir System <noreply@zonoir.com>",
       to: [adminEmail],
       subject: `🏥 New Clinic Registration: ${clinicName} - Action Required`,
       html: adminEmailHtml,

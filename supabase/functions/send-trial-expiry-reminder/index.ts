@@ -92,9 +92,9 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         const emailResponse = await resend.emails.send({
-          from: "MyClinicHQ <noreply@zonoir.com>",
+          from: "Zonoir <noreply@zonoir.com>",
           to: [profile.email],
-          subject: "Your Free Trial Expires in 3 Days - ClinicPro",
+          subject: "Your Free Trial Expires in 3 Days - Zonoir",
           html: `
             <!DOCTYPE html>
             <html>
@@ -110,7 +110,7 @@ const handler = async (req: Request): Promise<Response> => {
               <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
                 <p style="font-size: 16px;">Dear <strong>${profile.full_name}</strong>,</p>
                 
-                <p style="font-size: 16px;">This is a friendly reminder that your <strong>14-day free trial</strong> for <strong>${clinic.clinic_name}</strong> on ClinicPro will expire in <strong>3 days</strong>.</p>
+                <p style="font-size: 16px;">This is a friendly reminder that your <strong>14-day free trial</strong> for <strong>${clinic.clinic_name}</strong> on Zonoir will expire in <strong>3 days</strong>.</p>
                 
                 <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
                   <p style="margin: 0; font-size: 14px; color: #856404;">
@@ -118,7 +118,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </p>
                 </div>
                 
-                <p style="font-size: 16px;">To continue enjoying all the features of ClinicPro without any interruption, please contact our support team to discuss subscription options.</p>
+                <p style="font-size: 16px;">To continue enjoying all the features of Zonoir without any interruption, please contact our support team to discuss subscription options.</p>
                 
                 <h3 style="color: #667eea; margin-top: 25px;">What you'll lose access to:</h3>
                 <ul style="font-size: 14px; color: #555;">
@@ -136,7 +136,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
                 
                 <p style="font-size: 12px; color: #888; text-align: center;">
-                  This is an automated reminder from ClinicPro.<br>
+                  This is an automated reminder from Zonoir.<br>
                   Please do not reply to this email.
                 </p>
               </div>
@@ -168,9 +168,9 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         const emailResponse = await resend.emails.send({
-          from: "MyClinicHQ <noreply@zonoir.com>",
+          from: "Zonoir <noreply@zonoir.com>",
           to: [profile.email],
-          subject: "Your Free Trial Expires in 3 Days - ClinicPro",
+          subject: "Your Free Trial Expires in 3 Days - Zonoir",
           html: `
             <!DOCTYPE html>
             <html>
@@ -186,7 +186,7 @@ const handler = async (req: Request): Promise<Response> => {
               <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
                 <p style="font-size: 16px;">Dear <strong>Dr. ${profile.full_name}</strong>,</p>
                 
-                <p style="font-size: 16px;">This is a friendly reminder that your <strong>14-day free trial</strong> on ClinicPro will expire in <strong>3 days</strong>.</p>
+                <p style="font-size: 16px;">This is a friendly reminder that your <strong>14-day free trial</strong> on Zonoir will expire in <strong>3 days</strong>.</p>
                 
                 <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin: 20px 0;">
                   <p style="margin: 0; font-size: 14px; color: #856404;">
@@ -194,7 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
                   </p>
                 </div>
                 
-                <p style="font-size: 16px;">To continue enjoying all the features of ClinicPro without any interruption, please contact our support team to discuss subscription options.</p>
+                <p style="font-size: 16px;">To continue enjoying all the features of Zonoir without any interruption, please contact our support team to discuss subscription options.</p>
                 
                 <h3 style="color: #667eea; margin-top: 25px;">What you'll lose access to:</h3>
                 <ul style="font-size: 14px; color: #555;">
@@ -213,7 +213,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
                 
                 <p style="font-size: 12px; color: #888; text-align: center;">
-                  This is an automated reminder from ClinicPro.<br>
+                  This is an automated reminder from Zonoir.<br>
                   Please do not reply to this email.
                 </p>
               </div>
