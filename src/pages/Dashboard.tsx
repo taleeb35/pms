@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Building2, Users, Activity, LifeBuoy, CheckCircle2, Sparkles } from "lucide-react";
+import { Stethoscope, Building2, Users, Activity, LifeBuoy, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/clinic-logo.png";
@@ -14,8 +14,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [totalDoctors, setTotalDoctors] = useState(0);
-  const [approvedDoctors, setApprovedDoctors] = useState(0);
-  
   const [totalClinics, setTotalClinics] = useState(0);
   const [totalPatients, setTotalPatients] = useState(0);
 
@@ -30,11 +28,6 @@ const Dashboard = () => {
         .from("doctors")
         .select("id", { count: "exact", head: true });
 
-      const { count: approvedCount } = await supabase
-        .from("doctors")
-        .select("id", { count: "exact", head: true })
-        .eq("approved", true);
-
       const { count: clinicCount } = await supabase
         .from("clinics")
         .select("id", { count: "exact", head: true });
@@ -44,7 +37,6 @@ const Dashboard = () => {
         .select("id", { count: "exact", head: true });
 
       setTotalDoctors(totalCount || 0);
-      setApprovedDoctors(approvedCount || 0);
       setTotalClinics(clinicCount || 0);
       setTotalPatients(patientCount || 0);
     } finally {
@@ -119,7 +111,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="cursor-pointer hover:shadow-md transition-all border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Clinics</CardTitle>
@@ -143,19 +135,6 @@ const Dashboard = () => {
           <CardContent>
             <div className="text-3xl font-bold mb-1">{totalDoctors}</div>
             <p className="text-xs text-muted-foreground">All registered doctors</p>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctors")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Approved</CardTitle>
-            <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
-              <CheckCircle2 className="h-5 w-5 text-success" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{approvedDoctors}</div>
-            <p className="text-xs text-muted-foreground">Active & practicing</p>
           </CardContent>
         </Card>
 
