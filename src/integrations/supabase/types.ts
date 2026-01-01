@@ -1414,6 +1414,76 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_commissions: {
+        Row: {
+          amount: number
+          clinic_email: string | null
+          clinic_id: string | null
+          clinic_name: string | null
+          created_at: string
+          doctor_email: string | null
+          doctor_id: string | null
+          doctor_name: string | null
+          entity_type: string
+          id: string
+          month: string
+          referral_partner_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          clinic_email?: string | null
+          clinic_id?: string | null
+          clinic_name?: string | null
+          created_at?: string
+          doctor_email?: string | null
+          doctor_id?: string | null
+          doctor_name?: string | null
+          entity_type: string
+          id?: string
+          month: string
+          referral_partner_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          clinic_email?: string | null
+          clinic_id?: string | null
+          clinic_name?: string | null
+          created_at?: string
+          doctor_email?: string | null
+          doctor_id?: string | null
+          doctor_name?: string | null
+          entity_type?: string
+          id?: string
+          month?: string
+          referral_partner_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_commissions_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_commissions_referral_partner_id_fkey"
+            columns: ["referral_partner_id"]
+            isOneToOne: false
+            referencedRelation: "referral_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referral_partners: {
         Row: {
           commission_rate: number

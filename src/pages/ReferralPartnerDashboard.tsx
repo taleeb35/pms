@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { 
   Users, Copy, Coins, TrendingUp, LogOut, 
-  Building2, Stethoscope, Clock, CheckCircle2, XCircle
+  Building2, Stethoscope, Clock, CheckCircle2, XCircle, Calendar
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -36,15 +36,28 @@ interface ReferralPartner {
 interface Referral {
   id: string;
   name: string;
+  email?: string;
   type: "clinic" | "doctor";
   status: string;
   created_at: string;
+}
+
+interface MonthlyCommission {
+  id: string;
+  month: string;
+  amount: number;
+  clinic_name: string | null;
+  clinic_email: string | null;
+  doctor_name: string | null;
+  doctor_email: string | null;
+  entity_type: string;
 }
 
 const ReferralPartnerDashboard = () => {
   const navigate = useNavigate();
   const [partner, setPartner] = useState<ReferralPartner | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
+  const [monthlyCommissions, setMonthlyCommissions] = useState<MonthlyCommission[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,20 +86,54 @@ const ReferralPartnerDashboard = () => {
         sessionStorage.setItem("referral_partner", JSON.stringify(freshPartner));
       }
       fetchReferrals(partnerData.referral_code);
+      fetchMonthlyCommissions(partnerData.id);
     };
     
     fetchPartnerData();
   }, [navigate]);
 
+  const fetchMonthlyCommissions = async (partnerId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("referral_commissions")
+        .select("*")
+        .eq("referral_partner_id", partnerId)
+        .order("month", { ascending: false });
+
+      if (error) throw error;
+      setMonthlyCommissions(data || []);
+    } catch (error) {
+      console.error("Error fetching commissions:", error);
+    }
+  };
+
   const fetchReferrals = async (code: string) => {
     try {
-      // Fetch clinics with this referral code
+      // Fetch clinics with this referral code - include email from profiles
       const { data: clinics, error: clinicsError } = await supabase
         .from("clinics")
         .select("id, clinic_name, status, created_at")
         .eq("referred_by", code);
 
       if (clinicsError) throw clinicsError;
+
+      // Get clinic emails from profiles
+      let clinicReferrals: Referral[] = [];
+      if (clinics && clinics.length > 0) {
+        const { data: clinicProfiles } = await supabase
+          .from("profiles")
+          .select("id, email")
+          .in("id", clinics.map(c => c.id));
+
+        clinicReferrals = clinics.map(clinic => ({
+          id: clinic.id,
+          name: clinic.clinic_name,
+          email: clinicProfiles?.find(p => p.id === clinic.id)?.email,
+          type: "clinic" as const,
+          status: clinic.status,
+          created_at: clinic.created_at,
+        }));
+      }
 
       // Fetch doctors with this referral code
       const { data: doctors, error: doctorsError } = await supabase
@@ -96,30 +143,23 @@ const ReferralPartnerDashboard = () => {
 
       if (doctorsError) throw doctorsError;
 
-      // Get doctor names from profiles
+      // Get doctor names and emails from profiles
       let doctorReferrals: Referral[] = [];
       if (doctors && doctors.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("id, full_name")
+          .select("id, full_name, email")
           .in("id", doctors.map(d => d.id));
 
         doctorReferrals = doctors.map(doctor => ({
           id: doctor.id,
           name: profiles?.find(p => p.id === doctor.id)?.full_name || doctor.specialization,
+          email: profiles?.find(p => p.id === doctor.id)?.email,
           type: "doctor" as const,
           status: doctor.approved ? "approved" : "pending",
           created_at: doctor.created_at,
         }));
       }
-
-      const clinicReferrals: Referral[] = (clinics || []).map(clinic => ({
-        id: clinic.id,
-        name: clinic.clinic_name,
-        type: "clinic" as const,
-        status: clinic.status,
-        created_at: clinic.created_at,
-      }));
 
       const allReferrals = [...clinicReferrals, ...doctorReferrals].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -271,6 +311,75 @@ const ReferralPartnerDashboard = () => {
           </Card>
         </div>
 
+        {/* Monthly Earnings Table */}
+        <Card className="border-0 shadow-lg mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-emerald-600" />
+              Monthly Earnings
+            </CardTitle>
+            <CardDescription>
+              Your commission earnings breakdown by month
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {monthlyCommissions.length === 0 ? (
+              <div className="text-center py-12">
+                <Coins className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground">No earnings yet</h3>
+                <p className="text-muted-foreground mt-1">
+                  Your commission will appear here when referred clinics or doctors subscribe
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Month</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Commission</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {monthlyCommissions.map((commission) => (
+                      <TableRow key={commission.id}>
+                        <TableCell className="font-medium">
+                          {format(new Date(commission.month), "MMMM yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          {commission.entity_type === "clinic" 
+                            ? commission.clinic_name 
+                            : commission.doctor_name}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {commission.entity_type === "clinic" 
+                            ? commission.clinic_email 
+                            : commission.doctor_email}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                            {commission.entity_type === "clinic" ? (
+                              <><Building2 className="h-3 w-3" /> Clinic</>
+                            ) : (
+                              <><Stethoscope className="h-3 w-3" /> Doctor</>
+                            )}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold text-emerald-600">
+                          PKR {commission.amount.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Referrals Table */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
@@ -297,6 +406,7 @@ const ReferralPartnerDashboard = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Joined</TableHead>
@@ -306,6 +416,7 @@ const ReferralPartnerDashboard = () => {
                     {referrals.map((referral) => (
                       <TableRow key={referral.id}>
                         <TableCell className="font-medium">{referral.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{referral.email || "-"}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="flex items-center gap-1 w-fit">
                             {referral.type === "clinic" ? (

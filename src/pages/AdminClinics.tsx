@@ -219,11 +219,29 @@ const AdminClinics = () => {
         const monthlyFee = clinicData.payment_plan === "yearly" ? 4979 : 5999;
         const totalFee = Math.max(clinicData.requested_doctors, 1) * monthlyFee;
         const commission = Math.round(totalFee * (partner.commission_rate / 100));
+        
+        // Update total earnings
         await supabase.from("referral_partners").update({
           total_earnings: partner.total_earnings + commission,
           total_referrals: partner.total_referrals + 1,
           updated_at: new Date().toISOString()
         }).eq("id", partner.id);
+        
+        // Record commission details in referral_commissions table
+        const currentMonth = new Date();
+        currentMonth.setDate(1);
+        const monthStr = format(currentMonth, "yyyy-MM-dd");
+        
+        await supabase.from("referral_commissions").upsert({
+          referral_partner_id: partner.id,
+          clinic_id: clinic.id,
+          month: monthStr,
+          amount: commission,
+          clinic_name: clinic.clinic_name,
+          clinic_email: clinic.profile?.email || "",
+          entity_type: "clinic"
+        }, { onConflict: "referral_partner_id,clinic_id,month" });
+        
         toast.success(`Commission of PKR ${commission.toLocaleString()} added to referral partner`);
       }
     }
