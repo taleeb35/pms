@@ -34,6 +34,9 @@ interface ClinicPayment {
 
 interface ClinicMonthlyPaymentsProps {
   clinicId: string;
+  clinicName: string;
+  clinicEmail: string;
+  referredBy: string | null;
   doctorCount: number;
   doctorLimit: number;
   monthlyFeePerDoctor: number;
@@ -43,6 +46,9 @@ interface ClinicMonthlyPaymentsProps {
 
 const ClinicMonthlyPayments = ({
   clinicId,
+  clinicName,
+  clinicEmail,
+  referredBy,
   doctorCount,
   doctorLimit,
   monthlyFeePerDoctor,
@@ -117,7 +123,7 @@ const ClinicMonthlyPayments = ({
     }
   };
 
-  const updatePaymentStatus = async (paymentId: string, status: string) => {
+  const updatePaymentStatus = async (paymentId: string, status: string, month: string, paymentAmount: number) => {
     try {
       const updateData: any = {
         status,
@@ -126,8 +132,85 @@ const ClinicMonthlyPayments = ({
 
       if (status === "paid") {
         updateData.payment_date = new Date().toISOString();
+        
+        // Record commission for referral partner if clinic was referred
+        if (referredBy) {
+          const { data: partner } = await supabase
+            .from("referral_partners")
+            .select("*")
+            .eq("referral_code", referredBy)
+            .eq("status", "active")
+            .single();
+          
+          if (partner) {
+            const commission = Math.round(paymentAmount * (partner.commission_rate / 100));
+            
+            // Check if commission already exists for this month
+            const { data: existingCommission } = await supabase
+              .from("referral_commissions")
+              .select("id")
+              .eq("referral_partner_id", partner.id)
+              .eq("clinic_id", clinicId)
+              .eq("month", month)
+              .single();
+            
+            if (!existingCommission) {
+              // Insert new commission
+              await supabase.from("referral_commissions").insert({
+                referral_partner_id: partner.id,
+                clinic_id: clinicId,
+                month: month,
+                amount: commission,
+                clinic_name: clinicName,
+                clinic_email: clinicEmail,
+                entity_type: "clinic"
+              });
+              
+              // Update partner's total earnings
+              await supabase.from("referral_partners").update({
+                total_earnings: partner.total_earnings + commission,
+                updated_at: new Date().toISOString()
+              }).eq("id", partner.id);
+              
+              toast.success(`Commission of PKR ${commission.toLocaleString()} added to referral partner`);
+            }
+          }
+        }
       } else {
         updateData.payment_date = null;
+        
+        // Remove commission if payment is reverted to pending
+        if (referredBy) {
+          const { data: partner } = await supabase
+            .from("referral_partners")
+            .select("*")
+            .eq("referral_code", referredBy)
+            .eq("status", "active")
+            .single();
+          
+          if (partner) {
+            const { data: existingCommission } = await supabase
+              .from("referral_commissions")
+              .select("id, amount")
+              .eq("referral_partner_id", partner.id)
+              .eq("clinic_id", clinicId)
+              .eq("month", month)
+              .single();
+            
+            if (existingCommission) {
+              // Delete the commission
+              await supabase.from("referral_commissions")
+                .delete()
+                .eq("id", existingCommission.id);
+              
+              // Deduct from partner's total earnings
+              await supabase.from("referral_partners").update({
+                total_earnings: Math.max(0, partner.total_earnings - existingCommission.amount),
+                updated_at: new Date().toISOString()
+              }).eq("id", partner.id);
+            }
+          }
+        }
       }
 
       const { error } = await supabase
@@ -208,7 +291,7 @@ const ClinicMonthlyPayments = ({
                     {payment ? (
                       <Select
                         value={payment.status}
-                        onValueChange={(value) => updatePaymentStatus(payment.id, value)}
+                        onValueChange={(value) => updatePaymentStatus(payment.id, value, month, payment.amount)}
                       >
                         <SelectTrigger className="h-7 w-24 text-xs">
                           <SelectValue />
