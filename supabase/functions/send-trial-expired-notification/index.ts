@@ -76,7 +76,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       try {
         const emailResponse = await resend.emails.send({
-          from: "ClinicPro <onboarding@resend.dev>",
+          from: "MyClinicHQ <noreply@zonoir.com>",
           to: [profile.email],
           subject: "Your Free Trial Has Expired - ClinicPro",
           html: `
@@ -147,7 +147,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       try {
         const emailResponse = await resend.emails.send({
-          from: "ClinicPro <onboarding@resend.dev>",
+          from: "MyClinicHQ <noreply@zonoir.com>",
           to: [profile.email],
           subject: "Your Free Trial Has Expired - ClinicPro",
           html: `

@@ -185,7 +185,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email to doctor
     const emailResponse = await resend.emails.send({
-      from: "MyClinicHQ <noreply@myclinichq.com>",
+      from: "MyClinicHQ <noreply@zonoir.com>",
       to: [email],
       subject: `Registration Received - Dr. ${doctorName} | MyClinicHQ`,
       html: emailHtml,
@@ -304,7 +304,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const adminNotification = await resend.emails.send({
-      from: "MyClinicHQ System <noreply@myclinichq.com>",
+      from: "MyClinicHQ System <noreply@zonoir.com>",
       to: [adminEmail],
       subject: `🩺 New Doctor Registration: Dr. ${doctorName} - Action Required`,
       html: adminEmailHtml,
