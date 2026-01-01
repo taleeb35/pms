@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/Asset 2.png";
 
 const PublicHeader = () => {
   const navigate = useNavigate();
