@@ -268,12 +268,6 @@ const Auth = () => {
 
       <Card className="w-full max-w-xl relative z-10 border-2 border-purple-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
         <CardHeader className="space-y-4 text-center pb-6">
-          <div className="flex justify-center mb-2 animate-fade-in">
-            <div className="relative">
-              <img src={clinicLogo} alt="Clinic Logo" className="h-20 w-20 hover-scale" />
-              <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-yellow-400 animate-pulse" />
-            </div>
-          </div>
           <div>
             <CardTitle className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
               Create Your Clinic
@@ -284,14 +278,7 @@ const Auth = () => {
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-4 border border-purple-200 animate-fade-in">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-purple-600" />
-              <p className="text-sm font-semibold text-purple-900">Complete Clinic Registration</p>
-            </div>
-            <p className="text-xs text-muted-foreground">Fill in your clinic details to get started</p>
-          </div>
-
+        
           <form onSubmit={handleClinicSignup} className="space-y-4">
             {/* Row 1: Clinic Name & Phone */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
