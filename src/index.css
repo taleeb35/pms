@@ -137,4 +137,6 @@ All colors MUST be HSL.
 .hover\:text-foreground:hover {
     color: #fff !important;
 }
-
+img.main_logo.hover-scale {
+    width: 250px !important;
+}
