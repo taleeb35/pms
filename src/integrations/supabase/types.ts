@@ -1427,7 +1427,9 @@ export type Database = {
           entity_type: string
           id: string
           month: string
+          paid_at: string | null
           referral_partner_id: string
+          status: string
           updated_at: string
         }
         Insert: {
@@ -1442,7 +1444,9 @@ export type Database = {
           entity_type: string
           id?: string
           month: string
+          paid_at?: string | null
           referral_partner_id: string
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -1457,7 +1461,9 @@ export type Database = {
           entity_type?: string
           id?: string
           month?: string
+          paid_at?: string | null
           referral_partner_id?: string
+          status?: string
           updated_at?: string
         }
         Relationships: [

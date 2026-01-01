@@ -58,6 +58,8 @@ interface MonthlyCommission {
   doctor_name: string | null;
   doctor_email: string | null;
   entity_type: string;
+  status: string;
+  paid_at: string | null;
 }
 
 const ReferralPartnerDashboard = () => {
@@ -455,6 +457,7 @@ const ReferralPartnerDashboard = () => {
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Commission</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -483,6 +486,17 @@ const ReferralPartnerDashboard = () => {
                             )}
                           </Badge>
                         </TableCell>
+                        <TableCell>
+                          {commission.status === "paid" ? (
+                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                              <CheckCircle2 className="h-3 w-3 mr-1" /> Paid
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100">
+                              <Clock className="h-3 w-3 mr-1" /> Pending
+                            </Badge>
+                          )}
+                        </TableCell>
                         <TableCell className="text-right font-semibold text-emerald-600">
                           PKR {commission.amount.toLocaleString()}
                         </TableCell>
@@ -491,7 +505,12 @@ const ReferralPartnerDashboard = () => {
                   </TableBody>
                 </Table>
                 {filteredCommissions.length > 0 && (
-                  <div className="mt-4 pt-4 border-t flex justify-end">
+                  <div className="mt-4 pt-4 border-t flex justify-between items-center">
+                    <p className="text-sm text-muted-foreground">
+                      Paid: <span className="text-green-600 font-medium">PKR {filteredCommissions.filter(c => c.status === "paid").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                      {" • "}
+                      Pending: <span className="text-yellow-600 font-medium">PKR {filteredCommissions.filter(c => c.status === "pending").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                    </p>
                     <p className="text-sm font-medium">
                       Total: <span className="text-emerald-600 font-bold">PKR {filteredEarnings.toLocaleString()}</span>
                     </p>
