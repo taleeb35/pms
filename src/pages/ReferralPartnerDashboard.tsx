@@ -55,8 +55,27 @@ const ReferralPartnerDashboard = () => {
     }
 
     const partnerData = JSON.parse(storedPartner);
-    setPartner(partnerData);
-    fetchReferrals(partnerData.referral_code);
+    
+    // Fetch fresh data from database instead of using stale sessionStorage
+    const fetchPartnerData = async () => {
+      const { data: freshPartner, error } = await supabase
+        .from("referral_partners")
+        .select("*")
+        .eq("id", partnerData.id)
+        .single();
+      
+      if (error || !freshPartner) {
+        console.error("Error fetching partner data:", error);
+        setPartner(partnerData);
+      } else {
+        setPartner(freshPartner);
+        // Update sessionStorage with fresh data
+        sessionStorage.setItem("referral_partner", JSON.stringify(freshPartner));
+      }
+      fetchReferrals(partnerData.referral_code);
+    };
+    
+    fetchPartnerData();
   }, [navigate]);
 
   const fetchReferrals = async (code: string) => {
@@ -132,6 +151,7 @@ const ReferralPartnerDashboard = () => {
     switch (status) {
       case "active":
       case "approved":
+      case "subscribed":
         return <Badge className="bg-green-100 text-green-700 hover:bg-green-100"><CheckCircle2 className="h-3 w-3 mr-1" /> Active</Badge>;
       case "pending":
       case "draft":
@@ -162,7 +182,7 @@ const ReferralPartnerDashboard = () => {
 
   if (!partner) return null;
 
-  const approvedReferrals = referrals.filter(r => r.status === "active" || r.status === "approved").length;
+  const approvedReferrals = referrals.filter(r => r.status === "active" || r.status === "approved" || r.status === "subscribed").length;
   const pendingReferrals = referrals.filter(r => r.status === "pending" || r.status === "draft").length;
 
   return (
