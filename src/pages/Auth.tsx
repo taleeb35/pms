@@ -266,7 +266,7 @@ const Auth = () => {
         <span className="font-semibold text-purple-600">Back to Home</span>
       </Button>
 
-      <Card className="w-full max-w-md relative z-10 border-2 border-purple-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
+      <Card className="w-full max-w-xl relative z-10 border-2 border-purple-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
         <CardHeader className="space-y-4 text-center pb-6">
           <div className="flex justify-center mb-2 animate-fade-in">
             <div className="relative">
@@ -293,66 +293,77 @@ const Auth = () => {
           </div>
 
           <form onSubmit={handleClinicSignup} className="space-y-4">
-            <div className="space-y-2 animate-fade-in">
-              <Label htmlFor="clinicName" className="text-sm font-semibold">Clinic Name <span className="text-destructive">*</span></Label>
-              <Input
-                id="clinicName"
-                type="text"
-                placeholder="City Medical Center"
-                value={clinicName}
-                onChange={(e) => setClinicName(e.target.value)}
-                required
-                className={`border-2 ${errors.clinicName ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
-              />
-              {errors.clinicName && <p className="text-sm text-destructive">{errors.clinicName}</p>}
+            {/* Row 1: Clinic Name & Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
+              <div className="space-y-2">
+                <Label htmlFor="clinicName" className="text-sm font-semibold">Clinic Name <span className="text-destructive">*</span></Label>
+                <Input
+                  id="clinicName"
+                  type="text"
+                  placeholder="City Medical Center"
+                  value={clinicName}
+                  onChange={(e) => setClinicName(e.target.value)}
+                  required
+                  className={`border-2 ${errors.clinicName ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
+                />
+                {errors.clinicName && <p className="text-sm text-destructive">{errors.clinicName}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber" className="text-sm font-semibold">Phone Number <span className="text-destructive">*</span></Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="+92 300 1234567"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(handlePhoneInput(e))}
+                  required
+                  className={`border-2 ${errors.phoneNumber ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
+                />
+                {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
+              </div>
             </div>
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '50ms' }}>
-              <Label htmlFor="phoneNumber" className="text-sm font-semibold">Phone Number <span className="text-destructive">*</span></Label>
-              <Input
-                id="phoneNumber"
-                type="tel"
-                placeholder="+92 300 1234567"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(handlePhoneInput(e))}
-                required
-                className={`border-2 ${errors.phoneNumber ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
-              />
-              {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber}</p>}
+
+            {/* Row 2: City & Address */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: '50ms' }}>
+              <div className="space-y-2">
+                <CitySelect
+                  label="City"
+                  value={city}
+                  onValueChange={setCity}
+                  required
+                />
+                {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address" className="text-sm font-semibold">Address <span className="text-destructive">*</span></Label>
+                <Input
+                  id="address"
+                  type="text"
+                  placeholder="123 Main Street"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  required
+                  className={`border-2 ${errors.address ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
+                />
+                {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
+              </div>
             </div>
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <CitySelect
-                label="City"
-                value={city}
-                onValueChange={setCity}
-                required
-              />
-              {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
-            </div>
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '150ms' }}>
-              <Label htmlFor="address" className="text-sm font-semibold">Address <span className="text-destructive">*</span></Label>
-              <Input
-                id="address"
-                type="text"
-                placeholder="123 Main Street"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                required
-                className={`border-2 ${errors.address ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
-              />
-              {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
-            </div>
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '200ms' }}>
-              <Label htmlFor="noOfDoctors" className="text-sm font-semibold">Number of Doctors <span className="text-destructive">*</span></Label>
-              <Input
-                id="noOfDoctors"
-                type="text"
-                placeholder="5"
-                value={noOfDoctors}
-                onChange={(e) => setNoOfDoctors(handleNumberInput(e))}
-                required
-                className={`border-2 ${errors.noOfDoctors ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
-              />
-              {errors.noOfDoctors && <p className="text-sm text-destructive">{errors.noOfDoctors}</p>}
+
+            {/* Row 3: Number of Doctors */}
+            <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+              <div className="space-y-2">
+                <Label htmlFor="noOfDoctors" className="text-sm font-semibold">Number of Doctors <span className="text-destructive">*</span></Label>
+                <Input
+                  id="noOfDoctors"
+                  type="text"
+                  placeholder="5"
+                  value={noOfDoctors}
+                  onChange={(e) => setNoOfDoctors(handleNumberInput(e))}
+                  required
+                  className={`border-2 ${errors.noOfDoctors ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
+                />
+                {errors.noOfDoctors && <p className="text-sm text-destructive">{errors.noOfDoctors}</p>}
+              </div>
             </div>
 
             {/* Payment Plan Selection */}
@@ -458,7 +469,8 @@ const Auth = () => {
               )}
             </div>
             
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '250ms' }}>
+            {/* Email field */}
+            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '200ms' }}>
               <Label htmlFor="clinicEmail" className="text-sm font-semibold">Email <span className="text-destructive">*</span></Label>
               <Input
                 id="clinicEmail"
@@ -472,32 +484,35 @@ const Auth = () => {
               {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
             
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '300ms' }}>
-              <Label htmlFor="clinicPassword" className="text-sm font-semibold">Password <span className="text-destructive">*</span></Label>
-              <Input
-                id="clinicPassword"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className={`border-2 ${errors.password ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
-              />
-              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-            </div>
-            
-            <div className="space-y-2 animate-fade-in" style={{ animationDelay: '350ms' }}>
-              <Label htmlFor="confirmPassword" className="text-sm font-semibold">Confirm Password <span className="text-destructive">*</span></Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
-                className={`border-2 ${errors.confirmPassword ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
-              />
-              {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+            {/* Password fields in 2 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in" style={{ animationDelay: '250ms' }}>
+              <div className="space-y-2">
+                <Label htmlFor="clinicPassword" className="text-sm font-semibold">Password <span className="text-destructive">*</span></Label>
+                <Input
+                  id="clinicPassword"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className={`border-2 ${errors.password ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
+                />
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-semibold">Confirm Password <span className="text-destructive">*</span></Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className={`border-2 ${errors.confirmPassword ? 'border-destructive' : 'border-purple-200'} focus:border-purple-400 transition-colors`}
+                />
+                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+              </div>
             </div>
             
             <Button 
