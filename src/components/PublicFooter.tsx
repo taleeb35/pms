@@ -35,12 +35,11 @@ const PublicFooter = () => {
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3">
               <img src={clinicLogo} alt="Zonoir" className="h-12 w-12" />
-              <div>
-               
-              </div>
+              <div></div>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
-              The complete solution for modern clinic management. Trusted by 50+ clinics and 500+ doctors across Pakistan.
+              The complete solution for modern clinic management. Trusted by 50+ clinics and 500+ doctors across
+              Pakistan.
             </p>
             {/* Social Icons */}
             <div className="flex gap-3 pt-2">
@@ -135,12 +134,8 @@ const PublicFooter = () => {
         {/* Divider */}
         <div className="border-t border-slate-700/50 mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-slate-400 text-sm">
-              © {currentYear} Zonoir. All rights reserved.
-            </p>
-            <p className="text-slate-500 text-sm">
-              Made with ❤️ in Pakistan
-            </p>
+            <p className="text-slate-400 text-sm">© {currentYear} Zonoir. All rights reserved.</p>
+            <p className="text-slate-500 text-sm">Made with ❤️ in Pakistan</p>
           </div>
         </div>
       </div>
