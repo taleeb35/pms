@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Stethoscope, Building2, Users, Activity, LifeBuoy, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 import AdminAnalyticsCharts from "@/components/AdminAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 
@@ -64,7 +64,7 @@ const Dashboard = () => {
             <div className="relative group/logo">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-info/20 rounded-2xl blur-xl opacity-0 group-hover/logo:opacity-100 transition-opacity duration-300"></div>
               <div className="relative bg-white rounded-2xl p-4 shadow-lg group-hover/logo:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-primary/10">
-                <img src={clinicLogo} alt="MedCare Pro" className="h-16 w-16" />
+                <img src={clinicLogo} alt="Zonoir" className="main_logo new_logo" />
                 <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-warning animate-pulse opacity-0 group-hover/logo:opacity-100 transition-opacity duration-300" />
               </div>
             </div>

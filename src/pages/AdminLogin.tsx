@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Home, Shield, Lock, Sparkles } from "lucide-react";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -83,7 +83,7 @@ const AdminLogin = () => {
         <CardHeader className="space-y-4 text-center pb-8">
           <div className="flex justify-center mb-2">
             <div className="relative">
-              <img src={clinicLogo} alt="MedCare Pro" className="h-16 w-16 object-contain animate-fade-in" />
+              <img src={clinicLogo} alt="Zonoir" className="main_logo new_logo animate-fade-in" />
               <div className="absolute -top-1 -right-1">
                 <Shield className="h-6 w-6 text-primary animate-pulse" />
               </div>
