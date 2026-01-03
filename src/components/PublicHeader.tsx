@@ -38,7 +38,7 @@ const PublicHeader = () => {
             className="flex items-center gap-2 sm:gap-3 animate-fade-in cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <img src={clinicLogo} alt="Clinic Logo" className="main_logo hover-scale" />
+            <img src={clinicLogo} alt="Clinic Logo" className="main_logo new_logo hover-scale" />
             
           </div>
 
