@@ -5,13 +5,18 @@ import {
   Calendar, Users, FileText, Shield, 
   Sparkles, UserPlus, BarChart3, Coins, 
   CheckCircle2, ArrowRight, Play,
-  Building2, Stethoscope, HeadphonesIcon
+  Building2, Stethoscope, HeadphonesIcon,
+  Clock, Activity, ClipboardList
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
-import dashboardOverview from "@/assets/dashboard-overview.png";
-import patientManagement from "@/assets/patient-management.png";
-import appointmentCalendar from "@/assets/appointment-calendar.png";
+import featureDashboard from "@/assets/feature-dashboard.png";
+import featurePatients from "@/assets/feature-patients.png";
+import featureAppointments from "@/assets/feature-appointments.png";
+import featureVisitRecord from "@/assets/feature-visit-record.png";
+import featureSchedule from "@/assets/feature-schedule.png";
+import featureFinance from "@/assets/feature-finance.png";
+import featureActivityLogs from "@/assets/feature-activity-logs.png";
 
 const Features = () => {
   const navigate = useNavigate();
@@ -57,27 +62,59 @@ const Features = () => {
 
   const showcaseFeatures = [
     {
-      title: "Powerful Dashboard",
-      subtitle: "Everything at a Glance",
-      description: "Get real-time insights into your clinic performance with intuitive charts, patient statistics, and revenue tracking—all in one beautiful interface.",
-      image: dashboardOverview,
-      highlights: ["Real-time analytics", "Patient statistics", "Revenue charts", "Doctor performance"],
+      title: "Intuitive Dashboard",
+      subtitle: "Complete Overview at a Glance",
+      description: "Get instant insights into your clinic's performance. View total patients, appointments, today's schedule, and waitlist status. Analyze patient demographics by gender, age, city, and revenue with interactive charts—all updated in real-time.",
+      image: featureDashboard,
+      highlights: ["Real-time patient statistics", "Gender & age analytics", "Revenue tracking charts", "Today's appointments overview"],
       reversed: false
     },
     {
       title: "Patient Management",
       subtitle: "Complete Health Records",
-      description: "Track every patient from registration to treatment. Store medical history, allergies, visit records, and generate comprehensive health reports.",
-      image: patientManagement,
-      highlights: ["Medical history", "Visit tracking", "Allergy alerts", "Health reports"],
+      description: "Efficiently manage your entire patient database with powerful search and filtering. Filter by age, gender, city, and delivery dates. Import/export patient data seamlessly. Each patient profile includes contact info, blood group, and complete visit history.",
+      image: featurePatients,
+      highlights: ["Advanced search & filters", "Import/Export functionality", "Quick patient registration", "Complete patient profiles"],
       reversed: true
     },
     {
       title: "Smart Appointments",
       subtitle: "Effortless Scheduling",
-      description: "Visual calendar with drag-and-drop scheduling, automated reminders, walk-in management, and conflict detection to keep your clinic running smoothly.",
-      image: appointmentCalendar,
-      highlights: ["Visual calendar", "Auto reminders", "Walk-in queue", "Conflict detection"],
+      description: "Manage all appointments with flexible table and calendar views. Filter by status, date, and ICD codes. Track patient details, pregnancy information, appointment status, and who created each booking. Schedule new appointments in seconds.",
+      image: featureAppointments,
+      highlights: ["Table & calendar views", "Status-based filtering", "Pregnancy tracking", "Quick appointment creation"],
+      reversed: false
+    },
+    {
+      title: "Patient Visit Records",
+      subtitle: "Comprehensive Medical Documentation",
+      description: "Record and track every patient visit with detailed vitals including blood pressure, temperature, pulse, weight, height, and BMI. Document chief complaints, diagnoses with ICD codes, and maintain complete visit history with prescriptions and next visit scheduling.",
+      image: featureVisitRecord,
+      highlights: ["Complete vitals tracking", "Pain scale assessment", "Visit history timeline", "Medical records & documents"],
+      reversed: true
+    },
+    {
+      title: "Timing & Schedule",
+      subtitle: "Flexible Availability Management",
+      description: "Set your weekly availability with precision. Configure working hours for each day of the week, mark days off, and manage leaves effortlessly. Your patients will only see available slots based on your schedule.",
+      image: featureSchedule,
+      highlights: ["Weekly schedule setup", "Customizable time slots", "Day off management", "Leave planning"],
+      reversed: false
+    },
+    {
+      title: "Finance Management",
+      subtitle: "Complete Revenue Tracking",
+      description: "Track all financial aspects of your practice. View total revenue, discounts, clinic share, and doctor share at a glance. Detailed appointment-wise breakdown shows patient name, date, subtotal, discounts, and revenue splits. Export reports as PDF.",
+      image: featureFinance,
+      highlights: ["Revenue & discount tracking", "Clinic/Doctor share split", "Date-range filtering", "PDF report generation"],
+      reversed: true
+    },
+    {
+      title: "Activity Logs",
+      subtitle: "Complete Audit Trail",
+      description: "Track every action in your practice with comprehensive activity logs. Monitor schedule updates, patient registrations, appointment changes, and more. Search and filter by action type to maintain complete transparency and accountability.",
+      image: featureActivityLogs,
+      highlights: ["Real-time activity tracking", "Action-based filtering", "User action history", "Complete audit trail"],
       reversed: false
     }
   ];
@@ -126,7 +163,7 @@ const Features = () => {
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in">
-            From patient registration to financial reporting—simplify every aspect of your clinic.
+            From patient registration to financial reporting—simplify every aspect of your clinic with our comprehensive suite of features.
           </p>
           
           <div className="flex gap-4 justify-center pt-4 animate-fade-in">
@@ -173,7 +210,18 @@ const Features = () => {
       {/* Feature Showcases with Images */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="space-y-24">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Powerful Features
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Explore every feature designed to streamline your clinic operations
+            </p>
+          </div>
+          
+          <div className="space-y-32">
             {showcaseFeatures.map((feature, index) => (
               <div
                 key={index}
@@ -206,7 +254,7 @@ const Features = () => {
                     {feature.description}
                   </p>
                   
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {feature.highlights.map((highlight, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
