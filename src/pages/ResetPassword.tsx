@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, Loader2, CheckCircle, AlertCircle, Eye, EyeOff } from "lucide-react";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 import { validatePassword } from "@/lib/validations";
 
 const ResetPassword = () => {

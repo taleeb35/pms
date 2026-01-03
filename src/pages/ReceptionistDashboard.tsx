@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Users, Calendar, Building2, UserPlus, Clock, Activity, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 
@@ -129,7 +129,7 @@ const ReceptionistDashboard = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-info/20 to-info/5 flex items-center justify-center shadow-sm">
-              <img src={clinicLogo} alt="MedCare Pro" className="h-9 w-9 object-contain" />
+              <img src={clinicLogo} alt="Zonoir" className="h-9 w-9 object-contain" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">

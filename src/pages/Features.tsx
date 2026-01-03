@@ -298,7 +298,7 @@ const Features = () => {
               Ready to Transform Your Clinic?
             </h2>
             <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-              Join hundreds of clinics already using MedCare Pro. Start your 14-day free trial today.
+              Join hundreds of clinics already using Zonoir. Start your 14-day free trial today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 

@@ -28,7 +28,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 
 const pakistanCities = [
   "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",

@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { format, addMonths, startOfMonth } from "date-fns";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import TrialBanner from "@/components/TrialBanner";
@@ -161,7 +161,7 @@ const ClinicDashboard = () => {
             <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-info/20 to-info/5 flex items-center justify-center shadow-sm">
               <img 
                 src={clinicLogo} 
-                alt="MedCare Pro" 
+                alt="Zonoir" 
                 className="h-9 w-9 object-contain"
               />
             </div>

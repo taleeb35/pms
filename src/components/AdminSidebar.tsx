@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 
 const adminMenuItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -44,13 +44,9 @@ export function AdminSidebar() {
             <div className="flex items-center gap-3">
               <img 
                 src={clinicLogo} 
-                alt="MedCare Pro" 
-                className="h-12 w-12 object-contain hover:scale-110 transition-transform duration-300"
+                alt="Zonoir" 
+                className="main_logo new_logo hover:scale-110 transition-transform duration-300"
               />
-              <div>
-                <h3 className="font-bold text-lg">MedCare Pro</h3>
-                <p className="text-xs text-muted-foreground">Admin Panel</p>
-              </div>
             </div>
           </div>
         )}
@@ -59,7 +55,7 @@ export function AdminSidebar() {
           <div className="p-2 border-b border-border/40 flex justify-center">
             <img 
               src={clinicLogo} 
-              alt="MedCare Pro" 
+              alt="Zonoir" 
               className="h-8 w-8 object-contain hover:scale-110 transition-transform duration-300"
             />
           </div>

@@ -33,7 +33,7 @@ import {
   Activity,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
-import clinicLogo from "@/assets/clinic-logo.png";
+import clinicLogo from "@/assets/main-logo.webp";
 import {
   Collapsible,
   CollapsibleContent,
@@ -472,19 +472,9 @@ const Layout = ({ children }: LayoutProps) => {
               <div className="relative">
                 <img 
                   src={clinicLogo} 
-                  alt="MedCare Pro" 
-                  className="h-10 w-10 object-contain hover:scale-110 transition-transform duration-300"
+                  alt="Zonoir" 
+                  className="main_logo new_logo hover:scale-110 transition-transform duration-300"
                 />
-                <div className="absolute -top-1 -right-1 h-3 w-3 bg-success rounded-full animate-pulse" />
-              </div>
-              <div>
-                <h1 className="text-base font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  MedCare Pro
-                </h1>
-                <p className="text-xs text-muted-foreground hidden sm:block flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  Patient Management System
-                </p>
               </div>
             </div>
           </div>
