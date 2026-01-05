@@ -268,14 +268,44 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const fetchDiseaseTemplates = async () => {
     if (!appointment) return;
     try {
-      const { data, error } = await supabase
+      // First get the doctor's clinic_id
+      const { data: doctorData } = await supabase
+        .from("doctors")
+        .select("clinic_id")
+        .eq("id", appointment.doctor_id)
+        .maybeSingle();
+
+      // Fetch doctor-specific templates
+      const { data: doctorTemplates, error: doctorError } = await supabase
         .from("doctor_disease_templates")
         .select("id, disease_name, prescription_template")
         .eq("doctor_id", appointment.doctor_id)
         .order("disease_name");
 
-      if (error) throw error;
-      setDiseaseTemplates(data || []);
+      if (doctorError) throw doctorError;
+
+      // Also fetch clinic-level templates (where doctor_id is null but clinic_id matches)
+      let clinicTemplates: DiseaseTemplate[] = [];
+      if (doctorData?.clinic_id) {
+        const { data: cTemplates, error: clinicError } = await supabase
+          .from("doctor_disease_templates")
+          .select("id, disease_name, prescription_template")
+          .eq("clinic_id", doctorData.clinic_id)
+          .is("doctor_id", null)
+          .order("disease_name");
+
+        if (!clinicError && cTemplates) {
+          clinicTemplates = cTemplates;
+        }
+      }
+
+      // Combine both doctor-specific and clinic-level templates
+      const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
+      // Remove duplicates based on disease_name
+      const uniqueTemplates = allTemplates.filter((template, index, self) =>
+        index === self.findIndex(t => t.disease_name === template.disease_name)
+      );
+      setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
       console.error("Error fetching disease templates:", error);
     }
@@ -284,14 +314,44 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   const fetchTestTemplates = async () => {
     if (!appointment) return;
     try {
-      const { data, error } = await supabase
+      // First get the doctor's clinic_id
+      const { data: doctorData } = await supabase
+        .from("doctors")
+        .select("clinic_id")
+        .eq("id", appointment.doctor_id)
+        .maybeSingle();
+
+      // Fetch doctor-specific templates
+      const { data: doctorTemplates, error: doctorError } = await supabase
         .from("doctor_test_templates")
         .select("id, title, description")
         .eq("doctor_id", appointment.doctor_id)
         .order("title");
 
-      if (error) throw error;
-      setTestTemplates(data || []);
+      if (doctorError) throw doctorError;
+
+      // Also fetch clinic-level templates (where doctor_id is null but clinic_id matches)
+      let clinicTemplates: TestTemplate[] = [];
+      if (doctorData?.clinic_id) {
+        const { data: cTemplates, error: clinicError } = await supabase
+          .from("doctor_test_templates")
+          .select("id, title, description")
+          .eq("clinic_id", doctorData.clinic_id)
+          .is("doctor_id", null)
+          .order("title");
+
+        if (!clinicError && cTemplates) {
+          clinicTemplates = cTemplates;
+        }
+      }
+
+      // Combine both doctor-specific and clinic-level templates
+      const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
+      // Remove duplicates based on title
+      const uniqueTemplates = allTemplates.filter((template, index, self) =>
+        index === self.findIndex(t => t.title === template.title)
+      );
+      setTestTemplates(uniqueTemplates);
     } catch (error) {
       console.error("Error fetching test templates:", error);
     }
