@@ -4,17 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Check, 
-  Sparkles, 
-  Users, 
-  Zap,
-  Shield,
-  HeadphonesIcon,
-  ArrowRight,
-  Star,
-  Calculator
-} from "lucide-react";
+import { Check, Sparkles, Users, Zap, Shield, HeadphonesIcon, ArrowRight, Star, Calculator } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 
@@ -33,6 +23,7 @@ const Pricing = () => {
 
   const features = [
     "Unlimited Patients",
+    "2 Receptionist Account",
     "Appointment Management",
     "Complete Patient Records",
     "Visit Records & History",
@@ -47,45 +38,49 @@ const Pricing = () => {
   const faqs = [
     {
       question: "How does the pricing work?",
-      answer: "You pay PKR 5,999 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same."
+      answer:
+        "You pay PKR 5,999 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
     },
     {
       question: "Is there a free trial?",
-      answer: "Yes! All signups come with a 14-day free trial. No credit card required to start."
+      answer: "Yes! All signups come with a 14-day free trial. No credit card required to start.",
     },
     {
       question: "What's the yearly discount?",
-      answer: "When you choose annual billing, you get 17% off - that's PKR 4,979 per doctor per month instead of PKR 5,999."
+      answer:
+        "When you choose annual billing, you get 17% off - that's PKR 4,979 per doctor per month instead of PKR 5,999.",
     },
     {
       question: "Can I switch between monthly and yearly?",
-      answer: "Yes, you can switch your billing cycle at any time. Changes will be reflected in your next billing period."
+      answer:
+        "Yes, you can switch your billing cycle at any time. Changes will be reflected in your next billing period.",
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept all major bank transfers, JazzCash, EasyPaisa, and can arrange other payment methods for clinics."
+      answer:
+        "We accept all major bank transfers, JazzCash, EasyPaisa, and can arrange other payment methods for clinics.",
     },
     {
       question: "Is my data secure?",
-      answer: "Yes, we use bank-level encryption and comply with healthcare data protection standards to keep your data safe."
-    }
+      answer:
+        "Yes, we use bank-level encryption and comply with healthcare data protection standards to keep your data safe.",
+    },
   ];
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-PK', {
-      style: 'currency',
-      currency: 'PKR',
+    return new Intl.NumberFormat("en-PK", {
+      style: "currency",
+      currency: "PKR",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <PublicHeader />
-      
+
       <div className="container mx-auto px-4 py-8">
-        
         {/* Hero Section */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
@@ -104,15 +99,15 @@ const Pricing = () => {
 
           {/* Billing Toggle */}
           <div className="flex items-center justify-center gap-4 mb-8">
-            <span className={`text-sm font-medium transition-colors ${!isAnnual ? "text-foreground" : "text-muted-foreground"}`}>
+            <span
+              className={`text-sm font-medium transition-colors ${!isAnnual ? "text-foreground" : "text-muted-foreground"}`}
+            >
               Monthly
             </span>
-            <Switch
-              checked={isAnnual}
-              onCheckedChange={setIsAnnual}
-              className="data-[state=checked]:bg-primary"
-            />
-            <span className={`text-sm font-medium transition-colors ${isAnnual ? "text-foreground" : "text-muted-foreground"}`}>
+            <Switch checked={isAnnual} onCheckedChange={setIsAnnual} className="data-[state=checked]:bg-primary" />
+            <span
+              className={`text-sm font-medium transition-colors ${isAnnual ? "text-foreground" : "text-muted-foreground"}`}
+            >
               Yearly
             </span>
             {isAnnual && (
@@ -130,7 +125,7 @@ const Pricing = () => {
               <Star className="w-4 h-4 inline mr-1" />
               14-Day Free Trial Included
             </div>
-            
+
             <CardHeader className="pt-12 pb-4 text-center">
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-white" />
@@ -138,7 +133,7 @@ const Pricing = () => {
               <h3 className="text-2xl font-bold text-foreground">Per Doctor</h3>
               <p className="text-muted-foreground text-sm">For individual doctors & clinics</p>
             </CardHeader>
-            
+
             <CardContent className="pb-8">
               {/* Price Display */}
               <div className="text-center mb-6">
@@ -208,7 +203,7 @@ const Pricing = () => {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 className="w-full mb-6 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
                 size="lg"
                 onClick={() => navigate("/login")}
@@ -237,14 +232,29 @@ const Pricing = () => {
             <h2 className="text-3xl font-bold text-foreground mb-4">Everything You Need</h2>
             <p className="text-muted-foreground">All features included for every doctor</p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Zap, title: "Easy Setup", description: "Get started in minutes with our intuitive onboarding process" },
-              { icon: Shield, title: "Data Security", description: "Bank-level encryption and regular backups to keep your data safe" },
-              { icon: HeadphonesIcon, title: "Email Support", description: "Our support team is ready to help you succeed" },
+              {
+                icon: Zap,
+                title: "Easy Setup",
+                description: "Get started in minutes with our intuitive onboarding process",
+              },
+              {
+                icon: Shield,
+                title: "Data Security",
+                description: "Bank-level encryption and regular backups to keep your data safe",
+              },
+              {
+                icon: HeadphonesIcon,
+                title: "Email Support",
+                description: "Our support team is ready to help you succeed",
+              },
             ].map((feature, index) => (
-              <Card key={index} className="text-center p-6 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg">
+              <Card
+                key={index}
+                className="text-center p-6 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg"
+              >
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <feature.icon className="w-6 h-6 text-primary" />
                 </div>
@@ -261,7 +271,7 @@ const Pricing = () => {
             <h2 className="text-3xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
             <p className="text-muted-foreground">Everything you need to know about our pricing</p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             {faqs.map((faq, index) => (
               <Card key={index} className="p-6 border-primary/20 hover:border-primary/40 transition-all duration-300">
@@ -275,24 +285,17 @@ const Pricing = () => {
         {/* CTA Section */}
         <div className="max-w-4xl mx-auto text-center pb-12">
           <Card className="bg-gradient-to-br from-primary to-primary/80 border-0 p-12">
-            <h2 className="text-3xl font-bold text-primary-foreground mb-4">
-              Ready to Transform Your Practice?
-            </h2>
+            <h2 className="text-3xl font-bold text-primary-foreground mb-4">Ready to Transform Your Practice?</h2>
             <p className="text-primary-foreground/80 mb-8 text-lg">
               Start your 14-day free trial today. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="text-lg px-8"
-                onClick={() => navigate("/login")}
-              >
+              <Button size="lg" variant="secondary" className="text-lg px-8" onClick={() => navigate("/login")}>
                 Start Free Trial
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 className="text-lg px-8 bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
                 onClick={() => navigate("/contact")}
@@ -305,9 +308,7 @@ const Pricing = () => {
 
         {/* Footer Links */}
         <div className="text-center pb-12">
-          <p className="text-muted-foreground mb-4">
-            Have more questions?
-          </p>
+          <p className="text-muted-foreground mb-4">Have more questions?</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="outline" asChild>
               <Link to="/features">View All Features</Link>
