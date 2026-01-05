@@ -139,10 +139,10 @@ All colors MUST be HSL.
     margin: 1cm;
   }
 }
-.hover\:text-foreground:hover {
-  color: #fff !important;
+.hover\:text-primary-foreground:hover {
+  color: #8c36ea !important;
 }
-img.main_logo.hover-scale {
+g.main_logo.hover-scale {
   width: 250px !important;
 }
 img.main_logo.new_logo {
