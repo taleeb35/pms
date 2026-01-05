@@ -17,7 +17,7 @@ const ReferralPartnerAuth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email.trim() || !referralCode.trim()) {
       toast.error("Please enter both email and referral code");
       return;
@@ -56,7 +56,10 @@ const ReferralPartnerAuth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors">
+        <Link
+          to="/"
+          className="back_home inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home
         </Link>
@@ -69,9 +72,7 @@ const ReferralPartnerAuth = () => {
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Partner Dashboard
             </CardTitle>
-            <CardDescription>
-              Enter your credentials to access your referral dashboard
-            </CardDescription>
+            <CardDescription>Enter your credentials to access your referral dashboard</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -100,8 +101,8 @@ const ReferralPartnerAuth = () => {
                   required
                 />
               </div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                 disabled={loading}
               >
