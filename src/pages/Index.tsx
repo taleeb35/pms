@@ -354,15 +354,6 @@ const Index = () => {
                 Get Started
                 <Sparkles className="ml-2 h-5 w-5" />
               </Button>
-              <Button
-                onClick={() => navigate("/login")}
-                size="lg"
-                variant="outline"
-                className="text-lg px-12 py-7 bg-white/20 backdrop-blur-sm border-2 border-white text-white hover:bg-white/30 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
-              >
-                <Stethoscope className="mr-2 h-5 w-5" />
-                Login
-              </Button>
             </div>
 
             <div className="flex flex-wrap justify-center gap-6 text-white/90 text-sm mt-10">
