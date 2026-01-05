@@ -152,7 +152,7 @@ const Index = () => {
               onClick={() => navigate("/login")}
               size="lg"
               variant="outline"
-              className="text-lg px-10 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110"
+              className="home_login text-lg px-10 py-6 border-2 border-purple-600 text-purple-600 hover:bg-purple-50 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-110"
             >
               <LogIn className="mr-2 h-5 w-5" />
               Login
