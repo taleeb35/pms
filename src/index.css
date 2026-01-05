@@ -139,12 +139,12 @@ All colors MUST be HSL.
     margin: 1cm;
   }
 }
-.home_login:hover {
+/*.home_login:hover {
   color: #8c36ea !important;
 }
 .hover\:bg-primary:hover {
   background-color: #fff !important;
-}
+}*/
 g.main_logo.hover-scale {
   width: 250px !important;
 }
