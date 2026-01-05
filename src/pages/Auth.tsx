@@ -356,6 +356,17 @@ const Auth = () => {
             {/* Payment Plan Selection */}
             <div className="space-y-3 animate-fade-in p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200" style={{ animationDelay: '210ms' }}>
               <Label className="text-sm font-semibold">Payment Plan <span className="text-destructive">*</span></Label>
+              
+              {/* 14 Days Trial Badge - Prominently displayed */}
+              <div className="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-3 border-2 border-amber-400">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-amber-600 text-xl">🎉</span>
+                  <span className="font-bold text-amber-800 text-base">Start with 14 Days FREE Trial!</span>
+                  <span className="text-amber-600 text-xl">🎉</span>
+                </div>
+                <p className="text-xs text-amber-700 text-center mt-1">No payment required during trial period</p>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
@@ -389,15 +400,7 @@ const Auth = () => {
                   </div>
                 </button>
               </div>
-              {/* 14 Days Trial Badge */}
-              <div className="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-3 border border-amber-300 mb-3">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-amber-600 text-lg">🎉</span>
-                  <span className="font-bold text-amber-800 text-sm">Start with 14 Days FREE Trial!</span>
-                  <span className="text-amber-600 text-lg">🎉</span>
-                </div>
-                <p className="text-xs text-amber-700 text-center mt-1">No payment required during trial period</p>
-              </div>
+              
               {/* Pricing Summary */}
               <div className="bg-white/80 rounded-lg p-3 border border-purple-100">
                 <div className="flex justify-between text-sm mb-1">
