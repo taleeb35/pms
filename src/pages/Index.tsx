@@ -351,7 +351,7 @@ const Index = () => {
                 size="lg"
                 className="text-lg px-12 py-7 bg-white text-purple-600 hover:bg-gray-50 shadow-2xl hover:shadow-white/50 transition-all duration-300 hover:scale-110 font-bold"
               >
-                Sign Up
+                Get Started
                 <Sparkles className="ml-2 h-5 w-5" />
               </Button>
               <Button
