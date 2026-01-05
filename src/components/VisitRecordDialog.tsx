@@ -1006,7 +1006,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         ) : (
           <>
             <DialogHeader className="print:hidden">
-              <DialogTitle className="flex items-center justify-between">
+              <DialogTitle className="flex items-center justify-between pr-8">
                 <span>Patient Visit Record</span>
                 <Button variant="outline" size="sm" onClick={handlePrint}>
                   <Printer className="h-4 w-4 mr-2" />
