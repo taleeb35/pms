@@ -2,13 +2,51 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Printer, Loader2 } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  Plus,
+  Check,
+  X,
+  Edit,
+  Search,
+  Trash2,
+  MoreVertical,
+  FileText,
+  Play,
+  CheckCircle,
+  XCircle,
+  Printer,
+  Loader2,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/TableSkeleton";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -110,7 +148,9 @@ const DoctorAppointments = () => {
   }, []);
 
   const fetchDoctorId = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (user) {
       setDoctorId(user.id);
     }
@@ -118,17 +158,15 @@ const DoctorAppointments = () => {
 
   const checkDoctorSpecialization = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("doctors")
-        .select("specialization")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data, error } = await supabase.from("doctors").select("specialization").eq("id", user.id).maybeSingle();
 
       if (error) throw error;
-      
+
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
     } catch (error) {
@@ -139,7 +177,9 @@ const DoctorAppointments = () => {
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setAppointments([]);
         return;
@@ -147,12 +187,14 @@ const DoctorAppointments = () => {
 
       const { data, error } = await supabase
         .from("appointments")
-        .select(`
+        .select(
+          `
           *,
           patients(full_name, phone, patient_id, date_of_birth, email, father_name, pregnancy_start_date),
           creator:profiles!appointments_created_by_fkey(full_name),
           icd_code:clinic_icd_codes(id, code, description)
-        `)
+        `,
+        )
         .eq("doctor_id", user.id)
         .order("appointment_date", { ascending: true })
         .order("appointment_time", { ascending: true });
@@ -172,15 +214,13 @@ const DoctorAppointments = () => {
 
   const fetchICDCodes = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Get doctor's clinic_id first
-      const { data: doctorData } = await supabase
-        .from("doctors")
-        .select("clinic_id")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data: doctorData } = await supabase.from("doctors").select("clinic_id").eq("id", user.id).maybeSingle();
 
       if (doctorData?.clinic_id) {
         const { data, error } = await supabase
@@ -204,7 +244,9 @@ const DoctorAppointments = () => {
 
   const fetchWaitlistPatients = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -214,7 +256,7 @@ const DoctorAppointments = () => {
         .eq("status", "active");
 
       if (error) throw error;
-      const ids = new Set((data || []).map(item => item.patient_id));
+      const ids = new Set((data || []).map((item) => item.patient_id));
       setWaitlistPatientIds(ids);
     } catch (error: any) {
       console.error("Error fetching waitlist:", error);
@@ -233,7 +275,9 @@ const DoctorAppointments = () => {
       return;
     }
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const patientId = selectedPatientId;
       const appointmentDate = format(selectedDate, "yyyy-MM-dd");
       const appointmentTime = selectedTime;
@@ -241,47 +285,47 @@ const DoctorAppointments = () => {
       // Check if doctor is available (includes leave and schedule check)
       const availability = await checkDoctorAvailability(user?.id || "", appointmentDate);
       if (!availability.available) {
-        toast({ 
-          title: "Doctor Not Available", 
-          description: availability.reason || "The doctor is not available on this date. Please select a different date.", 
-          variant: "destructive" 
+        toast({
+          title: "Doctor Not Available",
+          description:
+            availability.reason || "The doctor is not available on this date. Please select a different date.",
+          variant: "destructive",
         });
         return;
       }
 
       // Check for double booking
-      const { available } = await isTimeSlotAvailable(
-        user?.id || "",
-        appointmentDate,
-        appointmentTime
-      );
+      const { available } = await isTimeSlotAvailable(user?.id || "", appointmentDate, appointmentTime);
 
       if (!available) {
-        toast({ 
-          title: "Time Slot Unavailable", 
-          description: "You already have an appointment at this time. Please select a different time slot.", 
-          variant: "destructive" 
+        toast({
+          title: "Time Slot Unavailable",
+          description: "You already have an appointment at this time. Please select a different time slot.",
+          variant: "destructive",
         });
         return;
       }
-      
-      const { data, error } = await supabase.from("appointments").insert({
-        doctor_id: user?.id, 
-        patient_id: patientId,
-        appointment_date: appointmentDate, 
-        appointment_time: appointmentTime,
-        duration_minutes: parseInt(formData.get("duration_minutes") as string), 
-        reason: formData.get("reason") as string || null,
-        notes: formData.get("notes") as string || null, 
-        status: "scheduled" as const,
-        created_by: user?.id || null,
-        appointment_type: selectedAppointmentType,
-      }).select();
+
+      const { data, error } = await supabase
+        .from("appointments")
+        .insert({
+          doctor_id: user?.id,
+          patient_id: patientId,
+          appointment_date: appointmentDate,
+          appointment_time: appointmentTime,
+          duration_minutes: parseInt(formData.get("duration_minutes") as string),
+          reason: (formData.get("reason") as string) || null,
+          notes: (formData.get("notes") as string) || null,
+          status: "scheduled" as const,
+          created_by: user?.id || null,
+          appointment_type: selectedAppointmentType,
+        })
+        .select();
       if (error) throw error;
 
       // Log activity
       if (data && data[0]) {
-        const selectedPatient = patients.find(p => p.id === patientId);
+        const selectedPatient = patients.find((p) => p.id === patientId);
         await logActivity({
           action: "appointment_created",
           entityType: "appointment",
@@ -321,7 +365,9 @@ const DoctorAppointments = () => {
     e.preventDefault();
     if (!editingAppointment || !editDate) return;
     const formData = new FormData(e.currentTarget);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     const appointmentDate = format(editDate, "yyyy-MM-dd");
     const appointmentTime = editSelectedTime;
 
@@ -329,10 +375,10 @@ const DoctorAppointments = () => {
       // Check if doctor is available (includes leave and schedule check)
       const availability = await checkDoctorAvailability(user?.id || "", appointmentDate);
       if (!availability.available) {
-        toast({ 
-          title: "Doctor Not Available", 
-          description: availability.reason || "You are not available on this date. Please select a different date.", 
-          variant: "destructive" 
+        toast({
+          title: "Doctor Not Available",
+          description: availability.reason || "You are not available on this date. Please select a different date.",
+          variant: "destructive",
         });
         return;
       }
@@ -342,26 +388,29 @@ const DoctorAppointments = () => {
         user?.id || "",
         appointmentDate,
         appointmentTime,
-        editingAppointment.id
+        editingAppointment.id,
       );
 
       if (!available) {
-        toast({ 
-          title: "Time Slot Unavailable", 
-          description: "You already have an appointment at this time. Please select a different time slot.", 
-          variant: "destructive" 
+        toast({
+          title: "Time Slot Unavailable",
+          description: "You already have an appointment at this time. Please select a different time slot.",
+          variant: "destructive",
         });
         return;
       }
 
-      const { error } = await supabase.from("appointments").update({
-        patient_id: formData.get("patient_id") as string,
-        appointment_date: appointmentDate, 
-        appointment_time: appointmentTime,
-        duration_minutes: parseInt(formData.get("duration_minutes") as string), 
-        reason: formData.get("reason") as string || null,
-        notes: formData.get("notes") as string || null,
-      }).eq("id", editingAppointment.id);
+      const { error } = await supabase
+        .from("appointments")
+        .update({
+          patient_id: formData.get("patient_id") as string,
+          appointment_date: appointmentDate,
+          appointment_time: appointmentTime,
+          duration_minutes: parseInt(formData.get("duration_minutes") as string),
+          reason: (formData.get("reason") as string) || null,
+          notes: (formData.get("notes") as string) || null,
+        })
+        .eq("id", editingAppointment.id);
       if (error) throw error;
 
       // Log appointment update
@@ -389,19 +438,25 @@ const DoctorAppointments = () => {
 
   const handleUpdateStatus = async (appointmentId: string, newStatus: string) => {
     // Find the appointment to get patient info for logging
-    const apt = appointments.find(a => a.id === appointmentId);
-    
-    const { error } = await supabase.from("appointments").update({ status: newStatus as any }).eq("id", appointmentId);
+    const apt = appointments.find((a) => a.id === appointmentId);
+
+    const { error } = await supabase
+      .from("appointments")
+      .update({ status: newStatus as any })
+      .eq("id", appointmentId);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
 
     // Log status change
-    const action = newStatus === "cancelled" ? "appointment_cancelled" 
-      : newStatus === "completed" ? "appointment_completed" 
-      : "appointment_status_changed";
-    
+    const action =
+      newStatus === "cancelled"
+        ? "appointment_cancelled"
+        : newStatus === "completed"
+          ? "appointment_completed"
+          : "appointment_status_changed";
+
     await logActivity({
       action,
       entityType: "appointment",
@@ -419,8 +474,8 @@ const DoctorAppointments = () => {
 
   const handleDeleteAppointment = async (appointmentId: string) => {
     // Find the appointment to get patient info for logging
-    const apt = appointments.find(a => a.id === appointmentId);
-    
+    const apt = appointments.find((a) => a.id === appointmentId);
+
     try {
       const { error } = await supabase.from("appointments").delete().eq("id", appointmentId);
       if (error) throw error;
@@ -475,34 +530,42 @@ const DoctorAppointments = () => {
   const getFilteredAppointments = () => {
     // If patient join is missing (RLS / deleted patient), exclude it to avoid runtime crashes
     let filtered = appointments.filter((apt) => apt.patients);
-    
+
     // Apply status filter
     if (statusFilter && statusFilter !== "all") {
       filtered = filtered.filter((apt) => apt.status === statusFilter);
     }
-    
+
     // Apply date filter
     if (dateFilter && dateFilter !== "all") {
       const today = startOfDay(new Date());
       switch (dateFilter) {
         case "today":
-          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }));
+          filtered = filtered.filter((apt) =>
+            isWithinInterval(new Date(apt.appointment_date), { start: today, end: endOfDay(today) }),
+          );
           break;
         case "tomorrow":
           const tomorrow = addDays(today, 1);
-          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }));
+          filtered = filtered.filter((apt) =>
+            isWithinInterval(new Date(apt.appointment_date), { start: tomorrow, end: endOfDay(tomorrow) }),
+          );
           break;
         case "day_after":
           const dayAfter = addDays(today, 2);
-          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }));
+          filtered = filtered.filter((apt) =>
+            isWithinInterval(new Date(apt.appointment_date), { start: dayAfter, end: endOfDay(dayAfter) }),
+          );
           break;
         case "week":
           const weekEnd = addDays(today, 7);
-          filtered = filtered.filter((apt) => isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }));
+          filtered = filtered.filter((apt) =>
+            isWithinInterval(new Date(apt.appointment_date), { start: today, end: weekEnd }),
+          );
           break;
       }
     }
-    
+
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
@@ -523,7 +586,7 @@ const DoctorAppointments = () => {
     if (icdCodeFilter && icdCodeFilter !== "all") {
       filtered = filtered.filter((apt) => apt.icd_code_id === icdCodeFilter);
     }
-    
+
     return filtered;
   };
 
@@ -538,9 +601,17 @@ const DoctorAppointments = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Appointments</h1>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-          <DialogTrigger asChild><Button className="gap-2"><Plus className="h-4 w-4" />New Appointment</Button></DialogTrigger>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Appointment
+            </Button>
+          </DialogTrigger>
           <DialogContent className="max-w-2xl">
-            <DialogHeader><DialogTitle>Schedule New Appointment</DialogTitle><DialogDescription>Create a new appointment for a patient</DialogDescription></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>Schedule New Appointment</DialogTitle>
+              <DialogDescription>Create a new appointment for a patient</DialogDescription>
+            </DialogHeader>
             <form onSubmit={handleAddAppointment} className="space-y-4">
               <div className="space-y-2">
                 <Label>Patient</Label>
@@ -553,15 +624,66 @@ const DoctorAppointments = () => {
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Appointment Date</Label><Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{selectedDate ? format(selectedDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={selectedDate} onSelect={(date) => { setSelectedDate(date); if (date) setDatePopoverOpen(false); }} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label htmlFor="appointment_time">Time</Label><DoctorTimeSelect doctorId={doctorId} selectedDate={selectedDate} value={selectedTime} onValueChange={setSelectedTime} onLeaveStatusChange={(onLeave) => setIsOnLeave(onLeave)} name="appointment_time" required /></div>
+                <div className="space-y-2">
+                  <Label>Appointment Date</Label>
+                  <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !selectedDate && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={(date) => {
+                          setSelectedDate(date);
+                          if (date) setDatePopoverOpen(false);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="appointment_time">Time</Label>
+                  <DoctorTimeSelect
+                    doctorId={doctorId}
+                    selectedDate={selectedDate}
+                    value={selectedTime}
+                    onValueChange={setSelectedTime}
+                    onLeaveStatusChange={(onLeave) => setIsOnLeave(onLeave)}
+                    name="appointment_time"
+                    required
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label htmlFor="duration_minutes">Duration (minutes)</Label><Input id="duration_minutes" name="duration_minutes" type="number" defaultValue={30} min={15} step={15} required /></div>
+                <div className="space-y-2">
+                  <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+                  <Input
+                    id="duration_minutes"
+                    name="duration_minutes"
+                    type="number"
+                    defaultValue={30}
+                    min={15}
+                    step={15}
+                    required
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label>Appointment Type</Label>
                   <Select value={selectedAppointmentType} onValueChange={setSelectedAppointmentType}>
-                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="new">New</SelectItem>
                       <SelectItem value="follow_up">Follow Up</SelectItem>
@@ -570,9 +692,20 @@ const DoctorAppointments = () => {
                   </Select>
                 </div>
               </div>
-              <div className="space-y-2"><Label htmlFor="reason">Reason for Visit</Label><Input id="reason" name="reason" placeholder="e.g., Regular checkup" /></div>
-              <div className="space-y-2"><Label htmlFor="notes">Notes</Label><Textarea id="notes" name="notes" placeholder="Additional notes..." rows={3} /></div>
-              <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button><Button type="submit">Create Appointment</Button></div>
+              <div className="space-y-2">
+                <Label htmlFor="reason">Reason for Visit</Label>
+                <Input id="reason" name="reason" placeholder="e.g., Regular checkup" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea id="notes" name="notes" placeholder="Additional notes..." rows={3} />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowAddDialog(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Create Appointment</Button>
+              </div>
             </form>
           </DialogContent>
         </Dialog>
@@ -581,20 +714,20 @@ const DoctorAppointments = () => {
       <Tabs defaultValue="table" className="w-full">
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <TabsList className="bg-accent/50 p-1 rounded-lg shadow-sm">
-            <TabsTrigger 
-              value="table" 
+            <TabsTrigger
+              value="table"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
             >
               Table View
             </TabsTrigger>
-            <TabsTrigger 
+            <TabsTrigger
               value="calendar"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
+              className="cal_view data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all"
             >
               Calendar View
             </TabsTrigger>
           </TabsList>
-          
+
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[180px] bg-background">
               <SelectValue placeholder="Filter by status" />
@@ -608,7 +741,7 @@ const DoctorAppointments = () => {
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={dateFilter || "all"} onValueChange={setDateFilter}>
             <SelectTrigger className="w-[180px] bg-background">
               <SelectValue placeholder="Filter by date" />
@@ -635,7 +768,7 @@ const DoctorAppointments = () => {
               ))}
             </SelectContent>
           </Select>
-          
+
           <div className="relative flex-1 min-w-[300px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -647,158 +780,184 @@ const DoctorAppointments = () => {
           </div>
         </div>
         <TabsContent value="table" className="space-y-4">
-          <Card><CardHeader><CardTitle>All Appointments</CardTitle></CardHeader><CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Patient</TableHead>
-                  <TableHead>Patient Phone</TableHead>
-                  {isGynecologist && <TableHead>Pregnancy</TableHead>}
-                  <TableHead>Date & Time</TableHead>
-                  <TableHead>Created By</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableSkeleton columns={isGynecologist ? 7 : 6} rows={5} columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]", "w-[80px]"]} />
-                ) : paginatedAppointments.length === 0 ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>All Appointments</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
-                      No appointments scheduled
-                    </TableCell>
+                    <TableHead>Patient</TableHead>
+                    <TableHead>Patient Phone</TableHead>
+                    {isGynecologist && <TableHead>Pregnancy</TableHead>}
+                    <TableHead>Date & Time</TableHead>
+                    <TableHead>Created By</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ) : (
-                  paginatedAppointments.map((apt) => (
-                <TableRow key={apt.id} className="hover:bg-accent/50">
-                  <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
-                  <TableCell>{apt.patients?.phone || "-"}</TableCell>
-                  {isGynecologist && (
-                    <TableCell>
-                      {apt.patients?.pregnancy_start_date ? (
-                        <span className="text-primary font-medium">
-                          {calculatePregnancyDuration(apt.patients!.pregnancy_start_date)}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
-                      )}
-                    </TableCell>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableSkeleton
+                      columns={isGynecologist ? 7 : 6}
+                      rows={5}
+                      columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]", "w-[80px]"]}
+                    />
+                  ) : paginatedAppointments.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
+                        No appointments scheduled
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedAppointments.map((apt) => (
+                      <TableRow key={apt.id} className="hover:bg-accent/50">
+                        <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
+                        <TableCell>{apt.patients?.phone || "-"}</TableCell>
+                        {isGynecologist && (
+                          <TableCell>
+                            {apt.patients?.pregnancy_start_date ? (
+                              <span className="text-primary font-medium">
+                                {calculatePregnancyDuration(apt.patients!.pregnancy_start_date)}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          {format(new Date(apt.appointment_date), "PPP")}
+                          <br />
+                          <span className="text-sm text-muted-foreground">{apt.appointment_time}</span>
+                        </TableCell>
+                        <TableCell>{apt.creator?.full_name || "-"}</TableCell>
+                        <TableCell>{getStatusBadge(apt.status)}</TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-background z-50">
+                              <DropdownMenuItem onClick={() => openEditDialog(apt)}>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit Appointment
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => openVisitDialog(apt)}>
+                                <FileText className="h-4 w-4 mr-2" />
+                                Record Visit
+                              </DropdownMenuItem>
+                              {apt.status === "completed" && (
+                                <DropdownMenuItem onClick={() => openPrintReportDialog(apt)}>
+                                  <Printer className="h-4 w-4 mr-2" />
+                                  Print Report
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              {apt.status === "scheduled" && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
+                                  <Check className="h-4 w-4 mr-2" />
+                                  Confirm
+                                </DropdownMenuItem>
+                              )}
+                              {apt.status === "confirmed" && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "in_progress")}>
+                                  <Play className="h-4 w-4 mr-2" />
+                                  Start
+                                </DropdownMenuItem>
+                              )}
+                              {apt.status === "in_progress" && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "completed")}>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Complete
+                                </DropdownMenuItem>
+                              )}
+                              {(apt.status === "scheduled" || apt.status === "confirmed") && (
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "cancelled")}>
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Cancel
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuSeparator />
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <DropdownMenuItem
+                                    onSelect={(e) => e.preventDefault()}
+                                    className="text-destructive focus:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete this appointment for{" "}
+                                      {apt.patients?.full_name || "this patient"}? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteAppointment(apt.id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
                   )}
-                  <TableCell>{format(new Date(apt.appointment_date), "PPP")}<br /><span className="text-sm text-muted-foreground">{apt.appointment_time}</span></TableCell>
-                  <TableCell>{apt.creator?.full_name || "-"}</TableCell>
-                  <TableCell>{getStatusBadge(apt.status)}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-background z-50">
-                        <DropdownMenuItem onClick={() => openEditDialog(apt)}>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit Appointment
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openVisitDialog(apt)}>
-                          <FileText className="h-4 w-4 mr-2" />
-                          Record Visit
-                        </DropdownMenuItem>
-                        {apt.status === "completed" && (
-                          <DropdownMenuItem onClick={() => openPrintReportDialog(apt)}>
-                            <Printer className="h-4 w-4 mr-2" />
-                            Print Report
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                        {apt.status === "scheduled" && (
-                          <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
-                            <Check className="h-4 w-4 mr-2" />
-                            Confirm
-                          </DropdownMenuItem>
-                        )}
-                        {apt.status === "confirmed" && (
-                          <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "in_progress")}>
-                            <Play className="h-4 w-4 mr-2" />
-                            Start
-                          </DropdownMenuItem>
-                        )}
-                        {apt.status === "in_progress" && (
-                          <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "completed")}>
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Complete
-                          </DropdownMenuItem>
-                        )}
-                        {(apt.status === "scheduled" || apt.status === "confirmed") && (
-                          <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "cancelled")}>
-                            <XCircle className="h-4 w-4 mr-2" />
-                            Cancel
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete this appointment for {apt.patients?.full_name || "this patient"}? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteAppointment(apt.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-                )}
-              </TableBody>
-            </Table>
-            <TablePagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
-            />
-          </CardContent></Card>
+                </TableBody>
+              </Table>
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
         <TabsContent value="calendar">
-          <ImprovedAppointmentCalendar 
-            appointments={appointments} 
+          <ImprovedAppointmentCalendar
+            appointments={appointments}
             onAppointmentClick={openVisitDialog}
             doctorId={doctorId}
           />
         </TabsContent>
       </Tabs>
 
-      <VisitRecordDialog
-        open={showVisitDialog}
-        onOpenChange={setShowVisitDialog}
-        appointment={visitAppointment}
-      />
+      <VisitRecordDialog open={showVisitDialog} onOpenChange={setShowVisitDialog} appointment={visitAppointment} />
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Edit Appointment</DialogTitle><DialogDescription>Update appointment details for {editingAppointment?.patients?.full_name || "patient"}</DialogDescription></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>Edit Appointment</DialogTitle>
+            <DialogDescription>
+              Update appointment details for {editingAppointment?.patients?.full_name || "patient"}
+            </DialogDescription>
+          </DialogHeader>
           {editingAppointment && (
             <form onSubmit={handleEditAppointment} className="space-y-4">
               <div className="space-y-2">
                 <Label>Patient</Label>
                 <Select name="patient_id" defaultValue={editingAppointment.patient_id} required>
-                  <SelectTrigger><SelectValue placeholder="Select Patient" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Patient" />
+                  </SelectTrigger>
                   <SelectContent>
                     {patients.map((patient) => (
                       <SelectItem key={patient.id} value={patient.id}>
@@ -809,13 +968,92 @@ const DoctorAppointments = () => {
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Appointment Date</Label><Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}><PopoverTrigger asChild><Button variant="outline" className={cn("w-full justify-start text-left font-normal", !editDate && "text-muted-foreground")}><CalendarIcon className="mr-2 h-4 w-4" />{editDate ? format(editDate, "PPP") : "Pick a date"}</Button></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={editDate} onSelect={(date) => { setEditDate(date); if (date) setEditDatePopoverOpen(false); }} initialFocus /></PopoverContent></Popover></div>
-                <div className="space-y-2"><Label>Time</Label><DoctorTimeSelect doctorId={doctorId} selectedDate={editDate} value={editSelectedTime} onValueChange={setEditSelectedTime} onLeaveStatusChange={(onLeave) => setEditIsOnLeave(onLeave)} name="appointment_time" required /></div>
+                <div className="space-y-2">
+                  <Label>Appointment Date</Label>
+                  <Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !editDate && "text-muted-foreground",
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {editDate ? format(editDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={editDate}
+                        onSelect={(date) => {
+                          setEditDate(date);
+                          if (date) setEditDatePopoverOpen(false);
+                        }}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  <DoctorTimeSelect
+                    doctorId={doctorId}
+                    selectedDate={editDate}
+                    value={editSelectedTime}
+                    onValueChange={setEditSelectedTime}
+                    onLeaveStatusChange={(onLeave) => setEditIsOnLeave(onLeave)}
+                    name="appointment_time"
+                    required
+                  />
+                </div>
               </div>
-              <div className="space-y-2"><Label htmlFor="edit_duration_minutes">Duration (minutes)</Label><Input id="edit_duration_minutes" name="duration_minutes" type="number" defaultValue={editingAppointment.duration_minutes || 30} min={15} step={15} required /></div>
-              <div className="space-y-2"><Label htmlFor="edit_reason">Reason for Visit</Label><Input id="edit_reason" name="reason" defaultValue={editingAppointment.reason || ""} placeholder="e.g., Regular checkup" /></div>
-              <div className="space-y-2"><Label htmlFor="edit_notes">Notes</Label><Textarea id="edit_notes" name="notes" defaultValue={editingAppointment.notes || ""} placeholder="Additional notes..." rows={3} /></div>
-              <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={() => { setShowEditDialog(false); setEditingAppointment(null); setEditDate(undefined); }}>Cancel</Button><Button type="submit">Update Appointment</Button></div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_duration_minutes">Duration (minutes)</Label>
+                <Input
+                  id="edit_duration_minutes"
+                  name="duration_minutes"
+                  type="number"
+                  defaultValue={editingAppointment.duration_minutes || 30}
+                  min={15}
+                  step={15}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_reason">Reason for Visit</Label>
+                <Input
+                  id="edit_reason"
+                  name="reason"
+                  defaultValue={editingAppointment.reason || ""}
+                  placeholder="e.g., Regular checkup"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit_notes">Notes</Label>
+                <Textarea
+                  id="edit_notes"
+                  name="notes"
+                  defaultValue={editingAppointment.notes || ""}
+                  placeholder="Additional notes..."
+                  rows={3}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditDialog(false);
+                    setEditingAppointment(null);
+                    setEditDate(undefined);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">Update Appointment</Button>
+              </div>
             </form>
           )}
         </DialogContent>
