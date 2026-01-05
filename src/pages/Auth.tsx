@@ -389,6 +389,15 @@ const Auth = () => {
                   </div>
                 </button>
               </div>
+              {/* 14 Days Trial Badge */}
+              <div className="bg-gradient-to-r from-amber-100 to-yellow-100 rounded-lg p-3 border border-amber-300 mb-3">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-amber-600 text-lg">🎉</span>
+                  <span className="font-bold text-amber-800 text-sm">Start with 14 Days FREE Trial!</span>
+                  <span className="text-amber-600 text-lg">🎉</span>
+                </div>
+                <p className="text-xs text-amber-700 text-center mt-1">No payment required during trial period</p>
+              </div>
               {/* Pricing Summary */}
               <div className="bg-white/80 rounded-lg p-3 border border-purple-100">
                 <div className="flex justify-between text-sm mb-1">
