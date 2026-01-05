@@ -28,7 +28,7 @@ All colors MUST be HSL.
 
     --accent: 231 48% 48%;
     --accent-foreground: 0 0% 100%;
-    
+
     /* Hover state colors for proper contrast */
     --hover: 231 48% 48%;
     --hover-foreground: 0 0% 100%;
@@ -112,7 +112,12 @@ All colors MUST be HSL.
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-display font-semibold tracking-tight;
   }
 }
@@ -135,15 +140,18 @@ All colors MUST be HSL.
   }
 }
 .hover\:text-foreground:hover {
-    color: #fff !important;
+  color: #fff !important;
 }
 img.main_logo.hover-scale {
-    width: 250px !important;
+  width: 250px !important;
 }
 img.main_logo.new_logo {
-    height: 56px !important;
-    width: auto !important;
+  height: 56px !important;
+  width: auto !important;
 }
 .new_width {
-    max-width: 50rem !important;
+  max-width: 50rem !important;
+}
+a.back_home:hover {
+  color: #5e5974 !important;
 }
