@@ -86,6 +86,7 @@ import ReceptionistActivityLogs from "./pages/ReceptionistActivityLogs";
 import DoctorReceptionistActivityLogs from "./pages/DoctorReceptionistActivityLogs";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -95,6 +96,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/features" element={<Features />} />
