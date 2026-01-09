@@ -18,7 +18,18 @@ import {
   AlertCircle,
   ThumbsUp,
   ThumbsDown,
-  BookOpen
+  BookOpen,
+  LayoutDashboard,
+  Users,
+  Calendar,
+  DollarSign,
+  Activity,
+  Zap,
+  BarChart3,
+  UserPlus,
+  ClipboardList,
+  HeadphonesIcon,
+  Stethoscope
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
@@ -718,6 +729,464 @@ const DoctorSignupArticle = () => {
   );
 };
 
+const DashboardOverviewArticle = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Getting Started</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Understanding Your Dashboard</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to="/knowledge-base">
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                <LayoutDashboard className="w-3 h-3 mr-1" />
+                Getting Started
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Understanding Your Dashboard
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A comprehensive guide to navigating and utilizing your dashboard effectively. 
+              Learn about key features, statistics, and quick actions available to you.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Navigate your dashboard layout",
+                  "Understand key statistics",
+                  "Use quick action buttons",
+                  "View analytics and activity logs"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Dashboard Types Overview */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Dashboard Types</h2>
+                  <p className="text-muted-foreground m-0">Different dashboards for different roles</p>
+                </div>
+              </div>
+              
+              <p className="mb-6">
+                Zonoir provides customized dashboards based on your user role. Each dashboard 
+                is tailored to show the most relevant information and actions for your specific needs.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Building2, label: "Clinic Dashboard", desc: "For clinic owners and administrators", color: "bg-emerald-500/10 text-emerald-600" },
+                  { icon: Stethoscope, label: "Doctor Dashboard", desc: "For individual doctors (single practice)", color: "bg-blue-500/10 text-blue-600" },
+                  { icon: Users, label: "Receptionist Dashboard", desc: "For clinic receptionists", color: "bg-purple-500/10 text-purple-600" },
+                  { icon: User, label: "Doctor Receptionist", desc: "For receptionists of single doctors", color: "bg-amber-500/10 text-amber-600" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-lg ${item.color} flex items-center justify-center shrink-0`}>
+                          <item.icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Key Statistics Section */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Key Statistics at a Glance</h2>
+                  <p className="text-muted-foreground m-0">Important metrics displayed on your dashboard</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your dashboard displays real-time statistics to help you monitor your practice's performance:
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Users, label: "Total Patients", desc: "Complete count of registered patients in your practice" },
+                  { icon: Calendar, label: "Today's Appointments", desc: "Number of appointments scheduled for today" },
+                  { icon: ClipboardList, label: "Monthly Appointments", desc: "Total appointments for the current month" },
+                  { icon: DollarSign, label: "Revenue Overview", desc: "Financial summary and payment tracking" },
+                  { icon: Stethoscope, label: "Total Doctors", desc: "Number of doctors (for clinics)" },
+                  { icon: Activity, label: "Waitlist Count", desc: "Patients currently on the waiting list" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50 hover:shadow-md transition-shadow">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Click on any statistic card to navigate directly to that section. 
+                  For example, clicking on "Total Patients" takes you to the patients list.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Quick Actions */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Quick Actions</h2>
+                  <p className="text-muted-foreground m-0">Common tasks at your fingertips</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Quick Actions section provides one-click access to the most frequently used features:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <h4 className="font-semibold">For Clinics:</h4>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { icon: UserPlus, label: "Add New Doctor", desc: "Register a new doctor to your clinic" },
+                    { icon: HeadphonesIcon, label: "Contact Support", desc: "Get help from our support team" },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                      <div className="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center">
+                        <item.icon className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <h4 className="font-semibold">For Doctors:</h4>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[
+                    { icon: Calendar, label: "New Appointment", desc: "Schedule a new appointment" },
+                    { icon: UserPlus, label: "Add Patient", desc: "Register a new patient" },
+                    { icon: ClipboardList, label: "View Waitlist", desc: "Manage your waiting list" },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                      <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center">
+                        <item.icon className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-semibold">For Receptionists:</h4>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { icon: Zap, label: "Walk-In Appointment", desc: "Quick appointment for walk-in patients" },
+                    { icon: Calendar, label: "View Appointments", desc: "See all scheduled appointments" },
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                      <div className="w-8 h-8 rounded bg-purple-500/10 flex items-center justify-center">
+                        <item.icon className="w-4 h-4 text-purple-600" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Analytics Section */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Analytics & Charts</h2>
+                  <p className="text-muted-foreground m-0">Visual insights into your practice</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your dashboard includes powerful analytics to help you understand trends and make informed decisions:
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Appointment Trends:</strong> View daily, weekly, or monthly appointment patterns</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Patient Growth:</strong> Track how your patient base is growing over time</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Revenue Analytics:</strong> Monitor financial performance and payment trends</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Appointment Status:</strong> See completion rates, cancellations, and no-shows</span>
+                  </li>
+                </ul>
+              </div>
+
+              <Card className="mb-6">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-8 text-center">
+                    <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 mx-auto mb-3 bg-background rounded-xl flex items-center justify-center shadow-lg">
+                          <BarChart3 className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">Analytics Charts Preview</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Activity Logs */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Activity Logs</h2>
+                  <p className="text-muted-foreground m-0">Track all actions in your practice</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Activity Logs section keeps a record of all important actions taken within your practice. 
+                This feature is available for clinic owners and single doctors.
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <h4 className="font-semibold">What gets logged:</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Patient registration - See who added each patient</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Appointment creation - Track who scheduled appointments</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Procedure assignments - Record of procedure additions</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Discounts applied - Track all fee adjustments and discounts</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Shield className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Transparency & Accountability</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Activity logs help maintain transparency and accountability across your team. 
+                    You can always see who performed which action and when.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Trial & Subscription */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Trial Banner & Subscription</h2>
+                  <p className="text-muted-foreground m-0">Manage your subscription status</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                If you're on a trial period, you'll see a trial banner at the top of your dashboard 
+                showing the remaining days. The banner helps you keep track of:
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  "Days remaining in your trial",
+                  "Trial expiration date",
+                  "Quick access to subscription page",
+                  "Current payment plan details"
+                ].map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Dashboard data refreshes automatically when you navigate to it</li>
+                      <li>• Statistics are calculated in real-time from your actual data</li>
+                      <li>• Some features may vary based on your subscription plan</li>
+                      <li>• Contact support if you notice any discrepancies in your statistics</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "How to Sign Up as a Single Doctor", slug: "doctor-signup" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Understanding Your Subscription", slug: "subscription" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 const KnowledgeBaseArticle = () => {
   const { slug } = useParams();
 
@@ -727,6 +1196,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "doctor-signup") {
     return <DoctorSignupArticle />;
+  }
+
+  if (slug === "dashboard-overview") {
+    return <DashboardOverviewArticle />;
   }
 
   // Placeholder for other articles
