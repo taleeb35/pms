@@ -1,4 +1,4 @@
-import styles from './Layout.module.css';
+import styles from "./Layout.module.css";
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,11 +34,7 @@ import {
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface LayoutProps {
   children: ReactNode;
@@ -73,9 +69,9 @@ const Layout = ({ children }: LayoutProps) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsInitialized(true);
-      
+
       // Handle specific auth events
-      if (event === 'SIGNED_OUT' || !currentSession) {
+      if (event === "SIGNED_OUT" || !currentSession) {
         // Use setTimeout to defer navigation and avoid potential deadlock
         setTimeout(() => {
           navigate("/");
@@ -88,7 +84,7 @@ const Layout = ({ children }: LayoutProps) => {
       setSession(existingSession);
       setUser(existingSession?.user ?? null);
       setIsInitialized(true);
-      
+
       if (!existingSession) {
         navigate("/");
       }
@@ -116,33 +112,29 @@ const Layout = ({ children }: LayoutProps) => {
         setDoctorClinicId(null);
         return;
       }
-      
+
       // Reset role when user changes to prevent stale data
       setUserRole(null);
       setClinicId(null);
       setDoctorId(null);
       setDoctorClinicId(null);
-      
+
       // Then check if user is a clinic FIRST (before receptionist check)
       // This is important because clinic owner's session should show clinic menu
-      const { data: clinicData } = await supabase
-        .from("clinics")
-        .select("id")
-        .eq("id", user.id)
-        .maybeSingle();
-      
+      const { data: clinicData } = await supabase.from("clinics").select("id").eq("id", user.id).maybeSingle();
+
       if (clinicData) {
         setUserRole("clinic");
         return;
       }
-      
+
       // Check if user is a doctor
       const { data: doctorData } = await supabase
         .from("doctors")
         .select("id, clinic_id")
         .eq("id", user.id)
         .maybeSingle();
-      
+
       if (doctorData) {
         setUserRole("doctor");
         setDoctorClinicId(doctorData.clinic_id);
@@ -155,7 +147,7 @@ const Layout = ({ children }: LayoutProps) => {
         .select("clinic_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      
+
       if (clinicReceptionistData) {
         setUserRole("receptionist");
         setClinicId(clinicReceptionistData.clinic_id);
@@ -168,20 +160,16 @@ const Layout = ({ children }: LayoutProps) => {
         .select("doctor_id")
         .eq("user_id", user.id)
         .maybeSingle();
-      
+
       if (doctorReceptionistData) {
         setUserRole("doctor_receptionist");
         setDoctorId(doctorReceptionistData.doctor_id);
         return;
       }
-      
+
       // Finally check user_roles table for admin
-      const { data: roleData } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      
+      const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
+
       setUserRole(roleData?.role || "admin");
     };
     fetchUserRole();
@@ -215,16 +203,12 @@ const Layout = ({ children }: LayoutProps) => {
   useEffect(() => {
     const fetchDoctorSpecialization = async () => {
       if (!user || userRole !== "doctor") return;
-      
-      const { data } = await supabase
-        .from("doctors")
-        .select("specialization")
-        .eq("id", user.id)
-        .maybeSingle();
-      
+
+      const { data } = await supabase.from("doctors").select("specialization").eq("id", user.id).maybeSingle();
+
       setDoctorSpecialization(data?.specialization || null);
     };
-    
+
     if (userRole === "doctor") {
       fetchDoctorSpecialization();
     }
@@ -381,15 +365,16 @@ const Layout = ({ children }: LayoutProps) => {
     },
   ];
 
-  const menuGroups = userRole === "doctor" 
-    ? doctorMenuGroups 
-    : userRole === "clinic" 
-    ? clinicMenuGroups 
-    : userRole === "receptionist"
-    ? receptionistMenuGroups
-    : userRole === "doctor_receptionist"
-    ? doctorReceptionistMenuGroups
-    : adminMenuGroups;
+  const menuGroups =
+    userRole === "doctor"
+      ? doctorMenuGroups
+      : userRole === "clinic"
+        ? clinicMenuGroups
+        : userRole === "receptionist"
+          ? receptionistMenuGroups
+          : userRole === "doctor_receptionist"
+            ? doctorReceptionistMenuGroups
+            : adminMenuGroups;
 
   // Dashboard item (shown at top)
   const getDashboardItem = () => {
@@ -425,25 +410,25 @@ const Layout = ({ children }: LayoutProps) => {
   useEffect(() => {
     if (initializedGroupsRef.current) return;
     initializedGroupsRef.current = true;
-    
+
     const currentPath = location.pathname;
     const newOpenGroups: Record<string, boolean> = {};
-    
+
     menuGroups.forEach((group) => {
-      const hasActiveItem = group.items.some(item => item.path === currentPath);
+      const hasActiveItem = group.items.some((item) => item.path === currentPath);
       if (hasActiveItem) {
         newOpenGroups[group.label] = true;
       }
     });
-    
+
     setOpenGroups(newOpenGroups);
   }, []);
 
   const toggleGroup = (label: string) => {
-    setOpenGroups(prev => {
+    setOpenGroups((prev) => {
       // Close all other groups and toggle the clicked one
       const newState: { [key: string]: boolean } = {};
-      Object.keys(prev).forEach(key => {
+      Object.keys(prev).forEach((key) => {
         newState[key] = false;
       });
       newState[label] = !prev[label];
@@ -470,21 +455,19 @@ const Layout = ({ children }: LayoutProps) => {
             </Button>
             <div className="flex items-center gap-3">
               <div className="relative">
-                <img 
-                  src={clinicLogo} 
-                  alt="Zonoir" 
+                <img
+                  src={clinicLogo}
+                  alt="Zonoir"
                   className="main_logo new_logo hover:scale-110 transition-transform duration-300"
                 />
               </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="new_bg hidden text-sm sm:inline px-3 py-1.5 rounded-full">
-              {user.email}
-            </span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <span className="new_bg hidden text-sm sm:inline px-3 py-1.5 rounded-full">{user.email}</span>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleLogout}
               className="hover:bg-destructive/10 hover:text-destructive transition-colors"
             >
@@ -499,7 +482,7 @@ const Layout = ({ children }: LayoutProps) => {
         <aside
           className={`${
             mobileMenuOpen ? "block" : "hidden"
-          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
+          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border dr_side md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
         >
           <nav className="space-y-1 p-3">
             {/* Dashboard item (at top) */}
@@ -521,13 +504,13 @@ const Layout = ({ children }: LayoutProps) => {
                 </Link>
               );
             })()}
-            
+
             {/* Grouped menu items */}
             {menuGroups.map((group) => {
               const GroupIcon = group.icon;
               const isOpen = openGroups[group.label] ?? false;
-              const hasActiveItem = group.items.some(item => location.pathname === item.path);
-              
+              const hasActiveItem = group.items.some((item) => location.pathname === item.path);
+
               // For single-item groups, render directly without collapsible
               if (group.items.length === 1) {
                 const item = group.items[0];
@@ -550,16 +533,14 @@ const Layout = ({ children }: LayoutProps) => {
               }
 
               return (
-                <Collapsible
-                  key={group.label}
-                  open={isOpen}
-                  onOpenChange={() => toggleGroup(group.label)}
-                >
+                <Collapsible key={group.label} open={isOpen} onOpenChange={() => toggleGroup(group.label)}>
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
                       className={`w-full justify-between text-foreground hover:bg-accent ${
-                        hasActiveItem ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary" : "hover:text-foreground"
+                        hasActiveItem
+                          ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary"
+                          : "hover:text-foreground"
                       }`}
                     >
                       <span className="flex items-center">
@@ -599,29 +580,32 @@ const Layout = ({ children }: LayoutProps) => {
             })}
 
             {/* Activity Logs item (at end) */}
-            {activityLogsItem && (() => {
-              const Icon = activityLogsItem.icon;
-              const isActive = location.pathname === activityLogsItem.path;
-              return (
-                <Link to={activityLogsItem.path}>
-                  <Button
-                    variant={isActive ? "default" : "ghost"}
-                    className={`w-full justify-start transition-all ${
-                      isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
-                    }`}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {activityLogsItem.label}
-                  </Button>
-                </Link>
-              );
-            })()}
+            {activityLogsItem &&
+              (() => {
+                const Icon = activityLogsItem.icon;
+                const isActive = location.pathname === activityLogsItem.path;
+                return (
+                  <Link to={activityLogsItem.path}>
+                    <Button
+                      variant={isActive ? "default" : "ghost"}
+                      className={`w-full justify-start transition-all ${
+                        isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                      }`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Icon className="mr-2 h-4 w-4" />
+                      {activityLogsItem.label}
+                    </Button>
+                  </Link>
+                );
+              })()}
           </nav>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 w-full overflow-hidden bg-gradient-to-br from-card via-card/50 to-primary/5 rounded-lg p-6 shadow-sm border">{children}</main>
+        <main className="flex-1 w-full overflow-hidden bg-gradient-to-br from-card via-card/50 to-primary/5 rounded-lg p-6 shadow-sm border">
+          {children}
+        </main>
       </div>
     </div>
   );
