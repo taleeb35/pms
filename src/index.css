@@ -167,3 +167,7 @@ a.back_home:hover {
 .doctor-sidebar button.inline-flex:hover {
   color: #fff !important;
 }
+
+.clinic-sidebar button.inline-flex:hover {
+  color: #fff !important;
+}
