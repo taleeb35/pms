@@ -482,6 +482,10 @@ const Layout = ({ children }: LayoutProps) => {
         <aside
           className={`${
             mobileMenuOpen ? "block" : "hidden"
+          } ${
+            userRole === 'doctor' ? 'doctor-sidebar' : ''
+          } ${
+            userRole === 'clinic' ? 'clinic-sidebar' : ''
           } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border dr_side md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
         >
           <nav className="space-y-1 p-3">
