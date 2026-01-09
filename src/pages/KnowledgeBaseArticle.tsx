@@ -1187,6 +1187,436 @@ const DashboardOverviewArticle = () => {
   );
 };
 
+const AddDoctorsArticle = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Getting Started</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Adding Doctors to Your Clinic</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to="/knowledge-base">
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Building2 className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Adding Doctors to Your Clinic
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how to add and manage doctors in your clinic, assign permissions, 
+              and get them started with patient management.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Navigate to the Add Doctor section",
+                  "Fill in doctor details correctly",
+                  "Understand doctor limits and plans",
+                  "Manage doctor accounts and statuses"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Prerequisites */}
+          <Card className="mb-10 border-amber-500/20 bg-amber-500/5">
+            <CardContent className="py-6">
+              <div className="flex items-start gap-3">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold mb-2">Before You Begin</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Your clinic account must be approved by the admin</li>
+                    <li>• You need to be logged in as a clinic owner</li>
+                    <li>• Have doctor's details ready (name, email, qualifications, etc.)</li>
+                    <li>• Ensure you have available doctor slots in your subscription</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Access the Doctors Section</h2>
+                  <p className="text-muted-foreground m-0">Navigate to doctor management</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <p>
+                  From your clinic dashboard, locate the <strong>"Doctors"</strong> option in the 
+                  left sidebar menu. Click on it to access the doctors management section.
+                </p>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Stethoscope className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">Doctors Menu</h4>
+                          <p className="text-xs text-muted-foreground">View and manage all doctors</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                          <UserPlus className="w-5 h-5 text-emerald-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">Add Doctor Button</h4>
+                          <p className="text-xs text-muted-foreground">Located at top right of page</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <p>
+                  Once in the Doctors section, click the <strong>"Add Doctor"</strong> button 
+                  located at the top right corner of the page to open the doctor registration form.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Fill in Doctor Details</h2>
+                  <p className="text-muted-foreground m-0">Provide complete doctor information</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Complete the doctor registration form with the following required information:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: User, label: "Full Name", desc: "Doctor's complete name" },
+                  { icon: Mail, label: "Email Address", desc: "For login credentials" },
+                  { icon: Smartphone, label: "Contact Number", desc: "Phone number for contact" },
+                  { icon: Shield, label: "PMDC Number", desc: "Medical registration number" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <p>Additional information you'll need to provide:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Specialization:</strong> Doctor's area of expertise (e.g., Cardiologist, Dermatologist)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Qualification:</strong> Educational qualifications (MBBS, FCPS, etc.)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Consultation Fee:</strong> Default fee for patient consultations</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Clinic Percentage:</strong> Revenue share percentage (if applicable)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Password:</strong> Create a secure password for the doctor's account</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Understanding Doctor Limits</h2>
+                  <p className="text-muted-foreground m-0">Know your subscription capacity</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 mb-6">
+                <Shield className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Doctor Limits</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Your clinic has a maximum number of doctors based on your subscription plan. 
+                    You specified this number during registration.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p>
+                  When you registered your clinic, you specified the number of doctors you need. 
+                  This is your <strong>requested doctor limit</strong>. Here's what you need to know:
+                </p>
+                
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                        <Users className="w-4 h-4 text-primary" />
+                        Current Doctors
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        Shows how many doctors are currently added to your clinic
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-primary" />
+                        Requested Limit
+                      </h4>
+                      <p className="text-xs text-muted-foreground">
+                        Maximum doctors allowed in your subscription
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                  <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    <strong>Need more doctors?</strong> If you need to add more doctors than your 
+                    current limit allows, contact the admin to request an increase in your doctor limit.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Submit & Doctor Access</h2>
+                  <p className="text-muted-foreground m-0">What happens after adding a doctor</p>
+                </div>
+              </div>
+
+              <p>
+                After submitting the doctor registration form:
+              </p>
+              
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                
+                {[
+                  { title: "Doctor Account Created", desc: "System creates login credentials" },
+                  { title: "Appears in Doctors List", desc: "Doctor shows in your clinic's doctor list" },
+                  { title: "Doctor Can Login", desc: "Doctor uses email and password to access their dashboard" },
+                  { title: "Start Managing Patients", desc: "Doctor can begin scheduling and seeing patients" },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Managing Doctor Accounts</h2>
+                  <p className="text-muted-foreground m-0">Edit, delete, or manage doctors</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once doctors are added, you can manage their accounts from the Doctors list:
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: ClipboardList, label: "View Details", desc: "See complete doctor information" },
+                  { icon: Calendar, label: "Manage Schedule", desc: "Set available days and hours" },
+                  { icon: Users, label: "View Patients", desc: "See doctor's patient list" },
+                  { icon: DollarSign, label: "Track Earnings", desc: "Monitor consultation revenue" },
+                  { icon: Activity, label: "Activity Logs", desc: "View doctor's activity history" },
+                  { icon: Shield, label: "Delete Account", desc: "Remove doctor from clinic" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-xs">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Each doctor email must be unique and not used by another account</li>
+                      <li>• Doctors can only be associated with one clinic at a time</li>
+                      <li>• Deleting a doctor does NOT free up your doctor limit slot</li>
+                      <li>• Doctor schedules must be set before they can receive appointments</li>
+                      <li>• Make sure to share login credentials securely with the doctor</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "Understanding Your Dashboard", slug: "dashboard-overview" },
+                { title: "Managing Doctor Schedules", slug: "doctor-schedule" },
+                { title: "Managing Receptionists", slug: "manage-receptionists" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 const KnowledgeBaseArticle = () => {
   const { slug } = useParams();
 
@@ -1200,6 +1630,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "dashboard-overview") {
     return <DashboardOverviewArticle />;
+  }
+
+  if (slug === "add-doctors") {
+    return <AddDoctorsArticle />;
   }
 
   // Placeholder for other articles
