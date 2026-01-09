@@ -158,3 +158,6 @@ img.main_logo.new_logo {
 a.back_home:hover {
   color: #5e5974 !important;
 }
+.des_nav button.inline-flex:hover {
+  color: #fff !important;
+}
