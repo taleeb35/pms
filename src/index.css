@@ -164,3 +164,6 @@ a.back_home:hover {
 .home_login:hover {
   color: #8a36e9 !important;
 }
+.doctor-sidebar button.inline-flex:hover {
+  color: #fff !important;
+}
