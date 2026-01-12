@@ -417,19 +417,6 @@ const Contact = () => {
             </div>
           </Card>
         </div>
-
-        {/* Footer CTA */}
-        <div className="mt-16 text-center pb-12">
-          <p className="text-muted-foreground mb-4">Want to explore our features first?</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="outline" asChild>
-              <Link to="/features">View All Features</Link>
-            </Button>
-            <Button asChild>
-              <Link to="/clinic/auth">Get Started Free</Link>
-            </Button>
-          </div>
-        </div>
       </div>
 
       <PublicFooter />
