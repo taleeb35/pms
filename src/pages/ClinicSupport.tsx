@@ -40,6 +40,8 @@ const ClinicSupport = () => {
     fetchTickets();
   }, []);
 
+  const [clinicName, setClinicName] = useState("");
+
   const fetchUserData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
@@ -49,12 +51,22 @@ const ClinicSupport = () => {
         .eq("id", user.id)
         .single();
 
+      const { data: clinic } = await supabase
+        .from("clinics")
+        .select("clinic_name")
+        .eq("id", user.id)
+        .single();
+
       if (profile) {
         setFormData(prev => ({
           ...prev,
           name: profile.full_name,
           email: profile.email,
         }));
+      }
+
+      if (clinic) {
+        setClinicName(clinic.clinic_name);
       }
     }
   };
@@ -123,16 +135,33 @@ const ClinicSupport = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { error } = await supabase.from("support_tickets").insert({
+      const { data: ticketData, error } = await supabase.from("support_tickets").insert({
         clinic_id: user.id,
         name: formData.name,
         email: formData.email,
         subject: formData.subject,
         message: formData.message,
         status: "open",
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      // Send notification email to admin
+      try {
+        await supabase.functions.invoke("send-ticket-notification", {
+          body: {
+            ticketId: ticketData.id,
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+            entityType: "clinic",
+            entityName: clinicName,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send ticket notification email:", emailError);
+      }
 
       toast({
         title: "Success",
