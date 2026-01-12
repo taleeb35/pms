@@ -27,7 +27,7 @@ const handler = async (req: Request): Promise<Response> => {
     let html = "";
 
     if (type === "signup") {
-      subject = "🎉 Welcome to Zonoir Referral Program - You're Approved!";
+      subject = "Zonoir Referral Program - Welcome, You're Approved";
       html = `
         <!DOCTYPE html>
         <html>
@@ -81,7 +81,7 @@ const handler = async (req: Request): Promise<Response> => {
         </html>
       `;
     } else if (type === "approved") {
-      subject = "🎉 Your Referral Partner Application is Approved!";
+      subject = "Zonoir - Your Referral Partner Application is Approved";
       html = `
         <!DOCTYPE html>
         <html>

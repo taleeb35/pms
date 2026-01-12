@@ -170,8 +170,8 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const subject = isActivated 
-      ? `🎉 Your Clinic "${clinicName}" is Now Active!`
-      : `⚠️ Your Clinic "${clinicName}" Has Been Suspended`;
+      ? `Zonoir - Your Clinic "${clinicName}" Has Been Activated`
+      : `Zonoir - Important: Your Clinic "${clinicName}" Has Been Suspended`;
 
     const emailResponse = await resend.emails.send({
       from: "Zonoir <noreply@zonoir.com>",

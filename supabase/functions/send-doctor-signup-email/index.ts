@@ -190,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Zonoir <noreply@zonoir.com>",
       to: [email],
-      subject: `Registration Received - Dr. ${doctorName} | Zonoir`,
+      subject: `Zonoir - Welcome Dr. ${doctorName}, Your Registration is Complete`,
       html: emailHtml,
       headers: {
         "X-Priority": "1",
@@ -312,7 +312,7 @@ const handler = async (req: Request): Promise<Response> => {
     const adminNotification = await resend.emails.send({
       from: "Zonoir System <noreply@zonoir.com>",
       to: [adminEmail],
-      subject: `🩺 New Doctor Registration: Dr. ${doctorName} - Action Required`,
+      subject: `Zonoir Admin - New Doctor Registration: Dr. ${doctorName}`,
       html: adminEmailHtml,
       headers: {
         "X-Priority": "1",

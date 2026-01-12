@@ -94,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
         const emailResponse = await resend.emails.send({
           from: "Zonoir <noreply@zonoir.com>",
           to: [profile.email],
-          subject: "Your Free Trial Expires in 3 Days - Zonoir",
+          subject: "Zonoir - Your Free Trial Expires in 3 Days",
           html: `
             <!DOCTYPE html>
             <html>
@@ -171,7 +171,7 @@ const handler = async (req: Request): Promise<Response> => {
         const emailResponse = await resend.emails.send({
           from: "Zonoir <noreply@zonoir.com>",
           to: [profile.email],
-          subject: "Your Free Trial Expires in 3 Days - Zonoir",
+          subject: "Zonoir - Your Free Trial Expires in 3 Days",
           html: `
             <!DOCTYPE html>
             <html>

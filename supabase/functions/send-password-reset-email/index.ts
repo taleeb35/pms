@@ -32,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "Zonoir <noreply@zonoir.com>",
         to: [email],
-        subject: "Password Reset Request - Zonoir",
+        subject: "Zonoir - Password Reset Request",
         html: `
           <!DOCTYPE html>
           <html>
