@@ -166,11 +166,11 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Visit Us</h3>
-                    <p className="text-muted-foreground text-sm mb-2">Our headquarters</p>
+                    <p className="text-muted-foreground text-sm mb-2">Our Office</p>
                     <p className="text-foreground">
-                      123 Healthcare Avenue,
+                      140 B, Khayaban e Amin,
                       <br />
-                      Gulberg III, Lahore,
+                      Lahore,
                       <br />
                       Pakistan 54000
                     </p>
