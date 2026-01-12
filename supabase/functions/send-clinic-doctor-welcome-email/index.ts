@@ -192,6 +192,9 @@ const handler = async (req: Request): Promise<Response> => {
                         © ${new Date().getFullYear()} ${clinicName}. All rights reserved.
                       </p>
                       <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
+                        140 B, Khayaban e Amin, Lahore, Pakistan
+                      </p>
+                      <p style="margin: 8px 0 0 0; color: #9ca3af; font-size: 12px;">
                         This email was sent to you because you were registered as a doctor at ${clinicName}.
                       </p>
                     </td>

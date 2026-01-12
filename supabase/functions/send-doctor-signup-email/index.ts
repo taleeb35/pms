@@ -169,6 +169,9 @@ const handler = async (req: Request): Promise<Response> => {
                     <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
                       Thank you for choosing Zonoir!
                     </p>
+                    <p style="margin: 0 0 8px; color: #999; font-size: 12px;">
+                      140 B, Khayaban e Amin, Lahore, Pakistan
+                    </p>
                     <p style="margin: 0; color: #999; font-size: 12px;">
                       © ${new Date().getFullYear()} Zonoir. All rights reserved.
                     </p>
@@ -288,6 +291,9 @@ const handler = async (req: Request): Promise<Response> => {
                   <td style="background-color: #1f2937; padding: 30px; text-align: center;">
                     <p style="margin: 0 0 10px; color: #9ca3af; font-size: 14px;">
                       Zonoir Admin Notification
+                    </p>
+                    <p style="margin: 0 0 8px; color: #6b7280; font-size: 12px;">
+                      140 B, Khayaban e Amin, Lahore, Pakistan
                     </p>
                     <p style="margin: 0; color: #6b7280; font-size: 12px;">
                       © ${new Date().getFullYear()} Zonoir. All rights reserved.

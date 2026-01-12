@@ -136,6 +136,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
                 
                 <p style="font-size: 12px; color: #888; text-align: center;">
+                  140 B, Khayaban e Amin, Lahore, Pakistan<br><br>
                   This is an automated reminder from Zonoir.<br>
                   Please do not reply to this email.
                 </p>
@@ -213,6 +214,7 @@ const handler = async (req: Request): Promise<Response> => {
                 <hr style="border: none; border-top: 1px solid #ddd; margin: 25px 0;">
                 
                 <p style="font-size: 12px; color: #888; text-align: center;">
+                  140 B, Khayaban e Amin, Lahore, Pakistan<br><br>
                   This is an automated reminder from Zonoir.<br>
                   Please do not reply to this email.
                 </p>

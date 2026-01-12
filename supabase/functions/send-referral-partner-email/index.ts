@@ -73,6 +73,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
+              <p>140 B, Khayaban e Amin, Lahore, Pakistan</p>
               <p>This email was sent because you signed up for our referral program.</p>
             </div>
           </div>
@@ -121,6 +122,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
+              <p>140 B, Khayaban e Amin, Lahore, Pakistan</p>
               <p>You're receiving this because your referral partner application was approved.</p>
             </div>
           </div>
@@ -157,6 +159,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
+              <p>140 B, Khayaban e Amin, Lahore, Pakistan</p>
               <p>You're receiving this because you applied to our referral program.</p>
             </div>
           </div>
@@ -195,6 +198,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p>Best regards,<br>The Zonoir Team</p>
             </div>
             <div class="footer">
+              <p>140 B, Khayaban e Amin, Lahore, Pakistan</p>
               <p>You're receiving this because your referral partner account was removed.</p>
             </div>
           </div>
