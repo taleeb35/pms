@@ -223,12 +223,12 @@ const handler = async (req: Request): Promise<Response> => {
                 
                 <!-- Header -->
                 <tr>
-                  <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 40px 30px; text-align: center;">
+                  <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 30px; text-align: center;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
                       🏥 New Clinic Registration
                     </h1>
                     <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
-                      Admin Notification - Requires Review
+                      Admin Notification - Auto-Approved
                     </p>
                   </td>
                 </tr>
@@ -236,9 +236,9 @@ const handler = async (req: Request): Promise<Response> => {
                 <!-- Body -->
                 <tr>
                   <td style="padding: 40px 30px;">
-                    <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 0 0 25px;">
-                      <p style="margin: 0; color: #991b1b; font-size: 16px; font-weight: 600;">
-                        ⚠️ Action Required: New clinic registration pending approval
+                    <div style="background-color: #ecfdf5; border-left: 4px solid #10b981; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 0 0 25px;">
+                      <p style="margin: 0; color: #065f46; font-size: 16px; font-weight: 600;">
+                        ✅ New clinic has been automatically activated with 14-day trial
                       </p>
                     </div>
                     
@@ -328,7 +328,7 @@ const handler = async (req: Request): Promise<Response> => {
     const adminNotification = await resend.emails.send({
       from: "Zonoir System <noreply@zonoir.com>",
       to: [adminEmail],
-      subject: `🏥 New Clinic Registration: ${clinicName} - Action Required`,
+      subject: `🏥 New Clinic Registration: ${clinicName} - Auto-Approved`,
       html: adminEmailHtml,
       headers: {
         "X-Priority": "1",
