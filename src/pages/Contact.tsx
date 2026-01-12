@@ -5,17 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Send, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Clock, 
-  MessageSquare,
-  Calendar,
-  Building2,
-  CheckCircle2
-} from "lucide-react";
+import { Send, Mail, Phone, MapPin, Clock, MessageSquare, Calendar, Building2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
@@ -28,7 +18,7 @@ const Contact = () => {
     organization: "",
     subject: "",
     message: "",
-    requestType: "inquiry"
+    requestType: "inquiry",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -40,10 +30,10 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
     setIsSubmitting(false);
     setIsSubmitted(true);
     toast.success("Your message has been sent successfully!");
@@ -68,8 +58,8 @@ const Contact = () => {
                   <Button asChild className="w-full">
                     <Link to="/">Return to Home</Link>
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={() => {
                       setIsSubmitted(false);
@@ -80,7 +70,7 @@ const Contact = () => {
                         organization: "",
                         subject: "",
                         message: "",
-                        requestType: "inquiry"
+                        requestType: "inquiry",
                       });
                     }}
                   >
@@ -98,9 +88,8 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <PublicHeader />
-      
+
       <div className="container mx-auto px-4 py-8">
-        
         {/* Hero Section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
@@ -114,7 +103,8 @@ const Contact = () => {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have questions about Zonoir? Want to schedule a demo? We're here to help you transform your clinic management.
+            Have questions about Zonoir? Want to schedule a demo? We're here to help you transform your clinic
+            management.
           </p>
         </div>
 
@@ -131,8 +121,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email Us</h3>
                     <p className="text-muted-foreground text-sm mb-2">For general inquiries and support</p>
-                    <a href="mailto:contact@zonoir.com" className="text-primary hover:underline font-medium">
-                      contact@zonoir.com
+                    <a href="mailto:hello@zonoir.com" className="text-primary hover:underline font-medium">
+                      hello@zonoir.com
                     </a>
                   </div>
                 </div>
@@ -166,8 +156,10 @@ const Contact = () => {
                     <h3 className="font-semibold text-foreground mb-1">Visit Us</h3>
                     <p className="text-muted-foreground text-sm mb-2">Our headquarters</p>
                     <p className="text-foreground">
-                      123 Healthcare Avenue,<br />
-                      Gulberg III, Lahore,<br />
+                      123 Healthcare Avenue,
+                      <br />
+                      Gulberg III, Lahore,
+                      <br />
                       Pakistan 54000
                     </p>
                   </div>
@@ -202,8 +194,8 @@ const Contact = () => {
                 <p className="text-primary-foreground/80 text-sm mb-4">
                   See Zonoir in action with a personalized demo from our team.
                 </p>
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   className="w-full"
                   onClick={() => {
                     setFormData({ ...formData, requestType: "demo" });
@@ -243,7 +235,7 @@ const Contact = () => {
                         { value: "pricing", label: "Pricing Info" },
                         { value: "support", label: "Technical Support" },
                         { value: "partnership", label: "Partnership" },
-                        { value: "other", label: "Other" }
+                        { value: "other", label: "Other" },
                       ].map((option) => (
                         <button
                           key={option.value}
@@ -359,12 +351,7 @@ const Contact = () => {
                   </div>
 
                   {/* Submit Button */}
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    className="w-full gap-2"
-                    disabled={isSubmitting}
-                  >
+                  <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
                         <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
@@ -380,9 +367,14 @@ const Contact = () => {
 
                   <p className="text-center text-muted-foreground text-sm">
                     By submitting this form, you agree to our{" "}
-                    <a href="#" className="text-primary hover:underline">Privacy Policy</a>
-                    {" "}and{" "}
-                    <a href="#" className="text-primary hover:underline">Terms of Service</a>.
+                    <a href="#" className="text-primary hover:underline">
+                      Privacy Policy
+                    </a>{" "}
+                    and{" "}
+                    <a href="#" className="text-primary hover:underline">
+                      Terms of Service
+                    </a>
+                    .
                   </p>
                 </form>
               </CardContent>
@@ -417,9 +409,7 @@ const Contact = () => {
 
         {/* Footer CTA */}
         <div className="mt-16 text-center pb-12">
-          <p className="text-muted-foreground mb-4">
-            Want to explore our features first?
-          </p>
+          <p className="text-muted-foreground mb-4">Want to explore our features first?</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="outline" asChild>
               <Link to="/features">View All Features</Link>
