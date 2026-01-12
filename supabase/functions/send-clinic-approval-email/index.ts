@@ -97,6 +97,9 @@ const handler = async (req: Request): Promise<Response> => {
                     <p style="margin: 0 0 10px; color: #666; font-size: 14px;">
                       Welcome to the Zonoir family!
                     </p>
+                    <p style="margin: 0 0 8px; color: #999; font-size: 12px;">
+                      140 B, Khayaban e Amin, Lahore, Pakistan
+                    </p>
                     <p style="margin: 0; color: #999; font-size: 12px;">
                       © ${new Date().getFullYear()} Zonoir. All rights reserved.
                     </p>

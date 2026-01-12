@@ -87,6 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
                 
                 <div style="text-align: center; padding: 20px; color: #888; font-size: 12px;">
                   <p>This is an automated message from Zonoir.</p>
+                  <p style="margin: 8px 0;">140 B, Khayaban e Amin, Lahore, Pakistan</p>
                   <p>© ${new Date().getFullYear()} Zonoir. All rights reserved.</p>
                 </div>
               </div>

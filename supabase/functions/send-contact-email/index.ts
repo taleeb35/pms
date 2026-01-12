@@ -96,6 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
             </div>
           </div>
           <p style="text-align: center; color: #9ca3af; font-size: 12px; margin-top: 20px;">
+            140 B, Khayaban e Amin, Lahore, Pakistan<br><br>
             This email was sent from the Zonoir contact form.
           </p>
         </div>
