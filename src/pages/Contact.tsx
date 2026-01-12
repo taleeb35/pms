@@ -392,31 +392,6 @@ const Contact = () => {
             </Card>
           </div>
         </div>
-
-        {/* Map Section */}
-        <div className="mt-16 max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Find Our Office</h2>
-            <p className="text-muted-foreground">Visit us at our headquarters in Lahore, Pakistan</p>
-          </div>
-          <Card className="border-primary/20 overflow-hidden">
-            <div className="aspect-[21/9] bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center relative">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMjIiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptMCAwdi02aC02djZoNnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50"></div>
-              <div className="text-center z-10">
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <MapPin className="w-8 h-8 text-primary-foreground" />
-                </div>
-                <h3 className="font-semibold text-foreground text-lg mb-2">Zonoir Headquarters</h3>
-                <p className="text-muted-foreground">140 B, Khayaban e Amin, Lahore</p>
-                <Button variant="outline" className="mt-4" asChild>
-                  <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
-                    Get Directions
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </div>
       </div>
 
       <PublicFooter />
