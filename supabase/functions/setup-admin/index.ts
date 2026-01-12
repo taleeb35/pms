@@ -25,7 +25,7 @@ serve(async (req) => {
     );
 
     // Admin credentials
-    const adminEmail = 'admin@pms.com';
+    const adminEmail = 'hello@zonoir.com';
     const adminPassword = 'shineE065';
     const adminName = 'Admin';
 
