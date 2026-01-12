@@ -9,6 +9,7 @@ import { Send, Mail, Phone, MapPin, Clock, MessageSquare, Calendar, Building2, C
 import { toast } from "sonner";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -31,12 +32,23 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const { data, error } = await supabase.functions.invoke("send-contact-email", {
+        body: formData,
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast.success("Your message has been sent successfully!");
+      if (error) {
+        throw error;
+      }
+
+      setIsSubmitted(true);
+      toast.success("Your message has been sent successfully!");
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Please try again or email us directly at hello@zonoir.com");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -198,8 +210,7 @@ const Contact = () => {
                   variant="secondary"
                   className="w-full"
                   onClick={() => {
-                    setFormData({ ...formData, requestType: "demo" });
-                    document.getElementById("request-type")?.scrollIntoView({ behavior: "smooth" });
+                    window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank");
                   }}
                 >
                   Request Demo
