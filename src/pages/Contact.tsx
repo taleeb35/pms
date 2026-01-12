@@ -407,7 +407,7 @@ const Contact = () => {
                   <MapPin className="w-8 h-8 text-primary-foreground" />
                 </div>
                 <h3 className="font-semibold text-foreground text-lg mb-2">Zonoir Headquarters</h3>
-                <p className="text-muted-foreground">123 Healthcare Avenue, Gulberg III, Lahore, Pakistan 54000</p>
+                <p className="text-muted-foreground">140 B, Khayaban e Amin, Lahore</p>
                 <Button variant="outline" className="mt-4" asChild>
                   <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
                     Get Directions
