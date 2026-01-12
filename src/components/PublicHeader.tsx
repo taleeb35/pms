@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, BookOpen, Menu, Gift } from "lucide-react";
+import { LogIn, BookOpen, Menu, Gift, Calendar } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import clinicLogo from "@/assets/main-logo.webp";
 
@@ -48,6 +48,15 @@ const PublicHeader = () => {
                 {item.label}
               </Button>
             ))}
+            <Button
+              onClick={() => window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank")}
+              size="sm"
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Calendar className="mr-2 h-4 w-4" />
+              Request A Demo
+            </Button>
             <Button
               onClick={() => navigate("/login")}
               size="sm"
@@ -96,6 +105,17 @@ const PublicHeader = () => {
                     </Button>
                   ))}
                   <div className="border-t my-4" />
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank");
+                    }}
+                    variant="outline"
+                    className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Request A Demo
+                  </Button>
                   <Button
                     onClick={() => {
                       setMobileMenuOpen(false);
