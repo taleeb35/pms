@@ -44,6 +44,7 @@ const PublicFooter = () => {
             <div className="flex gap-3 pt-2">
               {socialLinks.map((social, index) => (
                 <a
+                  target="_blank"
                   key={index}
                   href={social.href}
                   aria-label={social.label}
