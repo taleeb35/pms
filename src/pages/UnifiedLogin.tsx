@@ -69,7 +69,17 @@ const UnifiedLogin = () => {
 
       const roles = rolesData?.map(r => r.role) || [];
 
-      // Check for Clinic role
+      // Admin
+      if (roles.includes("admin")) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        navigate("/dashboard");
+        return;
+      }
+
+      // Clinic
       if (roles.includes("clinic")) {
         const result = await handleClinicLogin(userId);
         if (!result.success) {
@@ -80,7 +90,7 @@ const UnifiedLogin = () => {
         return;
       }
 
-      // Check for Doctor role
+      // Doctor
       if (roles.includes("doctor")) {
         const result = await handleDoctorLogin(userId);
         if (!result.success) {
@@ -91,7 +101,7 @@ const UnifiedLogin = () => {
         return;
       }
 
-      // Check for Receptionist role
+      // Receptionist
       if (roles.includes("receptionist")) {
         const result = await handleReceptionistLogin(userId);
         if (!result.success) {
