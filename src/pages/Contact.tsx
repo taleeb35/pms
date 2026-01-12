@@ -138,8 +138,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Call Us</h3>
                     <p className="text-muted-foreground text-sm mb-2">Mon-Fri from 9am to 6pm</p>
-                    <a href="tel:+923001234567" className="text-primary hover:underline font-medium">
-                      +92 300 123 4567
+                    <a href="tel:+923004313139" className="text-primary hover:underline font-medium">
+                      +92 300 4313139
                     </a>
                   </div>
                 </div>
