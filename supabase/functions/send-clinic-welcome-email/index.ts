@@ -45,7 +45,7 @@ const handler = async (req: Request): Promise<Response> => {
     const feePerDoctor = feeData ? parseInt(feeData.value) : 6000;
     const numberOfDoctors = requestedDoctors || 1;
     const totalMonthlyFee = feePerDoctor * numberOfDoctors;
-    const adminEmail = adminEmailData?.value || "admin@zonoir.com";
+    const adminEmail = adminEmailData?.value || "hello@zonoir.com";
 
     const emailHtml = `
       <!DOCTYPE html>

@@ -249,13 +249,13 @@ const DoctorSupport = () => {
       return;
     }
 
-    const { error } = await supabase.from("support_tickets").insert({
+    const { data: ticketData, error } = await supabase.from("support_tickets").insert({
       doctor_id: user.id,
       name: formData.name,
       email: formData.email,
       subject: formData.subject,
       message: formData.message,
-    });
+    }).select().single();
 
     if (error) {
       toast({
@@ -264,6 +264,23 @@ const DoctorSupport = () => {
         variant: "destructive",
       });
     } else {
+      // Send notification email to admin
+      try {
+        await supabase.functions.invoke("send-ticket-notification", {
+          body: {
+            ticketId: ticketData.id,
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+            entityType: "doctor",
+            entityName: formData.name,
+          },
+        });
+      } catch (emailError) {
+        console.error("Failed to send ticket notification email:", emailError);
+      }
+
       toast({
         title: "Success",
         description: "Your support ticket has been submitted successfully!",

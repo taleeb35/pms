@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
           ? monthlyFee
           : 6000;
     
-    const adminEmail = adminEmailData?.value || "admin@zonoir.com";
+    const adminEmail = adminEmailData?.value || "hello@zonoir.com";
 
     const emailHtml = `
       <!DOCTYPE html>

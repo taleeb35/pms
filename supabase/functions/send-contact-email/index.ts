@@ -48,7 +48,7 @@ const handler = async (req: Request): Promise<Response> => {
       other: "Other",
     };
 
-    // Send email to hello@zonoir.com
+    // Send email to admin
     const emailResponse = await resend.emails.send({
       from: "Zonoir Contact Form <noreply@zonoir.com>",
       to: ["hello@zonoir.com"],
