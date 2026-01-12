@@ -139,7 +139,7 @@ const Index = () => {
               <span className="font-medium">Profit Analytics</span>
             </div>
           </div>
-          <div className="flex gap-4 justify-center pt-6">
+          <div className="flex flex-wrap gap-4 justify-center pt-6">
             <Button
               onClick={() => navigate("/login")}
               size="lg"
@@ -147,6 +147,15 @@ const Index = () => {
             >
               Get Started
               <Sparkles className="ml-2 h-5 w-5" />
+            </Button>
+            <Button
+              onClick={() => window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank")}
+              size="lg"
+              variant="outline"
+              className="text-lg px-10 py-6 border-2 border-white bg-white/20 backdrop-blur text-purple-700 hover:bg-white hover:text-purple-600 shadow-2xl transition-all duration-300 hover:scale-110"
+            >
+              <Calendar className="mr-2 h-5 w-5" />
+              Request A Demo
             </Button>
             <Button
               onClick={() => navigate("/login")}
