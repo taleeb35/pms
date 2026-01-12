@@ -101,8 +101,8 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Email</p>
-                  <a href="mailto:contact@zonoir.com" className="text-sm hover:text-purple-400 transition-colors">
-                    contact@zonoir.com
+                  <a href="mailto:hello@zonoir.com" className="text-sm hover:text-purple-400 transition-colors">
+                    hello@zonoir.com
                   </a>
                 </div>
               </li>
@@ -112,8 +112,8 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Phone</p>
-                  <a href="tel:+923001234567" className="text-sm hover:text-purple-400 transition-colors">
-                    +92 300 123 4567
+                  <a href="tel:+923004313139" className="text-sm hover:text-purple-400 transition-colors">
+                    +92 300 4313139
                   </a>
                 </div>
               </li>
