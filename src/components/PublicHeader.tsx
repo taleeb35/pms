@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, BookOpen, Menu, Gift, Calendar } from "lucide-react";
+import { LogIn, Menu, Gift, Calendar, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import clinicLogo from "@/assets/main-logo.webp";
 
@@ -18,7 +18,6 @@ const PublicHeader = () => {
     { label: "Features", path: "/features" },
     { label: "Pricing", path: "/pricing" },
     { label: "Contact", path: "/contact" },
-    { label: "Help", path: "/knowledge-base", icon: BookOpen },
     { label: "Referral", path: "/referral-program", icon: Gift },
   ];
 
@@ -48,6 +47,14 @@ const PublicHeader = () => {
                 {item.label}
               </Button>
             ))}
+            <Button
+              onClick={() => navigate("/auth")}
+              size="sm"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              Get Zonoir Free
+            </Button>
             <Button
               onClick={() => window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank")}
               size="sm"
@@ -105,6 +112,16 @@ const PublicHeader = () => {
                     </Button>
                   ))}
                   <div className="border-t my-4" />
+                  <Button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/auth");
+                    }}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Get Zonoir Free
+                  </Button>
                   <Button
                     onClick={() => {
                       setMobileMenuOpen(false);
