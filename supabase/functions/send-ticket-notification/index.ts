@@ -142,7 +142,7 @@ const handler = async (req: Request): Promise<Response> => {
       from: "Zonoir Support <noreply@zonoir.com>",
       to: ["hello@zonoir.com"],
       reply_to: email,
-      subject: `🎫 New Support Ticket: ${subject}`,
+      subject: `Zonoir Support - New Ticket: ${subject}`,
       html: adminEmailHtml,
       headers: {
         "X-Priority": "1",

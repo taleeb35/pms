@@ -198,7 +198,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Zonoir <noreply@zonoir.com>",
       to: [email],
-      subject: `Registration Received - ${clinicName} | Zonoir`,
+      subject: `Zonoir - Welcome ${clinicName}, Your Registration is Complete`,
       html: emailHtml,
       headers: {
         "X-Priority": "1",

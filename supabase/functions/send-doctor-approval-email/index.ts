@@ -31,7 +31,7 @@ const handler = async (req: Request): Promise<Response> => {
     let subject = '';
 
     if (status === 'approved') {
-      subject = `🎉 Welcome Dr. ${doctorName} - Your Account is Approved!`;
+      subject = `Zonoir - Welcome Dr. ${doctorName}, Your Account is Approved`;
       emailHtml = `
         <!DOCTYPE html>
         <html>
@@ -133,7 +133,7 @@ const handler = async (req: Request): Promise<Response> => {
                          'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)';
       const textColor = status === 'pending' ? '#92400e' : status === 'suspended' ? '#991b1b' : '#374151';
 
-      subject = `${statusIcon} Dr. ${doctorName} - ${statusTitle}`;
+      subject = `Zonoir - Dr. ${doctorName}, ${statusTitle}`;
       emailHtml = `
         <!DOCTYPE html>
         <html>
