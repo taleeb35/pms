@@ -76,20 +76,20 @@ const DoctorReviewsSection = () => {
               ))}
             </div>
             
-            <div className="flex items-center gap-3 pt-4 border-t border-purple-100">
-              <Avatar className="h-12 w-12 border-2 border-purple-200">
+            <div className="flex items-center gap-4 pt-4 border-t border-purple-100">
+              <Avatar className="h-16 w-16 border-2 border-purple-200">
                 <AvatarImage 
                   src={review.image} 
                   alt={review.name}
                   className="object-cover"
                 />
-                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold">
+                <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-lg">
                   {review.name.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h4 className="font-bold text-foreground text-sm">{review.name}</h4>
-                <p className="text-xs text-muted-foreground">{review.role}</p>
+                <h4 className="font-bold text-foreground">{review.name}</h4>
+                <p className="text-sm text-muted-foreground">{review.role}</p>
               </div>
             </div>
           </div>
