@@ -66,7 +66,7 @@ const DoctorReviewsSection = () => {
             
             <Quote className="h-8 w-8 text-purple-200 mb-4" />
             
-            <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-4">
+            <p className="text-muted-foreground text-sm leading-relaxed mb-6">
               "{review.review}"
             </p>
             
