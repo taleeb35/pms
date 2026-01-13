@@ -77,8 +77,8 @@ const DoctorReviewsSection = () => {
             </div>
             
             <div className="flex items-center gap-4 pt-4 border-t border-purple-100">
-              <Avatar className="h-16 w-16 border-2 border-purple-200">
-                <AvatarImage 
+              <Avatar className="h-24 w-24 border-2 border-purple-200">
+                <AvatarImage
                   src={review.image} 
                   alt={review.name}
                   className="object-cover"
