@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import DoctorReviewsSection from "@/components/DoctorReviewsSection";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -329,6 +330,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Doctor Reviews Section */}
+      <DoctorReviewsSection />
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20">
