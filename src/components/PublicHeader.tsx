@@ -90,7 +90,7 @@ const PublicHeader = () => {
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px]">
+              <SheetContent side="right" className="w-[280px] sm:w-[320px] z-[100]">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
                     <img src={clinicLogo} alt="Clinic Logo" className="h-8 w-8" />
