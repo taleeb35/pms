@@ -93,7 +93,10 @@ const PublicHeader = () => {
               <SheetContent side="right" className="w-[280px] sm:w-[320px] z-[100]">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
-                    <img src={clinicLogo} alt="Clinic Logo" className="h-8 w-8" />
+                    <img src={clinicLogo} alt="Clinic Logo" className="" />
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Zonoir
+                    </span>
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-2 mt-8">
