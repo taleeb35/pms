@@ -212,9 +212,10 @@ const Auth = () => {
 
       if (roleError) throw roleError;
 
-      // Send welcome email
+      // Send welcome email with proper error handling
       try {
-        await supabase.functions.invoke('send-clinic-welcome-email', {
+        console.log("Invoking send-clinic-welcome-email function...");
+        const { data: emailData, error: emailFunctionError } = await supabase.functions.invoke('send-clinic-welcome-email', {
           body: {
             clinicName,
             email,
@@ -224,9 +225,16 @@ const Auth = () => {
             requestedDoctors: parseInt(noOfDoctors) || 1,
           },
         });
-        console.log("Welcome email sent successfully");
-      } catch (emailError) {
-        console.error("Failed to send welcome email:", emailError);
+        
+        if (emailFunctionError) {
+          console.error("Email function error:", emailFunctionError);
+        } else if (emailData?.success) {
+          console.log("Welcome email sent successfully:", emailData);
+        } else {
+          console.error("Email sending failed:", emailData?.error);
+        }
+      } catch (emailError: any) {
+        console.error("Failed to invoke email function:", emailError?.message || emailError);
       }
 
       // Show success dialog
