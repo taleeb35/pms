@@ -16,6 +16,7 @@ import {
   Activity,
   Clock,
   LogIn,
+  MapPin,
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
@@ -327,6 +328,84 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Cities We Serve Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 px-6 py-3 rounded-full border-2 border-green-200 mb-6 shadow-md">
+              <MapPin className="h-5 w-5 text-green-600 animate-pulse" />
+              <span className="text-sm font-bold text-green-900">Serving Across Pakistan</span>
+            </div>
+            <h3 className="text-4xl md:text-5xl font-extrabold mb-4">
+              <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                Available in Major Cities
+              </span>
+            </h3>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Our clinic management software is trusted by healthcare professionals across Pakistan
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {[
+              { name: "Lahore", hasPage: true, slug: "/emr-software-lahore" },
+              { name: "Karachi", hasPage: false },
+              { name: "Islamabad", hasPage: false },
+              { name: "Rawalpindi", hasPage: false },
+              { name: "Faisalabad", hasPage: false },
+              { name: "Multan", hasPage: false },
+              { name: "Peshawar", hasPage: false },
+              { name: "Quetta", hasPage: false },
+              { name: "Sialkot", hasPage: false },
+              { name: "Gujranwala", hasPage: false },
+              { name: "Hyderabad", hasPage: false },
+              { name: "Bahawalpur", hasPage: false },
+              { name: "Sargodha", hasPage: false },
+              { name: "Sukkur", hasPage: false },
+              { name: "Abbottabad", hasPage: false },
+            ].map((city, index) => (
+              city.hasPage ? (
+                <button
+                  key={city.name}
+                  onClick={() => navigate(city.slug!)}
+                  className="group relative bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-5 text-center shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 animate-fade-in cursor-pointer"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <MapPin className="h-6 w-6 mx-auto mb-2 group-hover:animate-bounce" />
+                  <span className="font-bold text-base">{city.name}</span>
+                  <div className="text-xs mt-1 opacity-80 group-hover:opacity-100">View Details →</div>
+                </button>
+              ) : (
+                <div
+                  key={city.name}
+                  className="group bg-white/80 backdrop-blur border-2 border-green-100 rounded-2xl p-5 text-center shadow-md hover:shadow-xl hover:border-green-300 transition-all duration-300 hover:-translate-y-1 animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <MapPin className="h-6 w-6 mx-auto mb-2 text-green-500 group-hover:text-green-600 transition-colors" />
+                  <span className="font-semibold text-foreground text-base">{city.name}</span>
+                  <div className="text-xs text-muted-foreground mt-1">Coming Soon</div>
+                </div>
+              )
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-muted-foreground mb-4">
+              Don't see your city? We're expanding rapidly across Pakistan!
+            </p>
+            <Button
+              onClick={() => navigate("/contact")}
+              variant="outline"
+              className="border-2 border-green-500 text-green-600 hover:bg-green-50"
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              Request Your City
+            </Button>
           </div>
         </div>
       </section>
