@@ -352,7 +352,7 @@ const Index = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {[
-              { name: "Lahore", hasPage: true, slug: "/emr-software-lahore" },
+              { name: "Lahore", hasPage: true, slug: "/emr-software-for-doctors-in-lahore" },
               { name: "Karachi", hasPage: false },
               { name: "Islamabad", hasPage: false },
               { name: "Rawalpindi", hasPage: false },
