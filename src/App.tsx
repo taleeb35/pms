@@ -105,7 +105,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/reviews" element={<Reviews />} />
-          <Route path="/emr-software-lahore" element={<CityLahore />} />
+          <Route path="/emr-software-for-doctors-in-lahore" element={<CityLahore />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/referral-program" element={<ReferralProgram />} />

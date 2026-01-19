@@ -30,10 +30,10 @@ const CityLahore = () => {
     title: "EMR Software for Doctors in Lahore | Clinic Management Software Lahore",
     description: "Best EMR software for doctors in Lahore. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 500+ Lahore clinics.",
     keywords: "EMR software Lahore, clinic management software Lahore, doctor software Lahore, patient management Lahore, clinic software Gulberg, hospital software Lahore, medical billing software Lahore, prescription software Lahore, OPD management Lahore, healthcare software Lahore, electronic medical records Lahore, doctor appointment system Lahore, clinic ERP Lahore",
-    canonicalUrl: "https://zonoir.com/emr-software-lahore",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-lahore",
     ogTitle: "EMR Software for Doctors in Lahore | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Lahore. Complete clinic management solution trusted by 500+ Lahore clinics.",
-    ogUrl: "https://zonoir.com/emr-software-lahore",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-lahore",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
