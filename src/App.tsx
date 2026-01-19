@@ -9,6 +9,7 @@ import Features from "./pages/Features";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
 import Reviews from "./pages/Reviews";
+import CityLahore from "./pages/CityLahore";
 import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Auth from "./pages/Auth";
@@ -104,6 +105,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/reviews" element={<Reviews />} />
+          <Route path="/emr-software-lahore" element={<CityLahore />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/referral-program" element={<ReferralProgram />} />
