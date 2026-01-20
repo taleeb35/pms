@@ -236,28 +236,15 @@ const CityLahore = () => {
                 ))}
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-8 lg:p-12">
-              <h3 className="text-2xl font-bold text-foreground mb-4">Areas We Serve in Lahore</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  "Gulberg",
-                  "Model Town",
-                  "DHA",
-                  "Johar Town",
-                  "Garden Town",
-                  "Faisal Town",
-                  "Cantt",
-                  "Iqbal Town",
-                  "Township",
-                  "Wapda Town",
-                  "Valencia",
-                  "Bahria Town",
-                ].map((area) => (
-                  <div key={area} className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-primary" />
-                    <span className="text-foreground">{area}</span>
-                  </div>
-                ))}
+            <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-8 lg:p-12 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Available Across Lahore</h3>
+                <p className="text-muted-foreground">
+                  Our software is available to all healthcare professionals throughout Lahore city.
+                </p>
               </div>
             </div>
           </div>
