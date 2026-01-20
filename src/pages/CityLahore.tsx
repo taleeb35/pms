@@ -236,17 +236,6 @@ const CityLahore = () => {
                 ))}
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-8 lg:p-12 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-10 h-10 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">Available Across Lahore</h3>
-                <p className="text-muted-foreground">
-                  Our software is available to all healthcare professionals throughout Lahore city.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
