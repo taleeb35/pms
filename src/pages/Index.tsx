@@ -352,23 +352,8 @@ const Index = () => {
       </section>
 
       {/* Cities We Serve Section */}
-      <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-emerald-100 px-6 py-3 rounded-full border-2 border-green-200 mb-6 shadow-md">
-              <MapPin className="h-5 w-5 text-green-600 animate-pulse" />
-              <span className="text-sm font-bold text-green-900">Serving Across Pakistan</span>
-            </div>
-            <h3 className="text-4xl md:text-5xl font-extrabold mb-4">
-              <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                Available in Major Cities
-              </span>
-            </h3>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Our clinic management software is trusted by healthcare professionals across Pakistan
-            </p>
-          </div>
-
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {[
               { name: "Lahore", hasPage: true, slug: "/emr-software-for-doctors-in-lahore" },
@@ -411,20 +396,6 @@ const Index = () => {
                 </div>
               )
             ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-muted-foreground mb-4">
-              Don't see your city? We're expanding rapidly across Pakistan!
-            </p>
-            <Button
-              onClick={() => navigate("/contact")}
-              variant="outline"
-              className="border-2 border-green-500 text-green-600 hover:bg-green-50"
-            >
-              <MapPin className="mr-2 h-4 w-4" />
-              Request Your City
-            </Button>
           </div>
         </div>
       </section>
