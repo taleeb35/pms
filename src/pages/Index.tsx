@@ -358,9 +358,9 @@ const Index = () => {
             {[
               { name: "Lahore", hasPage: true, slug: "/emr-software-for-doctors-in-lahore" },
               { name: "Karachi", hasPage: true, slug: "/emr-software-for-doctors-in-karachi" },
-              { name: "Islamabad", hasPage: false },
-              { name: "Rawalpindi", hasPage: false },
-              { name: "Faisalabad", hasPage: false },
+              { name: "Islamabad", hasPage: true, slug: "/emr-software-for-doctors-in-islamabad" },
+              { name: "Rawalpindi", hasPage: true, slug: "/emr-software-for-doctors-in-rawalpindi" },
+              { name: "Faisalabad", hasPage: true, slug: "/emr-software-for-doctors-in-faisalabad" },
               { name: "Multan", hasPage: false },
               { name: "Peshawar", hasPage: false },
               { name: "Quetta", hasPage: false },
