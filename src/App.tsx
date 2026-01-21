@@ -12,6 +12,9 @@ import Pricing from "./pages/Pricing";
 import Reviews from "./pages/Reviews";
 import CityLahore from "./pages/CityLahore";
 import CityKarachi from "./pages/CityKarachi";
+import CityIslamabad from "./pages/CityIslamabad";
+import CityRawalpindi from "./pages/CityRawalpindi";
+import CityFaisalabad from "./pages/CityFaisalabad";
 import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Auth from "./pages/Auth";
@@ -110,6 +113,9 @@ const App = () => (
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/emr-software-for-doctors-in-lahore" element={<CityLahore />} />
           <Route path="/emr-software-for-doctors-in-karachi" element={<CityKarachi />} />
+          <Route path="/emr-software-for-doctors-in-islamabad" element={<CityIslamabad />} />
+          <Route path="/emr-software-for-doctors-in-rawalpindi" element={<CityRawalpindi />} />
+          <Route path="/emr-software-for-doctors-in-faisalabad" element={<CityFaisalabad />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/referral-program" element={<ReferralProgram />} />
