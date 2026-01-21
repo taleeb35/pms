@@ -118,15 +118,21 @@ const CityRawalpindi = () => {
   const testimonials = [
     {
       name: "Dr. Imran Hussain",
-      clinic: "Rawalpindi Medical Complex, Saddar",
+      clinic: "Rawalpindi Medical Complex",
       rating: 5,
       review: "Outstanding EMR solution for our busy Rawalpindi practice. Easy to use and very reliable.",
     },
     {
-      name: "Dr. Ayesha Siddiqui",
-      clinic: "Family Health Clinic, Satellite Town",
+      name: "Dr. Nadia Khan",
+      clinic: "Family Health Clinic",
       rating: 5,
       review: "Best decision we made for our clinic. Patient management has never been easier.",
+    },
+    {
+      name: "Dr. Saad Ali",
+      clinic: "Pindi Care Hospital",
+      rating: 5,
+      review: "Exceptional software that has revolutionized how we handle patient records.",
     },
   ];
 
@@ -219,14 +225,14 @@ const CityRawalpindi = () => {
       {/* Benefits Section */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why Rawalpindi Doctors Choose Zonoir
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
               Join hundreds of successful clinics across Rawalpindi who trust Zonoir for their practice management.
             </p>
-            <ul className="space-y-3 text-left inline-block">
+            <ul className="space-y-3">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -246,7 +252,7 @@ const CityRawalpindi = () => {
               What Rawalpindi Doctors Say About Us
             </h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
               <Card key={index}>
                 <CardContent className="p-6">
