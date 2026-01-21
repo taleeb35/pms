@@ -118,15 +118,21 @@ const CityIslamabad = () => {
   const testimonials = [
     {
       name: "Dr. Usman Rashid",
-      clinic: "Capital Medical Center, F-8",
+      clinic: "Capital Medical Center",
       rating: 5,
       review: "Excellent EMR software for our Islamabad practice. The interface is intuitive and support is outstanding.",
     },
     {
       name: "Dr. Sana Qureshi",
-      clinic: "Blue Area Clinic, G-9",
+      clinic: "Blue Area Clinic",
       rating: 5,
       review: "Transformed our clinic operations completely. Highly recommend for doctors in the capital.",
+    },
+    {
+      name: "Dr. Amina Farooq",
+      clinic: "Islamabad Family Clinic",
+      rating: 5,
+      review: "The best investment for our practice. Patient management has never been this efficient.",
     },
   ];
 
@@ -219,14 +225,14 @@ const CityIslamabad = () => {
       {/* Benefits Section */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why Islamabad Doctors Choose Zonoir
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
               Join hundreds of successful clinics across Islamabad who trust Zonoir for their practice management.
             </p>
-            <ul className="space-y-3 text-left inline-block">
+            <ul className="space-y-3">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -246,7 +252,7 @@ const CityIslamabad = () => {
               What Islamabad Doctors Say About Us
             </h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
               <Card key={index}>
                 <CardContent className="p-6">

@@ -118,15 +118,21 @@ const CityKarachi = () => {
   const testimonials = [
     {
       name: "Dr. Hassan Raza",
-      clinic: "Raza Medical Complex, Clifton",
+      clinic: "Raza Medical Complex",
       rating: 5,
       review: "Excellent EMR software for Karachi clinics. The team understands the needs of Pakistani doctors.",
     },
     {
       name: "Dr. Ayesha Siddiqui",
-      clinic: "Siddiqui Healthcare, Defence",
+      clinic: "Siddiqui Healthcare",
       rating: 5,
       review: "Our patient management has improved significantly since we started using Zonoir.",
+    },
+    {
+      name: "Dr. Faisal Ahmed",
+      clinic: "Karachi Medical Center",
+      rating: 5,
+      review: "Streamlined our entire clinic workflow. Highly recommend for all Karachi doctors.",
     },
   ];
 
@@ -219,14 +225,14 @@ const CityKarachi = () => {
       {/* Benefits Section */}
       <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-3xl">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               Why Karachi Doctors Choose Zonoir
             </h2>
             <p className="text-lg text-muted-foreground mb-8">
               Join hundreds of successful clinics across Karachi who trust Zonoir for their practice management.
             </p>
-            <ul className="space-y-3 text-left inline-block">
+            <ul className="space-y-3">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -246,7 +252,7 @@ const CityKarachi = () => {
               What Karachi Doctors Say About Us
             </h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((testimonial, index) => (
               <Card key={index}>
                 <CardContent className="p-6">
