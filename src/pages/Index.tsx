@@ -367,7 +367,7 @@ const Index = () => {
                 { name: "Islamabad", hasPage: true, slug: "/emr-software-for-doctors-in-islamabad" },
                 { name: "Rawalpindi", hasPage: true, slug: "/emr-software-for-doctors-in-rawalpindi" },
                 { name: "Faisalabad", hasPage: true, slug: "/emr-software-for-doctors-in-faisalabad" },
-                { name: "Multan", hasPage: false },
+                { name: "Multan", hasPage: true, slug: "/emr-software-for-doctors-in-multan" },
                 { name: "Peshawar", hasPage: false },
                 { name: "Quetta", hasPage: false },
                 { name: "Sialkot", hasPage: false },
