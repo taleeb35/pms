@@ -21,9 +21,13 @@ import {
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import DoctorReviewsSection from "@/components/DoctorReviewsSection";
+import { useGeoLocation } from "@/contexts/GeoLocationContext";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { country } = useGeoLocation();
+
+  const isUSA = country === "US";
 
   // Check for password recovery redirect from Supabase
   useEffect(() => {
@@ -170,7 +174,6 @@ const Index = () => {
             </Button>
           </div>
 
-          {/* Trust Rating Section */}
           <div className="flex flex-col items-center gap-2 pt-8 animate-fade-in">
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -185,7 +188,9 @@ const Index = () => {
               ))}
             </div>
             <p className="text-muted-foreground text-sm md:text-base">
-              Zonoir is rated 4.8 stars on Google and trusted by 50+ clinics across Pakistan
+              {isUSA 
+                ? "Zonoir is rated 4.8 stars on Google and trusted by healthcare providers across the USA"
+                : "Zonoir is rated 4.8 stars on Google and trusted by 50+ clinics across Pakistan"}
             </p>
           </div>
         </div>
@@ -351,54 +356,56 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Cities We Serve Section */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {[
-              { name: "Lahore", hasPage: true, slug: "/emr-software-for-doctors-in-lahore" },
-              { name: "Karachi", hasPage: true, slug: "/emr-software-for-doctors-in-karachi" },
-              { name: "Islamabad", hasPage: true, slug: "/emr-software-for-doctors-in-islamabad" },
-              { name: "Rawalpindi", hasPage: true, slug: "/emr-software-for-doctors-in-rawalpindi" },
-              { name: "Faisalabad", hasPage: true, slug: "/emr-software-for-doctors-in-faisalabad" },
-              { name: "Multan", hasPage: false },
-              { name: "Peshawar", hasPage: false },
-              { name: "Quetta", hasPage: false },
-              { name: "Sialkot", hasPage: false },
-              { name: "Gujranwala", hasPage: false },
-              { name: "Hyderabad", hasPage: false },
-              { name: "Bahawalpur", hasPage: false },
-              { name: "Sargodha", hasPage: false },
-              { name: "Sukkur", hasPage: false },
-              { name: "Abbottabad", hasPage: false },
-            ].map((city, index) => (
-              city.hasPage ? (
-                <button
-                  key={city.name}
-                  onClick={() => navigate(city.slug!)}
-                  className="group relative bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-5 text-center shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 animate-fade-in cursor-pointer"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <MapPin className="h-6 w-6 mx-auto mb-2 group-hover:animate-bounce" />
-                  <span className="font-bold text-base">{city.name}</span>
-                  <div className="text-xs mt-1 opacity-80 group-hover:opacity-100">View Details →</div>
-                </button>
-              ) : (
-                <div
-                  key={city.name}
-                  className="group bg-white/80 backdrop-blur border-2 border-green-100 rounded-2xl p-5 text-center shadow-md hover:shadow-xl hover:border-green-300 transition-all duration-300 hover:-translate-y-1 animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <MapPin className="h-6 w-6 mx-auto mb-2 text-green-500 group-hover:text-green-600 transition-colors" />
-                  <span className="font-semibold text-foreground text-base">{city.name}</span>
-                  <div className="text-xs text-muted-foreground mt-1">Coming Soon</div>
-                </div>
-              )
-            ))}
+      {/* Cities We Serve Section - Only show for Pakistan visitors */}
+      {!isUSA && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {[
+                { name: "Lahore", hasPage: true, slug: "/emr-software-for-doctors-in-lahore" },
+                { name: "Karachi", hasPage: true, slug: "/emr-software-for-doctors-in-karachi" },
+                { name: "Islamabad", hasPage: true, slug: "/emr-software-for-doctors-in-islamabad" },
+                { name: "Rawalpindi", hasPage: true, slug: "/emr-software-for-doctors-in-rawalpindi" },
+                { name: "Faisalabad", hasPage: true, slug: "/emr-software-for-doctors-in-faisalabad" },
+                { name: "Multan", hasPage: false },
+                { name: "Peshawar", hasPage: false },
+                { name: "Quetta", hasPage: false },
+                { name: "Sialkot", hasPage: false },
+                { name: "Gujranwala", hasPage: false },
+                { name: "Hyderabad", hasPage: false },
+                { name: "Bahawalpur", hasPage: false },
+                { name: "Sargodha", hasPage: false },
+                { name: "Sukkur", hasPage: false },
+                { name: "Abbottabad", hasPage: false },
+              ].map((city, index) => (
+                city.hasPage ? (
+                  <button
+                    key={city.name}
+                    onClick={() => navigate(city.slug!)}
+                    className="group relative bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl p-5 text-center shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:scale-105 animate-fade-in cursor-pointer"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <MapPin className="h-6 w-6 mx-auto mb-2 group-hover:animate-bounce" />
+                    <span className="font-bold text-base">{city.name}</span>
+                    <div className="text-xs mt-1 opacity-80 group-hover:opacity-100">View Details →</div>
+                  </button>
+                ) : (
+                  <div
+                    key={city.name}
+                    className="group bg-white/80 backdrop-blur border-2 border-green-100 rounded-2xl p-5 text-center shadow-md hover:shadow-xl hover:border-green-300 transition-all duration-300 hover:-translate-y-1 animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <MapPin className="h-6 w-6 mx-auto mb-2 text-green-500 group-hover:text-green-600 transition-colors" />
+                    <span className="font-semibold text-foreground text-base">{city.name}</span>
+                    <div className="text-xs text-muted-foreground mt-1">Coming Soon</div>
+                  </div>
+                )
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Doctor Reviews Section */}
       <DoctorReviewsSection />

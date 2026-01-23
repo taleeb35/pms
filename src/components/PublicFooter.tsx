@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from "lucide-react";
 import clinicLogo from "@/assets/main-logo.webp";
+import { useGeoLocation } from "@/contexts/GeoLocationContext";
 
 const PublicFooter = () => {
   const currentYear = new Date().getFullYear();
+  const { country } = useGeoLocation();
+
+  const isUSA = country === "US";
 
   const quickLinks = [
     { name: "Home", href: "/" },
@@ -28,6 +32,21 @@ const PublicFooter = () => {
     { icon: Instagram, href: "https://www.instagram.com/zonoir_com", label: "Instagram" },
   ];
 
+  // Contact details based on country
+  const contactDetails = isUSA
+    ? {
+        email: "usa@zonoir.com",
+        phone: "+1 (555) 123-4567",
+        address: "New York, NY, USA",
+        trustText: "Trusted by healthcare providers across the United States",
+      }
+    : {
+        email: "hello@zonoir.com",
+        phone: "+92 300 4313139",
+        address: "Gulberg III, Lahore, Pakistan",
+        trustText: "Trusted by 50+ clinics and 500+ doctors across Pakistan",
+      };
+
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       <div className="container mx-auto px-4 py-16">
@@ -38,8 +57,7 @@ const PublicFooter = () => {
               <img src={clinicLogo} alt="Zonoir" className="" />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
-              The complete solution for modern clinic management. Trusted by 50+ clinics and 500+ doctors across
-              Pakistan.
+              The complete solution for modern clinic management. {contactDetails.trustText}.
             </p>
             {/* Social Icons */}
             <div className="flex gap-3 pt-2">
@@ -103,8 +121,8 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Email</p>
-                  <a href="mailto:hello@zonoir.com" className="text-sm hover:text-purple-400 transition-colors">
-                    hello@zonoir.com
+                  <a href={`mailto:${contactDetails.email}`} className="text-sm hover:text-purple-400 transition-colors">
+                    {contactDetails.email}
                   </a>
                 </div>
               </li>
@@ -114,8 +132,8 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Phone</p>
-                  <a href="tel:+923004313139" className="text-sm hover:text-purple-400 transition-colors">
-                    +92 300 4313139
+                  <a href={`tel:${contactDetails.phone.replace(/\s/g, '')}`} className="text-sm hover:text-purple-400 transition-colors">
+                    {contactDetails.phone}
                   </a>
                 </div>
               </li>
@@ -125,7 +143,7 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Address</p>
-                  <p className="text-sm">Gulberg III, Lahore, Pakistan</p>
+                  <p className="text-sm">{contactDetails.address}</p>
                 </div>
               </li>
             </ul>
@@ -136,7 +154,9 @@ const PublicFooter = () => {
         <div className="border-t border-slate-700/50 mt-12 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-400 text-sm">© {currentYear} Zonoir. All rights reserved.</p>
-            <p className="text-slate-500 text-sm">Made with ❤️ in Pakistan</p>
+            <p className="text-slate-500 text-sm">
+              {isUSA ? "Serving healthcare providers across the USA" : "Made with ❤️ in Pakistan"}
+            </p>
           </div>
         </div>
       </div>
