@@ -1,21 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, Menu, Gift, Calendar, Sparkles, Globe } from "lucide-react";
+import { LogIn, Menu, Gift, Calendar, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import clinicLogo from "@/assets/main-logo.webp";
-import { useGeoLocation } from "@/contexts/GeoLocationContext";
 
 const PublicHeader = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { country, setCountryManually } = useGeoLocation();
 
   const handleNavClick = (path: string) => {
     setMobileMenuOpen(false);
@@ -28,13 +20,6 @@ const PublicHeader = () => {
     { label: "Contact", path: "/contact" },
     { label: "Referral", path: "/referral-program", icon: Gift },
   ];
-
-  const countryOptions = [
-    { code: "PK" as const, label: "Pakistan", flag: "🇵🇰" },
-    { code: "US" as const, label: "USA", flag: "🇺🇸" },
-  ];
-
-  const currentCountry = countryOptions.find(c => c.code === country) || countryOptions[0];
 
   return (
     <>
@@ -62,29 +47,6 @@ const PublicHeader = () => {
                 {item.label}
               </Button>
             ))}
-
-            {/* Country Switcher */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Globe className="h-4 w-4" />
-                  <span>{currentCountry.flag}</span>
-                  <span className="hidden lg:inline">{currentCountry.label}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white z-50">
-                {countryOptions.map((option) => (
-                  <DropdownMenuItem
-                    key={option.code}
-                    onClick={() => setCountryManually(option.code)}
-                    className={`cursor-pointer ${country === option.code ? "bg-primary/10 font-semibold" : ""}`}
-                  >
-                    <span className="mr-2">{option.flag}</span>
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
 
             <Button
               onClick={() => navigate("/auth")}
@@ -115,27 +77,6 @@ const PublicHeader = () => {
 
           {/* Mobile Menu */}
           <div className="flex md:hidden items-center gap-2">
-            {/* Mobile Country Switcher */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <span className="text-lg">{currentCountry.flag}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white z-50">
-                {countryOptions.map((option) => (
-                  <DropdownMenuItem
-                    key={option.code}
-                    onClick={() => setCountryManually(option.code)}
-                    className={`cursor-pointer ${country === option.code ? "bg-primary/10 font-semibold" : ""}`}
-                  >
-                    <span className="mr-2">{option.flag}</span>
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             <Button
               onClick={() => navigate("/login")}
               size="sm"
