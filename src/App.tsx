@@ -18,6 +18,8 @@ import CityRawalpindi from "./pages/CityRawalpindi";
 import CityFaisalabad from "./pages/CityFaisalabad";
 import CityMultan from "./pages/CityMultan";
 import CityPeshawar from "./pages/CityPeshawar";
+import CityQuetta from "./pages/CityQuetta";
+import CitySialkot from "./pages/CitySialkot";
 import AdminLogin from "./pages/AdminLogin";
 import DoctorAuth from "./pages/DoctorAuth";
 import Auth from "./pages/Auth";
@@ -122,6 +124,8 @@ const App = () => (
           <Route path="/emr-software-for-doctors-in-faisalabad" element={<CityFaisalabad />} />
           <Route path="/emr-software-for-doctors-in-multan" element={<CityMultan />} />
           <Route path="/emr-software-for-doctors-in-peshawar" element={<CityPeshawar />} />
+          <Route path="/emr-software-for-doctors-in-quetta" element={<CityQuetta />} />
+          <Route path="/emr-software-for-doctors-in-sialkot" element={<CitySialkot />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/referral-program" element={<ReferralProgram />} />
