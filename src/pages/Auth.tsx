@@ -26,7 +26,7 @@ import {
   handleNumberInput
 } from "@/lib/validations";
 
-const MONTHLY_PRICE_PER_DOCTOR = 5999;
+const MONTHLY_PRICE_PER_DOCTOR = 19.99;
 const YEARLY_DISCOUNT = 0.17; // 17% discount
 
 const Auth = () => {
@@ -49,17 +49,17 @@ const Auth = () => {
 
   // Calculate pricing
   const doctorCount = parseInt(noOfDoctors) || 1;
-  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
+  const yearlyMonthlyRate = Math.round((MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT)) * 100) / 100;
   const monthlyTotal = doctorCount * MONTHLY_PRICE_PER_DOCTOR;
   const yearlyTotal = doctorCount * yearlyMonthlyRate;
   const yearlySavings = (monthlyTotal - yearlyTotal) * 12;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-PK', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'PKR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     }).format(price);
   };
 
