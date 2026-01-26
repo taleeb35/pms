@@ -13,11 +13,11 @@ const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [doctorCount, setDoctorCount] = useState(1);
 
-  const MONTHLY_PRICE_PER_DOCTOR = 5999;
+  const MONTHLY_PRICE_PER_DOCTOR = 19.99;
   const YEARLY_DISCOUNT = 0.17; // 17% discount
 
   const monthlyTotal = doctorCount * MONTHLY_PRICE_PER_DOCTOR;
-  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
+  const yearlyMonthlyRate = Math.round((MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT)) * 100) / 100;
   const yearlyTotal = doctorCount * yearlyMonthlyRate;
   const yearlySavings = (monthlyTotal - yearlyTotal) * 12;
 
@@ -39,7 +39,7 @@ const Pricing = () => {
     {
       question: "How does the pricing work?",
       answer:
-        "You pay PKR 5,999 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
+        "You pay $19.99 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
     },
     {
       question: "Is there a free trial?",
@@ -48,7 +48,7 @@ const Pricing = () => {
     {
       question: "What's the yearly discount?",
       answer:
-        "When you choose annual billing, you get 17% off - that's PKR 4,979 per doctor per month instead of PKR 5,999.",
+        "When you choose annual billing, you get 17% off - that's $16.59 per doctor per month instead of $19.99.",
     },
     {
       question: "Can I switch between monthly and yearly?",
@@ -68,11 +68,11 @@ const Pricing = () => {
   ];
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-PK", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "PKR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(price);
   };
 
@@ -94,7 +94,7 @@ const Pricing = () => {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            PKR 5,999 per doctor per month. Save 17% with yearly billing.
+            $19.99 per doctor per month. Save 17% with yearly billing.
           </p>
 
           {/* Billing Toggle */}
