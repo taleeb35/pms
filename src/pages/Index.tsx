@@ -372,9 +372,9 @@ const Index = () => {
                 { name: "Quetta", hasPage: true, slug: "/emr-software-for-doctors-in-quetta" },
                 { name: "Sialkot", hasPage: true, slug: "/emr-software-for-doctors-in-sialkot" },
                 { name: "Gujranwala", hasPage: true, slug: "/emr-software-for-doctors-in-gujranwala" },
-                { name: "Hyderabad", hasPage: false },
-                { name: "Bahawalpur", hasPage: false },
-                { name: "Sargodha", hasPage: false },
+                { name: "Hyderabad", hasPage: true, slug: "/emr-software-for-doctors-in-hyderabad" },
+                { name: "Bahawalpur", hasPage: true, slug: "/emr-software-for-doctors-in-bahawalpur" },
+                { name: "Sargodha", hasPage: true, slug: "/emr-software-for-doctors-in-sargodha" },
                 { name: "Sukkur", hasPage: false },
                 { name: "Abbottabad", hasPage: false },
               ].map((city, index) => (
