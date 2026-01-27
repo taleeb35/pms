@@ -375,8 +375,8 @@ const Index = () => {
                 { name: "Hyderabad", hasPage: true, slug: "/emr-software-for-doctors-in-hyderabad" },
                 { name: "Bahawalpur", hasPage: true, slug: "/emr-software-for-doctors-in-bahawalpur" },
                 { name: "Sargodha", hasPage: true, slug: "/emr-software-for-doctors-in-sargodha" },
-                { name: "Sukkur", hasPage: false },
-                { name: "Abbottabad", hasPage: false },
+                { name: "Sukkur", hasPage: true, slug: "/emr-software-for-doctors-in-sukkur" },
+                { name: "Abbottabad", hasPage: true, slug: "/emr-software-for-doctors-in-abbottabad" },
               ].map((city, index) => (
                 city.hasPage ? (
                   <button
