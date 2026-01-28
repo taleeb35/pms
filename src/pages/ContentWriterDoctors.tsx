@@ -73,6 +73,7 @@ const ContentWriterDoctors = () => {
             avatar_url
           )
         `)
+        .eq("approved", true)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
