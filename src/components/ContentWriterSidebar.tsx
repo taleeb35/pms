@@ -1,4 +1,4 @@
-import { Building2, Users, Stethoscope, LifeBuoy, Settings, LayoutDashboard, User, Share2, PenLine } from "lucide-react";
+import { Stethoscope, FileText, LayoutDashboard } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
@@ -13,18 +13,13 @@ import {
 } from "@/components/ui/sidebar";
 import clinicLogo from "@/assets/main-logo.webp";
 
-const adminMenuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Manage Clinics", url: "/admin/clinics", icon: Building2 },
-  { title: "All Doctors", url: "/doctors", icon: Stethoscope },
-  { title: "Referral Partners", url: "/admin/referral-partners", icon: Share2 },
-  { title: "Content Writers", url: "/admin/content-writers", icon: PenLine },
-  { title: "Support Tickets", url: "/support-tickets", icon: LifeBuoy },
-  { title: "Profile", url: "/admin/profile", icon: User },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
+const contentWriterMenuItems = [
+  { title: "Dashboard", url: "/content-writer/dashboard", icon: LayoutDashboard },
+  { title: "Blogs", url: "/content-writer/blogs", icon: FileText },
+  { title: "Doctors", url: "/content-writer/doctors", icon: Stethoscope },
 ];
 
-export function AdminSidebar() {
+export function ContentWriterSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
@@ -64,11 +59,11 @@ export function AdminSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className={collapsed ? "hidden" : ""}>
-            Navigation
+            Content Writer
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {adminMenuItems.map((item) => (
+              {contentWriterMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     onClick={() => navigate(item.url)}

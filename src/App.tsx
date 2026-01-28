@@ -102,6 +102,10 @@ import ClinicActivityLogs from "./pages/ClinicActivityLogs";
 import DoctorActivityLogs from "./pages/DoctorActivityLogs";
 import ReceptionistActivityLogs from "./pages/ReceptionistActivityLogs";
 import DoctorReceptionistActivityLogs from "./pages/DoctorReceptionistActivityLogs";
+import AdminContentWriters from "./pages/AdminContentWriters";
+import ContentWriterDashboard from "./pages/ContentWriterDashboard";
+import ContentWriterBlogs from "./pages/ContentWriterBlogs";
+import ContentWriterDoctors from "./pages/ContentWriterDoctors";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -379,6 +383,39 @@ const App = () => (
               element={
                 <Layout>
                   <AdminReferralPartners />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/content-writers"
+              element={
+                <Layout>
+                  <AdminContentWriters />
+                </Layout>
+              }
+            />
+            {/* Content Writer Routes */}
+            <Route
+              path="/content-writer/dashboard"
+              element={
+                <Layout>
+                  <ContentWriterDashboard />
+                </Layout>
+              }
+            />
+            <Route
+              path="/content-writer/blogs"
+              element={
+                <Layout>
+                  <ContentWriterBlogs />
+                </Layout>
+              }
+            />
+            <Route
+              path="/content-writer/doctors"
+              element={
+                <Layout>
+                  <ContentWriterDoctors />
                 </Layout>
               }
             />

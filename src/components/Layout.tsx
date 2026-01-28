@@ -167,8 +167,13 @@ const Layout = ({ children }: LayoutProps) => {
         return;
       }
 
-      // Finally check user_roles table for admin
+      // Check user_roles table for admin or content_writer
       const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
+
+      if (roleData?.role === "content_writer") {
+        setUserRole("content_writer");
+        return;
+      }
 
       setUserRole(roleData?.role || "admin");
     };
@@ -365,6 +370,18 @@ const Layout = ({ children }: LayoutProps) => {
     },
   ];
 
+  // Content writer menu - simple two items
+  const contentWriterMenuGroups: MenuGroup[] = [
+    {
+      label: "Content",
+      icon: FileText,
+      items: [
+        { path: "/content-writer/blogs", icon: FileText, label: "Blogs" },
+        { path: "/content-writer/doctors", icon: Stethoscope, label: "Doctors" },
+      ],
+    },
+  ];
+
   const menuGroups =
     userRole === "doctor"
       ? doctorMenuGroups
@@ -374,7 +391,9 @@ const Layout = ({ children }: LayoutProps) => {
           ? receptionistMenuGroups
           : userRole === "doctor_receptionist"
             ? doctorReceptionistMenuGroups
-            : adminMenuGroups;
+            : userRole === "content_writer"
+              ? contentWriterMenuGroups
+              : adminMenuGroups;
 
   // Dashboard item (shown at top)
   const getDashboardItem = () => {
@@ -386,6 +405,8 @@ const Layout = ({ children }: LayoutProps) => {
       return { path: "/receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     } else if (userRole === "doctor_receptionist") {
       return { path: "/doctor-receptionist/dashboard", icon: LayoutDashboard, label: "Dashboard" };
+    } else if (userRole === "content_writer") {
+      return { path: "/content-writer/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     } else {
       return { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" };
     }

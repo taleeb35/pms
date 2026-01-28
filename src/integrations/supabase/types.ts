@@ -160,6 +160,51 @@ export type Database = {
           },
         ]
       }
+      blogs: {
+        Row: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          author_name: string
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          published_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clinic_allergies: {
         Row: {
           clinic_id: string
@@ -1888,6 +1933,7 @@ export type Database = {
         | "receptionist"
         | "patient"
         | "clinic"
+        | "content_writer"
       appointment_status:
         | "scheduled"
         | "confirmed"
@@ -2031,6 +2077,7 @@ export const Constants = {
         "receptionist",
         "patient",
         "clinic",
+        "content_writer",
       ],
       appointment_status: [
         "scheduled",
