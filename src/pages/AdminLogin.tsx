@@ -29,17 +29,17 @@ const AdminLogin = () => {
 
       if (authError) throw authError;
 
-      // Check if user has admin role
+      // Check if user has admin or content_writer role
       const { data: roleData, error: roleError } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", authData.user.id)
-        .eq("role", "admin")
+        .in("role", ["admin", "content_writer"])
         .single();
 
       if (roleError || !roleData) {
         await supabase.auth.signOut();
-        throw new Error("Access denied. Admin privileges required.");
+        throw new Error("Access denied. Admin or Content Writer privileges required.");
       }
 
       toast({
@@ -47,7 +47,12 @@ const AdminLogin = () => {
         description: "Logged in successfully",
       });
 
-      navigate("/dashboard");
+      // Redirect based on role
+      if (roleData.role === "content_writer") {
+        navigate("/content-writer/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
