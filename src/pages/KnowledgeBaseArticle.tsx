@@ -1636,6 +1636,10 @@ const KnowledgeBaseArticle = () => {
     return <AddDoctorsArticle />;
   }
 
+  if (slug === "manage-receptionists") {
+    return <ManageReceptionistsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
@@ -1647,6 +1651,405 @@ const KnowledgeBaseArticle = () => {
           <Button>Back to Knowledge Base</Button>
         </Link>
       </div>
+      <PublicFooter />
+    </div>
+  );
+};
+
+const ManageReceptionistsArticle = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">For Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Receptionists</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to="/knowledge-base">
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Building2 className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Receptionists
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how to add, manage, and control access for receptionists in your clinic. 
+              Receptionists act as Personal Assistants with full clinic management capabilities.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Add new receptionists to your clinic",
+                  "Understand receptionist permissions",
+                  "Activate and deactivate accounts",
+                  "Manage receptionist access levels"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Introduction */}
+            <div className="mb-12">
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 mb-6">
+                <Users className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Receptionists as Personal Assistants</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Receptionists in your clinic have the same access permissions as clinic owners. 
+                    They can manage patients, appointments, walk-ins, view analytics, access finance, 
+                    and perform all clinic management tasks.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Navigate to Receptionists</h2>
+                  <p className="text-muted-foreground m-0">Access the receptionists management page</p>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <p>
+                  From your clinic dashboard sidebar, click on <strong>"Receptionists"</strong> to 
+                  access the receptionist management page. Here you'll see a list of all receptionists 
+                  associated with your clinic.
+                </p>
+                <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                  <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    <strong>Pro Tip:</strong> The receptionists page shows each receptionist's name, 
+                    email, status (active/draft), and the date they were added.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Add a New Receptionist</h2>
+                  <p className="text-muted-foreground m-0">Create an account for your clinic staff</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Click the <strong>"Add Receptionist"</strong> button to open the registration form. 
+                Fill in the following required information:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: User, label: "Full Name", desc: "Receptionist's complete name" },
+                  { icon: Mail, label: "Email Address", desc: "For login credentials" },
+                  { icon: Smartphone, label: "Phone Number", desc: "Contact number" },
+                  { icon: Shield, label: "Password", desc: "Secure login password" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <p>
+                Once submitted, the receptionist account is created and they can immediately 
+                log in using their email and password at the <strong>Receptionist Login</strong> page.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Receptionist Permissions</h2>
+                  <p className="text-muted-foreground m-0">Full Personal Assistant capabilities</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Receptionists have identical access to clinic owners, allowing them to fully 
+                manage day-to-day clinic operations:
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: Users, label: "Manage Patients", desc: "Add, edit, view patient records" },
+                  { icon: Calendar, label: "Appointments", desc: "Schedule and manage bookings" },
+                  { icon: ClipboardList, label: "Walk-In Patients", desc: "Handle walk-in registrations" },
+                  { icon: Stethoscope, label: "View Doctors", desc: "Access doctor information" },
+                  { icon: DollarSign, label: "Finance Access", desc: "View financial reports" },
+                  { icon: BarChart3, label: "Analytics", desc: "View clinic statistics" },
+                ].map((feature, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <feature.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{feature.label}</h4>
+                          <p className="text-xs text-muted-foreground">{feature.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Data Isolation:</strong> Receptionists can only access data for your specific 
+                  clinic. They cannot see information from other clinics on the platform.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Activate & Deactivate Accounts</h2>
+                  <p className="text-muted-foreground m-0">Control receptionist access</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                You can control whether a receptionist can access the system by changing their 
+                account status:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-emerald-500/30 bg-emerald-500/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h4 className="font-semibold text-emerald-700">Active Status</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Receptionist can log in and access all clinic features. This is the 
+                      default status for new accounts.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-amber-500/30 bg-amber-500/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                        <AlertCircle className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <h4 className="font-semibold text-amber-700">Draft Status</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Receptionist cannot log in. They'll see an "Account Not Active" message 
+                      if they attempt to access the system.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-3">
+                <p>To change a receptionist's status:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Go to the Receptionists page</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Find the receptionist in the list</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Use the status dropdown to select "Active" or "Draft"</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Changes take effect immediately</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-6">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Use Case:</strong> Set a receptionist to "Draft" status if they're 
+                  on leave or you want to temporarily restrict their access without deleting their account.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Receptionist Login Process</h2>
+                  <p className="text-muted-foreground m-0">How receptionists access the system</p>
+                </div>
+              </div>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                
+                {[
+                  { title: "Visit Login Page", desc: "Receptionist navigates to the dedicated login page" },
+                  { title: "Enter Credentials", desc: "Email and password provided by clinic owner" },
+                  { title: "Account Verification", desc: "System checks if account status is 'Active'" },
+                  { title: "Access Dashboard", desc: "If active, redirected to receptionist dashboard" },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Receptionists have full access to clinic data - add only trusted staff</li>
+                      <li>• Each receptionist has their own login credentials</li>
+                      <li>• Deactivated accounts retain their data and can be reactivated anytime</li>
+                      <li>• Activity logs track all actions performed by receptionists</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "Adding Doctors to Your Clinic", slug: "add-doctors" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <PublicFooter />
     </div>
   );
