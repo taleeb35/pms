@@ -306,9 +306,6 @@ const DoctorsBySpecialty = () => {
                           <Badge variant="secondary">{doctor.specialization}</Badge>
                         </div>
 
-                        <p className="text-muted-foreground text-sm mb-2">
-                          {doctor.qualification}
-                        </p>
 
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
                           {doctor.experience_years && doctor.experience_years > 0 && (
