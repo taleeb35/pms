@@ -14,6 +14,7 @@ const PublicFooter = () => {
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
+    { name: "Find Doctors", href: "/find-doctors" },
     { name: "Contact", href: "/contact" },
     { name: "Help Center", href: "/knowledge-base" },
     { name: "Referral Program", href: "/referral-program" },
