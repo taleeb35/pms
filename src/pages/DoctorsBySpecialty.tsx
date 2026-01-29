@@ -64,6 +64,7 @@ interface Doctor {
   city: string | null;
   introduction: string | null;
   avatar_url: string | null;
+  source?: 'system' | 'seo';
 }
 
 const DoctorsBySpecialty = () => {
@@ -94,28 +95,50 @@ const DoctorsBySpecialty = () => {
   const fetchDoctors = async () => {
     setLoading(true);
     try {
-      // First try SEO doctor listings
-      let query = supabase
+      // Fetch from SEO doctor listings
+      let seoQuery = supabase
         .from("seo_doctor_listings")
         .select("*")
         .eq("is_published", true);
 
       if (specialty && specialtyInfo) {
-        query = query.ilike("specialization", `%${specialtyInfo.name}%`);
+        seoQuery = seoQuery.ilike("specialization", `%${specialtyInfo.name}%`);
       }
 
       if (selectedCity && selectedCity !== "all") {
-        query = query.ilike("city", `%${selectedCity}%`);
+        seoQuery = seoQuery.ilike("city", `%${selectedCity}%`);
       }
 
-      const { data: seoData, error: seoError } = await query;
+      // Fetch from actual system doctors
+      let systemQuery = supabase
+        .from("doctors")
+        .select(`
+          id,
+          specialization,
+          qualification,
+          experience_years,
+          city,
+          introduction,
+          profiles!inner(full_name, avatar_url)
+        `)
+        .eq("approved", true);
 
-      if (seoError) {
-        console.error("Error fetching SEO doctors:", seoError);
+      if (specialty && specialtyInfo) {
+        systemQuery = systemQuery.ilike("specialization", `%${specialtyInfo.name}%`);
       }
+
+      if (selectedCity && selectedCity !== "all") {
+        systemQuery = systemQuery.ilike("city", `%${selectedCity}%`);
+      }
+
+      // Execute both queries in parallel
+      const [seoResult, systemResult] = await Promise.all([
+        seoQuery,
+        systemQuery
+      ]);
 
       // Map SEO listings to doctor format
-      const seoDoctors: Doctor[] = (seoData || []).map((doc) => ({
+      const seoDoctors: Doctor[] = (seoResult.data || []).map((doc) => ({
         id: doc.id,
         full_name: doc.full_name,
         specialization: doc.specialization,
@@ -124,9 +147,25 @@ const DoctorsBySpecialty = () => {
         city: doc.city,
         introduction: doc.introduction,
         avatar_url: doc.avatar_url,
+        source: 'seo' as const,
       }));
 
-      setDoctors(seoDoctors);
+      // Map system doctors to doctor format
+      const systemDoctors: Doctor[] = (systemResult.data || []).map((doc: any) => ({
+        id: doc.id,
+        full_name: doc.profiles?.full_name || 'Unknown',
+        specialization: doc.specialization,
+        qualification: doc.qualification,
+        experience_years: doc.experience_years,
+        city: doc.city,
+        introduction: doc.introduction,
+        avatar_url: doc.profiles?.avatar_url,
+        source: 'system' as const,
+      }));
+
+      // Combine both sources
+      const allDoctors = [...systemDoctors, ...seoDoctors];
+      setDoctors(allDoctors);
     } catch (error) {
       console.error("Error:", error);
     } finally {
