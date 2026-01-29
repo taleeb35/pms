@@ -78,11 +78,13 @@ const ContentWriterDoctors = () => {
     specialization: "",
     qualification: "",
     experience_years: "",
+    city: "",
     clinic_name: "",
     timing: "",
     clinic_location: "",
     introduction: "",
   });
+  const [seoSearchTerm, setSeoSearchTerm] = useState("");
 
   useEffect(() => {
     fetchDoctors();
@@ -236,7 +238,7 @@ const ContentWriterDoctors = () => {
           clinic_name: addFormData.clinic_name || null,
           timing: addFormData.timing || null,
           clinic_location: addFormData.clinic_location || null,
-          city: addFormData.clinic_location || null,
+          city: addFormData.city || null,
           created_by: user.id,
           is_published: true,
         });
@@ -265,6 +267,7 @@ const ContentWriterDoctors = () => {
       specialization: "",
       qualification: "",
       experience_years: "",
+      city: "",
       clinic_name: "",
       timing: "",
       clinic_location: "",
@@ -273,6 +276,17 @@ const ContentWriterDoctors = () => {
     setAvatarFile(null);
     setAvatarPreview(null);
   };
+
+  const filteredSeoDoctors = seoDoctors.filter((doc) => {
+    const searchLower = seoSearchTerm.toLowerCase();
+    return (
+      doc.full_name.toLowerCase().includes(searchLower) ||
+      doc.specialization.toLowerCase().includes(searchLower) ||
+      (doc.city || "").toLowerCase().includes(searchLower) ||
+      (doc.clinic_name || "").toLowerCase().includes(searchLower) ||
+      (doc.clinic_location || "").toLowerCase().includes(searchLower)
+    );
+  });
 
   const filteredDoctors = doctors.filter((doctor) => {
     const name = doctor.profile?.full_name || "";
@@ -401,6 +415,18 @@ const ContentWriterDoctors = () => {
                   />
                 </div>
 
+                {/* City */}
+                <div className="space-y-2">
+                  <Label htmlFor="city">City *</Label>
+                  <Input
+                    id="city"
+                    value={addFormData.city}
+                    onChange={(e) => setAddFormData({ ...addFormData, city: e.target.value })}
+                    placeholder="e.g., Lahore, Karachi, Islamabad"
+                    required
+                  />
+                </div>
+
                 {/* Clinic Name */}
                 <div className="space-y-2">
                   <Label htmlFor="clinic_name">Clinic Name</Label>
@@ -488,8 +514,21 @@ const ContentWriterDoctors = () => {
       {seoDoctors.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Your Doctor Listings</CardTitle>
-            <CardDescription>{seoDoctors.length} listings created by you</CardDescription>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <CardTitle>Your Doctor Listings</CardTitle>
+                <CardDescription>{filteredSeoDoctors.length} of {seoDoctors.length} listings</CardDescription>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by name, city, clinic..."
+                  value={seoSearchTerm}
+                  onChange={(e) => setSeoSearchTerm(e.target.value)}
+                  className="pl-10 w-full sm:w-64"
+                />
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
@@ -497,19 +536,19 @@ const ContentWriterDoctors = () => {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Specialization</TableHead>
+                  <TableHead>City</TableHead>
                   <TableHead>Clinic</TableHead>
-                  <TableHead>Location</TableHead>
                   <TableHead>PMDC</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {seoDoctors.map((doc) => (
+                {filteredSeoDoctors.map((doc) => (
                   <TableRow key={doc.id}>
                     <TableCell className="font-medium">{doc.full_name}</TableCell>
                     <TableCell>{doc.specialization}</TableCell>
+                    <TableCell>{doc.city || "N/A"}</TableCell>
                     <TableCell>{doc.clinic_name || "N/A"}</TableCell>
-                    <TableCell>{doc.clinic_location || doc.city || "N/A"}</TableCell>
                     <TableCell>
                       {doc.pmdc_verified ? (
                         <Badge className="bg-success/10 text-success border-success/20">Verified</Badge>
