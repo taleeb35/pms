@@ -106,6 +106,8 @@ import AdminContentWriters from "./pages/AdminContentWriters";
 import ContentWriterDashboard from "./pages/ContentWriterDashboard";
 import ContentWriterBlogs from "./pages/ContentWriterBlogs";
 import ContentWriterDoctors from "./pages/ContentWriterDoctors";
+import FindDoctors from "./pages/FindDoctors";
+import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
