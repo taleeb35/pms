@@ -147,6 +147,8 @@ const App = () => (
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/referral-program" element={<ReferralProgram />} />
+          <Route path="/find-doctors" element={<FindDoctors />} />
+          <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/admin-login" element={<AdminLogin />} />
