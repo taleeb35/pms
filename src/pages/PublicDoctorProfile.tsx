@@ -145,7 +145,8 @@ const PublicDoctorProfile = () => {
     };
 
     const fetchRelatedDoctors = async (specialization: string, doctorCity: string, excludeId: string) => {
-      const { data: relatedSeo } = await supabase
+      // Fetch doctors with same specialization
+      const { data: relatedSeoBySpec } = await supabase
         .from("seo_doctor_listings")
         .select("*")
         .eq("is_published", true)
@@ -153,7 +154,17 @@ const PublicDoctorProfile = () => {
         .neq("id", excludeId)
         .limit(4);
 
-      const { data: relatedApproved } = await supabase
+      // Fetch doctors from same city (different specialization)
+      const { data: relatedSeoByCity } = await supabase
+        .from("seo_doctor_listings")
+        .select("*")
+        .eq("is_published", true)
+        .eq("city", doctorCity)
+        .neq("specialization", specialization)
+        .neq("id", excludeId)
+        .limit(4);
+
+      const { data: relatedApprovedBySpec } = await supabase
         .from("doctors")
         .select(`
           id,
@@ -168,36 +179,100 @@ const PublicDoctorProfile = () => {
         .neq("id", excludeId)
         .limit(4);
 
+      const { data: relatedApprovedByCity } = await supabase
+        .from("doctors")
+        .select(`
+          id,
+          specialization,
+          qualification,
+          city,
+          experience_years,
+          profiles!inner(full_name, avatar_url)
+        `)
+        .eq("approved", true)
+        .eq("city", doctorCity)
+        .neq("specialization", specialization)
+        .neq("id", excludeId)
+        .limit(4);
+
       const related: RelatedDoctor[] = [];
+      const seenIds = new Set<string>();
 
-      if (relatedSeo) {
-        related.push(...relatedSeo.map(doc => ({
-          id: doc.id,
-          full_name: doc.full_name,
-          specialization: doc.specialization,
-          qualification: doc.qualification,
-          city: doc.city || "",
-          experience_years: doc.experience_years,
-          avatar_url: doc.avatar_url,
-        })));
+      // Add SEO listings by specialization first
+      if (relatedSeoBySpec) {
+        relatedSeoBySpec.forEach(doc => {
+          if (!seenIds.has(doc.id)) {
+            seenIds.add(doc.id);
+            related.push({
+              id: doc.id,
+              full_name: doc.full_name,
+              specialization: doc.specialization,
+              qualification: doc.qualification,
+              city: doc.city || "",
+              experience_years: doc.experience_years,
+              avatar_url: doc.avatar_url,
+            });
+          }
+        });
       }
 
-      if (relatedApproved) {
-        related.push(...relatedApproved.map(doc => {
-          const profile = doc.profiles as any;
-          return {
-            id: doc.id,
-            full_name: profile?.full_name || "",
-            specialization: doc.specialization,
-            qualification: doc.qualification,
-            city: doc.city || "",
-            experience_years: doc.experience_years,
-            avatar_url: profile?.avatar_url,
-          };
-        }));
+      // Add approved doctors by specialization
+      if (relatedApprovedBySpec) {
+        relatedApprovedBySpec.forEach(doc => {
+          if (!seenIds.has(doc.id)) {
+            seenIds.add(doc.id);
+            const profile = doc.profiles as any;
+            related.push({
+              id: doc.id,
+              full_name: profile?.full_name || "",
+              specialization: doc.specialization,
+              qualification: doc.qualification,
+              city: doc.city || "",
+              experience_years: doc.experience_years,
+              avatar_url: profile?.avatar_url,
+            });
+          }
+        });
       }
 
-      setRelatedDoctors(related.slice(0, 4));
+      // Add SEO listings by city
+      if (relatedSeoByCity) {
+        relatedSeoByCity.forEach(doc => {
+          if (!seenIds.has(doc.id)) {
+            seenIds.add(doc.id);
+            related.push({
+              id: doc.id,
+              full_name: doc.full_name,
+              specialization: doc.specialization,
+              qualification: doc.qualification,
+              city: doc.city || "",
+              experience_years: doc.experience_years,
+              avatar_url: doc.avatar_url,
+            });
+          }
+        });
+      }
+
+      // Add approved doctors by city
+      if (relatedApprovedByCity) {
+        relatedApprovedByCity.forEach(doc => {
+          if (!seenIds.has(doc.id)) {
+            seenIds.add(doc.id);
+            const profile = doc.profiles as any;
+            related.push({
+              id: doc.id,
+              full_name: profile?.full_name || "",
+              specialization: doc.specialization,
+              qualification: doc.qualification,
+              city: doc.city || "",
+              experience_years: doc.experience_years,
+              avatar_url: profile?.avatar_url,
+            });
+          }
+        });
+      }
+
+      setRelatedDoctors(related.slice(0, 8));
     };
 
     fetchDoctor();
@@ -368,10 +443,13 @@ const PublicDoctorProfile = () => {
 
           {/* Related Doctors Section */}
           {relatedDoctors.length > 0 && (
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
-                Other {doctor.specialization}s You May Like
+            <section className="mt-12 pt-8 border-t">
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
+                Similar Doctors You May Like
               </h2>
+              <p className="text-muted-foreground mb-6">
+                Other {doctor.specialization}s and specialists in {doctor.city}
+              </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {relatedDoctors.map((related) => (
                   <RelatedDoctorCard key={related.id} doctor={related} />
