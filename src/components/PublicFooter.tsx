@@ -96,7 +96,7 @@ const PublicFooter = () => {
 
           {/* Legal */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Legal</h4>
+            <h4 className="text-lg font-semibold mb-4">Information</h4>
             <ul className="space-y-3">
               {legalLinks.map((link, index) => (
                 <li key={index}>
@@ -122,7 +122,10 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Email</p>
-                  <a href={`mailto:${contactDetails.email}`} className="text-sm hover:text-purple-400 transition-colors">
+                  <a
+                    href={`mailto:${contactDetails.email}`}
+                    className="text-sm hover:text-purple-400 transition-colors"
+                  >
                     {contactDetails.email}
                   </a>
                 </div>
@@ -133,7 +136,10 @@ const PublicFooter = () => {
                 </div>
                 <div>
                   <p className="text-sm text-slate-400">Phone</p>
-                  <a href={`tel:${contactDetails.phone.replace(/\s/g, '')}`} className="text-sm hover:text-purple-400 transition-colors">
+                  <a
+                    href={`tel:${contactDetails.phone.replace(/\s/g, "")}`}
+                    className="text-sm hover:text-purple-400 transition-colors"
+                  >
                     {contactDetails.phone}
                   </a>
                 </div>
