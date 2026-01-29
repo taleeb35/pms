@@ -9,6 +9,11 @@ interface SEOProps {
   ogDescription?: string;
   ogUrl?: string;
   ogType?: string;
+  ogImage?: string;
+  twitterCard?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  twitterImage?: string;
   jsonLd?: object;
 }
 
@@ -21,10 +26,15 @@ export const useSEO = ({
   ogDescription,
   ogUrl,
   ogType = "website",
+  ogImage = "https://zonoir.com/og-image.png",
+  twitterCard = "summary_large_image",
+  twitterTitle,
+  twitterDescription,
+  twitterImage,
   jsonLd,
 }: SEOProps) => {
   useEffect(() => {
-    // Set title
+    // Set title immediately
     document.title = title;
 
     // Helper to set or create meta tag
@@ -52,7 +62,16 @@ export const useSEO = ({
     setMeta("og:description", ogDescription || description, true);
     setMeta("og:type", ogType, true);
     if (ogUrl) setMeta("og:url", ogUrl, true);
+    setMeta("og:image", ogImage, true);
+    setMeta("og:site_name", "Zonoir", true);
     setMeta("og:locale", "en_PK", true);
+
+    // Set Twitter Card tags
+    setMeta("twitter:card", twitterCard);
+    setMeta("twitter:site", "@zonoir");
+    setMeta("twitter:title", twitterTitle || ogTitle || title);
+    setMeta("twitter:description", twitterDescription || ogDescription || description);
+    setMeta("twitter:image", twitterImage || ogImage);
 
     // Set canonical URL
     if (canonicalUrl) {
@@ -89,5 +108,5 @@ export const useSEO = ({
         jsonLdScript.remove();
       }
     };
-  }, [title, description, keywords, canonicalUrl, ogTitle, ogDescription, ogUrl, ogType, jsonLd]);
+  }, [title, description, keywords, canonicalUrl, ogTitle, ogDescription, ogUrl, ogType, ogImage, twitterCard, twitterTitle, twitterDescription, twitterImage, jsonLd]);
 };

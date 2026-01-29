@@ -248,11 +248,18 @@ const PublicDoctorProfile = () => {
   useSEO({
     title: pageTitle,
     description: pageDescription,
+    keywords: doctor 
+      ? `${doctor.full_name}, ${doctor.specialization}, ${doctor.city}, doctor in ${doctor.city}, best ${doctor.specialization} ${doctor.city}, book appointment ${doctor.city}`
+      : `${specialtyDisplay}, ${cityDisplay}, doctors in Pakistan`,
     canonicalUrl,
     ogTitle: pageTitle,
     ogDescription: pageDescription,
     ogUrl: canonicalUrl,
     ogType: "profile",
+    ogImage: doctor?.avatar_url || "https://zonoir.com/og-image.png",
+    twitterTitle: pageTitle,
+    twitterDescription: pageDescription,
+    twitterImage: doctor?.avatar_url || "https://zonoir.com/og-image.png",
     jsonLd
   });
 
