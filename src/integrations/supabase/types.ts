@@ -1581,6 +1581,8 @@ export type Database = {
         Row: {
           avatar_url: string | null
           city: string | null
+          clinic_location: string | null
+          clinic_name: string | null
           created_at: string
           created_by: string
           experience_years: number | null
@@ -1588,13 +1590,17 @@ export type Database = {
           id: string
           introduction: string | null
           is_published: boolean
+          pmdc_verified: boolean | null
           qualification: string
           specialization: string
+          timing: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
           city?: string | null
+          clinic_location?: string | null
+          clinic_name?: string | null
           created_at?: string
           created_by: string
           experience_years?: number | null
@@ -1602,13 +1608,17 @@ export type Database = {
           id?: string
           introduction?: string | null
           is_published?: boolean
+          pmdc_verified?: boolean | null
           qualification: string
           specialization: string
+          timing?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
           city?: string | null
+          clinic_location?: string | null
+          clinic_name?: string | null
           created_at?: string
           created_by?: string
           experience_years?: number | null
@@ -1616,8 +1626,10 @@ export type Database = {
           id?: string
           introduction?: string | null
           is_published?: boolean
+          pmdc_verified?: boolean | null
           qualification?: string
           specialization?: string
+          timing?: string | null
           updated_at?: string
         }
         Relationships: []
