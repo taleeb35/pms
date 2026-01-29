@@ -106,6 +106,7 @@ import AdminContentWriters from "./pages/AdminContentWriters";
 import ContentWriterDashboard from "./pages/ContentWriterDashboard";
 import ContentWriterBlogs from "./pages/ContentWriterBlogs";
 import ContentWriterDoctors from "./pages/ContentWriterDoctors";
+import ContentWriterRegisteredDoctors from "./pages/ContentWriterRegisteredDoctors";
 import FindDoctors from "./pages/FindDoctors";
 import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
 import PublicDoctorProfile from "./pages/PublicDoctorProfile";
@@ -422,6 +423,14 @@ const App = () => (
               element={
                 <Layout>
                   <ContentWriterDoctors />
+                </Layout>
+              }
+            />
+            <Route
+              path="/content-writer/registered-doctors"
+              element={
+                <Layout>
+                  <ContentWriterRegisteredDoctors />
                 </Layout>
               }
             />
