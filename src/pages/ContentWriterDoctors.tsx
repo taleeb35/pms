@@ -6,13 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Stethoscope, Edit, Eye } from "lucide-react";
+import { Search, Stethoscope, Edit, Plus, X, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import TableSkeleton from "@/components/TableSkeleton";
 import { TablePagination } from "@/components/TablePagination";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Doctor {
   id: string;
@@ -29,10 +30,28 @@ interface Doctor {
   } | null;
 }
 
+interface SEODoctor {
+  id: string;
+  full_name: string;
+  specialization: string;
+  qualification: string;
+  experience_years: number | null;
+  introduction: string | null;
+  city: string | null;
+  avatar_url: string | null;
+  is_published: boolean;
+  pmdc_verified: boolean | null;
+  clinic_name: string | null;
+  timing: string | null;
+  clinic_location: string | null;
+  created_by: string;
+}
+
 const DEFAULT_PAGE_SIZE = 25;
 
 const ContentWriterDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [seoDoctors, setSeoDoctors] = useState<SEODoctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,6 +59,9 @@ const ContentWriterDoctors = () => {
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -50,8 +72,21 @@ const ContentWriterDoctors = () => {
     city: "",
   });
 
+  const [addFormData, setAddFormData] = useState({
+    full_name: "",
+    pmdc_verified: false,
+    specialization: "",
+    qualification: "",
+    experience_years: "",
+    clinic_name: "",
+    timing: "",
+    clinic_location: "",
+    introduction: "",
+  });
+
   useEffect(() => {
     fetchDoctors();
+    fetchSeoDoctors();
   }, []);
 
   const fetchDoctors = async () => {
@@ -86,6 +121,20 @@ const ContentWriterDoctors = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSeoDoctors = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("seo_doctor_listings")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setSeoDoctors(data || []);
+    } catch (error: any) {
+      console.error("Error fetching SEO doctors:", error);
     }
   };
 
@@ -135,6 +184,96 @@ const ContentWriterDoctors = () => {
     }
   };
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAddDoctor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormLoading(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      let avatarUrl = null;
+
+      // Upload avatar if provided
+      if (avatarFile) {
+        const fileExt = avatarFile.name.split('.').pop();
+        const fileName = `seo-doctor-${Date.now()}.${fileExt}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("medical-documents")
+          .upload(fileName, avatarFile);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from("medical-documents")
+          .getPublicUrl(fileName);
+        
+        avatarUrl = publicUrl;
+      }
+
+      const { error } = await supabase
+        .from("seo_doctor_listings")
+        .insert({
+          full_name: addFormData.full_name,
+          specialization: addFormData.specialization,
+          qualification: addFormData.qualification,
+          experience_years: addFormData.experience_years ? parseInt(addFormData.experience_years) : null,
+          introduction: addFormData.introduction || null,
+          avatar_url: avatarUrl,
+          pmdc_verified: addFormData.pmdc_verified,
+          clinic_name: addFormData.clinic_name || null,
+          timing: addFormData.timing || null,
+          clinic_location: addFormData.clinic_location || null,
+          city: addFormData.clinic_location || null,
+          created_by: user.id,
+          is_published: true,
+        });
+
+      if (error) throw error;
+
+      toast({ title: "Success", description: "Doctor listing added successfully" });
+      setShowAddForm(false);
+      resetAddForm();
+      fetchSeoDoctors();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const resetAddForm = () => {
+    setAddFormData({
+      full_name: "",
+      pmdc_verified: false,
+      specialization: "",
+      qualification: "",
+      experience_years: "",
+      clinic_name: "",
+      timing: "",
+      clinic_location: "",
+      introduction: "",
+    });
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  };
+
   const filteredDoctors = doctors.filter((doctor) => {
     const name = doctor.profile?.full_name || "";
     const email = doctor.profile?.email || "";
@@ -156,21 +295,249 @@ const ContentWriterDoctors = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Stethoscope className="h-8 w-8 text-info" />
-          Doctor Profiles
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          View and edit doctor information
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <Stethoscope className="h-8 w-8 text-info" />
+            Doctor Profiles
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            View, edit, and add doctor information
+          </p>
+        </div>
+        {!showAddForm && (
+          <Button onClick={() => setShowAddForm(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Add Doctor
+          </Button>
+        )}
       </div>
 
+      {/* Add Doctor Form */}
+      {showAddForm && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Add New Doctor Listing</CardTitle>
+                <CardDescription>Fill in the details to add a new doctor profile</CardDescription>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => { setShowAddForm(false); resetAddForm(); }}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleAddDoctor} className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="full_name">Name *</Label>
+                  <Input
+                    id="full_name"
+                    value={addFormData.full_name}
+                    onChange={(e) => setAddFormData({ ...addFormData, full_name: e.target.value })}
+                    placeholder="Dr. John Doe"
+                    required
+                  />
+                </div>
+
+                {/* PMDC Verified */}
+                <div className="space-y-2">
+                  <Label>PMDC Verified</Label>
+                  <div className="flex items-center space-x-4 pt-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="pmdc_yes"
+                        checked={addFormData.pmdc_verified}
+                        onCheckedChange={(checked) => setAddFormData({ ...addFormData, pmdc_verified: checked === true })}
+                      />
+                      <Label htmlFor="pmdc_yes" className="font-normal cursor-pointer">Yes</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="pmdc_no"
+                        checked={!addFormData.pmdc_verified}
+                        onCheckedChange={(checked) => setAddFormData({ ...addFormData, pmdc_verified: checked !== true })}
+                      />
+                      <Label htmlFor="pmdc_no" className="font-normal cursor-pointer">No</Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Type/Specialization */}
+                <div className="space-y-2">
+                  <Label htmlFor="specialization">Type / Specialization *</Label>
+                  <Input
+                    id="specialization"
+                    value={addFormData.specialization}
+                    onChange={(e) => setAddFormData({ ...addFormData, specialization: e.target.value })}
+                    placeholder="e.g., Cardiologist, Gynecologist"
+                    required
+                  />
+                </div>
+
+                {/* Qualification */}
+                <div className="space-y-2">
+                  <Label htmlFor="qualification">Qualification & Education *</Label>
+                  <Input
+                    id="qualification"
+                    value={addFormData.qualification}
+                    onChange={(e) => setAddFormData({ ...addFormData, qualification: e.target.value })}
+                    placeholder="e.g., MBBS, FCPS"
+                    required
+                  />
+                </div>
+
+                {/* Experience */}
+                <div className="space-y-2">
+                  <Label htmlFor="experience">Experience (Years)</Label>
+                  <Input
+                    id="experience"
+                    type="number"
+                    value={addFormData.experience_years}
+                    onChange={(e) => setAddFormData({ ...addFormData, experience_years: e.target.value })}
+                    placeholder="e.g., 10"
+                  />
+                </div>
+
+                {/* Clinic Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="clinic_name">Clinic Name</Label>
+                  <Input
+                    id="clinic_name"
+                    value={addFormData.clinic_name}
+                    onChange={(e) => setAddFormData({ ...addFormData, clinic_name: e.target.value })}
+                    placeholder="e.g., City Hospital"
+                  />
+                </div>
+
+                {/* Timing */}
+                <div className="space-y-2">
+                  <Label htmlFor="timing">Timing</Label>
+                  <Input
+                    id="timing"
+                    value={addFormData.timing}
+                    onChange={(e) => setAddFormData({ ...addFormData, timing: e.target.value })}
+                    placeholder="e.g., Mon-Fri 9AM-5PM"
+                  />
+                </div>
+
+                {/* Clinic Location */}
+                <div className="space-y-2">
+                  <Label htmlFor="clinic_location">Clinic Location</Label>
+                  <Input
+                    id="clinic_location"
+                    value={addFormData.clinic_location}
+                    onChange={(e) => setAddFormData({ ...addFormData, clinic_location: e.target.value })}
+                    placeholder="e.g., Lahore, Gulberg III"
+                  />
+                </div>
+
+                {/* Profile Picture */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Profile Picture</Label>
+                  <div className="flex items-center gap-4">
+                    {avatarPreview ? (
+                      <img src={avatarPreview} alt="Preview" className="h-20 w-20 rounded-full object-cover border" />
+                    ) : (
+                      <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center border">
+                        <Upload className="h-8 w-8 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        className="max-w-xs"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">JPG, PNG up to 5MB</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Introduction */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="introduction">Introduction / Bio</Label>
+                  <Textarea
+                    id="introduction"
+                    value={addFormData.introduction}
+                    onChange={(e) => setAddFormData({ ...addFormData, introduction: e.target.value })}
+                    placeholder="Write a brief introduction about the doctor..."
+                    rows={4}
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <Button type="button" variant="outline" onClick={() => { setShowAddForm(false); resetAddForm(); }}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={formLoading}>
+                  {formLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Add Doctor
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* SEO Doctor Listings */}
+      {seoDoctors.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Doctor Listings</CardTitle>
+            <CardDescription>{seoDoctors.length} listings created by you</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Specialization</TableHead>
+                  <TableHead>Clinic</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>PMDC</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {seoDoctors.map((doc) => (
+                  <TableRow key={doc.id}>
+                    <TableCell className="font-medium">{doc.full_name}</TableCell>
+                    <TableCell>{doc.specialization}</TableCell>
+                    <TableCell>{doc.clinic_name || "N/A"}</TableCell>
+                    <TableCell>{doc.clinic_location || doc.city || "N/A"}</TableCell>
+                    <TableCell>
+                      {doc.pmdc_verified ? (
+                        <Badge className="bg-success/10 text-success border-success/20">Verified</Badge>
+                      ) : (
+                        <Badge variant="secondary">Not Verified</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {doc.is_published ? (
+                        <Badge className="bg-info/10 text-info border-info/20">Published</Badge>
+                      ) : (
+                        <Badge variant="secondary">Draft</Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Existing Doctors List */}
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle>All Doctors</CardTitle>
+              <CardTitle>All Registered Doctors</CardTitle>
               <CardDescription>{filteredDoctors.length} doctors found</CardDescription>
             </div>
             <div className="relative">
@@ -243,6 +610,7 @@ const ContentWriterDoctors = () => {
         </CardContent>
       </Card>
 
+      {/* Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -250,9 +618,9 @@ const ContentWriterDoctors = () => {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="specialization">Specialization</Label>
+              <Label htmlFor="edit_specialization">Specialization</Label>
               <Input
-                id="specialization"
+                id="edit_specialization"
                 value={formData.specialization}
                 onChange={(e) => setFormData({ ...formData, specialization: e.target.value })}
                 placeholder="e.g., Cardiologist"
@@ -260,9 +628,9 @@ const ContentWriterDoctors = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="qualification">Qualification</Label>
+              <Label htmlFor="edit_qualification">Qualification</Label>
               <Input
-                id="qualification"
+                id="edit_qualification"
                 value={formData.qualification}
                 onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
                 placeholder="e.g., MBBS, MD"
@@ -270,9 +638,9 @@ const ContentWriterDoctors = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="experience_years">Experience (Years)</Label>
+              <Label htmlFor="edit_experience_years">Experience (Years)</Label>
               <Input
-                id="experience_years"
+                id="edit_experience_years"
                 type="number"
                 value={formData.experience_years}
                 onChange={(e) => setFormData({ ...formData, experience_years: e.target.value })}
@@ -280,18 +648,18 @@ const ContentWriterDoctors = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="edit_city">City</Label>
               <Input
-                id="city"
+                id="edit_city"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 placeholder="e.g., Lahore"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="introduction">Introduction</Label>
+              <Label htmlFor="edit_introduction">Introduction</Label>
               <Textarea
-                id="introduction"
+                id="edit_introduction"
                 value={formData.introduction}
                 onChange={(e) => setFormData({ ...formData, introduction: e.target.value })}
                 placeholder="Write a brief introduction about the doctor..."
