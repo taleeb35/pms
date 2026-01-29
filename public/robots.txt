@@ -13,5 +13,5 @@ Allow: /
 User-agent: *
 Allow: /
 
-# Dynamic Sitemap (auto-generated from database)
-Sitemap: https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap
+# Sitemap
+Sitemap: https://zonoir.com/sitemap.xml
