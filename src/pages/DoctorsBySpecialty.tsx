@@ -71,15 +71,20 @@ const DoctorsBySpecialty = () => {
 
   const specialtyInfo = specialty ? specialtyMap[specialty] : null;
   const displayName = specialtyInfo?.name || specialty?.replace(/-/g, " ") || "Doctors";
+  const locationLabel = selectedCity && selectedCity !== "all" ? selectedCity : "Pakistan";
+  const cityQuery =
+    selectedCity && selectedCity !== "all"
+      ? `?city=${encodeURIComponent(selectedCity)}`
+      : "";
 
   useSEO({
-    title: `Best ${displayName}s in Pakistan | Find ${displayName} Near You - Zonoir`,
-    description: `Find the best ${displayName}s in Pakistan. Book appointments with top-rated ${displayName}s, read reviews, and get quality healthcare.`,
-    keywords: `${displayName} pakistan, best ${displayName} near me, ${displayName} appointment, ${displayName} consultation`,
-    canonicalUrl: `https://zonoir.com/doctors/${specialty}`,
-    ogTitle: `Best ${displayName}s in Pakistan | Find ${displayName} Near You`,
-    ogDescription: `Search and find the best ${displayName}s across Pakistan. Book appointments instantly.`,
-    ogUrl: `https://zonoir.com/doctors/${specialty}`,
+    title: `Best ${displayName}s in ${locationLabel} | Zonoir`,
+    description: `Find the best ${displayName}s in ${locationLabel}. Book appointments with top-rated ${displayName}s, read reviews, and get quality healthcare.`,
+    keywords: `${displayName} ${locationLabel}, best ${displayName} in ${locationLabel}, ${displayName} appointment ${locationLabel}, ${displayName} consultation`,
+    canonicalUrl: `https://zonoir.com/doctors/${specialty}${cityQuery}`,
+    ogTitle: `Best ${displayName}s in ${locationLabel}`,
+    ogDescription: `Search and find the best ${displayName}s in ${locationLabel}. Book appointments instantly.`,
+    ogUrl: `https://zonoir.com/doctors/${specialty}${cityQuery}`,
   });
 
   useEffect(() => {
@@ -199,7 +204,7 @@ const DoctorsBySpecialty = () => {
             </Link>
 
             <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              Best {displayName}s in {selectedCity || "Pakistan"}
+              Best {displayName}s in {locationLabel}
             </h1>
             {specialtyInfo && (
               <p className="text-muted-foreground text-lg mb-6">
