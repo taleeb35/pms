@@ -1,5 +1,6 @@
-import { Stethoscope, FileText, LayoutDashboard } from "lucide-react";
+import { Stethoscope, FileText, LayoutDashboard, ChevronDown, UserCheck, ClipboardList } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,15 +10,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import clinicLogo from "@/assets/main-logo.webp";
-
-const contentWriterMenuItems = [
-  { title: "Dashboard", url: "/content-writer/dashboard", icon: LayoutDashboard },
-  { title: "Blogs", url: "/content-writer/blogs", icon: FileText },
-  { title: "Doctors", url: "/content-writer/doctors", icon: Stethoscope },
-];
 
 export function ContentWriterSidebar() {
   const { state } = useSidebar();
@@ -25,6 +28,10 @@ export function ContentWriterSidebar() {
   const navigate = useNavigate();
   const currentPath = location.pathname;
   const collapsed = state === "collapsed";
+
+  // Check if any doctor sub-route is active
+  const isDoctorRouteActive = currentPath.includes("/content-writer/doctors");
+  const [isDoctorsOpen, setIsDoctorsOpen] = useState(isDoctorRouteActive);
 
   const isActive = (path: string) => currentPath === path;
 
@@ -63,21 +70,95 @@ export function ContentWriterSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {contentWriterMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    className={`cursor-pointer transition-all duration-200 ${
-                      isActive(item.url)
-                        ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary"
-                        : "hover:bg-accent/50"
-                    }`}
-                  >
-                    <item.icon className={`h-5 w-5 ${isActive(item.url) ? "text-primary" : ""}`} />
-                    {!collapsed && <span>{item.title}</span>}
-                  </SidebarMenuButton>
+              {/* Dashboard */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => navigate("/content-writer/dashboard")}
+                  className={`cursor-pointer transition-all duration-200 ${
+                    isActive("/content-writer/dashboard")
+                      ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary"
+                      : "hover:bg-accent/50"
+                  }`}
+                >
+                  <LayoutDashboard className={`h-5 w-5 ${isActive("/content-writer/dashboard") ? "text-primary" : ""}`} />
+                  {!collapsed && <span>Dashboard</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Blogs */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => navigate("/content-writer/blogs")}
+                  className={`cursor-pointer transition-all duration-200 ${
+                    isActive("/content-writer/blogs")
+                      ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary"
+                      : "hover:bg-accent/50"
+                  }`}
+                >
+                  <FileText className={`h-5 w-5 ${isActive("/content-writer/blogs") ? "text-primary" : ""}`} />
+                  {!collapsed && <span>Blogs</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Doctors with Sub-items */}
+              <Collapsible
+                open={isDoctorsOpen}
+                onOpenChange={setIsDoctorsOpen}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton
+                      className={`cursor-pointer transition-all duration-200 ${
+                        isDoctorRouteActive
+                          ? "bg-primary/10 text-primary font-semibold"
+                          : "hover:bg-accent/50"
+                      }`}
+                    >
+                      <Stethoscope className={`h-5 w-5 ${isDoctorRouteActive ? "text-primary" : ""}`} />
+                      {!collapsed && (
+                        <>
+                          <span className="flex-1">Doctors</span>
+                          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isDoctorsOpen ? "rotate-180" : ""}`} />
+                        </>
+                      )}
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  
+                  {!collapsed && (
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton
+                            onClick={() => navigate("/content-writer/doctors")}
+                            className={`cursor-pointer transition-all duration-200 ${
+                              isActive("/content-writer/doctors")
+                                ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary"
+                                : "hover:bg-accent/50"
+                            }`}
+                          >
+                            <ClipboardList className="h-4 w-4" />
+                            <span>Listed Dr</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton
+                            onClick={() => navigate("/content-writer/registered-doctors")}
+                            className={`cursor-pointer transition-all duration-200 ${
+                              isActive("/content-writer/registered-doctors")
+                                ? "bg-primary/10 text-primary font-semibold border-l-4 border-primary"
+                                : "hover:bg-accent/50"
+                            }`}
+                          >
+                            <UserCheck className="h-4 w-4" />
+                            <span>Registered Dr</span>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  )}
                 </SidebarMenuItem>
-              ))}
+              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
