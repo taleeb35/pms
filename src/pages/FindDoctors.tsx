@@ -315,7 +315,7 @@ const FindDoctors = () => {
               {filteredSpecialties.map((specialty) => (
                 <Link
                   key={specialty.slug}
-                  to={`/doctors/${specialty.slug}${selectedCity ? `?city=${encodeURIComponent(selectedCity)}` : ""}`}
+                  to={`/doctors/${specialty.slug}${selectedCity && selectedCity !== "all" ? `?city=${encodeURIComponent(selectedCity)}` : ""}`}
                   className="group bg-card border rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/50"
                 >
                   <div className="flex items-start gap-4">
