@@ -11,6 +11,7 @@ import PublicFooter from "@/components/PublicFooter";
 import PublicCityCombobox from "@/components/PublicCityCombobox";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
+import { generateDoctorProfileUrl } from "@/lib/slugUtils";
 
 const specialtyMap: Record<string, { name: string; urdu: string }> = {
   "dermatologist": { name: "Dermatologist", urdu: "ماہر امراض جلد" },
@@ -279,55 +280,67 @@ const DoctorsBySpecialty = () => {
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredDoctors.map((doctor) => (
-                  <div
-                    key={doctor.id}
-                    className="bg-card border rounded-xl p-5 hover:shadow-lg transition-shadow flex flex-col"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <Avatar className="w-14 h-14">
-                        <AvatarImage src={doctor.avatar_url || undefined} />
-                        <AvatarFallback className="text-lg bg-primary/10 text-primary">
-                          {doctor.full_name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base truncate">
-                          {doctor.full_name}
-                        </h3>
-                        <Badge variant="secondary" className="text-xs mt-1">
-                          {doctor.specialization}
-                        </Badge>
+                {filteredDoctors.map((doctor) => {
+                  const profileUrl = doctor.city 
+                    ? generateDoctorProfileUrl(doctor.city, doctor.specialization, doctor.full_name)
+                    : null;
+
+                  return (
+                    <div
+                      key={doctor.id}
+                      className="bg-card border rounded-xl p-5 hover:shadow-lg transition-shadow flex flex-col"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <Avatar className="w-14 h-14">
+                          <AvatarImage src={doctor.avatar_url || undefined} />
+                          <AvatarFallback className="text-lg bg-primary/10 text-primary">
+                            {doctor.full_name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base truncate">
+                            {doctor.full_name}
+                          </h3>
+                          <Badge variant="secondary" className="text-xs mt-1">
+                            {doctor.specialization}
+                          </Badge>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mb-3">
-                      {doctor.experience_years && doctor.experience_years > 0 && (
-                        <span>{doctor.experience_years} years exp</span>
+                      <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mb-3">
+                        {doctor.experience_years && doctor.experience_years > 0 && (
+                          <span>{doctor.experience_years} years exp</span>
+                        )}
+                        {doctor.city && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-3.5 w-3.5" />
+                            {doctor.city}
+                          </span>
+                        )}
+                      </div>
+
+                      {doctor.introduction && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
+                          {doctor.introduction}
+                        </p>
                       )}
-                      {doctor.city && (
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" />
-                          {doctor.city}
-                        </span>
+
+                      {profileUrl ? (
+                        <Button variant="outline" size="sm" className="w-full mt-auto" asChild>
+                          <Link to={profileUrl}>View Profile</Link>
+                        </Button>
+                      ) : (
+                        <Button variant="outline" size="sm" className="w-full mt-auto" disabled>
+                          View Profile
+                        </Button>
                       )}
                     </div>
-
-                    {doctor.introduction && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
-                        {doctor.introduction}
-                      </p>
-                    )}
-
-                    <Button variant="outline" size="sm" className="w-full mt-auto">
-                      View Profile
-                    </Button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

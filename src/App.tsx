@@ -108,6 +108,7 @@ import ContentWriterBlogs from "./pages/ContentWriterBlogs";
 import ContentWriterDoctors from "./pages/ContentWriterDoctors";
 import FindDoctors from "./pages/FindDoctors";
 import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
+import PublicDoctorProfile from "./pages/PublicDoctorProfile";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -149,6 +150,7 @@ const App = () => (
           <Route path="/referral-program" element={<ReferralProgram />} />
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
+          <Route path="/doctors/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/admin-login" element={<AdminLogin />} />
