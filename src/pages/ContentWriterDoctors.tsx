@@ -29,14 +29,14 @@ interface Doctor {
   } | null;
 }
 
-const ITEMS_PER_PAGE = 10;
+const DEFAULT_PAGE_SIZE = 25;
 
 const ContentWriterDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
@@ -228,18 +228,16 @@ const ContentWriterDoctors = () => {
                   ))}
                 </TableBody>
               </Table>
-              {totalPages > 1 && (
-                <div className="mt-4">
-                  <TablePagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    pageSize={pageSize}
-                    onPageChange={setCurrentPage}
-                    onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
-                    totalItems={filteredDoctors.length}
-                  />
-                </div>
-              )}
+              <div className="mt-4">
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  pageSize={pageSize}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+                  totalItems={filteredDoctors.length}
+                />
+              </div>
             </>
           )}
         </CardContent>
