@@ -10,11 +10,11 @@ const PublicFooter = () => {
   const isUSA = country === "US";
 
   const quickLinks = [
-    { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
     { name: "Contact", href: "/contact" },
+    { name: "Referral Program", href: "/referral-program" },
   ];
 
   const legalLinks = [
@@ -22,7 +22,6 @@ const PublicFooter = () => {
     { name: "Terms of Service", href: "#" },
     { name: "Cookie Policy", href: "#" },
     { name: "Help Center", href: "/knowledge-base" },
-    { name: "Referral Program", href: "/referral-program" },
     { name: "Find Doctors", href: "/find-doctors" },
   ];
 
