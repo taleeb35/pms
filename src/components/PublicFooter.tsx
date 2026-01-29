@@ -14,16 +14,16 @@ const PublicFooter = () => {
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
-    { name: "Find Doctors", href: "/find-doctors" },
     { name: "Contact", href: "/contact" },
-    { name: "Help Center", href: "/knowledge-base" },
-    { name: "Referral Program", href: "/referral-program" },
   ];
 
   const legalLinks = [
     { name: "Privacy Policy", href: "#" },
     { name: "Terms of Service", href: "#" },
     { name: "Cookie Policy", href: "#" },
+    { name: "Help Center", href: "/knowledge-base" },
+    { name: "Referral Program", href: "/referral-program" },
+    { name: "Find Doctors", href: "/find-doctors" },
   ];
 
   const socialLinks = [
