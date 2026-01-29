@@ -6,22 +6,12 @@ import { slugToDisplayName, generateDoctorSlug, generateCitySlug, generateSpecia
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  MapPin, 
-  Award, 
-  Clock, 
-  Building2, 
-  GraduationCap, 
-  Stethoscope,
-  CheckCircle,
-  ChevronRight,
-  Phone,
-  Calendar
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import DoctorProfileHeader from "@/components/public/DoctorProfileHeader";
+import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTabs";
+import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
 
 interface DoctorData {
   id: string;
@@ -41,6 +31,16 @@ interface DoctorData {
   source: 'seo_listing' | 'approved_doctor';
 }
 
+interface RelatedDoctor {
+  id: string;
+  full_name: string;
+  specialization: string;
+  qualification: string;
+  city: string;
+  experience_years: number | null;
+  avatar_url: string | null;
+}
+
 const PublicDoctorProfile = () => {
   const { city, specialty, doctorSlug } = useParams<{
     city: string;
@@ -50,9 +50,8 @@ const PublicDoctorProfile = () => {
 
   const [doctor, setDoctor] = useState<DoctorData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [relatedDoctors, setRelatedDoctors] = useState<DoctorData[]>([]);
+  const [relatedDoctors, setRelatedDoctors] = useState<RelatedDoctor[]>([]);
 
-  // Format display values
   const cityDisplay = city ? slugToDisplayName(city) : "";
   const specialtyDisplay = specialty ? slugToDisplayName(specialty) : "";
 
@@ -146,7 +145,6 @@ const PublicDoctorProfile = () => {
     };
 
     const fetchRelatedDoctors = async (specialization: string, doctorCity: string, excludeId: string) => {
-      // Fetch related doctors from same specialty
       const { data: relatedSeo } = await supabase
         .from("seo_doctor_listings")
         .select("*")
@@ -170,7 +168,7 @@ const PublicDoctorProfile = () => {
         .neq("id", excludeId)
         .limit(4);
 
-      const related: DoctorData[] = [];
+      const related: RelatedDoctor[] = [];
 
       if (relatedSeo) {
         related.push(...relatedSeo.map(doc => ({
@@ -180,9 +178,7 @@ const PublicDoctorProfile = () => {
           qualification: doc.qualification,
           city: doc.city || "",
           experience_years: doc.experience_years,
-          introduction: null,
           avatar_url: doc.avatar_url,
-          source: 'seo_listing' as const
         })));
       }
 
@@ -196,9 +192,7 @@ const PublicDoctorProfile = () => {
             qualification: doc.qualification,
             city: doc.city || "",
             experience_years: doc.experience_years,
-            introduction: null,
             avatar_url: profile?.avatar_url,
-            source: 'approved_doctor' as const
           };
         }));
       }
@@ -263,13 +257,35 @@ const PublicDoctorProfile = () => {
     jsonLd
   });
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  // Build clinic data for tabs
+  const getClinics = (): ClinicInfo[] => {
+    if (!doctor) return [];
+    
+    // For now, we have single clinic data - this structure supports multiple clinics
+    const clinics: ClinicInfo[] = [];
+    
+    if (doctor.clinic_name || doctor.clinic_location) {
+      clinics.push({
+        id: "clinic-1",
+        name: doctor.clinic_name || "Main Clinic",
+        location: doctor.clinic_location || doctor.city,
+        fee: doctor.consultation_fee,
+        timing: doctor.timing,
+        mapQuery: `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`
+      });
+    } else {
+      // Default clinic if no specific data
+      clinics.push({
+        id: "clinic-1",
+        name: "Primary Practice",
+        location: doctor.city,
+        fee: doctor.consultation_fee,
+        timing: doctor.timing,
+        mapQuery: `${doctor.city}, Pakistan`
+      });
+    }
+    
+    return clinics;
   };
 
   if (loading) {
@@ -277,20 +293,23 @@ const PublicDoctorProfile = () => {
       <div className="min-h-screen bg-background">
         <PublicHeader />
         <main className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            <Skeleton className="h-8 w-48 mb-6" />
-            <Card>
-              <CardContent className="p-8">
-                <div className="flex flex-col md:flex-row gap-8">
-                  <Skeleton className="h-48 w-48 rounded-full" />
-                  <div className="flex-1 space-y-4">
-                    <Skeleton className="h-10 w-64" />
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-6 w-32" />
-                    <Skeleton className="h-20 w-full" />
+          <div className="max-w-5xl mx-auto space-y-6">
+            <Skeleton className="h-6 w-64" />
+            <Card className="p-8">
+              <div className="flex flex-col md:flex-row gap-8">
+                <Skeleton className="h-40 w-40 rounded-full mx-auto md:mx-0" />
+                <div className="flex-1 space-y-4">
+                  <Skeleton className="h-10 w-64" />
+                  <Skeleton className="h-6 w-48" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
                   </div>
                 </div>
-              </CardContent>
+              </div>
+            </Card>
+            <Card className="p-6">
+              <Skeleton className="h-64 w-full" />
             </Card>
           </div>
         </main>
@@ -321,158 +340,41 @@ const PublicDoctorProfile = () => {
     <div className="min-h-screen bg-background">
       <PublicHeader />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6 md:py-8">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6" aria-label="Breadcrumb">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to="/find-doctors" className="hover:text-primary transition-colors">Find Doctors</Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to={`/doctors/${specialty}?city=${cityDisplay}`} className="hover:text-primary transition-colors">
+        <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-6 overflow-x-auto pb-2" aria-label="Breadcrumb">
+          <Link to="/" className="hover:text-primary transition-colors whitespace-nowrap">Home</Link>
+          <ChevronRight className="h-4 w-4 flex-shrink-0" />
+          <Link to="/find-doctors" className="hover:text-primary transition-colors whitespace-nowrap">Find Doctors</Link>
+          <ChevronRight className="h-4 w-4 flex-shrink-0" />
+          <Link to={`/doctors/${specialty}?city=${cityDisplay}`} className="hover:text-primary transition-colors whitespace-nowrap">
             {specialtyDisplay}s in {cityDisplay}
           </Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground font-medium">{doctor.full_name}</span>
+          <ChevronRight className="h-4 w-4 flex-shrink-0" />
+          <span className="text-foreground font-medium truncate">{doctor.full_name}</span>
         </nav>
 
-        <div className="max-w-4xl mx-auto">
-          {/* Main Profile Card */}
-          <Card className="border-primary/20 shadow-lg mb-8">
-            <CardContent className="p-8">
-              <div className="flex flex-col md:flex-row gap-8">
-                {/* Avatar Section */}
-                <div className="flex flex-col items-center">
-                  <Avatar className="h-40 w-40 border-4 border-primary/20">
-                    <AvatarImage src={doctor.avatar_url || undefined} alt={doctor.full_name} />
-                    <AvatarFallback className="text-3xl bg-primary/10 text-primary">
-                      {getInitials(doctor.full_name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  {doctor.pmdc_verified && (
-                    <Badge className="mt-4 bg-green-500/10 text-green-600 border-green-500/20">
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      PMDC Verified
-                    </Badge>
-                  )}
-                </div>
+        <div className="max-w-5xl mx-auto space-y-8">
+          {/* Profile Header */}
+          <DoctorProfileHeader doctor={doctor} />
 
-                {/* Info Section */}
-                <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-foreground mb-2">{doctor.full_name}</h1>
-                  
-                  <div className="flex flex-wrap items-center gap-2 mb-4">
-                    <Badge variant="secondary" className="text-sm">
-                      <Stethoscope className="h-4 w-4 mr-1" />
-                      {doctor.specialization}
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-3 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <GraduationCap className="h-5 w-5 text-primary" />
-                      <span>{doctor.qualification}</span>
-                    </div>
-
-                    {doctor.experience_years && (
-                      <div className="flex items-center gap-2">
-                        <Award className="h-5 w-5 text-primary" />
-                        <span>{doctor.experience_years}+ years of experience</span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-primary" />
-                      <span>{doctor.clinic_location || doctor.city}</span>
-                    </div>
-
-                    {doctor.clinic_name && (
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-5 w-5 text-primary" />
-                        <span>{doctor.clinic_name}</span>
-                      </div>
-                    )}
-
-                    {doctor.timing && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-5 w-5 text-primary" />
-                        <span>{doctor.timing}</span>
-                      </div>
-                    )}
-
-                    {doctor.consultation_fee && (
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5 text-primary" />
-                        <span>Consultation Fee: Rs. {doctor.consultation_fee}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Contact Button */}
-                  {doctor.contact_number && (
-                    <div className="mt-6">
-                      <Button asChild className="w-full md:w-auto">
-                        <a href={`tel:${doctor.contact_number}`}>
-                          <Phone className="h-4 w-4 mr-2" />
-                          Call for Appointment
-                        </a>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Introduction/About Section */}
-              {doctor.introduction && (
-                <div className="mt-8 pt-8 border-t">
-                  <h2 className="text-xl font-semibold text-foreground mb-4">About {doctor.full_name}</h2>
-                  <p className="text-muted-foreground leading-relaxed">{doctor.introduction}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Practice Address and Timings Section */}
+          <section>
+            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
+              Practice Address and Timings
+            </h2>
+            <DoctorClinicTabs clinics={getClinics()} />
+          </section>
 
           {/* Related Doctors Section */}
           {relatedDoctors.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-2xl font-bold text-foreground mb-6">
+            <section>
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
                 Other {doctor.specialization}s You May Like
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {relatedDoctors.map((related) => (
-                  <Link
-                    key={related.id}
-                    to={`/doctors/${generateCitySlug(related.city)}/${generateSpecialtySlug(related.specialization)}/${generateDoctorSlug(related.full_name)}`}
-                    className="block"
-                  >
-                    <Card className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-4">
-                        <div className="flex items-center gap-4">
-                          <Avatar className="h-16 w-16">
-                            <AvatarImage src={related.avatar_url || undefined} alt={related.full_name} />
-                            <AvatarFallback className="bg-primary/10 text-primary">
-                              {getInitials(related.full_name)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <h3 className="font-semibold text-foreground">{related.full_name}</h3>
-                            <p className="text-sm text-muted-foreground">{related.qualification}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <MapPin className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-xs text-muted-foreground">{related.city}</span>
-                              {related.experience_years && (
-                                <>
-                                  <span className="text-muted-foreground">•</span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {related.experience_years}+ years
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
+                  <RelatedDoctorCard key={related.id} doctor={related} />
                 ))}
               </div>
             </section>
