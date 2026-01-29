@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, Stethoscope, Edit, Plus, X, Upload } from "lucide-react";
+import { Search, Stethoscope, Edit, Plus, X, Upload, Check, ChevronsUpDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,187 @@ import { Loader2 } from "lucide-react";
 import TableSkeleton from "@/components/TableSkeleton";
 import { TablePagination } from "@/components/TablePagination";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+// Specializations list
+const specializations = [
+  "Allergist",
+  "Cardiologist",
+  "Dentist",
+  "Dermatologist",
+  "Endocrinologist",
+  "ENT Specialist",
+  "Gastroenterologist",
+  "General Physician",
+  "General Surgeon",
+  "Geriatrician",
+  "Gynecologist",
+  "Hematologist",
+  "Infectious Disease Specialist",
+  "Nephrologist",
+  "Neurologist",
+  "Neurosurgeon",
+  "Oncologist",
+  "Ophthalmologist",
+  "Orthopedic Surgeon",
+  "Pain Management Specialist",
+  "Pediatrician",
+  "Plastic Surgeon",
+  "Psychiatrist",
+  "Psychologist",
+  "Pulmonologist",
+  "Radiologist",
+  "Rheumatologist",
+  "Sports Medicine Specialist",
+  "Urologist",
+  "Vascular Surgeon",
+];
+
+// Pakistan cities list
+const pakistanCities = [
+  "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",
+  "Multan", "Gujranwala", "Peshawar", "Quetta", "Sialkot",
+  "Sargodha", "Bahawalpur", "Sukkur", "Larkana", "Hyderabad",
+  "Mardan", "Mingora", "Abbottabad", "Dera Ghazi Khan", "Sahiwal",
+  "Nawabshah", "Jhang", "Rahim Yar Khan", "Kasur", "Gujrat",
+  "Sheikhupura", "Dera Ismail Khan", "Mirpur Khas", "Okara", "Chiniot",
+  "Kamoke", "Mandi Bahauddin", "Jhelum", "Sadiqabad", "Jacobabad",
+  "Shikarpur", "Khanewal", "Hafizabad", "Kohat", "Muzaffargarh",
+  "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari"
+].sort();
+
+// Searchable Specialization Select Component
+const SpecializationSelect = ({
+  value,
+  onValueChange,
+  label,
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  label: string;
+}) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between bg-background font-normal"
+          >
+            {value || "Select specialization"}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-background z-50" align="start">
+          <Command>
+            <CommandInput placeholder="Search specialization..." className="h-9" />
+            <CommandList className="max-h-[200px] overflow-y-auto">
+              <CommandEmpty>No specialization found.</CommandEmpty>
+              <CommandGroup>
+                {specializations.map((spec) => (
+                  <CommandItem
+                    key={spec}
+                    value={spec}
+                    onSelect={() => {
+                      onValueChange(spec);
+                      setOpen(false);
+                    }}
+                  >
+                    {spec}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value === spec ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};
+
+// Searchable City Select Component
+const CitySelectDropdown = ({
+  value,
+  onValueChange,
+  label,
+}: {
+  value: string;
+  onValueChange: (value: string) => void;
+  label: string;
+}) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between bg-background font-normal"
+          >
+            {value || "Select city"}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-background z-50" align="start">
+          <Command>
+            <CommandInput placeholder="Search city..." className="h-9" />
+            <CommandList className="max-h-[200px] overflow-y-auto">
+              <CommandEmpty>No city found.</CommandEmpty>
+              <CommandGroup>
+                {pakistanCities.map((city) => (
+                  <CommandItem
+                    key={city}
+                    value={city}
+                    onSelect={() => {
+                      onValueChange(city);
+                      setOpen(false);
+                    }}
+                  >
+                    {city}
+                    <Check
+                      className={cn(
+                        "ml-auto h-4 w-4",
+                        value === city ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};
 
 interface Doctor {
   id: string;
@@ -380,16 +561,11 @@ const ContentWriterDoctors = () => {
                 </div>
 
                 {/* Type/Specialization */}
-                <div className="space-y-2">
-                  <Label htmlFor="specialization">Type / Specialization *</Label>
-                  <Input
-                    id="specialization"
-                    value={addFormData.specialization}
-                    onChange={(e) => setAddFormData({ ...addFormData, specialization: e.target.value })}
-                    placeholder="e.g., Cardiologist, Gynecologist"
-                    required
-                  />
-                </div>
+                <SpecializationSelect
+                  value={addFormData.specialization}
+                  onValueChange={(value) => setAddFormData({ ...addFormData, specialization: value })}
+                  label="Type / Specialization *"
+                />
 
                 {/* Qualification */}
                 <div className="space-y-2">
@@ -416,16 +592,11 @@ const ContentWriterDoctors = () => {
                 </div>
 
                 {/* City */}
-                <div className="space-y-2">
-                  <Label htmlFor="city">City *</Label>
-                  <Input
-                    id="city"
-                    value={addFormData.city}
-                    onChange={(e) => setAddFormData({ ...addFormData, city: e.target.value })}
-                    placeholder="e.g., Lahore, Karachi, Islamabad"
-                    required
-                  />
-                </div>
+                <CitySelectDropdown
+                  value={addFormData.city}
+                  onValueChange={(value) => setAddFormData({ ...addFormData, city: value })}
+                  label="City *"
+                />
 
                 {/* Clinic Name */}
                 <div className="space-y-2">
