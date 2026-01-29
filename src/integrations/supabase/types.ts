@@ -1577,6 +1577,51 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_doctor_listings: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          created_at: string
+          created_by: string
+          experience_years: number | null
+          full_name: string
+          id: string
+          introduction: string | null
+          is_published: boolean
+          qualification: string
+          specialization: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          created_by: string
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          introduction?: string | null
+          is_published?: boolean
+          qualification: string
+          specialization: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          created_at?: string
+          created_by?: string
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          introduction?: string | null
+          is_published?: boolean
+          qualification?: string
+          specialization?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       specializations: {
         Row: {
           clinic_id: string
