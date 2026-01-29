@@ -1,19 +1,25 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer } from "lucide-react";
+import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer, Check, ChevronsUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { useSEO } from "@/hooks/useSEO";
-
 const specialties = [
   {
     name: "Dermatologist",
@@ -150,6 +156,7 @@ const cities = [
 const FindDoctors = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [cityOpen, setCityOpen] = useState(false);
   const navigate = useNavigate();
 
   useSEO({
@@ -169,9 +176,11 @@ const FindDoctors = () => {
   );
 
   const handleSpecialtyClick = (slug: string) => {
-    const cityParam = selectedCity ? `?city=${encodeURIComponent(selectedCity)}` : "";
+    const cityParam = selectedCity && selectedCity !== "all" ? `?city=${encodeURIComponent(selectedCity)}` : "";
     navigate(`/doctors/${slug}${cityParam}`);
   };
+
+  const selectedCityLabel = selectedCity === "all" ? "All Cities" : selectedCity || "Select City";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -193,19 +202,62 @@ const FindDoctors = () => {
               <div className="flex flex-col md:flex-row gap-3 bg-card rounded-xl shadow-lg p-4 border">
                 <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <Select value={selectedCity} onValueChange={setSelectedCity}>
-                    <SelectTrigger className="border-0 shadow-none focus:ring-0 p-0 h-auto">
-                      <SelectValue placeholder="Select City" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Cities</SelectItem>
-                      {cities.map((city) => (
-                        <SelectItem key={city} value={city}>
-                          {city}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        role="combobox"
+                        aria-expanded={cityOpen}
+                        className="w-full justify-between p-0 h-auto font-normal hover:bg-transparent"
+                      >
+                        {selectedCityLabel}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-background z-50" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search city..." className="h-9" />
+                        <CommandList className="max-h-[200px] overflow-y-auto">
+                          <CommandEmpty>No city found.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              value="All Cities"
+                              onSelect={() => {
+                                setSelectedCity("all");
+                                setCityOpen(false);
+                              }}
+                            >
+                              All Cities
+                              <Check
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  selectedCity === "all" ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                            {cities.map((city) => (
+                              <CommandItem
+                                key={city}
+                                value={city}
+                                onSelect={() => {
+                                  setSelectedCity(city);
+                                  setCityOpen(false);
+                                }}
+                              >
+                                {city}
+                                <Check
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    selectedCity === city ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div className="flex-[2] flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
@@ -263,7 +315,7 @@ const FindDoctors = () => {
               {filteredSpecialties.map((specialty) => (
                 <Link
                   key={specialty.slug}
-                  to={`/doctors/${specialty.slug}${selectedCity ? `?city=${encodeURIComponent(selectedCity)}` : ""}`}
+                  to={`/doctors/${specialty.slug}${selectedCity && selectedCity !== "all" ? `?city=${encodeURIComponent(selectedCity)}` : ""}`}
                   className="group bg-card border rounded-xl p-6 hover:shadow-lg transition-all duration-300 hover:border-primary/50"
                 >
                   <div className="flex items-start gap-4">
