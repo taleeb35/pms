@@ -1,19 +1,25 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer } from "lucide-react";
+import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer, Check, ChevronsUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { useSEO } from "@/hooks/useSEO";
-
 const specialties = [
   {
     name: "Dermatologist",
