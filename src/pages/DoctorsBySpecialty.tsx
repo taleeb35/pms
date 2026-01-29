@@ -311,8 +311,8 @@ const DoctorsBySpecialty = () => {
                         </p>
 
                         <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
-                          {doctor.experience_years && (
-                            <span>{doctor.experience_years}+ years experience</span>
+                          {doctor.experience_years && doctor.experience_years > 0 && (
+                            <span>{doctor.experience_years} years experience</span>
                           )}
                           {doctor.city && (
                             <span className="flex items-center gap-1">
@@ -330,10 +330,6 @@ const DoctorsBySpecialty = () => {
                       </div>
 
                       <div className="flex flex-col gap-2 md:items-end">
-                        <div className="flex items-center gap-1 text-amber-500">
-                          <Star className="h-4 w-4 fill-current" />
-                          <span className="text-sm font-medium">4.8</span>
-                        </div>
                         <Button variant="outline" size="sm">
                           View Profile
                         </Button>
