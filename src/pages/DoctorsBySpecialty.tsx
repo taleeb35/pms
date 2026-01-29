@@ -278,16 +278,16 @@ const DoctorsBySpecialty = () => {
                 </Button>
               </div>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredDoctors.map((doctor) => (
                   <div
                     key={doctor.id}
-                    className="bg-card border rounded-xl p-6 hover:shadow-lg transition-shadow"
+                    className="bg-card border rounded-xl p-5 hover:shadow-lg transition-shadow flex flex-col"
                   >
-                    <div className="flex flex-col md:flex-row items-start gap-4">
-                      <Avatar className="w-20 h-20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Avatar className="w-14 h-14">
                         <AvatarImage src={doctor.avatar_url || undefined} />
-                        <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                        <AvatarFallback className="text-lg bg-primary/10 text-primary">
                           {doctor.full_name
                             .split(" ")
                             .map((n) => n[0])
@@ -295,41 +295,37 @@ const DoctorsBySpecialty = () => {
                             .slice(0, 2)}
                         </AvatarFallback>
                       </Avatar>
-
-                      <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <h3 className="font-semibold text-lg">
-                            {doctor.full_name}
-                          </h3>
-                          <Badge variant="secondary">{doctor.specialization}</Badge>
-                        </div>
-
-
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
-                          {doctor.experience_years && doctor.experience_years > 0 && (
-                            <span>{doctor.experience_years} years experience</span>
-                          )}
-                          {doctor.city && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {doctor.city}
-                            </span>
-                          )}
-                        </div>
-
-                        {doctor.introduction && (
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {doctor.introduction}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex flex-col gap-2 md:items-end">
-                        <Button variant="outline" size="sm">
-                          View Profile
-                        </Button>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-base truncate">
+                          {doctor.full_name}
+                        </h3>
+                        <Badge variant="secondary" className="text-xs mt-1">
+                          {doctor.specialization}
+                        </Badge>
                       </div>
                     </div>
+
+                    <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mb-3">
+                      {doctor.experience_years && doctor.experience_years > 0 && (
+                        <span>{doctor.experience_years} years exp</span>
+                      )}
+                      {doctor.city && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5" />
+                          {doctor.city}
+                        </span>
+                      )}
+                    </div>
+
+                    {doctor.introduction && (
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
+                        {doctor.introduction}
+                      </p>
+                    )}
+
+                    <Button variant="outline" size="sm" className="w-full mt-auto">
+                      View Profile
+                    </Button>
                   </div>
                 ))}
               </div>
