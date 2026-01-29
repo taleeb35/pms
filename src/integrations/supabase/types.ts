@@ -1577,6 +1577,53 @@ export type Database = {
         }
         Relationships: []
       }
+      seo_doctor_clinics: {
+        Row: {
+          clinic_location: string | null
+          clinic_name: string
+          created_at: string
+          display_order: number | null
+          doctor_id: string
+          fee: number | null
+          id: string
+          map_query: string | null
+          timing: string | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_location?: string | null
+          clinic_name: string
+          created_at?: string
+          display_order?: number | null
+          doctor_id: string
+          fee?: number | null
+          id?: string
+          map_query?: string | null
+          timing?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_location?: string | null
+          clinic_name?: string
+          created_at?: string
+          display_order?: number | null
+          doctor_id?: string
+          fee?: number | null
+          id?: string
+          map_query?: string | null
+          timing?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_doctor_clinics_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "seo_doctor_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_doctor_listings: {
         Row: {
           avatar_url: string | null

@@ -6,12 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ClipboardList, Plus, X, Upload, Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { Search, ClipboardList, Plus, X, Upload, Check, ChevronsUpDown, Loader2, Trash2, Building2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import TableSkeleton from "@/components/TableSkeleton";
 import { TablePagination } from "@/components/TablePagination";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
   Command,
@@ -26,6 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { TimeSelect } from "@/components/TimeSelect";
 
 // Specializations list
 const specializations = [
@@ -73,6 +75,65 @@ const pakistanCities = [
   "Shikarpur", "Khanewal", "Hafizabad", "Kohat", "Muzaffargarh",
   "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari"
 ].sort();
+
+const DAYS_OF_WEEK = [
+  { id: 0, name: "Sunday" },
+  { id: 1, name: "Monday" },
+  { id: 2, name: "Tuesday" },
+  { id: 3, name: "Wednesday" },
+  { id: 4, name: "Thursday" },
+  { id: 5, name: "Friday" },
+  { id: 6, name: "Saturday" },
+];
+
+interface DaySchedule {
+  isWorking: boolean;
+  startTime: string;
+  endTime: string;
+}
+
+interface ClinicFormData {
+  id?: string;
+  clinic_name: string;
+  clinic_location: string;
+  fee: string;
+  schedule: Record<number, DaySchedule>;
+}
+
+const getDefaultSchedule = (): Record<number, DaySchedule> => {
+  const schedule: Record<number, DaySchedule> = {};
+  DAYS_OF_WEEK.forEach(day => {
+    schedule[day.id] = {
+      isWorking: day.id !== 0, // Sunday off by default
+      startTime: "09:00",
+      endTime: "17:00"
+    };
+  });
+  return schedule;
+};
+
+const formatTimeToDisplay = (time24: string): string => {
+  if (!time24) return "";
+  const [hours, minutes] = time24.split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
+  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
+};
+
+const formatScheduleToString = (schedule: Record<number, DaySchedule>): string => {
+  const lines: string[] = [];
+  DAYS_OF_WEEK.forEach(day => {
+    const daySchedule = schedule[day.id];
+    if (daySchedule?.isWorking) {
+      const start = formatTimeToDisplay(daySchedule.startTime);
+      const end = formatTimeToDisplay(daySchedule.endTime);
+      lines.push(`${day.name}: ${start} - ${end}`);
+    } else {
+      lines.push(`${day.name}: Closed`);
+    }
+  });
+  return lines.join("\n");
+};
 
 // Searchable Specialization Select Component
 const SpecializationSelect = ({
@@ -194,6 +255,135 @@ const CitySelectDropdown = ({
   );
 };
 
+// Clinic Schedule Editor Component
+const ClinicScheduleEditor = ({
+  schedule,
+  onScheduleChange,
+}: {
+  schedule: Record<number, DaySchedule>;
+  onScheduleChange: (schedule: Record<number, DaySchedule>) => void;
+}) => {
+  const updateDaySchedule = (dayId: number, updates: Partial<DaySchedule>) => {
+    const newSchedule = {
+      ...schedule,
+      [dayId]: { ...schedule[dayId], ...updates }
+    };
+    onScheduleChange(newSchedule);
+  };
+
+  return (
+    <div className="space-y-3">
+      <Label className="text-base font-semibold">Weekly Working Hours</Label>
+      <div className="space-y-2">
+        {DAYS_OF_WEEK.map((day) => (
+          <div key={day.id} className="flex items-center gap-4 p-3 border rounded-lg bg-muted/30">
+            <div className="w-24 font-medium">{day.name}</div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={schedule[day.id]?.isWorking ?? false}
+                onCheckedChange={(checked) => updateDaySchedule(day.id, { isWorking: checked })}
+              />
+              <span className="text-sm text-muted-foreground">
+                {schedule[day.id]?.isWorking ? "Working" : "Closed"}
+              </span>
+            </div>
+            {schedule[day.id]?.isWorking && (
+              <>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">Start:</span>
+                  <TimeSelect
+                    value={schedule[day.id]?.startTime || "09:00"}
+                    onValueChange={(value) => updateDaySchedule(day.id, { startTime: value })}
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">End:</span>
+                  <TimeSelect
+                    value={schedule[day.id]?.endTime || "17:00"}
+                    onValueChange={(value) => updateDaySchedule(day.id, { endTime: value })}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Clinic Form Card Component
+const ClinicFormCard = ({
+  clinic,
+  index,
+  onUpdate,
+  onRemove,
+  canRemove,
+}: {
+  clinic: ClinicFormData;
+  index: number;
+  onUpdate: (index: number, updates: Partial<ClinicFormData>) => void;
+  onRemove: (index: number) => void;
+  canRemove: boolean;
+}) => {
+  return (
+    <Card className="border-primary/20">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-primary" />
+            Clinic {index + 1}
+          </CardTitle>
+          {canRemove && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onRemove(index)}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="space-y-2">
+            <Label>Clinic Name *</Label>
+            <Input
+              value={clinic.clinic_name}
+              onChange={(e) => onUpdate(index, { clinic_name: e.target.value })}
+              placeholder="e.g., City Hospital"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Clinic Location</Label>
+            <Input
+              value={clinic.clinic_location}
+              onChange={(e) => onUpdate(index, { clinic_location: e.target.value })}
+              placeholder="e.g., Lahore, Gulberg III"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Consultation Fee (Rs.)</Label>
+            <Input
+              type="number"
+              value={clinic.fee}
+              onChange={(e) => onUpdate(index, { fee: e.target.value })}
+              placeholder="e.g., 2000"
+            />
+          </div>
+        </div>
+        <ClinicScheduleEditor
+          schedule={clinic.schedule}
+          onScheduleChange={(schedule) => onUpdate(index, { schedule })}
+        />
+      </CardContent>
+    </Card>
+  );
+};
+
 interface SEODoctor {
   id: string;
   full_name: string;
@@ -232,11 +422,17 @@ const ContentWriterDoctors = () => {
     qualification: "",
     experience_years: "",
     city: "",
-    clinic_name: "",
-    timing: "",
-    clinic_location: "",
     introduction: "",
   });
+
+  const [clinics, setClinics] = useState<ClinicFormData[]>([
+    {
+      clinic_name: "",
+      clinic_location: "",
+      fee: "",
+      schedule: getDefaultSchedule(),
+    }
+  ]);
 
   useEffect(() => {
     fetchSeoDoctors();
@@ -275,8 +471,43 @@ const ContentWriterDoctors = () => {
     }
   };
 
+  const addClinic = () => {
+    setClinics([
+      ...clinics,
+      {
+        clinic_name: "",
+        clinic_location: "",
+        fee: "",
+        schedule: getDefaultSchedule(),
+      }
+    ]);
+  };
+
+  const updateClinic = (index: number, updates: Partial<ClinicFormData>) => {
+    const newClinics = [...clinics];
+    newClinics[index] = { ...newClinics[index], ...updates };
+    setClinics(newClinics);
+  };
+
+  const removeClinic = (index: number) => {
+    if (clinics.length > 1) {
+      setClinics(clinics.filter((_, i) => i !== index));
+    }
+  };
+
   const handleAddDoctor = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate at least one clinic has a name
+    if (!clinics.some(c => c.clinic_name.trim())) {
+      toast({
+        title: "Error",
+        description: "At least one clinic must have a name",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setFormLoading(true);
 
     try {
@@ -302,7 +533,11 @@ const ContentWriterDoctors = () => {
         avatarUrl = publicUrl;
       }
 
-      const { error } = await supabase
+      // Get first clinic for legacy fields
+      const primaryClinic = clinics[0];
+
+      // Insert doctor listing
+      const { data: doctorData, error: doctorError } = await supabase
         .from("seo_doctor_listings")
         .insert({
           full_name: addFormData.full_name,
@@ -312,17 +547,40 @@ const ContentWriterDoctors = () => {
           introduction: addFormData.introduction || null,
           avatar_url: avatarUrl,
           pmdc_verified: addFormData.pmdc_verified,
-          clinic_name: addFormData.clinic_name || null,
-          timing: addFormData.timing || null,
-          clinic_location: addFormData.clinic_location || null,
+          clinic_name: primaryClinic.clinic_name || null,
+          timing: formatScheduleToString(primaryClinic.schedule),
+          clinic_location: primaryClinic.clinic_location || null,
           city: addFormData.city || null,
           created_by: user.id,
           is_published: true,
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (doctorError) throw doctorError;
 
-      toast({ title: "Success", description: "Doctor listing added successfully" });
+      // Insert clinics into seo_doctor_clinics table
+      const clinicsToInsert = clinics
+        .filter(c => c.clinic_name.trim())
+        .map((clinic, index) => ({
+          doctor_id: doctorData.id,
+          clinic_name: clinic.clinic_name,
+          clinic_location: clinic.clinic_location || null,
+          timing: formatScheduleToString(clinic.schedule),
+          fee: clinic.fee ? parseFloat(clinic.fee) : null,
+          map_query: clinic.clinic_location ? `${clinic.clinic_location}, ${addFormData.city}, Pakistan` : null,
+          display_order: index,
+        }));
+
+      if (clinicsToInsert.length > 0) {
+        const { error: clinicsError } = await supabase
+          .from("seo_doctor_clinics")
+          .insert(clinicsToInsert);
+
+        if (clinicsError) throw clinicsError;
+      }
+
+      toast({ title: "Success", description: "Doctor listing added successfully with clinics" });
       setShowAddForm(false);
       resetAddForm();
       fetchSeoDoctors();
@@ -345,11 +603,16 @@ const ContentWriterDoctors = () => {
       qualification: "",
       experience_years: "",
       city: "",
-      clinic_name: "",
-      timing: "",
-      clinic_location: "",
       introduction: "",
     });
+    setClinics([
+      {
+        clinic_name: "",
+        clinic_location: "",
+        fee: "",
+        schedule: getDefaultSchedule(),
+      }
+    ]);
     setAvatarFile(null);
     setAvatarPreview(null);
   };
@@ -398,7 +661,7 @@ const ContentWriterDoctors = () => {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>Add New Doctor Listing</CardTitle>
-                <CardDescription>Fill in the details to add a new doctor profile</CardDescription>
+                <CardDescription>Fill in the details to add a new doctor profile with multiple clinics</CardDescription>
               </div>
               <Button variant="ghost" size="icon" onClick={() => { setShowAddForm(false); resetAddForm(); }}>
                 <X className="h-5 w-5" />
@@ -407,6 +670,7 @@ const ContentWriterDoctors = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAddDoctor} className="space-y-6">
+              {/* Doctor Info Section */}
               <div className="grid gap-6 md:grid-cols-2">
                 {/* Name */}
                 <div className="space-y-2">
@@ -481,39 +745,6 @@ const ContentWriterDoctors = () => {
                   label="City *"
                 />
 
-                {/* Clinic Name */}
-                <div className="space-y-2">
-                  <Label htmlFor="clinic_name">Clinic Name</Label>
-                  <Input
-                    id="clinic_name"
-                    value={addFormData.clinic_name}
-                    onChange={(e) => setAddFormData({ ...addFormData, clinic_name: e.target.value })}
-                    placeholder="e.g., City Hospital"
-                  />
-                </div>
-
-                {/* Timing */}
-                <div className="space-y-2">
-                  <Label htmlFor="timing">Timing</Label>
-                  <Input
-                    id="timing"
-                    value={addFormData.timing}
-                    onChange={(e) => setAddFormData({ ...addFormData, timing: e.target.value })}
-                    placeholder="e.g., Mon-Fri 9AM-5PM"
-                  />
-                </div>
-
-                {/* Clinic Location */}
-                <div className="space-y-2">
-                  <Label htmlFor="clinic_location">Clinic Location</Label>
-                  <Input
-                    id="clinic_location"
-                    value={addFormData.clinic_location}
-                    onChange={(e) => setAddFormData({ ...addFormData, clinic_location: e.target.value })}
-                    placeholder="e.g., Lahore, Gulberg III"
-                  />
-                </div>
-
                 {/* Profile Picture */}
                 <div className="space-y-2 md:col-span-2">
                   <Label>Profile Picture</Label>
@@ -547,6 +778,32 @@ const ContentWriterDoctors = () => {
                     placeholder="Write a brief introduction about the doctor..."
                     rows={4}
                   />
+                </div>
+              </div>
+
+              {/* Clinics Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    Clinic Locations
+                  </h3>
+                  <Button type="button" variant="outline" size="sm" onClick={addClinic} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add Another Clinic
+                  </Button>
+                </div>
+                <div className="space-y-4">
+                  {clinics.map((clinic, index) => (
+                    <ClinicFormCard
+                      key={index}
+                      clinic={clinic}
+                      index={index}
+                      onUpdate={updateClinic}
+                      onRemove={removeClinic}
+                      canRemove={clinics.length > 1}
+                    />
+                  ))}
                 </div>
               </div>
 
