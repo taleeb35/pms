@@ -55,6 +55,8 @@ const PublicDoctorProfile = () => {
   const cityDisplay = city ? slugToDisplayName(city) : "";
   const specialtyDisplay = specialty ? slugToDisplayName(specialty) : "";
 
+  const [seoClinics, setSeoClinics] = useState<any[]>([]);
+
   useEffect(() => {
     const fetchDoctor = async () => {
       if (!city || !specialty || !doctorSlug) return;
@@ -91,6 +93,18 @@ const PublicDoctorProfile = () => {
             pmdc_verified: matchedSeo.pmdc_verified,
             source: 'seo_listing'
           });
+          
+          // Fetch multiple clinics for SEO doctor
+          const { data: clinicsData } = await supabase
+            .from("seo_doctor_clinics")
+            .select("*")
+            .eq("doctor_id", matchedSeo.id)
+            .order("display_order", { ascending: true });
+          
+          if (clinicsData && clinicsData.length > 0) {
+            setSeoClinics(clinicsData);
+          }
+          
           setLoading(false);
           fetchRelatedDoctors(matchedSeo.specialization, matchedSeo.city || "", matchedSeo.id);
           return;
@@ -336,7 +350,19 @@ const PublicDoctorProfile = () => {
   const getClinics = (): ClinicInfo[] => {
     if (!doctor) return [];
     
-    // For now, we have single clinic data - this structure supports multiple clinics
+    // If we have SEO clinics from the seo_doctor_clinics table, use them
+    if (seoClinics.length > 0) {
+      return seoClinics.map((clinic, index) => ({
+        id: clinic.id || `clinic-${index}`,
+        name: clinic.clinic_name || "Clinic",
+        location: clinic.clinic_location || doctor.city,
+        fee: clinic.fee,
+        timing: clinic.timing,
+        mapQuery: clinic.map_query || `${clinic.clinic_location || ""} ${doctor.city}, Pakistan`
+      }));
+    }
+    
+    // Fallback to legacy single clinic data
     const clinics: ClinicInfo[] = [];
     
     if (doctor.clinic_name || doctor.clinic_location) {
