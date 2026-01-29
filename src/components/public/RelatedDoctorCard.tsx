@@ -44,7 +44,6 @@ const RelatedDoctorCard = ({ doctor }: RelatedDoctorCardProps) => {
                 {doctor.full_name}
               </h3>
               <p className="text-sm text-primary font-medium">{doctor.specialization}</p>
-              <p className="text-xs text-muted-foreground line-clamp-1">{doctor.qualification}</p>
               <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 text-primary/70" />
