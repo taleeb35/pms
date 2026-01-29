@@ -212,28 +212,35 @@ const DoctorsBySpecialty = () => {
               </p>
             )}
 
-            {/* Filter Bar */}
-             <div className="grid gap-3 max-w-2xl md:grid-cols-2">
-               <PublicCityCombobox
-                 value={selectedCity}
-                 onValueChange={handleCityChange}
-                 cities={cities}
-                 includeAllOption
-                 placeholder="Select city"
-                 searchPlaceholder="Search city..."
-               />
+            {/* Filter Bar - Matching FindDoctors Design */}
+            <div className="max-w-2xl">
+              <div className="flex flex-col md:flex-row gap-3 bg-card rounded-xl shadow-lg p-4 border">
+                <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
+                  <MapPin className="h-5 w-5 text-primary shrink-0" />
+                  <PublicCityCombobox
+                    value={selectedCity}
+                    onValueChange={handleCityChange}
+                    cities={cities}
+                    includeAllOption
+                    placeholder="Select city"
+                    searchPlaceholder="Search city..."
+                    className="flex-1"
+                    triggerClassName="border-0 shadow-none h-auto p-0 font-normal hover:bg-transparent"
+                  />
+                </div>
 
-               <div className="relative">
-                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                 <Input
-                   type="text"
-                   placeholder="Search by name..."
-                   value={searchTerm}
-                   onChange={(e) => setSearchTerm(e.target.value)}
-                   className="h-11 pl-9"
-                 />
-               </div>
-             </div>
+                <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
+                  <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+                  <Input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="border-0 shadow-none focus-visible:ring-0 p-0 h-auto"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 

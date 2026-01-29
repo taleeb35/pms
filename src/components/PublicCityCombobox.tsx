@@ -27,6 +27,7 @@ interface PublicCityComboboxProps {
   placeholder?: string;
   searchPlaceholder?: string;
   className?: string;
+  triggerClassName?: string;
 }
 
 export default function PublicCityCombobox({
@@ -37,6 +38,7 @@ export default function PublicCityCombobox({
   placeholder = "Select city",
   searchPlaceholder = "Search city...",
   className,
+  triggerClassName,
 }: PublicCityComboboxProps) {
   const [open, setOpen] = useState(false);
 
@@ -57,10 +59,13 @@ export default function PublicCityCombobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="h-11 w-full justify-between bg-background px-3 font-normal"
+            className={cn(
+              "h-11 w-full justify-between bg-background px-3 font-normal",
+              triggerClassName
+            )}
           >
             <span className="flex min-w-0 items-center gap-2">
-              <MapPin className="h-4 w-4 text-muted-foreground" />
+              {!triggerClassName && <MapPin className="h-4 w-4 text-muted-foreground" />}
               <span className="truncate">
                 {selected ? selected.label : placeholder}
               </span>
