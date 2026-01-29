@@ -101,8 +101,9 @@ const DoctorsBySpecialty = () => {
         .select("*")
         .eq("is_published", true);
 
-      if (specialty && specialtyInfo) {
-        seoQuery = seoQuery.ilike("specialization", `%${specialtyInfo.name}%`);
+      if (specialty) {
+        const searchTerm = specialtyInfo?.name || specialty.replace(/-/g, " ");
+        seoQuery = seoQuery.ilike("specialization", `%${searchTerm}%`);
       }
 
       if (selectedCity && selectedCity !== "all") {
@@ -123,8 +124,9 @@ const DoctorsBySpecialty = () => {
         `)
         .eq("approved", true);
 
-      if (specialty && specialtyInfo) {
-        systemQuery = systemQuery.ilike("specialization", `%${specialtyInfo.name}%`);
+      if (specialty) {
+        const searchTerm = specialtyInfo?.name || specialty.replace(/-/g, " ");
+        systemQuery = systemQuery.ilike("specialization", `%${searchTerm}%`);
       }
 
       if (selectedCity && selectedCity !== "all") {
