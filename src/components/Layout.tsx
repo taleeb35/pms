@@ -370,14 +370,21 @@ const Layout = ({ children }: LayoutProps) => {
     },
   ];
 
-  // Content writer menu - simple two items
+  // Content writer menu - Doctors with sub-items
   const contentWriterMenuGroups: MenuGroup[] = [
     {
-      label: "Content",
+      label: "Blogs",
       icon: FileText,
       items: [
-        { path: "/content-writer/blogs", icon: FileText, label: "Blogs" },
-        { path: "/content-writer/doctors", icon: Stethoscope, label: "Doctors" },
+        { path: "/content-writer/blogs", icon: FileText, label: "All Blogs" },
+      ],
+    },
+    {
+      label: "Doctors",
+      icon: Stethoscope,
+      items: [
+        { path: "/content-writer/doctors", icon: ClipboardList, label: "Listed Dr" },
+        { path: "/content-writer/registered-doctors", icon: UserCog, label: "Registered Dr" },
       ],
     },
   ];
