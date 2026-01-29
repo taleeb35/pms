@@ -3,18 +3,12 @@ import { useParams, useSearchParams, Link } from "react-router-dom";
 import { Search, MapPin, ArrowLeft, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import PublicCityCombobox from "@/components/PublicCityCombobox";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -214,35 +208,27 @@ const DoctorsBySpecialty = () => {
             )}
 
             {/* Filter Bar */}
-            <div className="flex flex-col md:flex-row gap-3 max-w-2xl">
-              <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-card">
-                <MapPin className="h-5 w-5 text-primary" />
-                <Select value={selectedCity} onValueChange={handleCityChange}>
-                  <SelectTrigger className="border-0 shadow-none focus:ring-0 p-0 h-auto">
-                    <SelectValue placeholder="Select City" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Cities</SelectItem>
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+             <div className="grid gap-3 max-w-2xl md:grid-cols-2">
+               <PublicCityCombobox
+                 value={selectedCity}
+                 onValueChange={handleCityChange}
+                 cities={cities}
+                 includeAllOption
+                 placeholder="Select city"
+                 searchPlaceholder="Search city..."
+               />
 
-              <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-card">
-                <Search className="h-5 w-5 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Search by name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="border-0 shadow-none focus-visible:ring-0 p-0 h-auto"
-                />
-              </div>
-            </div>
+               <div className="relative">
+                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                 <Input
+                   type="text"
+                   placeholder="Search by name..."
+                   value={searchTerm}
+                   onChange={(e) => setSearchTerm(e.target.value)}
+                   className="h-11 pl-9"
+                 />
+               </div>
+             </div>
           </div>
         </section>
 
