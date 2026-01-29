@@ -64,6 +64,7 @@ interface Doctor {
   city: string | null;
   introduction: string | null;
   avatar_url: string | null;
+  source?: 'system' | 'seo';
 }
 
 const DoctorsBySpecialty = () => {
