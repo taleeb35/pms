@@ -421,6 +421,7 @@ const FindDoctors = () => {
             {/* Search Bar */}
             <div className="max-w-4xl mx-auto">
               <div className="flex flex-col md:flex-row gap-3 bg-card rounded-xl shadow-lg p-4 border">
+                {/* City Selector */}
                 <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
                   <MapPin className="h-5 w-5 text-primary" />
                   <Popover open={cityOpen} onOpenChange={setCityOpen}>
@@ -481,18 +482,81 @@ const FindDoctors = () => {
                   </Popover>
                 </div>
 
+                {/* Specialty Selector */}
+                <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
+                  <Stethoscope className="h-5 w-5 text-primary" />
+                  <Popover open={specialtyOpen} onOpenChange={setSpecialtyOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        role="combobox"
+                        aria-expanded={specialtyOpen}
+                        className="w-full justify-between p-0 h-auto font-normal hover:bg-transparent"
+                      >
+                        {selectedSpecialtyLabel}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-background z-50" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search specialty..." className="h-9" />
+                        <CommandList className="max-h-[250px] overflow-y-auto">
+                          <CommandEmpty>No specialty found.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              value="All Specialties"
+                              onSelect={() => {
+                                setSelectedSpecialty("");
+                                setSpecialtyOpen(false);
+                              }}
+                            >
+                              All Specialties
+                              <Check
+                                className={cn(
+                                  "ml-auto h-4 w-4",
+                                  selectedSpecialty === "" ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                            {specialties.map((specialty) => (
+                              <CommandItem
+                                key={specialty.slug}
+                                value={specialty.name}
+                                onSelect={() => {
+                                  setSelectedSpecialty(specialty.name);
+                                  setSpecialtyOpen(false);
+                                }}
+                              >
+                                <specialty.icon className="mr-2 h-4 w-4 text-primary" />
+                                {specialty.name}
+                                <Check
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    selectedSpecialty === specialty.name ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* Search Input */}
                 <div className="flex-[2] flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
                   <Search className="h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Search by Doctor Name or Specialty (e.g., Dr. Ali, Gynecologist)"
+                    placeholder="Search by Doctor Name (e.g., Dr. Ali)"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="border-0 shadow-none focus-visible:ring-0 p-0 h-auto"
                   />
                 </div>
 
-                <Button size="lg" className="whitespace-nowrap">
+                <Button size="lg" className="whitespace-nowrap" onClick={handleSearch}>
                   <Search className="h-4 w-4 mr-2" />
                   Search
                 </Button>
