@@ -385,7 +385,23 @@ const FindDoctors = () => {
     navigate(`/doctors/${citySlug}/${specialtySlug}/${doctorSlug}`);
   };
 
+  const handleSearch = () => {
+    if (selectedSpecialty) {
+      const specialty = specialties.find(s => s.name === selectedSpecialty);
+      if (specialty) {
+        const cityParam = selectedCity && selectedCity !== "all" ? `?city=${encodeURIComponent(selectedCity)}` : "";
+        navigate(`/doctors/${specialty.slug}${cityParam}`);
+      }
+    }
+  };
+
   const selectedCityLabel = selectedCity === "all" ? "All Cities" : selectedCity || "Select City";
+  const selectedSpecialtyLabel = selectedSpecialty || "All Specialties";
+
+  // Filter specialties grid based on selected specialty
+  const displayedSpecialties = selectedSpecialty 
+    ? specialties.filter(s => s.name === selectedSpecialty)
+    : filteredSpecialties;
 
   return (
     <div className="min-h-screen flex flex-col">
