@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer, Check, ChevronsUpDown } from "lucide-react";
+import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer, Check, ChevronsUpDown, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,18 @@ import {
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { useSEO } from "@/hooks/useSEO";
+import { supabase } from "@/integrations/supabase/client";
+import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug } from "@/lib/slugUtils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+interface DoctorResult {
+  id: string;
+  full_name: string;
+  specialization: string;
+  city: string;
+  avatar_url: string | null;
+  source: 'seo' | 'registered';
+}
 const specialties = [
   {
     name: "Allergist",
