@@ -1,7 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Building2, Banknote } from "lucide-react";
-import DoctorWeeklySchedule from "./DoctorWeeklySchedule";
+import DoctorWeeklySchedule, { type ScheduleDay } from "./DoctorWeeklySchedule";
 
 export interface ClinicInfo {
   id: string;
@@ -9,6 +9,7 @@ export interface ClinicInfo {
   location: string;
   fee?: number | null;
   timing?: string | null;
+  scheduleData?: ScheduleDay[];
   mapQuery?: string;
 }
 
@@ -63,7 +64,7 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
           <div className="grid md:grid-cols-2 gap-0">
             {/* Schedule */}
             <div className="p-6 border-b md:border-b-0 md:border-r">
-              <DoctorWeeklySchedule timing={clinic.timing} />
+              <DoctorWeeklySchedule timing={clinic.timing} scheduleData={clinic.scheduleData} />
             </div>
 
             {/* Map */}
@@ -144,7 +145,7 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
               <div className="grid md:grid-cols-2 gap-0">
                 {/* Schedule */}
                 <div className="p-6 border-b md:border-b-0 md:border-r">
-                  <DoctorWeeklySchedule timing={clinic.timing} />
+                  <DoctorWeeklySchedule timing={clinic.timing} scheduleData={clinic.scheduleData} />
                 </div>
 
                 {/* Map */}
