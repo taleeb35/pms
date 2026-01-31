@@ -467,7 +467,7 @@ const FindDoctors = () => {
                   <Search className="h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Search by Doctor Type (e.g., Dermatologist, Gynecologist)"
+                    placeholder="Search by Doctor Name or Specialty (e.g., Dr. Ali, Gynecologist)"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="border-0 shadow-none focus-visible:ring-0 p-0 h-auto"
@@ -481,23 +481,69 @@ const FindDoctors = () => {
               </div>
 
               {/* Search Suggestions Dropdown */}
-              {searchTerm && filteredSpecialties.length > 0 && (
-                <div className="bg-card border rounded-lg shadow-lg mt-2 max-h-64 overflow-y-auto">
-                  {filteredSpecialties.slice(0, 5).map((specialty) => (
-                    <button
-                      key={specialty.slug}
-                      onClick={() => handleSpecialtyClick(specialty.slug)}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left border-b last:border-b-0"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <specialty.icon className="h-5 w-5 text-primary" />
+              {searchTerm && (filteredSpecialties.length > 0 || doctorResults.length > 0) && (
+                <div className="bg-card border rounded-lg shadow-lg mt-2 max-h-80 overflow-y-auto">
+                  {/* Doctor Results */}
+                  {doctorResults.length > 0 && (
+                    <div className="border-b last:border-b-0">
+                      <div className="px-4 py-2 bg-muted/30">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Doctors</p>
                       </div>
-                      <div>
-                        <p className="font-medium">{specialty.name}</p>
-                        <p className="text-sm text-muted-foreground">{specialty.urdu}</p>
-                      </div>
-                    </button>
-                  ))}
+                      {doctorResults.map((doctor) => (
+                        <button
+                          key={doctor.id}
+                          onClick={() => handleDoctorClick(doctor)}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left border-b last:border-b-0"
+                        >
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={doctor.avatar_url || undefined} alt={doctor.full_name} />
+                            <AvatarFallback className="bg-primary/10">
+                              <User className="h-5 w-5 text-primary" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{doctor.full_name}</p>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {doctor.specialization} {doctor.city && `• ${doctor.city}`}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Specialty Results */}
+                  {filteredSpecialties.length > 0 && (
+                    <div>
+                      {doctorResults.length > 0 && (
+                        <div className="px-4 py-2 bg-muted/30">
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Specialties</p>
+                        </div>
+                      )}
+                      {filteredSpecialties.slice(0, 5).map((specialty) => (
+                        <button
+                          key={specialty.slug}
+                          onClick={() => handleSpecialtyClick(specialty.slug)}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left border-b last:border-b-0"
+                        >
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <specialty.icon className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{specialty.name}</p>
+                            <p className="text-sm text-muted-foreground">{specialty.urdu}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Loading state */}
+                  {isSearching && doctorResults.length === 0 && (
+                    <div className="px-4 py-3 text-sm text-muted-foreground">
+                      Searching doctors...
+                    </div>
+                  )}
                 </div>
               )}
             </div>
