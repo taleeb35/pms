@@ -11,6 +11,7 @@ import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DoctorProfileHeader from "@/components/public/DoctorProfileHeader";
 import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTabs";
+import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
 
 interface DoctorData {
@@ -56,12 +57,27 @@ const PublicDoctorProfile = () => {
   const specialtyDisplay = specialty ? slugToDisplayName(specialty) : "";
 
   const [seoClinics, setSeoClinics] = useState<any[]>([]);
+  const [approvedSchedule, setApprovedSchedule] = useState<ScheduleDay[] | null>(null);
+
+  const formatTimeToDisplay = (time: string | null | undefined) => {
+    if (!time) return undefined;
+    // Accept "HH:mm" or "HH:mm:ss"
+    const parts = time.split(":");
+    const hh = Number(parts[0] || 0);
+    const mm = Number(parts[1] || 0);
+    if (Number.isNaN(hh) || Number.isNaN(mm)) return time;
+    const ampm = hh >= 12 ? "PM" : "AM";
+    const hour12 = ((hh + 11) % 12) + 1;
+    return `${hour12}:${String(mm).padStart(2, "0")} ${ampm}`;
+  };
 
   useEffect(() => {
     const fetchDoctor = async () => {
       if (!city || !specialty || !doctorSlug) return;
 
       setLoading(true);
+      setSeoClinics([]);
+      setApprovedSchedule(null);
 
       // First try SEO listings
       const { data: seoData, error: seoError } = await supabase
@@ -101,9 +117,7 @@ const PublicDoctorProfile = () => {
             .eq("doctor_id", matchedSeo.id)
             .order("display_order", { ascending: true });
           
-          if (clinicsData && clinicsData.length > 0) {
-            setSeoClinics(clinicsData);
-          }
+          setSeoClinics(clinicsData ?? []);
           
           setLoading(false);
           fetchRelatedDoctors(matchedSeo.specialization, matchedSeo.city || "", matchedSeo.id);
@@ -151,6 +165,40 @@ const PublicDoctorProfile = () => {
             contact_number: matchedDoctor.contact_number,
             source: 'approved_doctor'
           });
+
+          // Fetch weekly schedule for approved doctor
+          const { data: scheduleRows, error: scheduleError } = await supabase
+            .from("doctor_schedules")
+            .select("day_of_week, is_available, start_time, end_time")
+            .eq("doctor_id", matchedDoctor.id)
+            .order("day_of_week", { ascending: true });
+
+          if (!scheduleError) {
+            const DAYS: Array<{ day: string; short: string }> = [
+              { day: "Sunday", short: "Sun" },
+              { day: "Monday", short: "Mon" },
+              { day: "Tuesday", short: "Tue" },
+              { day: "Wednesday", short: "Wed" },
+              { day: "Thursday", short: "Thu" },
+              { day: "Friday", short: "Fri" },
+              { day: "Saturday", short: "Sat" },
+            ];
+
+            const fullSchedule: ScheduleDay[] = DAYS.map((meta, i) => {
+              const row = scheduleRows?.find((r) => r.day_of_week === i);
+              const isAvailable = row ? !!row.is_available : i !== 0; // Sunday off by default
+              return {
+                day: meta.day,
+                dayShort: meta.short,
+                isAvailable,
+                startTime: isAvailable ? formatTimeToDisplay(row?.start_time ?? "09:00") : undefined,
+                endTime: isAvailable ? formatTimeToDisplay(row?.end_time ?? "17:00") : undefined,
+              };
+            });
+
+            setApprovedSchedule(fullSchedule);
+          }
+
           fetchRelatedDoctors(matchedDoctor.specialization, matchedDoctor.city || "", matchedDoctor.id);
         }
       }
@@ -349,10 +397,11 @@ const PublicDoctorProfile = () => {
   // Build clinic data for tabs
   const getClinics = (): ClinicInfo[] => {
     if (!doctor) return [];
+
+    const normalize = (s?: string | null) => (s || "").trim().toLowerCase();
     
     // If we have SEO clinics from the seo_doctor_clinics table, use them
-    if (seoClinics.length > 0) {
-      return seoClinics.map((clinic, index) => ({
+    const clinicsFromTable: ClinicInfo[] = seoClinics.map((clinic, index) => ({
         id: clinic.id || `clinic-${index}`,
         name: clinic.clinic_name || "Clinic",
         location: clinic.clinic_location || doctor.city,
@@ -360,6 +409,35 @@ const PublicDoctorProfile = () => {
         timing: clinic.timing,
         mapQuery: clinic.map_query || `${clinic.clinic_location || ""} ${doctor.city}, Pakistan`
       }));
+
+    // Legacy single clinic data (kept for backward compatibility)
+    const legacyClinic: ClinicInfo | null =
+      doctor.clinic_name || doctor.clinic_location
+        ? {
+            id: "legacy-clinic",
+            name: doctor.clinic_name || "Main Clinic",
+            location: doctor.clinic_location || doctor.city,
+            fee: doctor.consultation_fee,
+            timing: doctor.timing,
+            mapQuery: `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`,
+          }
+        : null;
+
+    // If we have clinic records + legacy clinic, merge them (avoid duplicates)
+    if (clinicsFromTable.length > 0) {
+      const merged = [...clinicsFromTable];
+      if (
+        legacyClinic &&
+        !merged.some(
+          (c) =>
+            normalize(c.name) === normalize(legacyClinic.name) &&
+            normalize(c.location) === normalize(legacyClinic.location),
+        )
+      ) {
+        // Prefer showing the legacy clinic first (it's usually the primary one)
+        merged.unshift(legacyClinic);
+      }
+      return merged;
     }
     
     // Fallback to legacy single clinic data
@@ -382,6 +460,7 @@ const PublicDoctorProfile = () => {
         location: doctor.city,
         fee: doctor.consultation_fee,
         timing: doctor.timing,
+        scheduleData: doctor.source === "approved_doctor" ? approvedSchedule ?? undefined : undefined,
         mapQuery: `${doctor.city}, Pakistan`
       });
     }
