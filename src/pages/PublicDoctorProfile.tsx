@@ -450,6 +450,7 @@ const PublicDoctorProfile = () => {
         location: doctor.clinic_location || doctor.city,
         fee: doctor.consultation_fee,
         timing: doctor.timing,
+        scheduleData: doctor.source === "approved_doctor" ? approvedSchedule ?? undefined : undefined,
         mapQuery: `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`
       });
     } else {
