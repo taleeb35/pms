@@ -266,7 +266,9 @@ const cities = [
 const FindDoctors = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [cityOpen, setCityOpen] = useState(false);
+  const [specialtyOpen, setSpecialtyOpen] = useState(false);
   const [doctorResults, setDoctorResults] = useState<DoctorResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
