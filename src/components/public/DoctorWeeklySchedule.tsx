@@ -45,11 +45,11 @@ function parseTimingString(timing?: string | null): ScheduleDay[] | null {
   if (lines.length === 0) return null;
 
   const map = new Map<string, { isAvailable: boolean; startTime?: string; endTime?: string }>();
-  const dayNames = new Map(
-    DAYS.map((d) => [d.day.toLowerCase(), d.day] as const).concat(
-      DAYS.map((d) => [d.dayShort.toLowerCase(), d.day] as const),
-    ),
-  );
+  const dayEntries: Array<[string, string]> = [
+    ...DAYS.map((d) => [d.day.toLowerCase(), d.day] as [string, string]),
+    ...DAYS.map((d) => [d.dayShort.toLowerCase(), d.day] as [string, string]),
+  ];
+  const dayNames = new Map<string, string>(dayEntries);
 
   for (const line of lines) {
     const m = line.match(/^([A-Za-z]+)\s*:\s*(.+)$/);
