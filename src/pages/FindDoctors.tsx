@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer, Check, ChevronsUpDown } from "lucide-react";
+import { Search, MapPin, Stethoscope, Heart, Brain, Bone, Eye, Baby, Syringe, Pill, Activity, Smile, Wind, Droplets, Thermometer, Check, ChevronsUpDown, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,18 @@ import {
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { useSEO } from "@/hooks/useSEO";
+import { supabase } from "@/integrations/supabase/client";
+import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug } from "@/lib/slugUtils";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+interface DoctorResult {
+  id: string;
+  full_name: string;
+  specialization: string;
+  city: string;
+  avatar_url: string | null;
+  source: 'seo' | 'registered';
+}
 const specialties = [
   {
     name: "Allergist",
@@ -255,7 +267,93 @@ const FindDoctors = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [cityOpen, setCityOpen] = useState(false);
+  const [doctorResults, setDoctorResults] = useState<DoctorResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+
+  // Debounced doctor name search
+  useEffect(() => {
+    const searchDoctors = async () => {
+      if (searchTerm.length < 2) {
+        setDoctorResults([]);
+        return;
+      }
+
+      // Check if searching for doctor name (not just specialty)
+      const isSpecialtySearch = specialties.some(
+        s => s.name.toLowerCase().includes(searchTerm.toLowerCase()) || s.urdu.includes(searchTerm)
+      );
+      
+      // Only search doctors if it's not a clear specialty match or if term is 3+ chars
+      if (searchTerm.length < 3 && isSpecialtySearch) {
+        setDoctorResults([]);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const results: DoctorResult[] = [];
+        const seenIds = new Set<string>();
+
+        // Search SEO listings
+        const { data: seoData } = await supabase
+          .from("seo_doctor_listings")
+          .select("id, full_name, specialization, city, avatar_url")
+          .eq("is_published", true)
+          .ilike("full_name", `%${searchTerm}%`)
+          .limit(5);
+
+        if (seoData) {
+          seoData.forEach(doc => {
+            if (!seenIds.has(doc.id)) {
+              seenIds.add(doc.id);
+              results.push({
+                id: doc.id,
+                full_name: doc.full_name,
+                specialization: doc.specialization,
+                city: doc.city || "",
+                avatar_url: doc.avatar_url,
+                source: 'seo'
+              });
+            }
+          });
+        }
+
+        // Search approved doctors
+        const { data: approvedData } = await supabase
+          .from("doctors")
+          .select("id, specialization, city, profiles!inner(full_name, avatar_url)")
+          .eq("approved", true)
+          .limit(5);
+
+        if (approvedData) {
+          approvedData.forEach(doc => {
+            const profile = doc.profiles as any;
+            if (profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) && !seenIds.has(doc.id)) {
+              seenIds.add(doc.id);
+              results.push({
+                id: doc.id,
+                full_name: profile.full_name,
+                specialization: doc.specialization,
+                city: doc.city || "",
+                avatar_url: profile.avatar_url,
+                source: 'registered'
+              });
+            }
+          });
+        }
+
+        setDoctorResults(results.slice(0, 5));
+      } catch (error) {
+        console.error("Error searching doctors:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    const debounce = setTimeout(searchDoctors, 300);
+    return () => clearTimeout(debounce);
+  }, [searchTerm]);
 
   useSEO({
     title: "Find Doctors in Pakistan | Best Specialists Near You - Zonoir",
@@ -276,6 +374,13 @@ const FindDoctors = () => {
   const handleSpecialtyClick = (slug: string) => {
     const cityParam = selectedCity && selectedCity !== "all" ? `?city=${encodeURIComponent(selectedCity)}` : "";
     navigate(`/doctors/${slug}${cityParam}`);
+  };
+
+  const handleDoctorClick = (doctor: DoctorResult) => {
+    const citySlug = generateCitySlug(doctor.city);
+    const specialtySlug = generateSpecialtySlug(doctor.specialization);
+    const doctorSlug = generateDoctorSlug(doctor.full_name);
+    navigate(`/doctors/${citySlug}/${specialtySlug}/${doctorSlug}`);
   };
 
   const selectedCityLabel = selectedCity === "all" ? "All Cities" : selectedCity || "Select City";
@@ -362,7 +467,7 @@ const FindDoctors = () => {
                   <Search className="h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Search by Doctor Type (e.g., Dermatologist, Gynecologist)"
+                    placeholder="Search by Doctor Name or Specialty (e.g., Dr. Ali, Gynecologist)"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="border-0 shadow-none focus-visible:ring-0 p-0 h-auto"
@@ -376,23 +481,69 @@ const FindDoctors = () => {
               </div>
 
               {/* Search Suggestions Dropdown */}
-              {searchTerm && filteredSpecialties.length > 0 && (
-                <div className="bg-card border rounded-lg shadow-lg mt-2 max-h-64 overflow-y-auto">
-                  {filteredSpecialties.slice(0, 5).map((specialty) => (
-                    <button
-                      key={specialty.slug}
-                      onClick={() => handleSpecialtyClick(specialty.slug)}
-                      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left border-b last:border-b-0"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <specialty.icon className="h-5 w-5 text-primary" />
+              {searchTerm && (filteredSpecialties.length > 0 || doctorResults.length > 0) && (
+                <div className="bg-card border rounded-lg shadow-lg mt-2 max-h-80 overflow-y-auto">
+                  {/* Doctor Results */}
+                  {doctorResults.length > 0 && (
+                    <div className="border-b last:border-b-0">
+                      <div className="px-4 py-2 bg-muted/30">
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Doctors</p>
                       </div>
-                      <div>
-                        <p className="font-medium">{specialty.name}</p>
-                        <p className="text-sm text-muted-foreground">{specialty.urdu}</p>
-                      </div>
-                    </button>
-                  ))}
+                      {doctorResults.map((doctor) => (
+                        <button
+                          key={doctor.id}
+                          onClick={() => handleDoctorClick(doctor)}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left border-b last:border-b-0"
+                        >
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={doctor.avatar_url || undefined} alt={doctor.full_name} />
+                            <AvatarFallback className="bg-primary/10">
+                              <User className="h-5 w-5 text-primary" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{doctor.full_name}</p>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {doctor.specialization} {doctor.city && `• ${doctor.city}`}
+                            </p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Specialty Results */}
+                  {filteredSpecialties.length > 0 && (
+                    <div>
+                      {doctorResults.length > 0 && (
+                        <div className="px-4 py-2 bg-muted/30">
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Specialties</p>
+                        </div>
+                      )}
+                      {filteredSpecialties.slice(0, 5).map((specialty) => (
+                        <button
+                          key={specialty.slug}
+                          onClick={() => handleSpecialtyClick(specialty.slug)}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/50 transition-colors text-left border-b last:border-b-0"
+                        >
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <specialty.icon className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{specialty.name}</p>
+                            <p className="text-sm text-muted-foreground">{specialty.urdu}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Loading state */}
+                  {isSearching && doctorResults.length === 0 && (
+                    <div className="px-4 py-3 text-sm text-muted-foreground">
+                      Searching doctors...
+                    </div>
+                  )}
                 </div>
               )}
             </div>
