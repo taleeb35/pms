@@ -1,6 +1,7 @@
+import { useMemo } from "react";
 import { Clock, CheckCircle, XCircle } from "lucide-react";
 
-interface ScheduleDay {
+export interface ScheduleDay {
   day: string;
   dayShort: string;
   isAvailable: boolean;
@@ -13,19 +14,90 @@ interface DoctorWeeklyScheduleProps {
   scheduleData?: ScheduleDay[];
 }
 
+const DAYS: Array<{ day: ScheduleDay["day"]; dayShort: ScheduleDay["dayShort"] }> = [
+  { day: "Sunday", dayShort: "Sun" },
+  { day: "Monday", dayShort: "Mon" },
+  { day: "Tuesday", dayShort: "Tue" },
+  { day: "Wednesday", dayShort: "Wed" },
+  { day: "Thursday", dayShort: "Thu" },
+  { day: "Friday", dayShort: "Fri" },
+  { day: "Saturday", dayShort: "Sat" },
+];
+
 const DEFAULT_SCHEDULE: ScheduleDay[] = [
+  { day: "Sunday", dayShort: "Sun", isAvailable: false },
   { day: "Monday", dayShort: "Mon", isAvailable: true, startTime: "09:00 AM", endTime: "05:00 PM" },
   { day: "Tuesday", dayShort: "Tue", isAvailable: true, startTime: "09:00 AM", endTime: "05:00 PM" },
   { day: "Wednesday", dayShort: "Wed", isAvailable: true, startTime: "09:00 AM", endTime: "05:00 PM" },
   { day: "Thursday", dayShort: "Thu", isAvailable: true, startTime: "09:00 AM", endTime: "05:00 PM" },
   { day: "Friday", dayShort: "Fri", isAvailable: true, startTime: "09:00 AM", endTime: "05:00 PM" },
   { day: "Saturday", dayShort: "Sat", isAvailable: true, startTime: "10:00 AM", endTime: "02:00 PM" },
-  { day: "Sunday", dayShort: "Sun", isAvailable: false },
 ];
 
+function parseTimingString(timing?: string | null): ScheduleDay[] | null {
+  if (!timing) return null;
+
+  const lines = timing
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) return null;
+
+  const map = new Map<string, { isAvailable: boolean; startTime?: string; endTime?: string }>();
+  const dayNames = new Map(
+    DAYS.map((d) => [d.day.toLowerCase(), d.day] as const).concat(
+      DAYS.map((d) => [d.dayShort.toLowerCase(), d.day] as const),
+    ),
+  );
+
+  for (const line of lines) {
+    const m = line.match(/^([A-Za-z]+)\s*:\s*(.+)$/);
+    if (!m) continue;
+    const key = m[1].toLowerCase();
+    const canonicalDay = dayNames.get(key);
+    if (!canonicalDay) continue;
+
+    const value = m[2].trim();
+    const isClosed = /\bclosed\b/i.test(value);
+    if (isClosed) {
+      map.set(canonicalDay, { isAvailable: false });
+      continue;
+    }
+
+    // Accept both hyphen and en-dash separators
+    const range = value.split(/\s*[-–]\s*/);
+    if (range.length >= 2) {
+      map.set(canonicalDay, {
+        isAvailable: true,
+        startTime: range[0]?.trim(),
+        endTime: range[1]?.trim(),
+      });
+    } else {
+      // Fallback: treat unknown format as available without strict time range
+      map.set(canonicalDay, { isAvailable: true });
+    }
+  }
+
+  // If we didn't parse any valid day lines, return null
+  if (map.size === 0) return null;
+
+  return DAYS.map(({ day, dayShort }) => {
+    const parsed = map.get(day);
+    if (!parsed) return { day, dayShort, isAvailable: false };
+    return {
+      day,
+      dayShort,
+      isAvailable: parsed.isAvailable,
+      startTime: parsed.startTime,
+      endTime: parsed.endTime,
+    };
+  });
+}
+
 const DoctorWeeklySchedule = ({ timing, scheduleData }: DoctorWeeklyScheduleProps) => {
-  // Parse timing string if no schedule data provided
-  const schedule = scheduleData || DEFAULT_SCHEDULE;
+  const parsedFromTiming = useMemo(() => parseTimingString(timing), [timing]);
+  const schedule = scheduleData || parsedFromTiming || DEFAULT_SCHEDULE;
 
   return (
     <div>
@@ -34,25 +106,19 @@ const DoctorWeeklySchedule = ({ timing, scheduleData }: DoctorWeeklyScheduleProp
         Available Timings
       </h3>
       
-      {timing && (
-        <p className="text-sm text-muted-foreground mb-4 bg-muted/50 rounded-lg px-3 py-2">
-          {timing}
-        </p>
-      )}
-
       <div className="space-y-2">
         {schedule.map((day) => (
           <div
             key={day.day}
-            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
-              day.isAvailable 
-                ? "bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20" 
-                : "bg-muted/50 border border-transparent"
-            }`}
+            className={
+              day.isAvailable
+                ? "flex items-center justify-between px-4 py-3 rounded-lg transition-colors bg-primary/5 border border-primary/20"
+                : "flex items-center justify-between px-4 py-3 rounded-lg transition-colors bg-muted/30 border border-transparent"
+            }
           >
             <div className="flex items-center gap-3">
               {day.isAvailable ? (
-                <CheckCircle className="h-4 w-4 text-green-600" />
+                <CheckCircle className="h-4 w-4 text-primary" />
               ) : (
                 <XCircle className="h-4 w-4 text-muted-foreground" />
               )}
@@ -60,7 +126,7 @@ const DoctorWeeklySchedule = ({ timing, scheduleData }: DoctorWeeklyScheduleProp
                 {day.day}
               </span>
             </div>
-            <span className={`text-sm ${day.isAvailable ? "text-green-700 dark:text-green-400 font-medium" : "text-muted-foreground"}`}>
+            <span className={`text-sm ${day.isAvailable ? "text-primary font-medium" : "text-muted-foreground"}`}>
               {day.isAvailable && day.startTime && day.endTime
                 ? `${day.startTime} - ${day.endTime}`
                 : "Closed"}
