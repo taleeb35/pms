@@ -643,7 +643,7 @@ const FindDoctors = () => {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredSpecialties.map((specialty) => (
+              {displayedSpecialties.map((specialty) => (
                 <Link
                   key={specialty.slug}
                   to={`/doctors/${specialty.slug}${selectedCity && selectedCity !== "all" ? `?city=${encodeURIComponent(selectedCity)}` : ""}`}
