@@ -419,7 +419,7 @@ const FindDoctors = () => {
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-4xl mx-auto">
+            <div className="mx-auto" style={{ maxWidth: '90rem' }}>
               <div className="flex flex-col md:flex-row gap-3 bg-card rounded-xl shadow-lg p-4 border">
                 {/* City Selector */}
                 <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
