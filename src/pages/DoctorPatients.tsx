@@ -265,7 +265,7 @@ const DoctorPatients = () => {
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, searchTerm]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, filterTrimester, searchTerm]);
   
   // Reset to page 1 when search term changes
   useEffect(() => {
