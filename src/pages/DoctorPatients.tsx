@@ -1246,11 +1246,9 @@ const DoctorPatients = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>{patient.email || "N/A"}</TableCell>
                         <TableCell>{patient.phone}</TableCell>
                         <TableCell className="capitalize">{patient.gender}</TableCell>
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
-                        <TableCell>{patient.blood_group || "N/A"}</TableCell>
                         <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                         <TableCell className="text-right">
                           <Button
