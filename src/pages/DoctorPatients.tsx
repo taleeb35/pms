@@ -1220,7 +1220,7 @@ const DoctorPatients = () => {
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground">
                       No patients found
                     </TableCell>
                   </TableRow>
