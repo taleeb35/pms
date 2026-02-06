@@ -936,7 +936,7 @@ const DoctorAppointments = () => {
         <TabsContent value="calendar">
           <ImprovedAppointmentCalendar
             appointments={appointments}
-            onAppointmentClick={openVisitDialog}
+            onAppointmentClick={openVisitPage}
             doctorId={doctorId}
           />
         </TabsContent>
