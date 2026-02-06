@@ -347,6 +347,15 @@ const ClinicPatients = () => {
         });
       }
 
+      // Client-side trimester filter
+      if (trimesterFilter !== "all") {
+        filteredData = filteredData.filter(p => {
+          if (!p.pregnancy_start_date) return false;
+          const trimester = getTrimester(p.pregnancy_start_date);
+          return trimester === parseInt(trimesterFilter);
+        });
+      }
+
       setPatients(filteredData);
       setTotalCount(count || 0);
     } catch (error: any) {
