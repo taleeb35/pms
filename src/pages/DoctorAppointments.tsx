@@ -113,11 +113,10 @@ const DoctorAppointments = () => {
   const [waitlistPatientIds, setWaitlistPatientIds] = useState<Set<string>>(new Set());
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showVisitDialog, setShowVisitDialog] = useState(false);
   const [showPrintReportDialog, setShowPrintReportDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
-  const [visitAppointment, setVisitAppointment] = useState<Appointment | null>(null);
+  const [printReportAppointment, setPrintReportAppointment] = useState<Appointment | null>(null);
   const [printReportAppointment, setPrintReportAppointment] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
