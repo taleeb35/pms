@@ -1216,6 +1216,7 @@ const DoctorPatients = () => {
                   <TableHead>Age</TableHead>
                   <TableHead>Blood Group</TableHead>
                   <TableHead>Added Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
