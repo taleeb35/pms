@@ -2338,6 +2338,106 @@ const DoctorPatients = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* New Appointment Dialog */}
+      <Dialog open={isAppointmentDialogOpen} onOpenChange={setIsAppointmentDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Schedule New Appointment</DialogTitle>
+            {appointmentPatient && (
+              <p className="text-sm text-muted-foreground">
+                Creating appointment for <span className="font-semibold">{appointmentPatient.full_name}</span> ({appointmentPatient.patient_id})
+              </p>
+            )}
+          </DialogHeader>
+          <form onSubmit={handleCreateAppointment} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Appointment Date *</Label>
+                <Popover open={appointmentDatePopoverOpen} onOpenChange={setAppointmentDatePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !appointmentDate && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {appointmentDate ? format(appointmentDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={appointmentDate}
+                      onSelect={(date) => {
+                        setAppointmentDate(date);
+                        if (date) setAppointmentDatePopoverOpen(false);
+                      }}
+                      disabled={(date) => date < startOfDay(new Date())}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label>Time *</Label>
+                <DoctorTimeSelect
+                  doctorId={doctorId}
+                  selectedDate={appointmentDate}
+                  value={appointmentTime}
+                  onValueChange={setAppointmentTime}
+                  onLeaveStatusChange={(onLeave) => setAppointmentIsOnLeave(onLeave)}
+                  name="appointment_time"
+                  required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+                <Input
+                  id="duration_minutes"
+                  name="duration_minutes"
+                  type="number"
+                  defaultValue={30}
+                  min={15}
+                  step={15}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Appointment Type</Label>
+                <Select value={appointmentType} onValueChange={setAppointmentType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="follow_up">Follow Up</SelectItem>
+                    <SelectItem value="report_check">Report Check</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reason">Reason for Visit</Label>
+              <Input id="reason" name="reason" placeholder="e.g., Regular checkup" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea id="notes" name="notes" placeholder="Additional notes..." rows={3} />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsAppointmentDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Create Appointment</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
