@@ -969,6 +969,100 @@ const DoctorPatients = () => {
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  const handleOpenAppointmentDialog = (patient: Patient) => {
+    setAppointmentPatient(patient);
+    setAppointmentDate(undefined);
+    setAppointmentTime("");
+    setAppointmentType("new");
+    setIsAppointmentDialogOpen(true);
+  };
+
+  const handleCreateAppointment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!appointmentPatient || !appointmentDate || !appointmentTime) {
+      toast({ title: "Error", description: "Please fill all required fields", variant: "destructive" });
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    const appointmentDateStr = format(appointmentDate, "yyyy-MM-dd");
+
+    try {
+      // Check if doctor is available (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(doctorId, appointmentDateStr);
+      if (!availability.available) {
+        toast({
+          title: "Doctor Not Available",
+          description: availability.reason || "You are not available on this date. Please select a different date.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check for double booking
+      const { available } = await isTimeSlotAvailable(doctorId, appointmentDateStr, appointmentTime);
+
+      if (!available) {
+        toast({
+          title: "Time Slot Unavailable",
+          description: "You already have an appointment at this time. Please select a different time slot.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("appointments")
+        .insert({
+          doctor_id: doctorId,
+          patient_id: appointmentPatient.id,
+          appointment_date: appointmentDateStr,
+          appointment_time: appointmentTime,
+          duration_minutes: parseInt(formData.get("duration_minutes") as string) || 30,
+          reason: (formData.get("reason") as string) || null,
+          notes: (formData.get("notes") as string) || null,
+          status: "scheduled" as const,
+          created_by: doctorId,
+          appointment_type: appointmentType,
+        })
+        .select();
+
+      if (error) throw error;
+
+      // Log activity
+      if (data && data[0]) {
+        await logActivity({
+          action: "appointment_created",
+          entityType: "appointment",
+          entityId: data[0].id,
+          details: {
+            patient_name: appointmentPatient.full_name,
+            appointment_date: appointmentDateStr,
+            appointment_time: appointmentTime,
+          },
+        });
+      }
+
+      // Remove patient from waitlist if they were in it
+      await supabase
+        .from("wait_list")
+        .delete()
+        .eq("doctor_id", doctorId)
+        .eq("patient_id", appointmentPatient.id)
+        .eq("status", "active");
+
+      toast({ title: "Success", description: "Appointment created successfully" });
+      setIsAppointmentDialogOpen(false);
+      setAppointmentPatient(null);
+      setAppointmentDate(undefined);
+      setAppointmentTime("");
+      setAppointmentType("new");
+      fetchWaitlistPatients();
+    } catch (error: any) {
+      toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="mb-8">
