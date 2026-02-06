@@ -1136,7 +1136,7 @@ const ClinicAppointmentDetail = () => {
                       doctorId={appointment.doctor_id}
                       selectedDate={nextVisitDate}
                       value={nextVisitTime}
-                      onChange={setNextVisitTime}
+                      onValueChange={setNextVisitTime}
                     />
                   </div>
                 )}
