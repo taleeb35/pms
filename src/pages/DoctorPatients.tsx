@@ -1271,7 +1271,7 @@ const DoctorPatients = () => {
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
-                          <TableCell colSpan={8} className="p-0">
+                          <TableCell colSpan={9} className="p-0">
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
