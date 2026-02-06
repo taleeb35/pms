@@ -208,12 +208,12 @@ export const AppointmentTimeline = ({
     setPosting(true);
     try {
       await logActivity({
-        action: "appointment_updated",
+        action: "appointment_comment_added",
         entityType: "appointment",
         entityId: appointmentId,
         details: {
           comment: newComment.trim(),
-          comment_type: "internal_note",
+          patient_name: patientName,
         },
       });
 
