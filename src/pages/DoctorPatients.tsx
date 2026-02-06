@@ -383,6 +383,15 @@ const DoctorPatients = () => {
         });
       }
 
+      // Apply trimester filter for gynecologists
+      if (filterTrimester && filterTrimester !== "all") {
+        filteredData = filteredData.filter(patient => {
+          if (!patient.pregnancy_start_date) return false;
+          const trimester = getTrimester(patient.pregnancy_start_date);
+          return trimester === parseInt(filterTrimester);
+        });
+      }
+
       // Apply added date filter
       if (filterAddedDateFrom) {
         filteredData = filteredData.filter(patient => {
