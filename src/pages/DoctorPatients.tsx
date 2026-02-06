@@ -1024,19 +1024,32 @@ const DoctorPatients = () => {
                 showAllOption={true}
               />
               {isGynecologist && (
-                <Select value={filterDelivery} onValueChange={setFilterDelivery}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Delivery Due" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Patients</SelectItem>
-                    <SelectItem value="7">Delivery in 7 days</SelectItem>
-                    <SelectItem value="14">Delivery in 14 days</SelectItem>
-                    <SelectItem value="30">Delivery in 30 days</SelectItem>
-                    <SelectItem value="60">Delivery in 2 months</SelectItem>
-                    <SelectItem value="90">Delivery in 3 months</SelectItem>
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select value={filterTrimester} onValueChange={setFilterTrimester}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Trimester" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Trimesters</SelectItem>
+                      <SelectItem value="1">1st Trimester (Week 1-12)</SelectItem>
+                      <SelectItem value="2">2nd Trimester (Week 13-26)</SelectItem>
+                      <SelectItem value="3">3rd Trimester (Week 27+)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={filterDelivery} onValueChange={setFilterDelivery}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Delivery Due" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Patients</SelectItem>
+                      <SelectItem value="7">Delivery in 7 days</SelectItem>
+                      <SelectItem value="14">Delivery in 14 days</SelectItem>
+                      <SelectItem value="30">Delivery in 30 days</SelectItem>
+                      <SelectItem value="60">Delivery in 2 months</SelectItem>
+                      <SelectItem value="90">Delivery in 3 months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
               )}
               <div className="flex gap-2 items-center">
                 <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
