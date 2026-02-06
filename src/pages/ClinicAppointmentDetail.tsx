@@ -1112,7 +1112,7 @@ const ClinicAppointmentDetail = () => {
                     <PopoverTrigger asChild>
                       <Button variant="outline" className="w-full justify-start text-left font-normal">
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {nextVisitDate ? format(nextVisitDate, "PPP") : "Select date"}
+                        {nextVisitDate ? format(nextVisitDate, "PPP") : <span>Select date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
