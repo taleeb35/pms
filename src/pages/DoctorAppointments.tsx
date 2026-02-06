@@ -942,7 +942,7 @@ const DoctorAppointments = () => {
         </TabsContent>
       </Tabs>
 
-      <VisitRecordDialog open={showVisitDialog} onOpenChange={setShowVisitDialog} appointment={visitAppointment} />
+      
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
