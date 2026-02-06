@@ -63,6 +63,7 @@ import ClinicDoctors from "./pages/ClinicDoctors";
 import ClinicPatients from "./pages/ClinicPatients";
 import ClinicPatientDetail from "./pages/ClinicPatientDetail";
 import ClinicAppointments from "./pages/ClinicAppointments";
+import ClinicAppointmentDetail from "./pages/ClinicAppointmentDetail";
 import ClinicWalkIn from "./pages/ClinicWalkIn";
 import ClinicFinance from "./pages/ClinicFinance";
 import ClinicExpenses from "./pages/ClinicExpenses";

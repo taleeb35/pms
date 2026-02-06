@@ -86,6 +86,8 @@ interface ICDCode {
 }
 
 const ClinicAppointments = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
