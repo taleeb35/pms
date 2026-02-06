@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { VisitHistory } from "@/components/VisitHistory";
 import { PatientMedicalDocsView } from "@/components/PatientMedicalDocsView";
+import { AppointmentTimeline } from "@/components/AppointmentTimeline";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
