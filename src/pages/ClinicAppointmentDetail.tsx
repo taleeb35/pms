@@ -1063,7 +1063,10 @@ const ClinicAppointmentDetail = () => {
                   {pregnancyStartDate && (
                     <div className="p-3 bg-pink-50 rounded-lg space-y-1">
                       <p className="text-sm"><strong>Duration:</strong> {calculatePregnancyDuration(pregnancyStartDate.toISOString())}</p>
-                      <p className="text-sm"><strong>EDD:</strong> {calculateExpectedDueDate(pregnancyStartDate.toISOString())}</p>
+                      <p className="text-sm"><strong>EDD:</strong> {(() => {
+                        const edd = calculateExpectedDueDate(pregnancyStartDate.toISOString());
+                        return edd ? format(edd, "PPP") : "—";
+                      })()}</p>
                     </div>
                   )}
                 </CardContent>
