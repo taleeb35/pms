@@ -153,6 +153,20 @@ const specialties = [
     icon: Pill,
   },
   {
+    name: "Laparoscopic Surgeon",
+    slug: "laparoscopic-surgeon",
+    urdu: "ماہر لیپروسکوپک سرجری",
+    description: "Surgeons who perform minimally invasive surgeries using small incisions and specialized instruments.",
+    icon: Syringe,
+  },
+  {
+    name: "Liver Specialist",
+    slug: "liver-specialist",
+    urdu: "ماہر جگر",
+    description: "Specialists who diagnose and treat liver diseases including hepatitis, cirrhosis, and liver cancer.",
+    icon: Activity,
+  },
+  {
     name: "Nephrologist",
     slug: "nephrologist",
     urdu: "ماہر امراض گردہ",
@@ -207,6 +221,13 @@ const specialties = [
     urdu: "ماہر امراض اطفال",
     description: "Medical doctors who specialize in the health and medical care of infants, children, and adolescents.",
     icon: Baby,
+  },
+  {
+    name: "Physiotherapist",
+    slug: "physiotherapist",
+    urdu: "فزیو تھراپسٹ",
+    description: "Specialists who help patients recover movement and function through physical therapy and exercises.",
+    icon: Bone,
   },
   {
     name: "Plastic Surgeon",
