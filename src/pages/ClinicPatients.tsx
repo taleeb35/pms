@@ -31,6 +31,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format, subMonths, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { getTrimester } from "@/lib/pregnancyUtils";
 import { CitySelect } from "@/components/CitySelect";
 import { 
   validateName, 
