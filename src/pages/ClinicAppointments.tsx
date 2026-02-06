@@ -478,8 +478,9 @@ const ClinicAppointments = () => {
   };
 
   const openVisitDialog = (appointment: Appointment) => {
-    setVisitAppointment(appointment);
-    setShowVisitDialog(true);
+    // Navigate to appointment detail page instead of dialog
+    const basePath = location.pathname.startsWith("/receptionist") ? "/receptionist" : "/clinic";
+    navigate(`${basePath}/appointments/${appointment.id}`);
   };
 
   const getFilteredAppointments = () => {
