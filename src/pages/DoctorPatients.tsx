@@ -141,6 +141,7 @@ const DoctorPatients = () => {
   const [filterGender, setFilterGender] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterDelivery, setFilterDelivery] = useState("");
+  const [filterTrimester, setFilterTrimester] = useState("");
   const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
   const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
   const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
