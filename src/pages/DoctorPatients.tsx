@@ -1228,7 +1228,7 @@ const DoctorPatients = () => {
                   </TableRow>
                 ) : (
                   filteredPatients.map((patient) => (
-                    <>
+                    <Fragment key={patient.id}>
                       <TableRow
                         key={patient.id}
                         className={`cursor-pointer transition-colors ${
