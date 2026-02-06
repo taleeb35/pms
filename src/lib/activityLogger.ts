@@ -10,6 +10,7 @@ export type ActivityAction =
   | "appointment_completed"
   | "appointment_deleted"
   | "appointment_status_changed"
+  | "appointment_comment_added"
   | "fee_updated"
   | "procedure_set"
   | "discount_applied"
