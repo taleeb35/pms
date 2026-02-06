@@ -107,6 +107,7 @@ const ClinicPatients = () => {
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [ageFilter, setAgeFilter] = useState<string>("all");
+  const [trimesterFilter, setTrimesterFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
   const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
