@@ -117,7 +117,6 @@ const DoctorAppointments = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
   const [printReportAppointment, setPrintReportAppointment] = useState<Appointment | null>(null);
-  const [printReportAppointment, setPrintReportAppointment] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
