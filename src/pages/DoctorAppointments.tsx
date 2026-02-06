@@ -60,7 +60,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
-import { VisitRecordDialog } from "@/components/VisitRecordDialog";
+
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { PrintReportDialog } from "@/components/PrintReportDialog";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
