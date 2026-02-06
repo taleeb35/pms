@@ -1614,7 +1614,7 @@ const DoctorPatients = () => {
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </Fragment>
                   ))
                 )}
               </TableBody>
