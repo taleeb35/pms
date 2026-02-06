@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet, CalendarPlus } from "lucide-react";
 import PatientImportExport from "@/components/PatientImportExport";
 import { VisitHistory } from "@/components/VisitHistory";
 import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
+import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
+import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
@@ -199,6 +201,14 @@ const DoctorPatients = () => {
   const [editSelectedDiseases, setEditSelectedDiseases] = useState<string[]>([]);
   const [addFormErrors, setAddFormErrors] = useState<Record<string, string>>({});
   const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
+  // Appointment creation states
+  const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
+  const [appointmentPatient, setAppointmentPatient] = useState<Patient | null>(null);
+  const [appointmentDate, setAppointmentDate] = useState<Date>();
+  const [appointmentDatePopoverOpen, setAppointmentDatePopoverOpen] = useState(false);
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [appointmentType, setAppointmentType] = useState("new");
+  const [appointmentIsOnLeave, setAppointmentIsOnLeave] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -959,6 +969,100 @@ const DoctorPatients = () => {
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  const handleOpenAppointmentDialog = (patient: Patient) => {
+    setAppointmentPatient(patient);
+    setAppointmentDate(undefined);
+    setAppointmentTime("");
+    setAppointmentType("new");
+    setIsAppointmentDialogOpen(true);
+  };
+
+  const handleCreateAppointment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!appointmentPatient || !appointmentDate || !appointmentTime) {
+      toast({ title: "Error", description: "Please fill all required fields", variant: "destructive" });
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    const appointmentDateStr = format(appointmentDate, "yyyy-MM-dd");
+
+    try {
+      // Check if doctor is available (includes leave and schedule check)
+      const availability = await checkDoctorAvailability(doctorId, appointmentDateStr);
+      if (!availability.available) {
+        toast({
+          title: "Doctor Not Available",
+          description: availability.reason || "You are not available on this date. Please select a different date.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check for double booking
+      const { available } = await isTimeSlotAvailable(doctorId, appointmentDateStr, appointmentTime);
+
+      if (!available) {
+        toast({
+          title: "Time Slot Unavailable",
+          description: "You already have an appointment at this time. Please select a different time slot.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("appointments")
+        .insert({
+          doctor_id: doctorId,
+          patient_id: appointmentPatient.id,
+          appointment_date: appointmentDateStr,
+          appointment_time: appointmentTime,
+          duration_minutes: parseInt(formData.get("duration_minutes") as string) || 30,
+          reason: (formData.get("reason") as string) || null,
+          notes: (formData.get("notes") as string) || null,
+          status: "scheduled" as const,
+          created_by: doctorId,
+          appointment_type: appointmentType,
+        })
+        .select();
+
+      if (error) throw error;
+
+      // Log activity
+      if (data && data[0]) {
+        await logActivity({
+          action: "appointment_created",
+          entityType: "appointment",
+          entityId: data[0].id,
+          details: {
+            patient_name: appointmentPatient.full_name,
+            appointment_date: appointmentDateStr,
+            appointment_time: appointmentTime,
+          },
+        });
+      }
+
+      // Remove patient from waitlist if they were in it
+      await supabase
+        .from("wait_list")
+        .delete()
+        .eq("doctor_id", doctorId)
+        .eq("patient_id", appointmentPatient.id)
+        .eq("status", "active");
+
+      toast({ title: "Success", description: "Appointment created successfully" });
+      setIsAppointmentDialogOpen(false);
+      setAppointmentPatient(null);
+      setAppointmentDate(undefined);
+      setAppointmentTime("");
+      setAppointmentType("new");
+      fetchWaitlistPatients();
+    } catch (error: any) {
+      toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });
+    }
+  };
+
   return (
     <div className="p-8">
       <div className="mb-8">
@@ -1112,20 +1216,20 @@ const DoctorPatients = () => {
                   <TableHead>Age</TableHead>
                   <TableHead>Blood Group</TableHead>
                   <TableHead>Added Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground">
+                    <TableCell colSpan={9} className="text-center text-muted-foreground">
                       No patients found
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredPatients.map((patient) => (
-                    <>
+                    <Fragment key={patient.id}>
                       <TableRow
-                        key={patient.id}
                         className={`cursor-pointer transition-colors ${
                           selectedPatient?.id === patient.id
                             ? "bg-primary/10 hover:bg-primary/15"
@@ -1150,10 +1254,23 @@ const DoctorPatients = () => {
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                         <TableCell>{patient.blood_group || "N/A"}</TableCell>
                         <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenAppointmentDialog(patient);
+                            }}
+                          >
+                            <CalendarPlus className="h-4 w-4 mr-2" />
+                            New Appointment
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
-                          <TableCell colSpan={8} className="p-0">
+                          <TableCell colSpan={9} className="p-0">
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
@@ -1496,7 +1613,7 @@ const DoctorPatients = () => {
                           </TableCell>
                         </TableRow>
                       )}
-                    </>
+                    </Fragment>
                   ))
                 )}
               </TableBody>
@@ -2220,6 +2337,106 @@ const DoctorPatients = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* New Appointment Dialog */}
+      <Dialog open={isAppointmentDialogOpen} onOpenChange={setIsAppointmentDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Schedule New Appointment</DialogTitle>
+            {appointmentPatient && (
+              <p className="text-sm text-muted-foreground">
+                Creating appointment for <span className="font-semibold">{appointmentPatient.full_name}</span> ({appointmentPatient.patient_id})
+              </p>
+            )}
+          </DialogHeader>
+          <form onSubmit={handleCreateAppointment} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Appointment Date *</Label>
+                <Popover open={appointmentDatePopoverOpen} onOpenChange={setAppointmentDatePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !appointmentDate && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {appointmentDate ? format(appointmentDate, "PPP") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={appointmentDate}
+                      onSelect={(date) => {
+                        setAppointmentDate(date);
+                        if (date) setAppointmentDatePopoverOpen(false);
+                      }}
+                      disabled={(date) => date < startOfDay(new Date())}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label>Time *</Label>
+                <DoctorTimeSelect
+                  doctorId={doctorId}
+                  selectedDate={appointmentDate}
+                  value={appointmentTime}
+                  onValueChange={setAppointmentTime}
+                  onLeaveStatusChange={(onLeave) => setAppointmentIsOnLeave(onLeave)}
+                  name="appointment_time"
+                  required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="duration_minutes">Duration (minutes)</Label>
+                <Input
+                  id="duration_minutes"
+                  name="duration_minutes"
+                  type="number"
+                  defaultValue={30}
+                  min={15}
+                  step={15}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Appointment Type</Label>
+                <Select value={appointmentType} onValueChange={setAppointmentType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="follow_up">Follow Up</SelectItem>
+                    <SelectItem value="report_check">Report Check</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reason">Reason for Visit</Label>
+              <Input id="reason" name="reason" placeholder="e.g., Regular checkup" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea id="notes" name="notes" placeholder="Additional notes..." rows={3} />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => setIsAppointmentDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Create Appointment</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
