@@ -1255,6 +1255,19 @@ const DoctorPatients = () => {
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                         <TableCell>{patient.blood_group || "N/A"}</TableCell>
                         <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenAppointmentDialog(patient);
+                            }}
+                          >
+                            <CalendarPlus className="h-4 w-4 mr-2" />
+                            New Appointment
+                          </Button>
+                        </TableCell>
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
