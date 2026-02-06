@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,7 +60,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
-import { VisitRecordDialog } from "@/components/VisitRecordDialog";
+
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { PrintReportDialog } from "@/components/PrintReportDialog";
 import { calculatePregnancyDuration } from "@/lib/pregnancyUtils";
@@ -112,11 +113,9 @@ const DoctorAppointments = () => {
   const [waitlistPatientIds, setWaitlistPatientIds] = useState<Set<string>>(new Set());
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [showVisitDialog, setShowVisitDialog] = useState(false);
   const [showPrintReportDialog, setShowPrintReportDialog] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [editingAppointment, setEditingAppointment] = useState<Appointment | null>(null);
-  const [visitAppointment, setVisitAppointment] = useState<Appointment | null>(null);
   const [printReportAppointment, setPrintReportAppointment] = useState<Appointment | null>(null);
   const [editDate, setEditDate] = useState<Date>();
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
@@ -517,9 +516,10 @@ const DoctorAppointments = () => {
     setShowEditDialog(true);
   };
 
-  const openVisitDialog = (appointment: Appointment) => {
-    setVisitAppointment(appointment);
-    setShowVisitDialog(true);
+  const navigate = useNavigate();
+
+  const openVisitPage = (appointment: Appointment) => {
+    navigate(`/doctor/appointments/${appointment.id}`);
   };
 
   const openPrintReportDialog = (appointment: Appointment) => {
@@ -845,7 +845,7 @@ const DoctorAppointments = () => {
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit Appointment
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => openVisitDialog(apt)}>
+                              <DropdownMenuItem onClick={() => openVisitPage(apt)}>
                                 <FileText className="h-4 w-4 mr-2" />
                                 Record Visit
                               </DropdownMenuItem>
@@ -934,13 +934,13 @@ const DoctorAppointments = () => {
         <TabsContent value="calendar">
           <ImprovedAppointmentCalendar
             appointments={appointments}
-            onAppointmentClick={openVisitDialog}
+            onAppointmentClick={openVisitPage}
             doctorId={doctorId}
           />
         </TabsContent>
       </Tabs>
 
-      <VisitRecordDialog open={showVisitDialog} onOpenChange={setShowVisitDialog} appointment={visitAppointment} />
+      
 
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
