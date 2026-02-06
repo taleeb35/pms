@@ -18,6 +18,8 @@ import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, F
 import PatientImportExport from "@/components/PatientImportExport";
 import { VisitHistory } from "@/components/VisitHistory";
 import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
+import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
+import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
