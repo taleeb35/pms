@@ -67,6 +67,7 @@ interface Patient {
   medical_history: string | null;
   created_by: string | null;
   created_at: string;
+  pregnancy_start_date: string | null;
 }
 
 interface Doctor {
