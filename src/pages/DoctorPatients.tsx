@@ -1210,11 +1210,9 @@ const DoctorPatients = () => {
                 <TableRow>
                   <TableHead>Patient ID</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Gender</TableHead>
                   <TableHead>Age</TableHead>
-                  <TableHead>Blood Group</TableHead>
                   <TableHead>Added Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
