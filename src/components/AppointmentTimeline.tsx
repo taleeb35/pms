@@ -175,6 +175,7 @@ export const AppointmentTimeline = ({
     const patientName = details?.patient_name as string || "patient";
     const newStatus = details?.new_status as string || "";
     const oldStatus = details?.old_status as string || "";
+    const actorName = details?.actorName as string || "";
 
     switch (action) {
       case "appointment_created":
@@ -185,6 +186,8 @@ export const AppointmentTimeline = ({
         return `Appointment marked as completed`;
       case "appointment_cancelled":
         return `Appointment was cancelled`;
+      case "appointment_comment_added":
+        return `${actorName || "Staff"} left a comment`;
       case "fee_updated":
         return `Consultation fee was updated`;
       case "procedure_set":
