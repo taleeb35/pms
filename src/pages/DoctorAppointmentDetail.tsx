@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { VisitHistory } from "@/components/VisitHistory";
 import { PatientMedicalDocsView } from "@/components/PatientMedicalDocsView";
+import { AppointmentTimeline } from "@/components/AppointmentTimeline";
 import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
@@ -942,7 +943,7 @@ const DoctorAppointmentDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Timeline/Notes Card */}
+            {/* Confidential Notes Card */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium">Confidential Notes</CardTitle>
@@ -957,6 +958,14 @@ const DoctorAppointmentDetail = () => {
                 />
               </CardContent>
             </Card>
+
+            {/* Timeline Section - Shopify Style */}
+            <AppointmentTimeline
+              appointmentId={appointment.id}
+              patientId={appointment.patient_id}
+              patientName={appointment.patients.full_name}
+              doctorId={appointment.doctor_id}
+            />
 
             {/* Submit Button */}
             <div className="flex justify-end gap-2">
