@@ -235,7 +235,7 @@ const ClinicPatients = () => {
     if (doctorIds.length > 0) {
       fetchPatients();
     }
-  }, [doctorIds, currentPage, pageSize, searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, filterAddedDateFrom, filterAddedDateTo]);
+  }, [doctorIds, currentPage, pageSize, searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, trimesterFilter, filterAddedDateFrom, filterAddedDateTo]);
 
   const fetchAllergyAndDiseaseOptions = async () => {
     if (!clinicId) return;
