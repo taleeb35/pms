@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +86,8 @@ interface ICDCode {
 }
 
 const ClinicAppointments = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -477,8 +480,9 @@ const ClinicAppointments = () => {
   };
 
   const openVisitDialog = (appointment: Appointment) => {
-    setVisitAppointment(appointment);
-    setShowVisitDialog(true);
+    // Navigate to appointment detail page instead of dialog
+    const basePath = location.pathname.startsWith("/receptionist") ? "/receptionist" : "/clinic";
+    navigate(`${basePath}/appointments/${appointment.id}`);
   };
 
   const getFilteredAppointments = () => {
