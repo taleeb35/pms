@@ -41,11 +41,32 @@ const specialties = [
     icon: Syringe,
   },
   {
+    name: "Bariatric / Weight Loss Surgeon",
+    slug: "bariatric-weight-loss-surgeon",
+    urdu: "ماہر وزن میں کمی سرجری",
+    description: "Surgeons who perform weight loss surgeries to help patients achieve healthy body weight.",
+    icon: Activity,
+  },
+  {
+    name: "Cancer Surgeon",
+    slug: "cancer-surgeon",
+    urdu: "ماہر سرطان سرجری",
+    description: "Surgeons who specialize in removing tumors and cancerous tissues from the body.",
+    icon: Syringe,
+  },
+  {
     name: "Cardiologist",
     slug: "cardiologist",
     urdu: "ماہر امراض قلب",
     description: "Specialists who diagnose and treat diseases and conditions of the heart and cardiovascular system.",
     icon: Heart,
+  },
+  {
+    name: "Clinical Nutritionist",
+    slug: "clinical-nutritionist",
+    urdu: "ماہر غذائیت",
+    description: "Experts who provide dietary guidance and nutrition therapy for health and disease management.",
+    icon: Pill,
   },
   {
     name: "Dentist",
@@ -74,6 +95,13 @@ const specialties = [
     urdu: "ماہر کان ناک گلا",
     description: "Specialists who diagnose and treat conditions related to the ear, nose, and throat.",
     icon: Wind,
+  },
+  {
+    name: "Eye Surgeon",
+    slug: "eye-surgeon",
+    urdu: "ماہر آنکھوں کی سرجری",
+    description: "Surgeons who perform surgical procedures to treat eye diseases and improve vision.",
+    icon: Eye,
   },
   {
     name: "Gastroenterologist",
