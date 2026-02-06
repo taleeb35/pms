@@ -1018,6 +1018,21 @@ const ClinicPatients = () => {
             </div>
 
             <div className="space-y-2">
+              <Label>Filter by Trimester</Label>
+              <Select value={trimesterFilter} onValueChange={setTrimesterFilter}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="All Trimesters" />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  <SelectItem value="all">All Trimesters</SelectItem>
+                  <SelectItem value="1">1st Trimester (Week 1-12)</SelectItem>
+                  <SelectItem value="2">2nd Trimester (Week 13-26)</SelectItem>
+                  <SelectItem value="3">3rd Trimester (Week 27+)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label>Filter by Gender</Label>
               <Select value={selectedGender} onValueChange={setSelectedGender}>
                 <SelectTrigger className="bg-background">
