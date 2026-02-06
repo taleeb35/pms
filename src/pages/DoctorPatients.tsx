@@ -21,7 +21,7 @@ import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
-import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/pregnancyUtils";
+import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 import { TablePagination } from "@/components/TablePagination";
@@ -141,6 +141,7 @@ const DoctorPatients = () => {
   const [filterGender, setFilterGender] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterDelivery, setFilterDelivery] = useState("");
+  const [filterTrimester, setFilterTrimester] = useState("");
   const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
   const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
   const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
@@ -264,7 +265,7 @@ const DoctorPatients = () => {
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, searchTerm]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, filterTrimester, searchTerm]);
   
   // Reset to page 1 when search term changes
   useEffect(() => {
@@ -379,6 +380,15 @@ const DoctorPatients = () => {
           if (filterDelivery === "60") return daysUntilDelivery >= 0 && daysUntilDelivery <= 60;
           if (filterDelivery === "90") return daysUntilDelivery >= 0 && daysUntilDelivery <= 90;
           return true;
+        });
+      }
+
+      // Apply trimester filter for gynecologists
+      if (filterTrimester && filterTrimester !== "all") {
+        filteredData = filteredData.filter(patient => {
+          if (!patient.pregnancy_start_date) return false;
+          const trimester = getTrimester(patient.pregnancy_start_date);
+          return trimester === parseInt(filterTrimester);
         });
       }
 
@@ -1014,19 +1024,32 @@ const DoctorPatients = () => {
                 showAllOption={true}
               />
               {isGynecologist && (
-                <Select value={filterDelivery} onValueChange={setFilterDelivery}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Delivery Due" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Patients</SelectItem>
-                    <SelectItem value="7">Delivery in 7 days</SelectItem>
-                    <SelectItem value="14">Delivery in 14 days</SelectItem>
-                    <SelectItem value="30">Delivery in 30 days</SelectItem>
-                    <SelectItem value="60">Delivery in 2 months</SelectItem>
-                    <SelectItem value="90">Delivery in 3 months</SelectItem>
-                  </SelectContent>
-                </Select>
+                <>
+                  <Select value={filterTrimester} onValueChange={setFilterTrimester}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Trimester" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Trimesters</SelectItem>
+                      <SelectItem value="1">1st Trimester (Week 1-12)</SelectItem>
+                      <SelectItem value="2">2nd Trimester (Week 13-26)</SelectItem>
+                      <SelectItem value="3">3rd Trimester (Week 27+)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={filterDelivery} onValueChange={setFilterDelivery}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Delivery Due" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Patients</SelectItem>
+                      <SelectItem value="7">Delivery in 7 days</SelectItem>
+                      <SelectItem value="14">Delivery in 14 days</SelectItem>
+                      <SelectItem value="30">Delivery in 30 days</SelectItem>
+                      <SelectItem value="60">Delivery in 2 months</SelectItem>
+                      <SelectItem value="90">Delivery in 3 months</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </>
               )}
               <div className="flex gap-2 items-center">
                 <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>

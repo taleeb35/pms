@@ -31,6 +31,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format, subMonths, startOfDay, endOfDay } from "date-fns";
 import { cn } from "@/lib/utils";
+import { getTrimester } from "@/lib/pregnancyUtils";
 import { CitySelect } from "@/components/CitySelect";
 import { 
   validateName, 
@@ -67,6 +68,7 @@ interface Patient {
   medical_history: string | null;
   created_by: string | null;
   created_at: string;
+  pregnancy_start_date: string | null;
 }
 
 interface Doctor {
@@ -105,6 +107,7 @@ const ClinicPatients = () => {
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
   const [ageFilter, setAgeFilter] = useState<string>("all");
+  const [trimesterFilter, setTrimesterFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
   const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
@@ -232,7 +235,7 @@ const ClinicPatients = () => {
     if (doctorIds.length > 0) {
       fetchPatients();
     }
-  }, [doctorIds, currentPage, pageSize, searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, filterAddedDateFrom, filterAddedDateTo]);
+  }, [doctorIds, currentPage, pageSize, searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, trimesterFilter, filterAddedDateFrom, filterAddedDateTo]);
 
   const fetchAllergyAndDiseaseOptions = async () => {
     if (!clinicId) return;
@@ -344,6 +347,15 @@ const ClinicPatients = () => {
         });
       }
 
+      // Client-side trimester filter
+      if (trimesterFilter !== "all") {
+        filteredData = filteredData.filter(p => {
+          if (!p.pregnancy_start_date) return false;
+          const trimester = getTrimester(p.pregnancy_start_date);
+          return trimester === parseInt(trimesterFilter);
+        });
+      }
+
       setPatients(filteredData);
       setTotalCount(count || 0);
     } catch (error: any) {
@@ -404,7 +416,7 @@ const ClinicPatients = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, pageSize, filterAddedDateFrom, filterAddedDateTo]);
+  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, trimesterFilter, pageSize, filterAddedDateFrom, filterAddedDateTo]);
 
   const getDoctorName = (doctorId: string | null) => {
     if (!doctorId) return "Unknown";
@@ -1001,6 +1013,21 @@ const ClinicPatients = () => {
                   <SelectItem value="19-35">19-35 years</SelectItem>
                   <SelectItem value="36-50">36-50 years</SelectItem>
                   <SelectItem value="51+">51+ years</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Filter by Trimester</Label>
+              <Select value={trimesterFilter} onValueChange={setTrimesterFilter}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="All Trimesters" />
+                </SelectTrigger>
+                <SelectContent className="bg-background z-50">
+                  <SelectItem value="all">All Trimesters</SelectItem>
+                  <SelectItem value="1">1st Trimester (Week 1-12)</SelectItem>
+                  <SelectItem value="2">2nd Trimester (Week 13-26)</SelectItem>
+                  <SelectItem value="3">3rd Trimester (Week 27+)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
