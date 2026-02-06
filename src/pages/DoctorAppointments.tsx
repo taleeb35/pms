@@ -518,9 +518,10 @@ const DoctorAppointments = () => {
     setShowEditDialog(true);
   };
 
-  const openVisitDialog = (appointment: Appointment) => {
-    setVisitAppointment(appointment);
-    setShowVisitDialog(true);
+  const navigate = useNavigate();
+
+  const openVisitPage = (appointment: Appointment) => {
+    navigate(`/doctor/appointments/${appointment.id}`);
   };
 
   const openPrintReportDialog = (appointment: Appointment) => {
