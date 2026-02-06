@@ -493,6 +493,14 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/appointments/:id"
+              element={
+                <Layout>
+                  <ClinicAppointmentDetail />
+                </Layout>
+              }
+            />
+            <Route
               path="/clinic/walk-in"
               element={
                 <Layout>
