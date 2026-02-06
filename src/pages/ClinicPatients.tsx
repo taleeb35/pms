@@ -416,7 +416,7 @@ const ClinicPatients = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, pageSize, filterAddedDateFrom, filterAddedDateTo]);
+  }, [searchTerm, selectedDoctor, selectedGender, selectedCity, ageFilter, trimesterFilter, pageSize, filterAddedDateFrom, filterAddedDateTo]);
 
   const getDoctorName = (doctorId: string | null) => {
     if (!doctorId) return "Unknown";
