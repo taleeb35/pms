@@ -420,7 +420,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const handleStatusChange = async (newStatus: string) => {
+  const handleStatusChange = async (newStatus: "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled" | "no_show") => {
     if (!appointment) return;
     
     try {
