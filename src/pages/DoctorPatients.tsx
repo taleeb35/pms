@@ -201,6 +201,14 @@ const DoctorPatients = () => {
   const [editSelectedDiseases, setEditSelectedDiseases] = useState<string[]>([]);
   const [addFormErrors, setAddFormErrors] = useState<Record<string, string>>({});
   const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
+  // Appointment creation states
+  const [isAppointmentDialogOpen, setIsAppointmentDialogOpen] = useState(false);
+  const [appointmentPatient, setAppointmentPatient] = useState<Patient | null>(null);
+  const [appointmentDate, setAppointmentDate] = useState<Date>();
+  const [appointmentDatePopoverOpen, setAppointmentDatePopoverOpen] = useState(false);
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [appointmentType, setAppointmentType] = useState("new");
+  const [appointmentIsOnLeave, setAppointmentIsOnLeave] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
