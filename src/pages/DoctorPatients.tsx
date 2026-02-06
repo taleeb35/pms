@@ -1210,11 +1210,9 @@ const DoctorPatients = () => {
                 <TableRow>
                   <TableHead>Patient ID</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Gender</TableHead>
                   <TableHead>Age</TableHead>
-                  <TableHead>Blood Group</TableHead>
                   <TableHead>Added Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -1222,7 +1220,7 @@ const DoctorPatients = () => {
               <TableBody>
                 {filteredPatients.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground">
                       No patients found
                     </TableCell>
                   </TableRow>
@@ -1248,11 +1246,9 @@ const DoctorPatients = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>{patient.email || "N/A"}</TableCell>
                         <TableCell>{patient.phone}</TableCell>
                         <TableCell className="capitalize">{patient.gender}</TableCell>
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
-                        <TableCell>{patient.blood_group || "N/A"}</TableCell>
                         <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -1270,7 +1266,7 @@ const DoctorPatients = () => {
                       </TableRow>
                       {selectedPatient?.id === patient.id && (
                         <TableRow>
-                          <TableCell colSpan={9} className="p-0">
+                          <TableCell colSpan={7} className="p-0">
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
