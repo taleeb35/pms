@@ -579,18 +579,45 @@ const Layout = ({ children }: LayoutProps) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
                 return (
-                  <Link key={item.path} to={item.path}>
+                  <Link key={item.path} to={item.path} title={sidebarCollapsed ? item.label : undefined}>
                     <Button
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start transition-all ${
+                      className={`w-full transition-all ${
+                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                      } ${
                         isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Icon className="mr-2 h-4 w-4" />
-                      {item.label}
+                      <Icon className={sidebarCollapsed ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                      {!sidebarCollapsed && item.label}
                     </Button>
                   </Link>
+                );
+              }
+
+              // When collapsed, show only the group icon with active indicator
+              if (sidebarCollapsed) {
+                return (
+                  <div key={group.label} className="space-y-1">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.path;
+                      return (
+                        <Link key={item.path} to={item.path} title={item.label}>
+                          <Button
+                            variant={isActive ? "default" : "ghost"}
+                            className={`w-full justify-center px-2 transition-all ${
+                              isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                            }`}
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Icon className="h-5 w-5" />
+                          </Button>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 );
               }
 
