@@ -175,10 +175,12 @@ const DoctorAppointmentDetail = () => {
       if (error) throw error;
       setAppointment(data);
       
+      // First check for existing record to know if we should set default consultation fee
+      const existingRecordResult = await fetchExistingRecord(data.id);
+      
       // Fetch related data
       await Promise.all([
-        checkDoctorSpecialization(data.doctor_id),
-        fetchExistingRecord(data.id),
+        checkDoctorSpecialization(data.doctor_id, !!existingRecordResult),
         fetchPatientPregnancyDate(data.patient_id),
         fetchDiseaseTemplates(data.doctor_id),
         fetchTestTemplates(data.doctor_id),
