@@ -278,12 +278,12 @@ const DoctorPatients = () => {
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, filterTrimester, searchTerm]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, filterTrimester, searchTerm, sortColumn, sortDirection]);
   
-  // Reset to page 1 when search term changes
+  // Reset to page 1 when search term or sort changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, sortColumn, sortDirection]);
 
   const fetchWaitlistPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -329,8 +329,36 @@ const DoctorPatients = () => {
       let query = supabase
         .from("patients")
         .select("*", { count: "exact" })
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+        .eq("created_by", user.id);
+
+      // Apply sorting - map column names to database columns
+      if (sortColumn) {
+        let dbColumn: string;
+        let ascending = sortDirection === "asc";
+        
+        switch (sortColumn) {
+          case "name":
+            dbColumn = "full_name";
+            break;
+          case "gender":
+            dbColumn = "gender";
+            break;
+          case "age":
+            // For age, we sort by date_of_birth in reverse (older DOB = older age)
+            dbColumn = "date_of_birth";
+            ascending = sortDirection === "desc"; // Reverse because older DOB = older age
+            break;
+          case "added_date":
+            dbColumn = "created_at";
+            break;
+          default:
+            dbColumn = "created_at";
+        }
+        query = query.order(dbColumn, { ascending });
+      } else {
+        // Default sorting by created_at descending
+        query = query.order("created_at", { ascending: false });
+      }
 
       // Add search filter if search term exists
       if (searchTerm.trim()) {
@@ -446,33 +474,6 @@ const DoctorPatients = () => {
       ? <ArrowUp className="ml-1 h-4 w-4" /> 
       : <ArrowDown className="ml-1 h-4 w-4" />;
   };
-
-  // Sort patients
-  const sortedPatients = [...patients].sort((a, b) => {
-    if (!sortColumn) return 0;
-    
-    let comparison = 0;
-    
-    switch (sortColumn) {
-      case "name":
-        comparison = a.full_name.localeCompare(b.full_name);
-        break;
-      case "gender":
-        comparison = a.gender.localeCompare(b.gender);
-        break;
-      case "age": {
-        const ageA = differenceInYears(new Date(), new Date(a.date_of_birth));
-        const ageB = differenceInYears(new Date(), new Date(b.date_of_birth));
-        comparison = ageA - ageB;
-        break;
-      }
-      case "added_date":
-        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        break;
-    }
-    
-    return sortDirection === "asc" ? comparison : -comparison;
-  });
 
   const fetchMedicalHistory = (patient: Patient) => {
     try {
@@ -1014,8 +1015,8 @@ const DoctorPatients = () => {
     return age;
   };
 
-  // Apply sorting to patients
-  const filteredPatients = sortedPatients;
+  // Sorting is now done server-side, use patients directly
+  const filteredPatients = patients;
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
