@@ -329,7 +329,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const fetchExistingRecord = async (appointmentId: string) => {
+  const fetchExistingRecord = async (appointmentId: string): Promise<boolean> => {
     const { data, error } = await supabase
       .from("visit_records")
       .select("*")
@@ -338,7 +338,7 @@ const DoctorAppointmentDetail = () => {
 
     if (error && error.code !== 'PGRST116') {
       console.error("Error fetching visit record:", error);
-      return;
+      return false;
     }
 
     if (data) {
