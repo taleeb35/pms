@@ -540,7 +540,9 @@ const Layout = ({ children }: LayoutProps) => {
             userRole === 'doctor' ? 'doctor-sidebar' : ''
           } ${
             userRole === 'clinic' ? 'clinic-sidebar' : ''
-          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border dr_side md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
+          } ${
+            sidebarCollapsed ? 'md:w-16' : 'md:w-64'
+          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:flex-shrink-0 md:rounded-lg md:border dr_side md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)] transition-all duration-300`}
         >
           <nav className="space-y-1 p-3">
             {/* Dashboard item (at top) */}
@@ -548,16 +550,18 @@ const Layout = ({ children }: LayoutProps) => {
               const Icon = dashboardItem.icon;
               const isActive = location.pathname === dashboardItem.path;
               return (
-                <Link to={dashboardItem.path}>
+                <Link to={dashboardItem.path} title={sidebarCollapsed ? dashboardItem.label : undefined}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
-                    className={`w-full justify-start transition-all ${
+                    className={`w-full transition-all ${
+                      sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                    } ${
                       isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {dashboardItem.label}
+                    <Icon className={sidebarCollapsed ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                    {!sidebarCollapsed && dashboardItem.label}
                   </Button>
                 </Link>
               );
