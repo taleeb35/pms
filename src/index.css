@@ -26,8 +26,8 @@ All colors MUST be HSL.
     --muted: 220 14% 96%;
     --muted-foreground: 0 0% 35%;
 
-    --accent: 220 14% 96%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 231 48% 48%;
+    --accent-foreground: 0 0% 100%;
 
     /* Hover state colors for proper contrast */
     --hover: 231 48% 48%;

@@ -569,7 +569,7 @@ const Layout = ({ children }: LayoutProps) => {
                     className={`w-full transition-all ${
                       sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
                     } ${
-                      isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                      isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -598,7 +598,7 @@ const Layout = ({ children }: LayoutProps) => {
                       className={`w-full transition-all ${
                         sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
                       } ${
-                        isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                        isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
@@ -621,7 +621,7 @@ const Layout = ({ children }: LayoutProps) => {
                           <Button
                             variant={isActive ? "default" : "ghost"}
                             className={`w-full justify-center px-2 transition-all ${
-                              isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                              isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                           >
@@ -639,10 +639,10 @@ const Layout = ({ children }: LayoutProps) => {
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-between text-foreground hover:bg-accent ${
+                      className={`w-full justify-between text-foreground hover:bg-primary hover:text-white ${
                         hasActiveItem
                           ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary"
-                          : "hover:text-foreground"
+                          : ""
                       }`}
                     >
                       <span className="flex items-center">
@@ -666,7 +666,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant={isActive ? "default" : "ghost"}
                             size="sm"
                             className={`w-full justify-start text-sm transition-all ${
-                              isActive ? "shadow-sm" : "hover:bg-accent hover:shadow-sm"
+                              isActive ? "shadow-sm" : "hover:bg-primary hover:text-white hover:shadow-sm"
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                           >
@@ -693,7 +693,7 @@ const Layout = ({ children }: LayoutProps) => {
                       className={`w-full transition-all ${
                         sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
                       } ${
-                        isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                        isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >

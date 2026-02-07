@@ -110,6 +110,7 @@ export const MultiSelectSearchable = ({
                     key={option.value}
                     value={option.label}
                     onSelect={() => handleSelect(option.value)}
+                    className="hover:bg-primary hover:text-white data-[selected=true]:bg-primary data-[selected=true]:text-white"
                   >
                     {option.label}
                     <Check
