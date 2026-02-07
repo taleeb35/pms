@@ -1052,6 +1052,9 @@ const DoctorAppointmentDetail = () => {
               </CardContent>
             </Card>
 
+            {/* Visit History - Moved below Contact Information */}
+            <VisitHistory patientId={appointment.patient_id} />
+
             {/* Pregnancy Tracking - For Gynecologists */}
             {isGynecologist && (
               <Card className="bg-primary/5 border-primary/20">
