@@ -488,7 +488,7 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Enhanced Header with Logo and Graphics */}
       <header className="dr sticky top-0 z-50 w-full border-b bg-gradient-to-r from-card via-card/95 to-primary/5 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -496,6 +496,16 @@ const Layout = ({ children }: LayoutProps) => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X /> : <Menu />}
+            </Button>
+            {/* Sidebar toggle button for desktop */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:flex"
+              onClick={toggleSidebar}
+              title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
+            >
+              {sidebarCollapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
             </Button>
             <div className="flex items-center gap-3">
               <div className="relative">
