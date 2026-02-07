@@ -666,7 +666,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant={isActive ? "default" : "ghost"}
                             size="sm"
                             className={`w-full justify-start text-sm transition-all ${
-                              isActive ? "shadow-sm" : "hover:bg-accent hover:shadow-sm"
+                              isActive ? "shadow-sm" : "hover:bg-primary hover:text-white hover:shadow-sm"
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                           >
