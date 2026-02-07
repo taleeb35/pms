@@ -474,6 +474,7 @@ const DoctorPatients = () => {
     return sortDirection === "asc" ? comparison : -comparison;
   });
 
+  const fetchMedicalHistory = (patient: Patient) => {
     try {
       const history = patient.medical_history 
         ? JSON.parse(patient.medical_history) 
