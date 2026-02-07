@@ -329,8 +329,36 @@ const DoctorPatients = () => {
       let query = supabase
         .from("patients")
         .select("*", { count: "exact" })
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false });
+        .eq("created_by", user.id);
+
+      // Apply sorting - map column names to database columns
+      if (sortColumn) {
+        let dbColumn: string;
+        let ascending = sortDirection === "asc";
+        
+        switch (sortColumn) {
+          case "name":
+            dbColumn = "full_name";
+            break;
+          case "gender":
+            dbColumn = "gender";
+            break;
+          case "age":
+            // For age, we sort by date_of_birth in reverse (older DOB = older age)
+            dbColumn = "date_of_birth";
+            ascending = sortDirection === "desc"; // Reverse because older DOB = older age
+            break;
+          case "added_date":
+            dbColumn = "created_at";
+            break;
+          default:
+            dbColumn = "created_at";
+        }
+        query = query.order(dbColumn, { ascending });
+      } else {
+        // Default sorting by created_at descending
+        query = query.order("created_at", { ascending: false });
+      }
 
       // Add search filter if search term exists
       if (searchTerm.trim()) {
