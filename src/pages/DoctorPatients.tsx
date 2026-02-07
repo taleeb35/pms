@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet, CalendarPlus } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet, CalendarPlus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import PatientImportExport from "@/components/PatientImportExport";
 import { VisitHistory } from "@/components/VisitHistory";
 import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
