@@ -152,7 +152,8 @@ const DoctorTimeSelect = ({
             <div className="p-1">
               {filteredTimeSlots.length === 0 ? (
                 <div className="py-6 text-center text-sm text-muted-foreground">
-                  {timeSlots.length === 0 ? "No available time slots" : "No time found"}
+                  {!doctorId || !selectedDate ? "Please select a date first" : 
+                   timeSlots.length === 0 ? "No available time slots for this day" : "No time found"}
                 </div>
               ) : (
                 filteredTimeSlots.map((slot) => (
