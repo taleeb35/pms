@@ -278,12 +278,12 @@ const DoctorPatients = () => {
   useEffect(() => {
     fetchPatients();
     fetchWaitlistPatients();
-  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, filterTrimester, searchTerm]);
+  }, [currentPage, pageSize, filterAge, filterGender, filterCity, filterDelivery, filterTrimester, searchTerm, sortColumn, sortDirection]);
   
-  // Reset to page 1 when search term changes
+  // Reset to page 1 when search term or sort changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, sortColumn, sortDirection]);
 
   const fetchWaitlistPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
