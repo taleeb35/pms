@@ -11,23 +11,14 @@ import {
   Edit,
   Search,
   Trash2,
-  MoreVertical,
   FileText,
   Play,
   CheckCircle,
   XCircle,
   Printer,
-  Loader2,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/TableSkeleton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +28,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -780,25 +770,28 @@ const DoctorAppointments = () => {
                     <TableHead>Date & Time</TableHead>
                     <TableHead>Created By</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
                     <TableSkeleton
-                      columns={isGynecologist ? 7 : 6}
+                      columns={isGynecologist ? 6 : 5}
                       rows={5}
-                      columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]", "w-[80px]"]}
+                      columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
                     />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={isGynecologist ? 6 : 5} className="text-center text-muted-foreground py-8">
                         No appointments scheduled
                       </TableCell>
                     </TableRow>
                   ) : (
                     paginatedAppointments.map((apt) => (
-                      <TableRow key={apt.id} className="hover:bg-accent/50">
+                      <TableRow 
+                        key={apt.id} 
+                        className="hover:bg-accent/50 cursor-pointer transition-colors"
+                        onClick={() => openVisitPage(apt)}
+                      >
                         <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                         <TableCell>{apt.patients?.phone || "-"}</TableCell>
                         {isGynecologist && (
@@ -819,86 +812,6 @@ const DoctorAppointments = () => {
                         </TableCell>
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                         <TableCell>{getStatusBadge(apt.status)}</TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="bg-background z-50">
-                              <DropdownMenuItem onClick={() => openEditDialog(apt)}>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit Appointment
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => openVisitPage(apt)}>
-                                <FileText className="h-4 w-4 mr-2" />
-                                Record Visit
-                              </DropdownMenuItem>
-                              {apt.status === "completed" && (
-                                <DropdownMenuItem onClick={() => openPrintReportDialog(apt)}>
-                                  <Printer className="h-4 w-4 mr-2" />
-                                  Print Report
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuSeparator />
-                              {apt.status === "scheduled" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
-                                  <Check className="h-4 w-4 mr-2" />
-                                  Confirm
-                                </DropdownMenuItem>
-                              )}
-                              {apt.status === "confirmed" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "in_progress")}>
-                                  <Play className="h-4 w-4 mr-2" />
-                                  Start
-                                </DropdownMenuItem>
-                              )}
-                              {apt.status === "in_progress" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "completed")}>
-                                  <CheckCircle className="h-4 w-4 mr-2" />
-                                  Complete
-                                </DropdownMenuItem>
-                              )}
-                              {(apt.status === "scheduled" || apt.status === "confirmed") && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "cancelled")}>
-                                  <XCircle className="h-4 w-4 mr-2" />
-                                  Cancel
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuSeparator />
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <DropdownMenuItem
-                                    onSelect={(e) => e.preventDefault()}
-                                    className="text-destructive focus:text-destructive"
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Are you sure you want to delete this appointment for{" "}
-                                      {apt.patients?.full_name || "this patient"}? This action cannot be undone.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDeleteAppointment(apt.id)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
                       </TableRow>
                     ))
                   )}
