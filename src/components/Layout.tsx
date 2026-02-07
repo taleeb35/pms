@@ -639,10 +639,10 @@ const Layout = ({ children }: LayoutProps) => {
                   <CollapsibleTrigger asChild>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-between text-foreground hover:bg-accent ${
+                      className={`w-full justify-between text-foreground hover:bg-primary hover:text-white ${
                         hasActiveItem
                           ? "bg-primary/15 text-primary font-semibold border-l-2 border-primary"
-                          : "hover:text-foreground"
+                          : ""
                       }`}
                     >
                       <span className="flex items-center">
