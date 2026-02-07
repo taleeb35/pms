@@ -383,7 +383,9 @@ const DoctorAppointmentDetail = () => {
       if (data.next_visit_date) {
         setNextVisitDate(new Date(data.next_visit_date));
       }
+      return true;
     }
+    return false;
   };
 
   const calculateAge = (dob: string) => {
