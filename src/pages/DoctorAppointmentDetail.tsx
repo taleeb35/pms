@@ -192,7 +192,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const checkDoctorSpecialization = async (doctorId: string) => {
+  const checkDoctorSpecialization = async (doctorId: string, hasExistingRecord: boolean = false) => {
     try {
       const { data, error } = await supabase
         .from("doctors")
@@ -205,6 +205,11 @@ const DoctorAppointmentDetail = () => {
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
       setIsOphthalmologist(spec.includes("ophthalmologist"));
+
+      // Set default consultation fee from doctor's profile if no existing record
+      if (!hasExistingRecord && data?.consultation_fee) {
+        setFormData(prev => ({ ...prev, consultation_fee: data.consultation_fee.toString() }));
+      }
 
       // Fetch procedures
       fetchProcedures(doctorId);
