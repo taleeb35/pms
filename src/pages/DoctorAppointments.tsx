@@ -312,7 +312,7 @@ const DoctorAppointments = () => {
           patient_id: patientId,
           appointment_date: appointmentDate,
           appointment_time: appointmentTime,
-          duration_minutes: parseInt(formData.get("duration_minutes") as string),
+          duration_minutes: 30, // Default duration
           reason: (formData.get("reason") as string) || null,
           notes: (formData.get("notes") as string) || null,
           status: "scheduled" as const,
@@ -405,7 +405,7 @@ const DoctorAppointments = () => {
           patient_id: formData.get("patient_id") as string,
           appointment_date: appointmentDate,
           appointment_time: appointmentTime,
-          duration_minutes: parseInt(formData.get("duration_minutes") as string),
+          duration_minutes: 30, // Default duration
           reason: (formData.get("reason") as string) || null,
           notes: (formData.get("notes") as string) || null,
         })
@@ -665,32 +665,18 @@ const DoctorAppointments = () => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="duration_minutes">Duration (minutes)</Label>
-                  <Input
-                    id="duration_minutes"
-                    name="duration_minutes"
-                    type="number"
-                    defaultValue={30}
-                    min={15}
-                    step={15}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Appointment Type</Label>
-                  <Select value={selectedAppointmentType} onValueChange={setSelectedAppointmentType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="follow_up">Follow Up</SelectItem>
-                      <SelectItem value="report_check">Report Check</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="space-y-2">
+                <Label>Appointment Type</Label>
+                <Select value={selectedAppointmentType} onValueChange={setSelectedAppointmentType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New</SelectItem>
+                    <SelectItem value="follow_up">Follow Up</SelectItem>
+                    <SelectItem value="report_check">Report Check</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="reason">Reason for Visit</Label>
@@ -1008,18 +994,6 @@ const DoctorAppointments = () => {
                     required
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit_duration_minutes">Duration (minutes)</Label>
-                <Input
-                  id="edit_duration_minutes"
-                  name="duration_minutes"
-                  type="number"
-                  defaultValue={editingAppointment.duration_minutes || 30}
-                  min={15}
-                  step={15}
-                  required
-                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="edit_reason">Reason for Visit</Label>

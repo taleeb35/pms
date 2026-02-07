@@ -39,18 +39,9 @@ const DoctorTimeSelect = ({
 
   useEffect(() => {
     const fetchTimeSlots = async () => {
+      // Don't show any slots until both doctor and date are selected
       if (!doctorId || !selectedDate) {
-        // Generate default slots if no doctor/date selected
-        const defaultSlots = Array.from({ length: 48 }, (_, i) => {
-          const hours = Math.floor(i / 2);
-          const minutes = (i % 2) * 30;
-          const time24 = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-          const period = hours >= 12 ? 'PM' : 'AM';
-          const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-          const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-          return { value: time24, label: time12 };
-        });
-        setTimeSlots(defaultSlots);
+        setTimeSlots([]);
         setIsUnavailable(false);
         setUnavailableReason(null);
         onLeaveStatusChange?.(false);
@@ -112,7 +103,7 @@ const DoctorTimeSelect = ({
     setSearchQuery("");
   };
 
-  const isDisabled = disabled || loading || (isUnavailable && timeSlots.length === 0);
+  const isDisabled = disabled || loading || !doctorId || !selectedDate || (isUnavailable && timeSlots.length === 0);
 
   return (
     <>
@@ -138,7 +129,10 @@ const DoctorTimeSelect = ({
               ) : (
                 <Clock className="h-4 w-4" />
               )}
-              {loading ? "Loading..." : (isUnavailable && timeSlots.length === 0) ? (unavailableReason || "Doctor not available") : (selectedLabel || placeholder)}
+              {loading ? "Loading..." : 
+                (!doctorId || !selectedDate) ? "Select date first" :
+                (isUnavailable && timeSlots.length === 0) ? (unavailableReason || "Doctor not available") : 
+                (selectedLabel || placeholder)}
             </div>
           </Button>
         </PopoverTrigger>
@@ -158,7 +152,8 @@ const DoctorTimeSelect = ({
             <div className="p-1">
               {filteredTimeSlots.length === 0 ? (
                 <div className="py-6 text-center text-sm text-muted-foreground">
-                  {timeSlots.length === 0 ? "No available time slots" : "No time found"}
+                  {!doctorId || !selectedDate ? "Please select a date first" : 
+                   timeSlots.length === 0 ? "No available time slots for this day" : "No time found"}
                 </div>
               ) : (
                 filteredTimeSlots.map((slot) => (

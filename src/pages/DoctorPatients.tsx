@@ -1018,7 +1018,7 @@ const DoctorPatients = () => {
           patient_id: appointmentPatient.id,
           appointment_date: appointmentDateStr,
           appointment_time: appointmentTime,
-          duration_minutes: parseInt(formData.get("duration_minutes") as string) || 30,
+          duration_minutes: 30, // Default duration
           reason: (formData.get("reason") as string) || null,
           notes: (formData.get("notes") as string) || null,
           status: "scheduled" as const,
@@ -2389,32 +2389,18 @@ const DoctorPatients = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="duration_minutes">Duration (minutes)</Label>
-                <Input
-                  id="duration_minutes"
-                  name="duration_minutes"
-                  type="number"
-                  defaultValue={30}
-                  min={15}
-                  step={15}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Appointment Type</Label>
-                <Select value={appointmentType} onValueChange={setAppointmentType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="new">New</SelectItem>
-                    <SelectItem value="follow_up">Follow Up</SelectItem>
-                    <SelectItem value="report_check">Report Check</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label>Appointment Type</Label>
+              <Select value={appointmentType} onValueChange={setAppointmentType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="follow_up">Follow Up</SelectItem>
+                  <SelectItem value="report_check">Report Check</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Reason for Visit</Label>
