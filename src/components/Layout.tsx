@@ -674,16 +674,18 @@ const Layout = ({ children }: LayoutProps) => {
                 const Icon = activityLogsItem.icon;
                 const isActive = location.pathname === activityLogsItem.path;
                 return (
-                  <Link to={activityLogsItem.path}>
+                  <Link to={activityLogsItem.path} title={sidebarCollapsed ? activityLogsItem.label : undefined}>
                     <Button
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start transition-all ${
+                      className={`w-full transition-all ${
+                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                      } ${
                         isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Icon className="mr-2 h-4 w-4" />
-                      {activityLogsItem.label}
+                      <Icon className={sidebarCollapsed ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                      {!sidebarCollapsed && activityLogsItem.label}
                     </Button>
                   </Link>
                 );
