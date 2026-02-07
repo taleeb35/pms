@@ -1014,8 +1014,8 @@ const DoctorPatients = () => {
     return age;
   };
 
-  // Search is now server-side, so we just use patients directly
-  const filteredPatients = patients;
+  // Apply sorting to patients
+  const filteredPatients = sortedPatients;
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
