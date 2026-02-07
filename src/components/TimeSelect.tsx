@@ -109,10 +109,10 @@ const TimeSelect = ({
                     key={slot.value}
                     type="button"
                     onClick={() => handleSelect(slot.value)}
-                    className={cn(
-                      "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-accent-foreground transition-colors",
-                      value === slot.value && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
-                    )}
+                  className={cn(
+                    "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-primary hover:text-primary-foreground transition-colors",
+                    value === slot.value && "bg-primary text-primary-foreground"
+                  )}
                   >
                     <span className="font-medium">{slot.value}</span>
                     <span className="ml-2 text-muted-foreground">({slot.label})</span>
