@@ -129,7 +129,10 @@ const DoctorTimeSelect = ({
               ) : (
                 <Clock className="h-4 w-4" />
               )}
-              {loading ? "Loading..." : (isUnavailable && timeSlots.length === 0) ? (unavailableReason || "Doctor not available") : (selectedLabel || placeholder)}
+              {loading ? "Loading..." : 
+                (!doctorId || !selectedDate) ? "Select date first" :
+                (isUnavailable && timeSlots.length === 0) ? (unavailableReason || "Doctor not available") : 
+                (selectedLabel || placeholder)}
             </div>
           </Button>
         </PopoverTrigger>
