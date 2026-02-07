@@ -175,10 +175,12 @@ const DoctorAppointmentDetail = () => {
       if (error) throw error;
       setAppointment(data);
       
+      // First check for existing record to know if we should set default consultation fee
+      const existingRecordResult = await fetchExistingRecord(data.id);
+      
       // Fetch related data
       await Promise.all([
-        checkDoctorSpecialization(data.doctor_id),
-        fetchExistingRecord(data.id),
+        checkDoctorSpecialization(data.doctor_id, !!existingRecordResult),
         fetchPatientPregnancyDate(data.patient_id),
         fetchDiseaseTemplates(data.doctor_id),
         fetchTestTemplates(data.doctor_id),
@@ -192,7 +194,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const checkDoctorSpecialization = async (doctorId: string) => {
+  const checkDoctorSpecialization = async (doctorId: string, hasExistingRecord: boolean = false) => {
     try {
       const { data, error } = await supabase
         .from("doctors")
@@ -205,6 +207,11 @@ const DoctorAppointmentDetail = () => {
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
       setIsOphthalmologist(spec.includes("ophthalmologist"));
+
+      // Set default consultation fee from doctor's profile if no existing record
+      if (!hasExistingRecord && data?.consultation_fee) {
+        setFormData(prev => ({ ...prev, consultation_fee: data.consultation_fee.toString() }));
+      }
 
       // Fetch procedures
       fetchProcedures(doctorId);
@@ -322,7 +329,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const fetchExistingRecord = async (appointmentId: string) => {
+  const fetchExistingRecord = async (appointmentId: string): Promise<boolean> => {
     const { data, error } = await supabase
       .from("visit_records")
       .select("*")
@@ -331,7 +338,7 @@ const DoctorAppointmentDetail = () => {
 
     if (error && error.code !== 'PGRST116') {
       console.error("Error fetching visit record:", error);
-      return;
+      return false;
     }
 
     if (data) {
@@ -376,7 +383,9 @@ const DoctorAppointmentDetail = () => {
       if (data.next_visit_date) {
         setNextVisitDate(new Date(data.next_visit_date));
       }
+      return true;
     }
+    return false;
   };
 
   const calculateAge = (dob: string) => {
@@ -1043,6 +1052,9 @@ const DoctorAppointmentDetail = () => {
               </CardContent>
             </Card>
 
+            {/* Visit History - Moved below Contact Information */}
+            <VisitHistory patientId={appointment.patient_id} />
+
             {/* Pregnancy Tracking - For Gynecologists */}
             {isGynecologist && (
               <Card className="bg-primary/5 border-primary/20">
@@ -1173,9 +1185,6 @@ const DoctorAppointmentDetail = () => {
 
             {/* Medical Documents */}
             <PatientMedicalDocsView patientId={appointment.patient_id} />
-
-            {/* Visit History */}
-            <VisitHistory patientId={appointment.patient_id} />
           </div>
         </div>
       </form>
