@@ -1185,9 +1185,7 @@ const DoctorAppointmentDetail = () => {
 
             {/* Medical Documents */}
             <PatientMedicalDocsView patientId={appointment.patient_id} />
-
-            {/* Visit History */}
-            <VisitHistory patientId={appointment.patient_id} />
+          </div>
           </div>
         </div>
       </form>
