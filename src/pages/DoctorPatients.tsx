@@ -14,7 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet, CalendarPlus } from "lucide-react";
+import { Search, Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, FileSpreadsheet, CalendarPlus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import PatientImportExport from "@/components/PatientImportExport";
 import { VisitHistory } from "@/components/VisitHistory";
 import { format, differenceInYears, subMonths, startOfDay, endOfDay } from "date-fns";
@@ -148,6 +148,9 @@ const DoctorPatients = () => {
   const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
   const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
   const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
+  // Sorting state
+  const [sortColumn, setSortColumn] = useState<"name" | "gender" | "age" | "added_date" | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [editForm, setEditForm] = useState<{
     full_name: string;
     father_name: string;
@@ -423,6 +426,53 @@ const DoctorPatients = () => {
       toast({ title: "Error fetching patients", variant: "destructive" });
     }
   };
+
+  // Sorting handler
+  const handleSort = (column: "name" | "gender" | "age" | "added_date") => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  // Get sort icon
+  const getSortIcon = (column: "name" | "gender" | "age" | "added_date") => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="ml-1 h-4 w-4 text-muted-foreground" />;
+    }
+    return sortDirection === "asc" 
+      ? <ArrowUp className="ml-1 h-4 w-4" /> 
+      : <ArrowDown className="ml-1 h-4 w-4" />;
+  };
+
+  // Sort patients
+  const sortedPatients = [...patients].sort((a, b) => {
+    if (!sortColumn) return 0;
+    
+    let comparison = 0;
+    
+    switch (sortColumn) {
+      case "name":
+        comparison = a.full_name.localeCompare(b.full_name);
+        break;
+      case "gender":
+        comparison = a.gender.localeCompare(b.gender);
+        break;
+      case "age": {
+        const ageA = differenceInYears(new Date(), new Date(a.date_of_birth));
+        const ageB = differenceInYears(new Date(), new Date(b.date_of_birth));
+        comparison = ageA - ageB;
+        break;
+      }
+      case "added_date":
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        break;
+    }
+    
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
 
   const fetchMedicalHistory = (patient: Patient) => {
     try {
@@ -964,8 +1014,8 @@ const DoctorPatients = () => {
     return age;
   };
 
-  // Search is now server-side, so we just use patients directly
-  const filteredPatients = patients;
+  // Apply sorting to patients
+  const filteredPatients = sortedPatients;
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -1164,11 +1214,47 @@ const DoctorPatients = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Patient ID</TableHead>
-                  <TableHead>Name</TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("name")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Name
+                      {getSortIcon("name")}
+                    </button>
+                  </TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead>Gender</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Added Date</TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("gender")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Gender
+                      {getSortIcon("gender")}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("age")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Age
+                      {getSortIcon("age")}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("added_date")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Added Date
+                      {getSortIcon("added_date")}
+                    </button>
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
