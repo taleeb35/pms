@@ -72,6 +72,19 @@ const Layout = ({ children }: LayoutProps) => {
     });
   };
 
+  // Keyboard shortcut to toggle sidebar (Ctrl+B)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "b" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        toggleSidebar();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   useEffect(() => {
     // Prevent double initialization in development mode (React StrictMode)
     if (initRef.current) return;
