@@ -621,7 +621,7 @@ const Layout = ({ children }: LayoutProps) => {
                           <Button
                             variant={isActive ? "default" : "ghost"}
                             className={`w-full justify-center px-2 transition-all ${
-                              isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                              isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                             }`}
                             onClick={() => setMobileMenuOpen(false)}
                           >
