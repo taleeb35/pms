@@ -2391,17 +2391,16 @@ const DoctorPatients = () => {
             </div>
             <div className="space-y-2">
               <Label>Appointment Type</Label>
-                <Select value={appointmentType} onValueChange={setAppointmentType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="new">New</SelectItem>
-                    <SelectItem value="follow_up">Follow Up</SelectItem>
-                    <SelectItem value="report_check">Report Check</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={appointmentType} onValueChange={setAppointmentType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="follow_up">Follow Up</SelectItem>
+                  <SelectItem value="report_check">Report Check</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Reason for Visit</Label>
