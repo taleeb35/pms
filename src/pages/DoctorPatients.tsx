@@ -475,33 +475,6 @@ const DoctorPatients = () => {
       : <ArrowDown className="ml-1 h-4 w-4" />;
   };
 
-  // Sort patients
-  const sortedPatients = [...patients].sort((a, b) => {
-    if (!sortColumn) return 0;
-    
-    let comparison = 0;
-    
-    switch (sortColumn) {
-      case "name":
-        comparison = a.full_name.localeCompare(b.full_name);
-        break;
-      case "gender":
-        comparison = a.gender.localeCompare(b.gender);
-        break;
-      case "age": {
-        const ageA = differenceInYears(new Date(), new Date(a.date_of_birth));
-        const ageB = differenceInYears(new Date(), new Date(b.date_of_birth));
-        comparison = ageA - ageB;
-        break;
-      }
-      case "added_date":
-        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        break;
-    }
-    
-    return sortDirection === "asc" ? comparison : -comparison;
-  });
-
   const fetchMedicalHistory = (patient: Patient) => {
     try {
       const history = patient.medical_history 
