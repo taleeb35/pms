@@ -427,7 +427,53 @@ const DoctorPatients = () => {
     }
   };
 
-  const fetchMedicalHistory = (patient: Patient) => {
+  // Sorting handler
+  const handleSort = (column: "name" | "gender" | "age" | "added_date") => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  // Get sort icon
+  const getSortIcon = (column: "name" | "gender" | "age" | "added_date") => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="ml-1 h-4 w-4 text-muted-foreground" />;
+    }
+    return sortDirection === "asc" 
+      ? <ArrowUp className="ml-1 h-4 w-4" /> 
+      : <ArrowDown className="ml-1 h-4 w-4" />;
+  };
+
+  // Sort patients
+  const sortedPatients = [...patients].sort((a, b) => {
+    if (!sortColumn) return 0;
+    
+    let comparison = 0;
+    
+    switch (sortColumn) {
+      case "name":
+        comparison = a.full_name.localeCompare(b.full_name);
+        break;
+      case "gender":
+        comparison = a.gender.localeCompare(b.gender);
+        break;
+      case "age": {
+        const ageA = differenceInYears(new Date(), new Date(a.date_of_birth));
+        const ageB = differenceInYears(new Date(), new Date(b.date_of_birth));
+        comparison = ageA - ageB;
+        break;
+      }
+      case "added_date":
+        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        break;
+    }
+    
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
+
     try {
       const history = patient.medical_history 
         ? JSON.parse(patient.medical_history) 
