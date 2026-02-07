@@ -31,6 +31,8 @@ import {
   Share2,
   CreditCard,
   Activity,
+  PanelLeftClose,
+  PanelLeft,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -55,6 +57,33 @@ const Layout = ({ children }: LayoutProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const initRef = useRef(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Check localStorage for saved state
+    const saved = localStorage.getItem("sidebar:collapsed");
+    return saved === "true";
+  });
+
+  // Save sidebar state to localStorage
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const newState = !prev;
+      localStorage.setItem("sidebar:collapsed", String(newState));
+      return newState;
+    });
+  };
+
+  // Keyboard shortcut to toggle sidebar (Ctrl+B)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "b" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        toggleSidebar();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     // Prevent double initialization in development mode (React StrictMode)
@@ -472,7 +501,7 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Enhanced Header with Logo and Graphics */}
       <header className="dr sticky top-0 z-50 w-full border-b bg-gradient-to-r from-card via-card/95 to-primary/5 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -480,6 +509,16 @@ const Layout = ({ children }: LayoutProps) => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X /> : <Menu />}
+            </Button>
+            {/* Sidebar toggle button for desktop */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden md:flex"
+              onClick={toggleSidebar}
+              title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
+            >
+              {sidebarCollapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
             </Button>
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -514,7 +553,9 @@ const Layout = ({ children }: LayoutProps) => {
             userRole === 'doctor' ? 'doctor-sidebar' : ''
           } ${
             userRole === 'clinic' ? 'clinic-sidebar' : ''
-          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:w-64 md:flex-shrink-0 md:rounded-lg md:border dr_side md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)]`}
+          } ${
+            sidebarCollapsed ? 'md:w-16' : 'md:w-64'
+          } fixed inset-0 top-16 z-40 bg-gradient-to-b from-card to-card/80 md:static md:block md:flex-shrink-0 md:rounded-lg md:border dr_side md:shadow-sm overflow-y-auto max-h-[calc(100vh-6rem)] transition-all duration-300`}
         >
           <nav className="space-y-1 p-3">
             {/* Dashboard item (at top) */}
@@ -522,16 +563,18 @@ const Layout = ({ children }: LayoutProps) => {
               const Icon = dashboardItem.icon;
               const isActive = location.pathname === dashboardItem.path;
               return (
-                <Link to={dashboardItem.path}>
+                <Link to={dashboardItem.path} title={sidebarCollapsed ? dashboardItem.label : undefined}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
-                    className={`w-full justify-start transition-all ${
+                    className={`w-full transition-all ${
+                      sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                    } ${
                       isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <Icon className="mr-2 h-4 w-4" />
-                    {dashboardItem.label}
+                    <Icon className={sidebarCollapsed ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                    {!sidebarCollapsed && dashboardItem.label}
                   </Button>
                 </Link>
               );
@@ -549,18 +592,45 @@ const Layout = ({ children }: LayoutProps) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
                 return (
-                  <Link key={item.path} to={item.path}>
+                  <Link key={item.path} to={item.path} title={sidebarCollapsed ? item.label : undefined}>
                     <Button
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start transition-all ${
+                      className={`w-full transition-all ${
+                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                      } ${
                         isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Icon className="mr-2 h-4 w-4" />
-                      {item.label}
+                      <Icon className={sidebarCollapsed ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                      {!sidebarCollapsed && item.label}
                     </Button>
                   </Link>
+                );
+              }
+
+              // When collapsed, show only the group icon with active indicator
+              if (sidebarCollapsed) {
+                return (
+                  <div key={group.label} className="space-y-1">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.path;
+                      return (
+                        <Link key={item.path} to={item.path} title={item.label}>
+                          <Button
+                            variant={isActive ? "default" : "ghost"}
+                            className={`w-full justify-center px-2 transition-all ${
+                              isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                            }`}
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Icon className="h-5 w-5" />
+                          </Button>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 );
               }
 
@@ -617,16 +687,18 @@ const Layout = ({ children }: LayoutProps) => {
                 const Icon = activityLogsItem.icon;
                 const isActive = location.pathname === activityLogsItem.path;
                 return (
-                  <Link to={activityLogsItem.path}>
+                  <Link to={activityLogsItem.path} title={sidebarCollapsed ? activityLogsItem.label : undefined}>
                     <Button
                       variant={isActive ? "default" : "ghost"}
-                      className={`w-full justify-start transition-all ${
+                      className={`w-full transition-all ${
+                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                      } ${
                         isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Icon className="mr-2 h-4 w-4" />
-                      {activityLogsItem.label}
+                      <Icon className={sidebarCollapsed ? "h-5 w-5" : "mr-2 h-4 w-4"} />
+                      {!sidebarCollapsed && activityLogsItem.label}
                     </Button>
                   </Link>
                 );
