@@ -148,6 +148,9 @@ const DoctorPatients = () => {
   const [filterAddedDateTo, setFilterAddedDateTo] = useState<Date>();
   const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
   const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
+  // Sorting state
+  const [sortColumn, setSortColumn] = useState<"name" | "gender" | "age" | "added_date" | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [editForm, setEditForm] = useState<{
     full_name: string;
     father_name: string;
