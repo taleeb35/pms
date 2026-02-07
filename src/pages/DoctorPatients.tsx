@@ -1214,11 +1214,47 @@ const DoctorPatients = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Patient ID</TableHead>
-                  <TableHead>Name</TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("name")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Name
+                      {getSortIcon("name")}
+                    </button>
+                  </TableHead>
                   <TableHead>Phone</TableHead>
-                  <TableHead>Gender</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Added Date</TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("gender")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Gender
+                      {getSortIcon("gender")}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("age")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Age
+                      {getSortIcon("age")}
+                    </button>
+                  </TableHead>
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => handleSort("added_date")}
+                      className="flex items-center font-medium hover:text-primary transition-colors"
+                    >
+                      Added Date
+                      {getSortIcon("added_date")}
+                    </button>
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
