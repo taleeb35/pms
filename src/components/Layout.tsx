@@ -693,7 +693,7 @@ const Layout = ({ children }: LayoutProps) => {
                       className={`w-full transition-all ${
                         sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
                       } ${
-                        isActive ? "shadow-md" : "hover:bg-accent hover:shadow-sm"
+                        isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                       }`}
                       onClick={() => setMobileMenuOpen(false)}
                     >
