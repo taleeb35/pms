@@ -1155,51 +1155,6 @@ const DoctorPatients = () => {
                   </Select>
                 </>
               )}
-              <div className="flex gap-2 items-center">
-                <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filterAddedDateFrom ? format(filterAddedDateFrom, "PP") : "From Date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={filterAddedDateFrom}
-                      onSelect={(date) => { setFilterAddedDateFrom(date); setAddedDateFromPopoverOpen(false); }}
-                      disabled={(date) => date > new Date()}
-                      initialFocus
-                      fromDate={subMonths(new Date(), 12)}
-                      toDate={new Date()}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Popover open={addedDateToPopoverOpen} onOpenChange={setAddedDateToPopoverOpen}>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateTo && "text-muted-foreground")}>
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {filterAddedDateTo ? format(filterAddedDateTo, "PP") : "To Date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background z-50" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={filterAddedDateTo}
-                      onSelect={(date) => { setFilterAddedDateTo(date); setAddedDateToPopoverOpen(false); }}
-                      disabled={(date) => date > new Date() || (filterAddedDateFrom && date < filterAddedDateFrom)}
-                      initialFocus
-                      fromDate={subMonths(new Date(), 12)}
-                      toDate={new Date()}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {(filterAddedDateFrom || filterAddedDateTo) && (
-                  <Button variant="ghost" size="icon" onClick={() => { setFilterAddedDateFrom(undefined); setFilterAddedDateTo(undefined); }}>
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </CardHeader>
