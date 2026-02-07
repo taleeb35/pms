@@ -103,7 +103,7 @@ const DoctorTimeSelect = ({
     setSearchQuery("");
   };
 
-  const isDisabled = disabled || loading || (isUnavailable && timeSlots.length === 0);
+  const isDisabled = disabled || loading || !doctorId || !selectedDate || (isUnavailable && timeSlots.length === 0);
 
   return (
     <>
