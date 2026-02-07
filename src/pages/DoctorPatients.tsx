@@ -1018,7 +1018,7 @@ const DoctorPatients = () => {
           patient_id: appointmentPatient.id,
           appointment_date: appointmentDateStr,
           appointment_time: appointmentTime,
-          duration_minutes: parseInt(formData.get("duration_minutes") as string) || 30,
+          duration_minutes: 30, // Default duration
           reason: (formData.get("reason") as string) || null,
           notes: (formData.get("notes") as string) || null,
           status: "scheduled" as const,

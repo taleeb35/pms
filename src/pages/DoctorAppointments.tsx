@@ -997,18 +997,6 @@ const DoctorAppointments = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit_duration_minutes">Duration (minutes)</Label>
-                <Input
-                  id="edit_duration_minutes"
-                  name="duration_minutes"
-                  type="number"
-                  defaultValue={editingAppointment.duration_minutes || 30}
-                  min={15}
-                  step={15}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="edit_reason">Reason for Visit</Label>
                 <Input
                   id="edit_reason"
