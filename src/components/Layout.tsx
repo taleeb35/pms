@@ -55,6 +55,20 @@ const Layout = ({ children }: LayoutProps) => {
   const [isInitialized, setIsInitialized] = useState(false);
   const initRef = useRef(false);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Check localStorage for saved state
+    const saved = localStorage.getItem("sidebar:collapsed");
+    return saved === "true";
+  });
+
+  // Save sidebar state to localStorage
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const newState = !prev;
+      localStorage.setItem("sidebar:collapsed", String(newState));
+      return newState;
+    });
+  };
 
   useEffect(() => {
     // Prevent double initialization in development mode (React StrictMode)
