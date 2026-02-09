@@ -3,17 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Loader2, FileText, Edit, Eye, Search } from "lucide-react";
+import { Plus, Trash2, Loader2, FileText, Edit, Search, ImagePlus } from "lucide-react";
 import { format } from "date-fns";
 import TableSkeleton from "@/components/TableSkeleton";
 import { TablePagination } from "@/components/TablePagination";
+import RichTextEditor from "@/components/RichTextEditor";
 
 interface Blog {
   id: string;
@@ -49,7 +49,6 @@ const ContentWriterBlogs = () => {
     title: "",
     slug: "",
     content: "",
-    excerpt: "",
     featured_image: "",
     status: "draft",
   });
@@ -109,7 +108,12 @@ const ContentWriterBlogs = () => {
         .single();
 
       const blogData = {
-        ...formData,
+        title: formData.title,
+        slug: formData.slug,
+        content: formData.content,
+        excerpt: formData.content.replace(/<[^>]*>/g, '').substring(0, 200), // Auto-generate excerpt from content
+        featured_image: formData.featured_image || null,
+        status: formData.status,
         author_id: user.id,
         author_name: profile?.full_name || "Unknown Author",
         published_at: formData.status === "published" ? new Date().toISOString() : null,
@@ -151,7 +155,6 @@ const ContentWriterBlogs = () => {
       title: blog.title,
       slug: blog.slug,
       content: blog.content,
-      excerpt: blog.excerpt || "",
       featured_image: blog.featured_image || "",
       status: blog.status,
     });
@@ -187,7 +190,6 @@ const ContentWriterBlogs = () => {
       title: "",
       slug: "",
       content: "",
-      excerpt: "",
       featured_image: "",
       status: "draft",
     });
@@ -264,28 +266,18 @@ const ContentWriterBlogs = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Excerpt</Label>
-                <Textarea
-                  id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  placeholder="Brief description of the blog post"
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
+                <Label htmlFor="content">Content *</Label>
+                <RichTextEditor
                   value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, content: value })}
                   placeholder="Write your blog content here..."
-                  rows={10}
-                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="featured_image">Featured Image URL</Label>
+                <Label htmlFor="featured_image" className="flex items-center gap-2">
+                  <ImagePlus className="h-4 w-4" />
+                  Featured Image URL
+                </Label>
                 <Input
                   id="featured_image"
                   value={formData.featured_image}
