@@ -232,6 +232,7 @@ const ContentWriterBlogs = () => {
       status: "draft",
     });
     setEditingBlog(null);
+    setImagePreview(null);
     setIsDialogOpen(false);
   };
 
