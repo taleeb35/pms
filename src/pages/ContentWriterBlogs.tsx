@@ -264,28 +264,18 @@ const ContentWriterBlogs = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Excerpt</Label>
-                <Textarea
-                  id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  placeholder="Brief description of the blog post"
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
+                <Label htmlFor="content">Content *</Label>
+                <RichTextEditor
                   value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  onChange={(value) => setFormData({ ...formData, content: value })}
                   placeholder="Write your blog content here..."
-                  rows={10}
-                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="featured_image">Featured Image URL</Label>
+                <Label htmlFor="featured_image" className="flex items-center gap-2">
+                  <ImagePlus className="h-4 w-4" />
+                  Featured Image URL
+                </Label>
                 <Input
                   id="featured_image"
                   value={formData.featured_image}
