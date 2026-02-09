@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Loader2, FileText, Edit, Search, ImagePlus } from "lucide-react";
+import { Plus, Trash2, Loader2, FileText, Edit, Search, ImagePlus, Upload } from "lucide-react";
 import { format } from "date-fns";
 import TableSkeleton from "@/components/TableSkeleton";
 import { TablePagination } from "@/components/TablePagination";
@@ -52,6 +52,8 @@ const ContentWriterBlogs = () => {
     featured_image: "",
     status: "draft",
   });
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -149,6 +151,41 @@ const ContentWriterBlogs = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Error", description: "Please select an image file", variant: "destructive" });
+      return;
+    }
+
+    setImageUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `blog-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(filePath);
+
+      setFormData((prev) => ({ ...prev, featured_image: publicUrl }));
+      setImagePreview(publicUrl);
+      toast({ title: "Success", description: "Image uploaded successfully" });
+    } catch (error: any) {
+      toast({ title: "Upload Error", description: error.message, variant: "destructive" });
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
   const handleEdit = (blog: Blog) => {
     setEditingBlog(blog);
     setFormData({
@@ -158,6 +195,7 @@ const ContentWriterBlogs = () => {
       featured_image: blog.featured_image || "",
       status: blog.status,
     });
+    setImagePreview(blog.featured_image || null);
     setIsDialogOpen(true);
   };
 
@@ -194,6 +232,7 @@ const ContentWriterBlogs = () => {
       status: "draft",
     });
     setEditingBlog(null);
+    setImagePreview(null);
     setIsDialogOpen(false);
   };
 
@@ -274,16 +313,44 @@ const ContentWriterBlogs = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="featured_image" className="flex items-center gap-2">
+                <Label className="flex items-center gap-2">
                   <ImagePlus className="h-4 w-4" />
-                  Featured Image URL
+                  Featured Image
                 </Label>
-                <Input
-                  id="featured_image"
-                  value={formData.featured_image}
-                  onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
+                {imagePreview && (
+                  <div className="relative rounded-md overflow-hidden border">
+                    <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover" />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => { setImagePreview(null); setFormData((prev) => ({ ...prev, featured_image: "" })); }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+                <label
+                  htmlFor="image-upload"
+                  className="flex items-center justify-center gap-2 border-2 border-dashed rounded-md p-4 cursor-pointer hover:border-primary/50 transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  {imageUploading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Upload className="h-5 w-5" />
+                  )}
+                  <span className="text-sm">{imageUploading ? "Uploading..." : "Click to upload image"}</span>
+                </label>
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  disabled={imageUploading}
                 />
+                <p className="text-xs text-muted-foreground">Recommended: 1200×630px (1.91:1 ratio)</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
