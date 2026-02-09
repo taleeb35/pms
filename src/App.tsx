@@ -112,6 +112,8 @@ import ContentWriterRegisteredDoctors from "./pages/ContentWriterRegisteredDocto
 import FindDoctors from "./pages/FindDoctors";
 import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
 import PublicDoctorProfile from "./pages/PublicDoctorProfile";
+import Blogs from "./pages/Blogs";
+import BlogPost from "./pages/BlogPost";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
