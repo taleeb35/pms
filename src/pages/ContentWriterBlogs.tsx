@@ -151,6 +151,41 @@ const ContentWriterBlogs = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Error", description: "Please select an image file", variant: "destructive" });
+      return;
+    }
+
+    setImageUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `blog-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(filePath);
+
+      setFormData((prev) => ({ ...prev, featured_image: publicUrl }));
+      setImagePreview(publicUrl);
+      toast({ title: "Success", description: "Image uploaded successfully" });
+    } catch (error: any) {
+      toast({ title: "Upload Error", description: error.message, variant: "destructive" });
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
   const handleEdit = (blog: Blog) => {
     setEditingBlog(blog);
     setFormData({
@@ -160,6 +195,7 @@ const ContentWriterBlogs = () => {
       featured_image: blog.featured_image || "",
       status: blog.status,
     });
+    setImagePreview(blog.featured_image || null);
     setIsDialogOpen(true);
   };
 
