@@ -45,11 +45,7 @@ jobs:
 
             echo "Install deps & build (with devDependencies)"
             unset NODE_ENV
-            if [ -f package-lock.json ]; then
-              npm ci
-            else
-              npm install
-            fi
+            npm install
             npm run build
 
             echo "Start or reload PM2 from ecosystem.config.cjs"
