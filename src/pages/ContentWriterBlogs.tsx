@@ -313,16 +313,44 @@ const ContentWriterBlogs = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="featured_image" className="flex items-center gap-2">
+                <Label className="flex items-center gap-2">
                   <ImagePlus className="h-4 w-4" />
-                  Featured Image URL
+                  Featured Image
                 </Label>
-                <Input
-                  id="featured_image"
-                  value={formData.featured_image}
-                  onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
+                {imagePreview && (
+                  <div className="relative rounded-md overflow-hidden border">
+                    <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover" />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => { setImagePreview(null); setFormData((prev) => ({ ...prev, featured_image: "" })); }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+                <label
+                  htmlFor="image-upload"
+                  className="flex items-center justify-center gap-2 border-2 border-dashed rounded-md p-4 cursor-pointer hover:border-primary/50 transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  {imageUploading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Upload className="h-5 w-5" />
+                  )}
+                  <span className="text-sm">{imageUploading ? "Uploading..." : "Click to upload image"}</span>
+                </label>
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  disabled={imageUploading}
                 />
+                <p className="text-xs text-muted-foreground">Recommended: 1200×630px (1.91:1 ratio)</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
