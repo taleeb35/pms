@@ -52,6 +52,8 @@ const ContentWriterBlogs = () => {
     featured_image: "",
     status: "draft",
   });
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBlogs();
