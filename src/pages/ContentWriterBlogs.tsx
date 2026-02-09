@@ -155,7 +155,6 @@ const ContentWriterBlogs = () => {
       title: blog.title,
       slug: blog.slug,
       content: blog.content,
-      excerpt: blog.excerpt || "",
       featured_image: blog.featured_image || "",
       status: blog.status,
     });
