@@ -594,8 +594,31 @@ const DoctorAppointments = () => {
   });
 
   const filteredAppointments = getFilteredAppointments();
-  const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  const totalPages = Math.ceil(filteredAppointments.length / pageSize);
+
+  // Apply sorting
+  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
+    let comparison = 0;
+    switch (sortColumn) {
+      case "number":
+        comparison = (appointmentNumberMap.get(a.id) || 0) - (appointmentNumberMap.get(b.id) || 0);
+        break;
+      case "patient":
+        comparison = (a.patients?.full_name || "").localeCompare(b.patients?.full_name || "");
+        break;
+      case "date":
+        comparison = new Date(a.appointment_date + "T" + a.appointment_time).getTime() - new Date(b.appointment_date + "T" + b.appointment_time).getTime();
+        break;
+      case "status":
+        comparison = (a.status || "").localeCompare(b.status || "");
+        break;
+      default:
+        comparison = 0;
+    }
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
+
+  const paginatedAppointments = sortedAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const totalPages = Math.ceil(sortedAppointments.length / pageSize);
 
   // No early return - show skeleton in content instead
 
