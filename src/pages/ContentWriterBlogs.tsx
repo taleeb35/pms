@@ -311,6 +311,16 @@ const ContentWriterBlogs = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="meta_description">Meta Description (SEO)</Label>
+                <Textarea
+                  id="meta_description"
+                  value={formData.meta_description}
+                  onChange={(e) => setFormData({ ...formData, meta_description: e.target.value.slice(0, 160) })}
+                  placeholder="Brief description for search engines (max 160 characters)"
+                  rows={3}
+                />
+                <p className="text-xs text-muted-foreground">{formData.meta_description.length}/160 characters</p>
+              <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
                 <RichTextEditor
                   value={formData.content}
