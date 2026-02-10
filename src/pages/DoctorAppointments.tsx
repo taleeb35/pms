@@ -802,6 +802,7 @@ const DoctorAppointments = () => {
                         className="hover:bg-accent/50 cursor-pointer transition-colors"
                         onClick={() => openVisitPage(apt)}
                       >
+                        <TableCell className="font-medium text-primary">#{appointmentNumberMap.get(apt.id) || 0}</TableCell>
                         <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                         <TableCell>{apt.patients?.phone || "-"}</TableCell>
                         {isGynecologist && (
