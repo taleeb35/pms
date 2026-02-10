@@ -28,6 +28,38 @@ const BlogPost = () => {
   const [loading, setLoading] = useState(true);
   const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
 
+  const stripHtml = (html: string) => {
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+  };
+
+  const seoDescription = blog?.meta_description || blog?.excerpt || (blog ? stripHtml(blog.content).substring(0, 160) : "Read our latest blog post on Zonoir.");
+
+  useSEO({
+    title: blog ? `${blog.title} | Zonoir Blog` : "Blog | Zonoir",
+    description: seoDescription,
+    canonicalUrl: `https://zonoir.com/blog/${slug}`,
+    ogTitle: blog?.title,
+    ogDescription: seoDescription,
+    ogUrl: `https://zonoir.com/blog/${slug}`,
+    ogType: "article",
+    ogImage: blog?.featured_image || "https://zonoir.com/og-image.png",
+    jsonLd: blog ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": blog.title,
+      "description": seoDescription,
+      "image": blog.featured_image || undefined,
+      "datePublished": blog.published_at || blog.created_at,
+      "publisher": {
+        "@type": "Organization",
+        "name": "Zonoir",
+        "url": "https://zonoir.com"
+      }
+    } : undefined,
+  });
+
   useEffect(() => {
     if (slug) {
       fetchBlog();
