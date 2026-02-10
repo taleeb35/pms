@@ -782,7 +782,7 @@ const DoctorAppointments = () => {
                     />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isGynecologist ? 6 : 5} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
                         No appointments scheduled
                       </TableCell>
                     </TableRow>
