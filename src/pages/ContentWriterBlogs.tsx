@@ -22,6 +22,7 @@ interface Blog {
   slug: string;
   content: string;
   excerpt: string | null;
+  meta_description: string | null;
   featured_image: string | null;
   author_id: string;
   author_name: string;
