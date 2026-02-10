@@ -196,6 +196,7 @@ const ContentWriterBlogs = () => {
       title: blog.title,
       slug: blog.slug,
       content: blog.content,
+      meta_description: blog.meta_description || "",
       featured_image: blog.featured_image || "",
       status: blog.status,
     });
