@@ -776,9 +776,9 @@ const DoctorAppointments = () => {
                 <TableBody>
                   {loading ? (
                     <TableSkeleton
-                      columns={isGynecologist ? 6 : 5}
+                      columns={isGynecologist ? 7 : 6}
                       rows={5}
-                      columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
+                      columnWidths={["w-[80px]", "w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
                     />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
