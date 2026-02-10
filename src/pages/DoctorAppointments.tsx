@@ -61,6 +61,7 @@ import { logActivity } from "@/lib/activityLogger";
 
 interface Appointment {
   id: string;
+  created_at: string;
   appointment_date: string;
   appointment_time: string;
   status: string;
@@ -580,6 +581,15 @@ const DoctorAppointments = () => {
     return filtered;
   };
 
+  // Build a map of appointment id -> sequential number based on creation order
+  const appointmentNumberMap = new Map<string, number>();
+  const sortedByCreation = [...appointments].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  sortedByCreation.forEach((apt, index) => {
+    appointmentNumberMap.set(apt.id, index + 1);
+  });
+
   const filteredAppointments = getFilteredAppointments();
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const totalPages = Math.ceil(filteredAppointments.length / pageSize);
@@ -764,6 +774,7 @@ const DoctorAppointments = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Appoint#</TableHead>
                     <TableHead>Patient</TableHead>
                     <TableHead>Patient Phone</TableHead>
                     {isGynecologist && <TableHead>Pregnancy</TableHead>}
@@ -775,13 +786,13 @@ const DoctorAppointments = () => {
                 <TableBody>
                   {loading ? (
                     <TableSkeleton
-                      columns={isGynecologist ? 6 : 5}
+                      columns={isGynecologist ? 7 : 6}
                       rows={5}
-                      columnWidths={["w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
+                      columnWidths={["w-[80px]", "w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
                     />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isGynecologist ? 6 : 5} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
                         No appointments scheduled
                       </TableCell>
                     </TableRow>
@@ -792,6 +803,7 @@ const DoctorAppointments = () => {
                         className="hover:bg-accent/50 cursor-pointer transition-colors"
                         onClick={() => openVisitPage(apt)}
                       >
+                        <TableCell className="font-medium text-primary">#{appointmentNumberMap.get(apt.id) || 0}</TableCell>
                         <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                         <TableCell>{apt.patients?.phone || "-"}</TableCell>
                         {isGynecologist && (
