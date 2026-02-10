@@ -116,7 +116,8 @@ const ContentWriterBlogs = () => {
         title: formData.title,
         slug: formData.slug,
         content: formData.content,
-        excerpt: formData.content.replace(/<[^>]*>/g, '').substring(0, 200), // Auto-generate excerpt from content
+        excerpt: formData.content.replace(/<[^>]*>/g, '').substring(0, 200),
+        meta_description: formData.meta_description || null,
         featured_image: formData.featured_image || null,
         status: formData.status,
         author_id: user.id,
