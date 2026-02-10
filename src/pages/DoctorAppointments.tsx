@@ -127,6 +127,8 @@ const DoctorAppointments = () => {
   const [doctorId, setDoctorId] = useState<string>("");
   const [isOnLeave, setIsOnLeave] = useState(false);
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
+  const [sortColumn, setSortColumn] = useState<string>("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const { toast } = useToast();
 
   useEffect(() => {
