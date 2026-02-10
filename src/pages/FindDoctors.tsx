@@ -34,11 +34,25 @@ interface DoctorResult {
 }
 const specialties = [
   {
+    name: "Aesthetic Physician",
+    slug: "aesthetic-physician",
+    urdu: "ماہر جمالیات",
+    description: "Specialists who focus on cosmetic treatments and aesthetic procedures to enhance appearance.",
+    icon: Smile,
+  },
+  {
     name: "Allergist",
     slug: "allergist",
     urdu: "ماہر الرجی",
     description: "Specialists who diagnose and treat allergies, asthma, and immune system disorders.",
     icon: Syringe,
+  },
+  {
+    name: "Audiologist",
+    slug: "audiologist",
+    urdu: "ماہر سماعت",
+    description: "Specialists who diagnose and treat hearing and balance disorders.",
+    icon: Stethoscope,
   },
   {
     name: "Bariatric / Weight Loss Surgeon",
@@ -60,6 +74,13 @@ const specialties = [
     urdu: "ماہر امراض قلب",
     description: "Specialists who diagnose and treat diseases and conditions of the heart and cardiovascular system.",
     icon: Heart,
+  },
+  {
+    name: "Chest Respiratory Specialist",
+    slug: "chest-respiratory-specialist",
+    urdu: "ماہر امراض سینہ",
+    description: "Specialists who diagnose and treat diseases of the chest and respiratory system.",
+    icon: Wind,
   },
   {
     name: "Clinical Nutritionist",
@@ -104,6 +125,13 @@ const specialties = [
     icon: Eye,
   },
   {
+    name: "Family Medicine",
+    slug: "family-medicine",
+    urdu: "ماہر خاندانی طب",
+    description: "Doctors who provide comprehensive healthcare for individuals and families across all ages.",
+    icon: Stethoscope,
+  },
+  {
     name: "Gastroenterologist",
     slug: "gastroenterologist",
     urdu: "ماہر امراض معدہ",
@@ -115,6 +143,13 @@ const specialties = [
     slug: "general-physician",
     urdu: "جنرل فزیشن",
     description: "Medical doctors who specialize in the non-surgical treatment of all types of diseases and illnesses.",
+    icon: Stethoscope,
+  },
+  {
+    name: "General Practitioner",
+    slug: "general-practitioner",
+    urdu: "جنرل پریکٹیشنر",
+    description: "Doctors who provide primary care and treat a wide range of common medical conditions.",
     icon: Stethoscope,
   },
   {
@@ -153,6 +188,20 @@ const specialties = [
     icon: Pill,
   },
   {
+    name: "Internal Medicine Specialist",
+    slug: "internal-medicine-specialist",
+    urdu: "ماہر داخلی طب",
+    description: "Specialists who diagnose and treat complex diseases affecting internal organs.",
+    icon: Stethoscope,
+  },
+  {
+    name: "Interventional Cardiologist",
+    slug: "interventional-cardiologist",
+    urdu: "ماہر مداخلتی امراض قلب",
+    description: "Cardiologists who perform catheter-based treatments for heart diseases.",
+    icon: Heart,
+  },
+  {
     name: "Laparoscopic Surgeon",
     slug: "laparoscopic-surgeon",
     urdu: "ماہر لیپروسکوپک سرجری",
@@ -165,6 +214,13 @@ const specialties = [
     urdu: "ماہر جگر",
     description: "Specialists who diagnose and treat liver diseases including hepatitis, cirrhosis, and liver cancer.",
     icon: Activity,
+  },
+  {
+    name: "Medical Specialist",
+    slug: "medical-specialist",
+    urdu: "میڈیکل ماہر",
+    description: "Doctors with advanced training in internal medicine who treat complex medical conditions.",
+    icon: Stethoscope,
   },
   {
     name: "Nephrologist",
@@ -188,6 +244,13 @@ const specialties = [
     icon: Brain,
   },
   {
+    name: "Nutritionist",
+    slug: "nutritionist",
+    urdu: "ماہر غذائیت",
+    description: "Experts who advise on diet and nutrition to promote health and manage weight.",
+    icon: Pill,
+  },
+  {
     name: "Oncologist",
     slug: "oncologist",
     urdu: "ماہر سرطان",
@@ -202,6 +265,20 @@ const specialties = [
     icon: Eye,
   },
   {
+    name: "Optometrist",
+    slug: "optometrist",
+    urdu: "ماہر بصارت",
+    description: "Specialists who examine eyes, prescribe corrective lenses, and detect eye conditions.",
+    icon: Eye,
+  },
+  {
+    name: "Oral and Maxillofacial Surgeon",
+    slug: "oral-and-maxillofacial-surgeon",
+    urdu: "ماہر زبانی و چہرے کی سرجری",
+    description: "Surgeons who treat diseases, injuries, and defects of the mouth, jaw, and face.",
+    icon: Smile,
+  },
+  {
     name: "Orthopedic Surgeon",
     slug: "orthopedic-surgeon",
     urdu: "ماہر ہڈیوں",
@@ -214,6 +291,13 @@ const specialties = [
     urdu: "ماہر درد",
     description: "Specialists who diagnose and treat chronic pain conditions using various treatment methods.",
     icon: Activity,
+  },
+  {
+    name: "Pediatric Surgeon",
+    slug: "pediatric-surgeon",
+    urdu: "ماہر اطفال سرجری",
+    description: "Surgeons who specialize in performing surgeries on infants, children, and adolescents.",
+    icon: Baby,
   },
   {
     name: "Pediatrician",
@@ -270,6 +354,13 @@ const specialties = [
     urdu: "ماہر جوڑوں کے امراض",
     description: "Specialists who treat arthritis, autoimmune diseases, and musculoskeletal conditions.",
     icon: Bone,
+  },
+  {
+    name: "Speech Therapist",
+    slug: "speech-therapist",
+    urdu: "ماہر گفتار",
+    description: "Specialists who assess and treat speech, language, and communication disorders.",
+    icon: Stethoscope,
   },
   {
     name: "Sports Medicine Specialist",
