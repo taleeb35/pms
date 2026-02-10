@@ -764,6 +764,7 @@ const DoctorAppointments = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Appoint#</TableHead>
                     <TableHead>Patient</TableHead>
                     <TableHead>Patient Phone</TableHead>
                     {isGynecologist && <TableHead>Pregnancy</TableHead>}
