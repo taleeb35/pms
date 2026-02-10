@@ -7,6 +7,7 @@ import { Calendar, User, ArrowLeft, Clock } from "lucide-react";
 import { format } from "date-fns";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Blog {
   id: string;
