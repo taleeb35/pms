@@ -233,6 +233,7 @@ const ContentWriterBlogs = () => {
       title: "",
       slug: "",
       content: "",
+      meta_description: "",
       featured_image: "",
       status: "draft",
     });
