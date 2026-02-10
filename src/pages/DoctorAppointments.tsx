@@ -61,6 +61,7 @@ import { logActivity } from "@/lib/activityLogger";
 
 interface Appointment {
   id: string;
+  created_at: string;
   appointment_date: string;
   appointment_time: string;
   status: string;
