@@ -102,6 +102,7 @@ const DoctorAppointmentDetail = () => {
   const { toast } = useToast();
   
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
+  const [appointmentNumber, setAppointmentNumber] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
@@ -174,6 +175,17 @@ const DoctorAppointmentDetail = () => {
 
       if (error) throw error;
       setAppointment(data);
+
+      // Compute 4-digit appointment number (Shopify-style: #1001, #1002, ...)
+      const { count, error: countError } = await supabase
+        .from("appointments")
+        .select("id", { count: "exact", head: true })
+        .eq("doctor_id", data.doctor_id)
+        .lte("created_at", data.created_at);
+      
+      if (!countError && count !== null) {
+        setAppointmentNumber(1000 + count);
+      }
       
       // First check for existing record to know if we should set default consultation fee
       const existingRecordResult = await fetchExistingRecord(data.id);
@@ -645,13 +657,13 @@ const DoctorAppointmentDetail = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>#{appointment.patients.patient_id}</BreadcrumbPage>
+                <BreadcrumbPage>#{appointmentNumber}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
 
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">#{appointment.patients.patient_id}</h1>
+            <h1 className="text-2xl font-bold">#{appointmentNumber}</h1>
             <Badge variant="outline" className={cn("capitalize", getStatusColor(appointment.status))}>
               {appointment.status.replace("_", " ")}
             </Badge>

@@ -581,13 +581,13 @@ const DoctorAppointments = () => {
     return filtered;
   };
 
-  // Build a map of appointment id -> sequential number based on creation order
+  // Build a map of appointment id -> 4-digit sequential number (like Shopify orders: #1001, #1002, ...)
   const appointmentNumberMap = new Map<string, number>();
   const sortedByCreation = [...appointments].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
   sortedByCreation.forEach((apt, index) => {
-    appointmentNumberMap.set(apt.id, index + 1);
+    appointmentNumberMap.set(apt.id, 1001 + index);
   });
 
   const filteredAppointments = getFilteredAppointments();
