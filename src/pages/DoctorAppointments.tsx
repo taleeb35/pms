@@ -49,6 +49,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
@@ -126,6 +127,8 @@ const DoctorAppointments = () => {
   const [doctorId, setDoctorId] = useState<string>("");
   const [isOnLeave, setIsOnLeave] = useState(false);
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
+  const [sortColumn, setSortColumn] = useState<string>("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -591,8 +594,48 @@ const DoctorAppointments = () => {
   });
 
   const filteredAppointments = getFilteredAppointments();
-  const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  const totalPages = Math.ceil(filteredAppointments.length / pageSize);
+
+  // Apply sorting
+  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
+    let comparison = 0;
+    switch (sortColumn) {
+      case "number":
+        comparison = (appointmentNumberMap.get(a.id) || 0) - (appointmentNumberMap.get(b.id) || 0);
+        break;
+      case "patient":
+        comparison = (a.patients?.full_name || "").localeCompare(b.patients?.full_name || "");
+        break;
+      case "date":
+        comparison = new Date(a.appointment_date + "T" + a.appointment_time).getTime() - new Date(b.appointment_date + "T" + b.appointment_time).getTime();
+        break;
+      case "status":
+        comparison = (a.status || "").localeCompare(b.status || "");
+        break;
+      default:
+        comparison = 0;
+    }
+    return sortDirection === "asc" ? comparison : -comparison;
+  });
+
+  const paginatedAppointments = sortedAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const totalPages = Math.ceil(sortedAppointments.length / pageSize);
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(prev => prev === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+    setCurrentPage(1);
+  };
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortColumn !== column) return <ArrowUpDown className="h-3 w-3 ml-1 opacity-40" />;
+    return sortDirection === "asc" 
+      ? <ArrowUp className="h-3 w-3 ml-1" /> 
+      : <ArrowDown className="h-3 w-3 ml-1" />;
+  };
 
   // No early return - show skeleton in content instead
 
@@ -774,13 +817,21 @@ const DoctorAppointments = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Appoint#</TableHead>
-                    <TableHead>Patient</TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("number")}>
+                      <span className="flex items-center">Appoint#<SortIcon column="number" /></span>
+                    </TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("patient")}>
+                      <span className="flex items-center">Patient<SortIcon column="patient" /></span>
+                    </TableHead>
                     <TableHead>Patient Phone</TableHead>
                     {isGynecologist && <TableHead>Pregnancy</TableHead>}
-                    <TableHead>Date & Time</TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("date")}>
+                      <span className="flex items-center">Date & Time<SortIcon column="date" /></span>
+                    </TableHead>
                     <TableHead>Created By</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("status")}>
+                      <span className="flex items-center">Status<SortIcon column="status" /></span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
