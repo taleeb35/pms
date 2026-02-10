@@ -580,6 +580,15 @@ const DoctorAppointments = () => {
     return filtered;
   };
 
+  // Build a map of appointment id -> sequential number based on creation order
+  const appointmentNumberMap = new Map<string, number>();
+  const sortedByCreation = [...appointments].sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  );
+  sortedByCreation.forEach((apt, index) => {
+    appointmentNumberMap.set(apt.id, index + 1);
+  });
+
   const filteredAppointments = getFilteredAppointments();
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const totalPages = Math.ceil(filteredAppointments.length / pageSize);
