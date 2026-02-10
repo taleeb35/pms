@@ -132,22 +132,6 @@ const BlogPost = () => {
             {blog.title}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-8">
-            <span className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              {blog.author_name}
-            </span>
-            <span className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {blog.published_at
-                ? format(new Date(blog.published_at), "MMMM dd, yyyy")
-                : format(new Date(blog.created_at), "MMMM dd, yyyy")}
-            </span>
-            <span className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              {estimateReadTime(blog.content)} min read
-            </span>
-          </div>
 
           {blog.featured_image && (
             <div className="mb-10 rounded-xl overflow-hidden shadow-lg">
