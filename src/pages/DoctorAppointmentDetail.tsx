@@ -657,13 +657,13 @@ const DoctorAppointmentDetail = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>#{appointment.patients.patient_id}</BreadcrumbPage>
+                <BreadcrumbPage>#{appointmentNumber}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
 
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">#{appointment.patients.patient_id}</h1>
+            <h1 className="text-2xl font-bold">#{appointmentNumber}</h1>
             <Badge variant="outline" className={cn("capitalize", getStatusColor(appointment.status))}>
               {appointment.status.replace("_", " ")}
             </Badge>
