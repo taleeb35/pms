@@ -175,6 +175,17 @@ const DoctorAppointmentDetail = () => {
 
       if (error) throw error;
       setAppointment(data);
+
+      // Compute 4-digit appointment number (Shopify-style: #1001, #1002, ...)
+      const { count, error: countError } = await supabase
+        .from("appointments")
+        .select("id", { count: "exact", head: true })
+        .eq("doctor_id", data.doctor_id)
+        .lte("created_at", data.created_at);
+      
+      if (!countError && count !== null) {
+        setAppointmentNumber(1000 + count);
+      }
       
       // First check for existing record to know if we should set default consultation fee
       const existingRecordResult = await fetchExistingRecord(data.id);
