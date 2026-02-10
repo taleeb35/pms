@@ -49,6 +49,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 import { cn } from "@/lib/utils";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
