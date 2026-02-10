@@ -320,6 +320,7 @@ const ContentWriterBlogs = () => {
                   rows={3}
                 />
                 <p className="text-xs text-muted-foreground">{formData.meta_description.length}/160 characters</p>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
                 <RichTextEditor
