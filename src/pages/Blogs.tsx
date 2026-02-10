@@ -116,6 +116,14 @@ const Blogs = () => {
                         )}
                       </div>
                       <CardContent className="p-6">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {blog.published_at
+                              ? format(new Date(blog.published_at), "MMM dd, yyyy")
+                              : format(new Date(blog.created_at), "MMM dd, yyyy")}
+                          </span>
+                        </div>
                         <h2 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
                           {blog.title}
                         </h2>
