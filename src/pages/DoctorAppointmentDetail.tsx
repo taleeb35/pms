@@ -102,6 +102,7 @@ const DoctorAppointmentDetail = () => {
   const { toast } = useToast();
   
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
+  const [appointmentNumber, setAppointmentNumber] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
