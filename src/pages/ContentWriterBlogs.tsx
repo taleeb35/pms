@@ -9,7 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Loader2, FileText, Edit, Search, ImagePlus, Upload } from "lucide-react";
+import { Plus, Trash2, Loader2, FileText, Edit, Search, ImagePlus, Upload, Eye } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import TableSkeleton from "@/components/TableSkeleton";
 import { TablePagination } from "@/components/TablePagination";
@@ -21,6 +22,7 @@ interface Blog {
   slug: string;
   content: string;
   excerpt: string | null;
+  meta_description: string | null;
   featured_image: string | null;
   author_id: string;
   author_name: string;
@@ -49,6 +51,7 @@ const ContentWriterBlogs = () => {
     title: "",
     slug: "",
     content: "",
+    meta_description: "",
     featured_image: "",
     status: "draft",
   });
@@ -113,7 +116,8 @@ const ContentWriterBlogs = () => {
         title: formData.title,
         slug: formData.slug,
         content: formData.content,
-        excerpt: formData.content.replace(/<[^>]*>/g, '').substring(0, 200), // Auto-generate excerpt from content
+        excerpt: formData.content.replace(/<[^>]*>/g, '').substring(0, 200),
+        meta_description: formData.meta_description || null,
         featured_image: formData.featured_image || null,
         status: formData.status,
         author_id: user.id,
@@ -192,6 +196,7 @@ const ContentWriterBlogs = () => {
       title: blog.title,
       slug: blog.slug,
       content: blog.content,
+      meta_description: blog.meta_description || "",
       featured_image: blog.featured_image || "",
       status: blog.status,
     });
@@ -228,6 +233,7 @@ const ContentWriterBlogs = () => {
       title: "",
       slug: "",
       content: "",
+      meta_description: "",
       featured_image: "",
       status: "draft",
     });
@@ -303,6 +309,17 @@ const ContentWriterBlogs = () => {
                   placeholder="blog-post-url"
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="meta_description">Meta Description (SEO)</Label>
+                <Textarea
+                  id="meta_description"
+                  value={formData.meta_description}
+                  onChange={(e) => setFormData({ ...formData, meta_description: e.target.value.slice(0, 160) })}
+                  placeholder="Brief description for search engines (max 160 characters)"
+                  rows={3}
+                />
+                <p className="text-xs text-muted-foreground">{formData.meta_description.length}/160 characters</p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="content">Content *</Label>
@@ -438,6 +455,16 @@ const ContentWriterBlogs = () => {
                       <TableCell>{format(new Date(blog.created_at), "MMM dd, yyyy")}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {blog.status === "published" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`/blog/${blog.slug}`, "_blank")}
+                              title="Preview"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button variant="ghost" size="sm" onClick={() => handleEdit(blog)}>
                             <Edit className="h-4 w-4" />
                           </Button>
