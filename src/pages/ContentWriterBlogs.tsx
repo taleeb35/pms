@@ -454,6 +454,16 @@ const ContentWriterBlogs = () => {
                       <TableCell>{format(new Date(blog.created_at), "MMM dd, yyyy")}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
+                          {blog.status === "published" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => window.open(`/blog/${blog.slug}`, "_blank")}
+                              title="Preview"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button variant="ghost" size="sm" onClick={() => handleEdit(blog)}>
                             <Edit className="h-4 w-4" />
                           </Button>
