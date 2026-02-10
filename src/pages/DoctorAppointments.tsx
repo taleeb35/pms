@@ -817,13 +817,21 @@ const DoctorAppointments = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Appoint#</TableHead>
-                    <TableHead>Patient</TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("number")}>
+                      <span className="flex items-center">Appoint#<SortIcon column="number" /></span>
+                    </TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("patient")}>
+                      <span className="flex items-center">Patient<SortIcon column="patient" /></span>
+                    </TableHead>
                     <TableHead>Patient Phone</TableHead>
                     {isGynecologist && <TableHead>Pregnancy</TableHead>}
-                    <TableHead>Date & Time</TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("date")}>
+                      <span className="flex items-center">Date & Time<SortIcon column="date" /></span>
+                    </TableHead>
                     <TableHead>Created By</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className="cursor-pointer select-none" onClick={() => handleSort("status")}>
+                      <span className="flex items-center">Status<SortIcon column="status" /></span>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
