@@ -20,7 +20,7 @@ const PublicFooter = () => {
   const legalLinks = [
     { name: "Privacy Policy", href: "#" },
     { name: "Terms of Service", href: "#" },
-    { name: "Cookie Policy", href: "#" },
+    { name: "Blog", href: "/blog" },
     { name: "Help Center", href: "/knowledge-base" },
     { name: "Find Doctors", href: "/find-doctors" },
   ];
