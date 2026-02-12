@@ -1627,6 +1627,44 @@ export type Database = {
           },
         ]
       }
+      seo_doctor_faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          display_order: number | null
+          doctor_id: string
+          id: string
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          display_order?: number | null
+          doctor_id: string
+          id?: string
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          display_order?: number | null
+          doctor_id?: string
+          id?: string
+          question?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_doctor_faqs_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "seo_doctor_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seo_doctor_listings: {
         Row: {
           avatar_url: string | null

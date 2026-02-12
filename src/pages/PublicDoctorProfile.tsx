@@ -13,6 +13,8 @@ import DoctorProfileHeader from "@/components/public/DoctorProfileHeader";
 import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTabs";
 import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { HelpCircle } from "lucide-react";
 
 interface DoctorData {
   id: string;
@@ -58,6 +60,7 @@ const PublicDoctorProfile = () => {
 
   const [seoClinics, setSeoClinics] = useState<any[]>([]);
   const [approvedSchedule, setApprovedSchedule] = useState<ScheduleDay[] | null>(null);
+  const [faqs, setFaqs] = useState<{ question: string; answer: string }[]>([]);
 
   const formatTimeToDisplay = (time: string | null | undefined) => {
     if (!time) return undefined;
@@ -78,6 +81,7 @@ const PublicDoctorProfile = () => {
       setLoading(true);
       setSeoClinics([]);
       setApprovedSchedule(null);
+      setFaqs([]);
 
       // First try SEO listings
       const { data: seoData, error: seoError } = await supabase
@@ -111,13 +115,21 @@ const PublicDoctorProfile = () => {
           });
           
           // Fetch multiple clinics for SEO doctor
-          const { data: clinicsData } = await supabase
-            .from("seo_doctor_clinics")
-            .select("*")
-            .eq("doctor_id", matchedSeo.id)
-            .order("display_order", { ascending: true });
+          const [clinicsRes, faqsRes] = await Promise.all([
+            supabase
+              .from("seo_doctor_clinics")
+              .select("*")
+              .eq("doctor_id", matchedSeo.id)
+              .order("display_order", { ascending: true }),
+            supabase
+              .from("seo_doctor_faqs")
+              .select("question, answer")
+              .eq("doctor_id", matchedSeo.id)
+              .order("display_order", { ascending: true }),
+          ]);
           
-          setSeoClinics(clinicsData ?? []);
+          setSeoClinics(clinicsRes.data ?? []);
+          setFaqs(faqsRes.data ?? []);
           
           setLoading(false);
           fetchRelatedDoctors(matchedSeo.specialization, matchedSeo.city || "", matchedSeo.id);
@@ -376,6 +388,19 @@ const PublicDoctorProfile = () => {
     }
   } : undefined;
 
+  const faqJsonLd = faqs.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  } : undefined;
+
   useSEO({
     title: pageTitle,
     description: pageDescription,
@@ -519,6 +544,12 @@ const PublicDoctorProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       <PublicHeader />
       
       <main className="container mx-auto px-4 py-6 md:py-8">
@@ -546,6 +577,32 @@ const PublicDoctorProfile = () => {
             </h2>
             <DoctorClinicTabs clinics={getClinics()} />
           </section>
+
+          {/* FAQs Section */}
+          {faqs.length > 0 && (
+            <section>
+              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
+                <HelpCircle className="h-6 w-6 text-primary" />
+                Frequently Asked Questions
+              </h2>
+              <Card>
+                <CardContent className="p-6">
+                  <Accordion type="single" collapsible className="w-full">
+                    {faqs.map((faq, index) => (
+                      <AccordionItem key={index} value={`faq-${index}`}>
+                        <AccordionTrigger className="text-left font-medium">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground whitespace-pre-line">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </CardContent>
+              </Card>
+            </section>
+          )}
 
           {/* Related Doctors Section */}
           {relatedDoctors.length > 0 && (

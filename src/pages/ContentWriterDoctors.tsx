@@ -39,6 +39,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import DeletingOverlay from "@/components/DeletingOverlay";
+import FaqEditor, { type FaqItem } from "@/components/FaqEditor";
 
 // Specializations list
 const specializations = [
@@ -512,6 +513,7 @@ const ContentWriterDoctors = () => {
     introduction: "",
   });
   const [editClinics, setEditClinics] = useState<ClinicFormData[]>([]);
+  const [editFaqs, setEditFaqs] = useState<FaqItem[]>([]);
   const [editAvatarFile, setEditAvatarFile] = useState<File | null>(null);
   const [editAvatarPreview, setEditAvatarPreview] = useState<string | null>(null);
 
@@ -537,6 +539,7 @@ const ContentWriterDoctors = () => {
       schedule: getDefaultSchedule(),
     }
   ]);
+  const [addFaqs, setAddFaqs] = useState<FaqItem[]>([]);
 
   useEffect(() => {
     fetchSeoDoctors();
@@ -575,6 +578,22 @@ const ContentWriterDoctors = () => {
       return data || [];
     } catch (error) {
       console.error("Error fetching clinics:", error);
+      return [];
+    }
+  };
+
+  const fetchDoctorFaqs = async (doctorId: string): Promise<FaqItem[]> => {
+    try {
+      const { data, error } = await supabase
+        .from("seo_doctor_faqs")
+        .select("*")
+        .eq("doctor_id", doctorId)
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return (data || []).map(f => ({ id: f.id, question: f.question, answer: f.answer }));
+    } catch (error) {
+      console.error("Error fetching FAQs:", error);
       return [];
     }
   };
@@ -666,9 +685,14 @@ const ContentWriterDoctors = () => {
     setEditAvatarPreview(doctor.avatar_url);
     setEditAvatarFile(null);
 
-    // Fetch clinics for this doctor
-    const fetchedClinics = await fetchDoctorClinics(doctor.id);
+    // Fetch clinics and FAQs for this doctor
+    const [fetchedClinics, fetchedFaqs] = await Promise.all([
+      fetchDoctorClinics(doctor.id),
+      fetchDoctorFaqs(doctor.id),
+    ]);
     
+    setEditFaqs(fetchedFaqs);
+
     if (fetchedClinics.length > 0) {
       setEditClinics(fetchedClinics.map(c => ({
         id: c.id,
@@ -700,6 +724,7 @@ const ContentWriterDoctors = () => {
       introduction: "",
     });
     setEditClinics([]);
+    setEditFaqs([]);
     setEditAvatarFile(null);
     setEditAvatarPreview(null);
   };
@@ -787,6 +812,28 @@ const ContentWriterDoctors = () => {
           .insert(clinicsToInsert);
 
         if (clinicsError) throw clinicsError;
+      }
+
+      // Delete existing FAQs and insert updated ones
+      await supabase
+        .from("seo_doctor_faqs")
+        .delete()
+        .eq("doctor_id", editingDoctor.id);
+
+      const faqsToInsert = editFaqs
+        .filter(f => f.question.trim() && f.answer.trim())
+        .map((faq, index) => ({
+          doctor_id: editingDoctor.id,
+          question: faq.question,
+          answer: faq.answer,
+          display_order: index,
+        }));
+
+      if (faqsToInsert.length > 0) {
+        const { error: faqsError } = await supabase
+          .from("seo_doctor_faqs")
+          .insert(faqsToInsert);
+        if (faqsError) throw faqsError;
       }
 
       toast({ title: "Success", description: "Doctor listing updated successfully" });
@@ -922,6 +969,23 @@ const ContentWriterDoctors = () => {
         if (clinicsError) throw clinicsError;
       }
 
+      // Insert FAQs
+      const faqsToInsert = addFaqs
+        .filter(f => f.question.trim() && f.answer.trim())
+        .map((faq, index) => ({
+          doctor_id: doctorData.id,
+          question: faq.question,
+          answer: faq.answer,
+          display_order: index,
+        }));
+
+      if (faqsToInsert.length > 0) {
+        const { error: faqsError } = await supabase
+          .from("seo_doctor_faqs")
+          .insert(faqsToInsert);
+        if (faqsError) throw faqsError;
+      }
+
       toast({ title: "Success", description: "Doctor listing added successfully with clinics" });
       setShowAddForm(false);
       resetAddForm();
@@ -957,6 +1021,7 @@ const ContentWriterDoctors = () => {
     ]);
     setAvatarFile(null);
     setAvatarPreview(null);
+    setAddFaqs([]);
   };
 
   const filteredSeoDoctors = seoDoctors.filter((doc) => {
@@ -1151,6 +1216,9 @@ const ContentWriterDoctors = () => {
                 </div>
               </div>
 
+              {/* FAQs Section */}
+              <FaqEditor faqs={addFaqs} onFaqsChange={setAddFaqs} />
+
               <div className="flex justify-end gap-3">
                 <Button type="button" variant="outline" onClick={() => { setShowAddForm(false); resetAddForm(); }}>
                   Cancel
@@ -1317,6 +1385,9 @@ const ContentWriterDoctors = () => {
                   ))}
                 </div>
               </div>
+
+              {/* FAQs Section */}
+              <FaqEditor faqs={editFaqs} onFaqsChange={setEditFaqs} />
 
               <div className="flex justify-end gap-3">
                 <Button type="button" variant="outline" onClick={handleCancelEdit}>
