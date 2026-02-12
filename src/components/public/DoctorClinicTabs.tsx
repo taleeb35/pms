@@ -50,24 +50,24 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
   }
 
   const getGoogleMapEmbedUrl = (input: string) => {
-    // If it's a Google Maps URL, extract the search query or coordinates
-    if (input.includes("google.com/maps")) {
+    // Extract a clean Google Maps URL if mixed with other text
+    const urlMatch = input.match(/(https?:\/\/(?:www\.)?google\.com\/maps\/[^\s,]+)/);
+    const cleanInput = urlMatch ? urlMatch[1] : input;
+    
+    if (cleanInput.includes("google.com/maps")) {
       try {
-        const url = new URL(input);
-        // Extract from /maps/search/QUERY pattern
+        const url = new URL(cleanInput);
         const searchMatch = url.pathname.match(/\/maps\/search\/(.+)/);
         if (searchMatch) {
           const query = decodeURIComponent(searchMatch[1].replace(/\+/g, ' '));
           return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
         }
-        // Extract from /maps/place/QUERY pattern
         const placeMatch = url.pathname.match(/\/maps\/place\/(.+)/);
         if (placeMatch) {
           const query = decodeURIComponent(placeMatch[1].split('/')[0].replace(/\+/g, ' '));
           return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
         }
-        // Extract coordinates from @lat,lng pattern
-        const coordMatch = input.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+        const coordMatch = cleanInput.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
         if (coordMatch) {
           return `https://www.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&output=embed`;
         }
@@ -79,11 +79,14 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
     return `https://www.google.com/maps?q=${encodedLocation}&output=embed`;
   };
 
+  const extractGoogleMapsUrl = (input: string): string | null => {
+    const match = input.match(/(https?:\/\/(?:www\.)?google\.com\/maps\/[^\s,]+)/);
+    return match ? match[1] : null;
+  };
+
   const getGoogleMapLinkUrl = (input: string) => {
-    // If it's already a Google Maps URL, return it directly
-    if (input.includes("google.com/maps")) {
-      return input;
-    }
+    const extracted = extractGoogleMapsUrl(input);
+    if (extracted) return extracted;
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(input)}`;
   };
 
