@@ -3,6 +3,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Building2, Banknote } from "lucide-react";
 import DoctorWeeklySchedule, { type ScheduleDay } from "./DoctorWeeklySchedule";
 
+const getDisplayLocation = (location: string) => {
+  if (location.includes("google.com/maps")) {
+    try {
+      const url = new URL(location);
+      const searchMatch = url.pathname.match(/\/maps\/search\/(.+)/);
+      if (searchMatch) {
+        return decodeURIComponent(searchMatch[1].split('/@')[0].replace(/\+/g, ' '));
+      }
+      const placeMatch = url.pathname.match(/\/maps\/place\/(.+)/);
+      if (placeMatch) {
+        return decodeURIComponent(placeMatch[1].split('/')[0].replace(/\+/g, ' '));
+      }
+    } catch {
+      // fall through
+    }
+    return "View on Google Maps";
+  }
+  return location;
+};
+
 export interface ClinicInfo {
   id: string;
   name: string;
@@ -82,7 +102,7 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
                 <h3 className="text-lg font-semibold text-foreground">{clinic.name}</h3>
                 <div className="flex items-center gap-2 text-muted-foreground mt-1">
                   <MapPin className="h-4 w-4" />
-                  <span className="text-sm">{clinic.location}</span>
+                  <span className="text-sm">{getDisplayLocation(clinic.location)}</span>
                 </div>
                 {clinic.fee && (
                   <div className="flex items-center gap-2 text-primary mt-2">
@@ -163,7 +183,7 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
                     <h3 className="text-lg font-semibold text-foreground">{clinic.name}</h3>
                     <div className="flex items-center gap-2 text-muted-foreground mt-1">
                       <MapPin className="h-4 w-4" />
-                      <span className="text-sm">{clinic.location}</span>
+                      <span className="text-sm">{getDisplayLocation(clinic.location)}</span>
                     </div>
                     {clinic.fee && (
                       <div className="flex items-center gap-2 text-primary mt-2">
