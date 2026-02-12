@@ -114,6 +114,8 @@ import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
 import PublicDoctorProfile from "./pages/PublicDoctorProfile";
 import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
