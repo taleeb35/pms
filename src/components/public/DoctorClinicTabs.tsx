@@ -29,9 +29,42 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
     );
   }
 
-  const getGoogleMapEmbedUrl = (location: string) => {
-    const encodedLocation = encodeURIComponent(location);
+  const getGoogleMapEmbedUrl = (input: string) => {
+    // If it's a Google Maps URL, extract the search query or coordinates
+    if (input.includes("google.com/maps")) {
+      try {
+        const url = new URL(input);
+        // Extract from /maps/search/QUERY pattern
+        const searchMatch = url.pathname.match(/\/maps\/search\/(.+)/);
+        if (searchMatch) {
+          const query = decodeURIComponent(searchMatch[1].replace(/\+/g, ' '));
+          return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+        }
+        // Extract from /maps/place/QUERY pattern
+        const placeMatch = url.pathname.match(/\/maps\/place\/(.+)/);
+        if (placeMatch) {
+          const query = decodeURIComponent(placeMatch[1].split('/')[0].replace(/\+/g, ' '));
+          return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+        }
+        // Extract coordinates from @lat,lng pattern
+        const coordMatch = input.match(/@(-?\d+\.?\d*),(-?\d+\.?\d*)/);
+        if (coordMatch) {
+          return `https://www.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&output=embed`;
+        }
+      } catch {
+        // Fall through to default
+      }
+    }
+    const encodedLocation = encodeURIComponent(input);
     return `https://www.google.com/maps?q=${encodedLocation}&output=embed`;
+  };
+
+  const getGoogleMapLinkUrl = (input: string) => {
+    // If it's already a Google Maps URL, return it directly
+    if (input.includes("google.com/maps")) {
+      return input;
+    }
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(input)}`;
   };
 
   // Single clinic - no tabs needed
