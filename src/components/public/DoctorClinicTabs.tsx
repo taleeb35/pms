@@ -200,7 +200,7 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
                     />
                   </div>
                   <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(clinic.mapQuery || clinic.location)}`}
+                    href={getGoogleMapLinkUrl(clinic.mapQuery || clinic.location)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm text-primary hover:underline mt-3"
