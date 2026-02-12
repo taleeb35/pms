@@ -80,8 +80,13 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
   };
 
   const extractGoogleMapsUrl = (input: string): string | null => {
-    const match = input.match(/(https?:\/\/(?:www\.)?google\.com\/maps\/[^\s,]+)/);
-    return match ? match[1] : null;
+    // Match full Google Maps URL (commas are valid in URLs for coordinates)
+    // Stop at comma followed by space or %20 (appended text like ", Lahore, Pakistan")
+    const match = input.match(/(https?:\/\/(?:www\.)?google\.com\/maps\/\S+?)(?:,\s|,%20|$)/);
+    if (match) return match[1];
+    // Fallback: grab everything non-whitespace after google.com/maps/
+    const fallback = input.match(/(https?:\/\/(?:www\.)?google\.com\/maps\/\S+)/);
+    return fallback ? fallback[1] : null;
   };
 
   const getGoogleMapLinkUrl = (input: string) => {
