@@ -18,8 +18,8 @@ const PublicFooter = () => {
   ];
 
   const legalLinks = [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms-of-service" },
     { name: "Blog", href: "/blog" },
     { name: "Help Center", href: "/knowledge-base" },
     { name: "Find Doctors", href: "/find-doctors" },
