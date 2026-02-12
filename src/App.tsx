@@ -114,6 +114,8 @@ import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
 import PublicDoctorProfile from "./pages/PublicDoctorProfile";
 import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -160,6 +162,8 @@ const App = () => (
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/blog" element={<Blogs />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />

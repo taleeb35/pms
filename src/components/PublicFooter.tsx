@@ -18,8 +18,8 @@ const PublicFooter = () => {
   ];
 
   const legalLinks = [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms-of-service" },
     { name: "Blog", href: "/blog" },
     { name: "Help Center", href: "/knowledge-base" },
     { name: "Find Doctors", href: "/find-doctors" },
@@ -99,13 +99,13 @@ const PublicFooter = () => {
             <ul className="space-y-3">
               {legalLinks.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-slate-400 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2 group"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
