@@ -459,7 +459,7 @@ const ContentWriterBlogs = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => window.open(`/blog/${blog.slug}`, "_blank")}
+                              onClick={() => window.open(`https://zonoir.com/blog/${blog.slug}`, "_blank")}
                               title="Preview"
                             >
                               <Eye className="h-4 w-4" />
