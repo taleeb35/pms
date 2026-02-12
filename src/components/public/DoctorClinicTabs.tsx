@@ -90,8 +90,10 @@ const DoctorClinicTabs = ({ clinics, defaultClinicId }: DoctorClinicTabsProps) =
   };
 
   const getGoogleMapLinkUrl = (input: string) => {
-    const extracted = extractGoogleMapsUrl(input);
-    if (extracted) return extracted;
+    // If input contains a Google Maps URL, use it directly
+    if (input.includes("google.com/maps")) {
+      return input.trim();
+    }
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(input)}`;
   };
 
