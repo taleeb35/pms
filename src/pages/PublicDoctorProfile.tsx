@@ -579,30 +579,56 @@ const PublicDoctorProfile = () => {
           </section>
 
           {/* FAQs Section */}
-          {faqs.length > 0 && (
-            <section>
-              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <HelpCircle className="h-6 w-6 text-primary" />
-                Frequently Asked Questions
-              </h2>
-              <Card>
-                <CardContent className="p-6">
-                  <Accordion type="single" collapsible className="w-full">
-                    {faqs.map((faq, index) => (
-                      <AccordionItem key={index} value={`faq-${index}`}>
-                        <AccordionTrigger className="text-left font-medium">
-                          {faq.question}
-                        </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground whitespace-pre-line">
-                          {faq.answer}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            </section>
-          )}
+          {(() => {
+            const drName = doctor.full_name;
+            const fixedFaqs = [
+              ...(doctor.contact_number ? [{
+                question: `What is ${drName}'s contact number?`,
+                answer: `You can contact ${drName} at ${doctor.contact_number}.`
+              }] : []),
+              {
+                question: `What is the Qualification of ${drName}?`,
+                answer: `${drName}'s qualification is ${doctor.qualification}.`
+              },
+              {
+                question: `What is ${drName}'s speciality & area of expertise?`,
+                answer: `${drName} specializes in ${doctor.specialization}.`
+              },
+              ...(doctor.experience_years ? [{
+                question: `How experienced is ${drName}?`,
+                answer: `${drName} has ${doctor.experience_years}+ years of experience in ${doctor.specialization}.`
+              }] : []),
+              ...(doctor.city ? [{
+                question: `Where does ${drName} practice?`,
+                answer: `${drName} practices in ${doctor.city}.`
+              }] : []),
+            ];
+            const allFaqs = [...faqs, ...fixedFaqs];
+
+            return (
+              <section>
+                <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
+                  FAQs
+                </h2>
+                <Card>
+                  <CardContent className="p-6">
+                    <Accordion type="single" collapsible className="w-full">
+                      {allFaqs.map((faq, index) => (
+                        <AccordionItem key={index} value={`faq-${index}`}>
+                          <AccordionTrigger className="text-left font-medium">
+                            {faq.question}
+                          </AccordionTrigger>
+                          <AccordionContent className="text-muted-foreground whitespace-pre-line">
+                            {faq.answer}
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </CardContent>
+                </Card>
+              </section>
+            );
+          })()}
 
           {/* Related Doctors Section */}
           {relatedDoctors.length > 0 && (
