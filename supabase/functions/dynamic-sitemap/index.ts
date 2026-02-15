@@ -51,6 +51,9 @@ serve(async (req) => {
       { loc: "/find-doctors", priority: "0.9", changefreq: "daily" },
       { loc: "/referral-program", priority: "0.7", changefreq: "monthly" },
       { loc: "/knowledge-base", priority: "0.8", changefreq: "weekly" },
+      { loc: "/blog", priority: "0.8", changefreq: "weekly" },
+      { loc: "/privacy-policy", priority: "0.5", changefreq: "monthly" },
+      { loc: "/terms-of-service", priority: "0.5", changefreq: "monthly" },
     ];
 
     for (const page of staticPages) {
@@ -120,6 +123,25 @@ serve(async (req) => {
     <priority>0.8</priority>
   </url>
 `;
+    }
+
+    // ============ BLOG POSTS ============
+    const { data: blogPosts } = await supabase
+      .from("blogs")
+      .select("slug, updated_at")
+      .eq("status", "published");
+
+    if (blogPosts) {
+      for (const post of blogPosts) {
+        const lastmod = post.updated_at ? post.updated_at.split('T')[0] : today;
+        sitemap += `  <url>
+    <loc>${BASE_URL}/blog/${post.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+`;
+      }
     }
 
     // ============ DOCTOR PROFILE PAGES FROM SEO LISTINGS ============
