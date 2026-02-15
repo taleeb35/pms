@@ -3,161 +3,189 @@
   <!-- Homepage -->
   <url>
     <loc>https://zonoir.com/</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
+
   <!-- Main Pages -->
   <url>
     <loc>https://zonoir.com/features</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/pricing</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/contact</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/reviews</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/find-doctors</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/referral-program</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  
+
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://zonoir.com/privacy-policy</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/terms-of-service</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Blog -->
+  <url>
+    <loc>https://zonoir.com/blog</loc>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/blog/future-of-digital-healthcare-emr-systems</loc>
+    <lastmod>2026-02-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Knowledge Base -->
   <url>
     <loc>https://zonoir.com/knowledge-base</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/clinic-signup</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/doctor-signup</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/dashboard-overview</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/add-doctors</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/manage-receptionists</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/specializations</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/doctor-schedule</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/prescription-templates</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/visit-records</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/add-patients</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/medical-records</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/patient-history</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/book-appointments</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/walk-ins</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/appointment-calendar</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/subscription</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/payment-tracking</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zonoir.com/knowledge-base/expenses</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -165,91 +193,91 @@
   <!-- City Landing Pages -->
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-lahore</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-karachi</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-islamabad</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-rawalpindi</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-faisalabad</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-multan</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-peshawar</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-quetta</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-sialkot</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-gujranwala</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-hyderabad</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-bahawalpur</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-sargodha</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-sukkur</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://zonoir.com/emr-software-for-doctors-in-abbottabad</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -257,192 +285,198 @@
   <!-- Specialty Pages -->
   <url>
     <loc>https://zonoir.com/doctors/general-physician</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/gynecologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/dermatologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/pediatrician</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/cardiologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/orthopedic-surgeon</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/ent-specialist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/neurologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/psychiatrist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/urologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/gastroenterologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/pulmonologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/endocrinologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/nephrologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/oncologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/rheumatologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/ophthalmologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/dentist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/plastic-surgeon</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/neurosurgeon</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/general-surgeon</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/vascular-surgeon</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/infectious-disease-specialist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/allergist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/pain-management-specialist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/sexologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/nutritionist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/physiotherapist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/psychologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/homeopath</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://zonoir.com/doctors/diabetologist</loc>
-    <lastmod>2026-01-29</lastmod>
+    <lastmod>2026-02-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/hematologist</loc>
+    <lastmod>2026-02-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Doctor Profile Pages -->
+  <!-- Doctor Profile Pages (SEO Listings) -->
   <url>
     <loc>https://zonoir.com/doctors/lahore/gynecologist/dr-mariam-khalid</loc>
     <lastmod>2026-01-29</lastmod>
@@ -450,14 +484,250 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://zonoir.com/doctors/sargodha/cardiologist/dr-ahmed-ali</loc>
+    <loc>https://zonoir.com/doctors/daska/dermatologist/galena-joseph</loc>
     <lastmod>2026-01-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://zonoir.com/doctors/lahore/gynecologist/dr-sadia-zulfiqar-cheema</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gynecologist/asst-prof-dr-zill-e-huma</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gastroenterologist/dr-asad-ali-choudhry</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-surgeon/dr-fahreyar-alam</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/psychiatrist/dr-kamran-ahmed</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/pediatrician/prof-dr-attia-bari</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gastroenterologist/dr-salman-taj-uppal</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/infectious-disease-specialist/dr-ashraf-ali-khan</loc>
+    <lastmod>2026-01-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/vascular-surgeon/dr-ilyas-sadiq</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gastroenterologist/dr-muhammad-avais-khan</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gynecologist/dr-tazeen-ashraf</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/plastic-surgeon/asst-prof-dr-umer-nazir</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-physician/dr-syed-mohsin-ali</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/vascular-surgeon/dr-m-umar</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/neurosurgeon/asst-prof-dr-hassaan-zahid</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/psychologist/ms-sabeeka-pervaiz</loc>
+    <lastmod>2026-01-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://zonoir.com/doctors/lahore/gynecologist/dr-sarah-asif</loc>
-    <lastmod>2025-12-12</lastmod>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gynecologist/dr-kiran-usman</loc>
+    <lastmod>2026-01-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/pediatrician/dr-asia-shafiq</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-surgeon/dr-mian-tahir-shah</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gynecologist/dr-rukhsana-babar</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/urologist/asst-prof-irfan-shabbir-goraya</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-surgeon/dr-m-zeeshan-sarwar</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/gastroenterologist/dr-hamad-ashraf</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-surgeon/prof-dr-muhammad-nawaz-anjum</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/neurologist/asst-prof-dr-mamoona-tanwir-rana</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/pediatrician/dr-lubna-riaz</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/infectious-disease-specialist/dr-yasser-hussain</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/plastic-surgeon/dr-waseem-humayoun</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-surgeon/prof-dr-mohammad-akmal-shafiq</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/plastic-surgeon/prof-dr-mustehsan-bashir</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/hematologist/dr-ayesha-ehsan</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/psychologist/ms-saman-chaudhry</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/general-surgeon/dr-muhammad-ayzed</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/ent-specialist/asst-prof-dr-nasir-riaz</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/neurologist/asst-prof-dr-ayesha-aslam</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/orthopedic-surgeon/dr-ahmed-shoaib</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/psychiatrist/dr-bushra-mubarika-butt</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zonoir.com/doctors/lahore/endocrinologist/dr-gulshad-hassan</loc>
+    <lastmod>2026-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Doctor Profile Pages (Approved/Registered Doctors) -->
+  <url>
+    <loc>https://zonoir.com/doctors/sargodha/cardiologist/dr-ahmed-ali</loc>
+    <lastmod>2026-01-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
