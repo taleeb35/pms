@@ -112,7 +112,8 @@ serve(async (req) => {
       "ophthalmologist", "dentist", "plastic-surgeon", "neurosurgeon",
       "general-surgeon", "vascular-surgeon", "infectious-disease-specialist",
       "allergist", "pain-management-specialist", "sexologist", "nutritionist",
-      "physiotherapist", "psychologist", "homeopath", "diabetologist"
+      "physiotherapist", "psychologist", "homeopath", "diabetologist",
+      "hematologist", "family-medicine"
     ];
 
     for (const specialty of specialties) {
