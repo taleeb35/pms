@@ -40,38 +40,46 @@ const PublicHeader = () => {
               <Button
                 key={item.path}
                 variant="ghost"
-                onClick={() => navigate(item.path)}
+                asChild
                 className="text-muted-foreground hover:text-foreground font-medium"
               >
-                {item.icon && <item.icon className="mr-1.5 h-4 w-4" />}
-                {item.label}
+                <Link to={item.path}>
+                  {item.icon && <item.icon className="mr-1.5 h-4 w-4" />}
+                  {item.label}
+                </Link>
               </Button>
             ))}
 
             <Button
-              onClick={() => navigate("/auth")}
+              asChild
               size="sm"
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
-              <Sparkles className="mr-2 h-4 w-4" />
-              Get Zonoir Free
+              <Link to="/auth">
+                <Sparkles className="mr-2 h-4 w-4" />
+                Get Zonoir Free
+              </Link>
             </Button>
             <Button
-              onClick={() => window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank")}
+              asChild
               size="sm"
               variant="outline"
               className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
             >
-              <Calendar className="mr-2 h-4 w-4" />
-              Request A Demo
+              <a href="https://calendar.app.google/vkzUUndGFT4Afq1D9" target="_blank" rel="noopener noreferrer">
+                <Calendar className="mr-2 h-4 w-4" />
+                Request A Demo
+              </a>
             </Button>
             <Button
-              onClick={() => navigate("/login")}
+              asChild
               size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
-              <LogIn className="mr-2 h-4 w-4" />
-              Login
+              <Link to="/login">
+                <LogIn className="mr-2 h-4 w-4" />
+                Login
+              </Link>
             </Button>
           </div>
 
