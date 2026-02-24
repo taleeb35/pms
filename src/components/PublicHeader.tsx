@@ -111,44 +111,43 @@ const PublicHeader = () => {
                     <Button
                       key={item.path}
                       variant="ghost"
-                      onClick={() => handleNavClick(item.path)}
+                      asChild
                       className="w-full justify-start text-lg font-medium"
                     >
-                      {item.icon && <item.icon className="mr-2 h-5 w-5" />}
-                      {item.label}
+                      <Link to={item.path} onClick={() => setMobileMenuOpen(false)}>
+                        {item.icon && <item.icon className="mr-2 h-5 w-5" />}
+                        {item.label}
+                      </Link>
                     </Button>
                   ))}
                   <div className="border-t my-4" />
                   <Button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      navigate("/auth");
-                    }}
+                    asChild
                     className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
                   >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Get Zonoir Free
+                    <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Get Zonoir Free
+                    </Link>
                   </Button>
                   <Button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank");
-                    }}
+                    asChild
                     variant="outline"
                     className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                   >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    Request A Demo
+                    <a href="https://calendar.app.google/vkzUUndGFT4Afq1D9" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Request A Demo
+                    </a>
                   </Button>
                   <Button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      navigate("/login");
-                    }}
+                    asChild
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Login
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Login
+                    </Link>
                   </Button>
                 </nav>
               </SheetContent>
