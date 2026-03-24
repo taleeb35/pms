@@ -51,6 +51,7 @@ import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fn
 import { cn } from "@/lib/utils";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { PrintReportDialog } from "@/components/PrintReportDialog";
@@ -129,6 +130,7 @@ const DoctorAppointments = () => {
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
   const [sortColumn, setSortColumn] = useState<string>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => {
@@ -636,6 +638,56 @@ const DoctorAppointments = () => {
       : <ArrowDown className="h-3 w-3 ml-1" />;
   };
 
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedAppointments.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedAppointments.map(a => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (selectedIds.size === 0) return;
+    try {
+      const ids = Array.from(selectedIds);
+      const { error } = await supabase
+        .from("appointments")
+        .update({ status: newStatus as any })
+        .in("id", ids);
+      if (error) throw error;
+
+      for (const id of ids) {
+        const apt = appointments.find(a => a.id === id);
+        const action = newStatus === "cancelled" ? "appointment_cancelled"
+          : newStatus === "completed" ? "appointment_completed"
+          : "appointment_status_changed";
+        await logActivity({
+          action,
+          entityType: "appointment",
+          entityId: id,
+          details: {
+            doctorId,
+            patient_name: apt?.patients?.full_name || "Unknown",
+            new_status: newStatus,
+          },
+        });
+      }
+
+      toast({ title: "Success", description: `${ids.length} appointment(s) updated to ${newStatus}` });
+      setSelectedIds(new Set());
+      fetchAppointments();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   // No early return - show skeleton in content instead
 
   return (
@@ -809,12 +861,37 @@ const DoctorAppointments = () => {
         <TabsContent value="table" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>All Appointments</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>All Appointments</CardTitle>
+                {selectedIds.size > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("scheduled")}>
+                      Mark Scheduled
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("start")}>
+                      Mark Started
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("completed")}>
+                      <CheckCircle className="h-4 w-4 mr-1" /> Complete
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleBulkStatusUpdate("cancelled")}>
+                      <XCircle className="h-4 w-4 mr-1" /> Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[40px]">
+                      <Checkbox
+                        checked={paginatedAppointments.length > 0 && selectedIds.size === paginatedAppointments.length}
+                        onCheckedChange={toggleSelectAll}
+                      />
+                    </TableHead>
                     <TableHead className="cursor-pointer select-none" onClick={() => handleSort("number")}>
                       <span className="flex items-center">Appoint#<SortIcon column="number" /></span>
                     </TableHead>
@@ -835,13 +912,13 @@ const DoctorAppointments = () => {
                 <TableBody>
                   {loading ? (
                     <TableSkeleton
-                      columns={isGynecologist ? 7 : 6}
+                      columns={isGynecologist ? 8 : 7}
                       rows={5}
-                      columnWidths={["w-[80px]", "w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
+                      columnWidths={["w-[40px]", "w-[80px]", "w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
                     />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={isGynecologist ? 8 : 7} className="text-center text-muted-foreground py-8">
                         No appointments scheduled
                       </TableCell>
                     </TableRow>
@@ -849,9 +926,15 @@ const DoctorAppointments = () => {
                     paginatedAppointments.map((apt) => (
                       <TableRow 
                         key={apt.id} 
-                        className="hover:bg-accent/50 cursor-pointer transition-colors"
+                        className={cn("hover:bg-accent/50 cursor-pointer transition-colors", selectedIds.has(apt.id) && "bg-accent")}
                         onClick={() => openVisitPage(apt)}
                       >
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedIds.has(apt.id)}
+                            onCheckedChange={() => toggleSelect(apt.id)}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium text-primary">#{appointmentNumberMap.get(apt.id) || 0}</TableCell>
                         <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                         <TableCell>{apt.patients?.phone || "-"}</TableCell>

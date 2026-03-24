@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Calendar, Clock } from "lucide-react";
+import { Search, Calendar, Clock, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 import { TableSkeleton } from "@/components/TableSkeleton";
 import { DashboardSkeleton } from "@/components/DashboardSkeleton";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { logActivity } from "@/lib/activityLogger";
 
 const DoctorReceptionistAppointments = () => {
   const { toast } = useToast();
@@ -23,6 +26,7 @@ const DoctorReceptionistAppointments = () => {
   const [showCalendar, setShowCalendar] = useState(true);
   const [pageSize, setPageSize] = useState(10);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (doctorId) {
@@ -90,6 +94,56 @@ const DoctorReceptionistAppointments = () => {
     setSelectedAppointment(appointment);
   };
 
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedAppointments.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedAppointments.map((a: any) => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (selectedIds.size === 0) return;
+    try {
+      const ids = Array.from(selectedIds);
+      const { error } = await supabase
+        .from("appointments")
+        .update({ status: newStatus as any })
+        .in("id", ids);
+      if (error) throw error;
+
+      for (const id of ids) {
+        const apt = appointments.find((a: any) => a.id === id);
+        const action = newStatus === "cancelled" ? "appointment_cancelled"
+          : newStatus === "completed" ? "appointment_completed"
+          : "appointment_status_changed";
+        await logActivity({
+          action,
+          entityType: "appointment",
+          entityId: id,
+          details: {
+            doctorId,
+            patient_name: apt?.patients?.full_name || "Unknown",
+            new_status: newStatus,
+          },
+        });
+      }
+
+      toast({ title: "Success", description: `${ids.length} appointment(s) updated to ${newStatus}` });
+      setSelectedIds(new Set());
+      fetchAppointments();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   if (doctorLoading || loading) {
     return <DashboardSkeleton />;
   }
@@ -131,8 +185,27 @@ const DoctorReceptionistAppointments = () => {
       ) : (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>All Appointments ({filteredAppointments.length})</CardTitle>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-4">
+                <CardTitle>All Appointments ({filteredAppointments.length})</CardTitle>
+                {selectedIds.size > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("scheduled")}>
+                      Mark Scheduled
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("start")}>
+                      Mark Started
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("completed")}>
+                      <CheckCircle className="h-4 w-4 mr-1" /> Complete
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleBulkStatusUpdate("cancelled")}>
+                      <XCircle className="h-4 w-4 mr-1" /> Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -154,6 +227,12 @@ const DoctorReceptionistAppointments = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[40px]">
+                        <Checkbox
+                          checked={paginatedAppointments.length > 0 && selectedIds.size === paginatedAppointments.length}
+                          onCheckedChange={toggleSelectAll}
+                        />
+                      </TableHead>
                       <TableHead>Patient</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Time</TableHead>
@@ -164,7 +243,13 @@ const DoctorReceptionistAppointments = () => {
                   </TableHeader>
                   <TableBody>
                     {paginatedAppointments.map((appt) => (
-                      <TableRow key={appt.id}>
+                      <TableRow key={appt.id} className={cn(selectedIds.has(appt.id) && "bg-accent")}>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedIds.has(appt.id)}
+                            onCheckedChange={() => toggleSelect(appt.id)}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">
                           {appt.patients?.full_name || "N/A"}
                         </TableCell>
