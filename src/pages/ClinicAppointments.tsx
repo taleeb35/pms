@@ -462,10 +462,9 @@ const ClinicAppointments = () => {
   const getStatusBadge = (status: string) => {
     const config: any = {
       scheduled: { label: "Scheduled", className: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
-      confirmed: { label: "Confirmed", className: "bg-green-500/10 text-green-500 border-green-500/20" },
-      in_progress: { label: "In Progress", className: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
-      completed: { label: "Completed", className: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
+      start: { label: "Started", className: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
       cancelled: { label: "Cancelled", className: "bg-red-500/10 text-red-500 border-red-500/20" },
+      completed: { label: "Completed", className: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
     };
     const c = config[status] || config.scheduled;
     return <Badge className={c.className}>{c.label}</Badge>;
