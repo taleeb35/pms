@@ -886,6 +886,12 @@ const DoctorAppointments = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[40px]">
+                      <Checkbox
+                        checked={paginatedAppointments.length > 0 && selectedIds.size === paginatedAppointments.length}
+                        onCheckedChange={toggleSelectAll}
+                      />
+                    </TableHead>
                     <TableHead className="cursor-pointer select-none" onClick={() => handleSort("number")}>
                       <span className="flex items-center">Appoint#<SortIcon column="number" /></span>
                     </TableHead>
