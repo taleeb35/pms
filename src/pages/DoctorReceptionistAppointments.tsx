@@ -26,6 +26,7 @@ const DoctorReceptionistAppointments = () => {
   const [showCalendar, setShowCalendar] = useState(true);
   const [pageSize, setPageSize] = useState(10);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (doctorId) {
