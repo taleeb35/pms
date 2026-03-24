@@ -207,11 +207,9 @@ const DoctorActivityLogs = () => {
     if (details.new_status) {
       const statusLabels: Record<string, string> = {
         scheduled: "Scheduled",
-        confirmed: "Confirmed",
-        in_progress: "In Progress",
+        start: "Started",
         completed: "Completed",
         cancelled: "Cancelled",
-        no_show: "No Show",
       };
       parts.push(`Status: ${statusLabels[String(details.new_status)] || String(details.new_status)}`);
     }

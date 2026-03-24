@@ -763,24 +763,18 @@ const ClinicAppointments = () => {
                                 Record Visit
                               </DropdownMenuItem>
                               {apt.status === "scheduled" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
-                                  <Check className="h-4 w-4 mr-2" />
-                                  Confirm
-                                </DropdownMenuItem>
-                              )}
-                              {apt.status === "confirmed" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "in_progress")}>
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "start")}>
                                   <Play className="h-4 w-4 mr-2" />
                                   Start
                                 </DropdownMenuItem>
                               )}
-                              {apt.status === "in_progress" && (
+                              {apt.status === "start" && (
                                 <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "completed")}>
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Complete
                                 </DropdownMenuItem>
                               )}
-                              {(apt.status === "scheduled" || apt.status === "confirmed") && (
+                              {(apt.status === "scheduled" || apt.status === "start") && (
                                 <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "cancelled")}>
                                   <XCircle className="h-4 w-4 mr-2" />
                                   Cancel

@@ -682,8 +682,8 @@ const ClinicAppointmentDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleStatusChange("in_progress")}>
-                <Play className="h-4 w-4 mr-2" /> Mark In Progress
+              <DropdownMenuItem onClick={() => handleStatusChange("start")}>
+                <Play className="h-4 w-4 mr-2" /> Start
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleStatusChange("completed")}>
                 <CheckCircle className="h-4 w-4 mr-2" /> Mark Completed

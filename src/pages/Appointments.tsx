@@ -53,11 +53,9 @@ const Appointments = () => {
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       scheduled: "bg-blue-500",
-      confirmed: "bg-green-500",
-      in_progress: "bg-yellow-500",
-      completed: "bg-gray-500",
+      start: "bg-yellow-500",
+      completed: "bg-purple-500",
       cancelled: "bg-red-500",
-      no_show: "bg-orange-500",
     };
     return colors[status] || "bg-gray-500";
   };

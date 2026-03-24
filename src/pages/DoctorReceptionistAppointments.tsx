@@ -59,12 +59,17 @@ const DoctorReceptionistAppointments = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
       scheduled: "secondary",
-      confirmed: "default",
+      start: "default",
       completed: "default",
       cancelled: "destructive",
-      no_show: "destructive",
     };
-    return <Badge variant={variants[status] || "secondary"}>{status}</Badge>;
+    const labels: Record<string, string> = {
+      scheduled: "Scheduled",
+      start: "Started",
+      completed: "Completed",
+      cancelled: "Cancelled",
+    };
+    return <Badge variant={variants[status] || "secondary"}>{labels[status] || status}</Badge>;
   };
 
   const filteredAppointments = appointments.filter((a) => {
