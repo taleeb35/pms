@@ -926,7 +926,7 @@ const DoctorAppointments = () => {
                     paginatedAppointments.map((apt) => (
                       <TableRow 
                         key={apt.id} 
-                        className={cn("hover:bg-accent/50 cursor-pointer transition-colors", selectedIds.has(apt.id) && "bg-accent")}
+                        className={cn("hover:bg-accent/50 cursor-pointer transition-colors", selectedIds.has(apt.id) && "bg-primary/10 hover:bg-primary/15")}
                         onClick={() => openVisitPage(apt)}
                       >
                         <TableCell onClick={(e) => e.stopPropagation()}>

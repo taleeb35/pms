@@ -814,7 +814,7 @@ const ClinicAppointments = () => {
                     </TableRow>
                   ) : (
                     paginatedAppointments.map((apt) => (
-                      <TableRow key={apt.id} className={cn("hover:bg-accent/50", selectedIds.has(apt.id) && "bg-accent")}>
+                      <TableRow key={apt.id} className={cn("hover:bg-accent/50", selectedIds.has(apt.id) && "bg-primary/10 hover:bg-primary/15")}>
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <Checkbox
                             checked={selectedIds.has(apt.id)}

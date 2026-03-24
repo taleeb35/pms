@@ -243,7 +243,7 @@ const DoctorReceptionistAppointments = () => {
                   </TableHeader>
                   <TableBody>
                     {paginatedAppointments.map((appt) => (
-                      <TableRow key={appt.id} className={cn(selectedIds.has(appt.id) && "bg-accent")}>
+                      <TableRow key={appt.id} className={cn(selectedIds.has(appt.id) && "bg-primary/10 hover:bg-primary/15")}>
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <Checkbox
                             checked={selectedIds.has(appt.id)}
