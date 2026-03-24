@@ -912,13 +912,13 @@ const DoctorAppointments = () => {
                 <TableBody>
                   {loading ? (
                     <TableSkeleton
-                      columns={isGynecologist ? 7 : 6}
+                      columns={isGynecologist ? 8 : 7}
                       rows={5}
-                      columnWidths={["w-[80px]", "w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
+                      columnWidths={["w-[40px]", "w-[80px]", "w-[150px]", "w-[100px]", "w-[100px]", "w-[120px]", "w-[100px]"]}
                     />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={isGynecologist ? 7 : 6} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={isGynecologist ? 8 : 7} className="text-center text-muted-foreground py-8">
                         No appointments scheduled
                       </TableCell>
                     </TableRow>
@@ -926,10 +926,15 @@ const DoctorAppointments = () => {
                     paginatedAppointments.map((apt) => (
                       <TableRow 
                         key={apt.id} 
-                        className="hover:bg-accent/50 cursor-pointer transition-colors"
+                        className={cn("hover:bg-accent/50 cursor-pointer transition-colors", selectedIds.has(apt.id) && "bg-accent")}
                         onClick={() => openVisitPage(apt)}
                       >
-                        <TableCell className="font-medium text-primary">#{appointmentNumberMap.get(apt.id) || 0}</TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedIds.has(apt.id)}
+                            onCheckedChange={() => toggleSelect(apt.id)}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                         <TableCell>{apt.patients?.phone || "-"}</TableCell>
                         {isGynecologist && (
