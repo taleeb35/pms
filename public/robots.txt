@@ -46,4 +46,6 @@ Sitemap: https://zonoir.com/sitemap.xml
 Sitemap: https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap
 
 # LLMs
-# See https://zonoir.com/llms.txt for LLM-friendly site description
+# Full dynamic version with all doctor profiles:
+# https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-llms-txt
+# Static fallback: https://zonoir.com/llms.txt
