@@ -440,7 +440,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const handleStatusChange = async (newStatus: "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled" | "no_show") => {
+  const handleStatusChange = async (newStatus: "scheduled" | "start" | "completed" | "cancelled") => {
     if (!appointment) return;
     
     try {
