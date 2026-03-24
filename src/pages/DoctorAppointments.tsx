@@ -861,7 +861,26 @@ const DoctorAppointments = () => {
         <TabsContent value="table" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>All Appointments</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>All Appointments</CardTitle>
+                {selectedIds.size > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("scheduled")}>
+                      Mark Scheduled
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("start")}>
+                      Mark Started
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("completed")}>
+                      <CheckCircle className="h-4 w-4 mr-1" /> Complete
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleBulkStatusUpdate("cancelled")}>
+                      <XCircle className="h-4 w-4 mr-1" /> Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
