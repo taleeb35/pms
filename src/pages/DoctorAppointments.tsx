@@ -51,6 +51,7 @@ import { format, addDays, startOfDay, endOfDay, isWithinInterval } from "date-fn
 import { cn } from "@/lib/utils";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
+import { Checkbox } from "@/components/ui/checkbox";
 
 import { PatientSearchSelect } from "@/components/PatientSearchSelect";
 import { PrintReportDialog } from "@/components/PrintReportDialog";
