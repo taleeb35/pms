@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, Menu, Gift, Calendar, Sparkles } from "lucide-react";
+import { LogIn, Menu, Gift, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import clinicLogo from "@/assets/main-logo.webp";
 
@@ -63,17 +63,6 @@ const PublicHeader = () => {
             <Button
               asChild
               size="sm"
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <a href="https://calendar.app.google/vkzUUndGFT4Afq1D9" target="_blank" rel="noopener noreferrer">
-                <Calendar className="mr-2 h-4 w-4" />
-                Request A Demo
-              </a>
-            </Button>
-            <Button
-              asChild
-              size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Link to="/login">
@@ -129,16 +118,6 @@ const PublicHeader = () => {
                       <Sparkles className="mr-2 h-4 w-4" />
                       Get Zonoir Free
                     </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <a href="https://calendar.app.google/vkzUUndGFT4Afq1D9" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Request A Demo
-                    </a>
                   </Button>
                   <Button
                     asChild
