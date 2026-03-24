@@ -120,6 +120,7 @@ const ClinicAppointments = () => {
   const [isOnLeave, setIsOnLeave] = useState(false);
   const [editSelectedDoctorId, setEditSelectedDoctorId] = useState("");
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => {
