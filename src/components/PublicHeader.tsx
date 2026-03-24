@@ -63,17 +63,6 @@ const PublicHeader = () => {
             <Button
               asChild
               size="sm"
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              <a href="https://calendar.app.google/vkzUUndGFT4Afq1D9" target="_blank" rel="noopener noreferrer">
-                <Calendar className="mr-2 h-4 w-4" />
-                Request A Demo
-              </a>
-            </Button>
-            <Button
-              asChild
-              size="sm"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
               <Link to="/login">
