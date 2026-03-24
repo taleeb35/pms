@@ -185,8 +185,27 @@ const DoctorReceptionistAppointments = () => {
       ) : (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>All Appointments ({filteredAppointments.length})</CardTitle>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-4">
+                <CardTitle>All Appointments ({filteredAppointments.length})</CardTitle>
+                {selectedIds.size > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("scheduled")}>
+                      Mark Scheduled
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("start")}>
+                      Mark Started
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("completed")}>
+                      <CheckCircle className="h-4 w-4 mr-1" /> Complete
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleBulkStatusUpdate("cancelled")}>
+                      <XCircle className="h-4 w-4 mr-1" /> Cancel
+                    </Button>
+                  </div>
+                )}
+              </div>
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -208,6 +227,12 @@ const DoctorReceptionistAppointments = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[40px]">
+                        <Checkbox
+                          checked={paginatedAppointments.length > 0 && selectedIds.size === paginatedAppointments.length}
+                          onCheckedChange={toggleSelectAll}
+                        />
+                      </TableHead>
                       <TableHead>Patient</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Time</TableHead>
@@ -218,7 +243,13 @@ const DoctorReceptionistAppointments = () => {
                   </TableHeader>
                   <TableBody>
                     {paginatedAppointments.map((appt) => (
-                      <TableRow key={appt.id}>
+                      <TableRow key={appt.id} className={cn(selectedIds.has(appt.id) && "bg-accent")}>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={selectedIds.has(appt.id)}
+                            onCheckedChange={() => toggleSelect(appt.id)}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">
                           {appt.patients?.full_name || "N/A"}
                         </TableCell>
