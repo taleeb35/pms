@@ -120,7 +120,7 @@ const DoctorReceptionistWalkIn = () => {
         doctor_id: doctorId,
         appointment_date: today,
         appointment_time: now,
-        status: "in_progress",
+        status: "start" as any,
         appointment_type: "walk-in",
         reason: formData.reason || "Walk-in",
         consultation_fee: parseFloat(formData.consultationFee) || 0,

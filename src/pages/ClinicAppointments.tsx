@@ -462,10 +462,9 @@ const ClinicAppointments = () => {
   const getStatusBadge = (status: string) => {
     const config: any = {
       scheduled: { label: "Scheduled", className: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
-      confirmed: { label: "Confirmed", className: "bg-green-500/10 text-green-500 border-green-500/20" },
-      in_progress: { label: "In Progress", className: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
-      completed: { label: "Completed", className: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
+      start: { label: "Started", className: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
       cancelled: { label: "Cancelled", className: "bg-red-500/10 text-red-500 border-red-500/20" },
+      completed: { label: "Completed", className: "bg-purple-500/10 text-purple-500 border-purple-500/20" },
     };
     const c = config[status] || config.scheduled;
     return <Badge className={c.className}>{c.label}</Badge>;
@@ -666,8 +665,7 @@ const ClinicAppointments = () => {
             <SelectContent className="bg-background z-50">
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="scheduled">Scheduled</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="in_progress">In Progress</SelectItem>
+              <SelectItem value="start">Started</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
@@ -765,24 +763,18 @@ const ClinicAppointments = () => {
                                 Record Visit
                               </DropdownMenuItem>
                               {apt.status === "scheduled" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "confirmed")}>
-                                  <Check className="h-4 w-4 mr-2" />
-                                  Confirm
-                                </DropdownMenuItem>
-                              )}
-                              {apt.status === "confirmed" && (
-                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "in_progress")}>
+                                <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "start")}>
                                   <Play className="h-4 w-4 mr-2" />
                                   Start
                                 </DropdownMenuItem>
                               )}
-                              {apt.status === "in_progress" && (
+                              {apt.status === "start" && (
                                 <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "completed")}>
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Complete
                                 </DropdownMenuItem>
                               )}
-                              {(apt.status === "scheduled" || apt.status === "confirmed") && (
+                              {(apt.status === "scheduled" || apt.status === "start") && (
                                 <DropdownMenuItem onClick={() => handleUpdateStatus(apt.id, "cancelled")}>
                                   <XCircle className="h-4 w-4 mr-2" />
                                   Cancel
