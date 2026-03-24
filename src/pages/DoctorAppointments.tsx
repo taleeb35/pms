@@ -130,6 +130,7 @@ const DoctorAppointments = () => {
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
   const [sortColumn, setSortColumn] = useState<string>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => {
