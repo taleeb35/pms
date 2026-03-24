@@ -1,0 +1,81 @@
+# Zonoir
+
+> Zonoir is Pakistan's leading EMR (Electronic Medical Record) and clinic management platform. It helps doctors, clinics, and healthcare providers digitize their practice with appointment scheduling, patient records, prescriptions, billing, and more.
+
+## About
+
+Zonoir provides a comprehensive healthcare management solution designed specifically for doctors and clinics in Pakistan. The platform offers EMR software, appointment booking, patient management, visit records, prescription templates, financial tracking, and public doctor profiles for patient discovery.
+
+## Key Features
+
+- **EMR Software**: Digital patient records, visit history, prescriptions, and medical documents
+- **Appointment Management**: Online booking, walk-ins, waitlist, and calendar views
+- **Clinic Management**: Multi-doctor support, receptionist access, specializations, and expenses tracking
+- **Doctor Profiles**: Public searchable profiles with qualifications, schedule, and clinic locations
+- **Billing & Finance**: Consultation fees, procedure fees, invoices, and payment tracking
+- **Patient Portal**: Patient search, medical history, allergies, and document uploads
+
+## Public Pages
+
+- [Home](https://zonoir.com/)
+- [Features](https://zonoir.com/features)
+- [Pricing](https://zonoir.com/pricing)
+- [Find Doctors](https://zonoir.com/find-doctors)
+- [Blog](https://zonoir.com/blog)
+- [Contact](https://zonoir.com/contact)
+- [Reviews](https://zonoir.com/reviews)
+- [Knowledge Base](https://zonoir.com/knowledge-base)
+- [Referral Program](https://zonoir.com/referral-program)
+- [Privacy Policy](https://zonoir.com/privacy-policy)
+- [Terms of Service](https://zonoir.com/terms-of-service)
+
+## Doctor Discovery by Specialty
+
+- [General Physician](https://zonoir.com/doctors/general-physician)
+- [Gynecologist](https://zonoir.com/doctors/gynecologist)
+- [Dermatologist](https://zonoir.com/doctors/dermatologist)
+- [Pediatrician](https://zonoir.com/doctors/pediatrician)
+- [Cardiologist](https://zonoir.com/doctors/cardiologist)
+- [Orthopedic Surgeon](https://zonoir.com/doctors/orthopedic-surgeon)
+- [ENT Specialist](https://zonoir.com/doctors/ent-specialist)
+- [Neurologist](https://zonoir.com/doctors/neurologist)
+- [Psychiatrist](https://zonoir.com/doctors/psychiatrist)
+- [Urologist](https://zonoir.com/doctors/urologist)
+- [Gastroenterologist](https://zonoir.com/doctors/gastroenterologist)
+- [Pulmonologist](https://zonoir.com/doctors/pulmonologist)
+- [Endocrinologist](https://zonoir.com/doctors/endocrinologist)
+- [Ophthalmologist](https://zonoir.com/doctors/ophthalmologist)
+- [Dentist](https://zonoir.com/doctors/dentist)
+- [General Surgeon](https://zonoir.com/doctors/general-surgeon)
+- [Psychologist](https://zonoir.com/doctors/psychologist)
+- [Physiotherapist](https://zonoir.com/doctors/physiotherapist)
+- [Nutritionist](https://zonoir.com/doctors/nutritionist)
+- [Diabetologist](https://zonoir.com/doctors/diabetologist)
+
+## City Pages (EMR Software)
+
+- [Lahore](https://zonoir.com/emr-software-for-doctors-in-lahore)
+- [Karachi](https://zonoir.com/emr-software-for-doctors-in-karachi)
+- [Islamabad](https://zonoir.com/emr-software-for-doctors-in-islamabad)
+- [Rawalpindi](https://zonoir.com/emr-software-for-doctors-in-rawalpindi)
+- [Faisalabad](https://zonoir.com/emr-software-for-doctors-in-faisalabad)
+- [Multan](https://zonoir.com/emr-software-for-doctors-in-multan)
+- [Peshawar](https://zonoir.com/emr-software-for-doctors-in-peshawar)
+- [Quetta](https://zonoir.com/emr-software-for-doctors-in-quetta)
+- [Sialkot](https://zonoir.com/emr-software-for-doctors-in-sialkot)
+- [Gujranwala](https://zonoir.com/emr-software-for-doctors-in-gujranwala)
+- [Hyderabad](https://zonoir.com/emr-software-for-doctors-in-hyderabad)
+- [Bahawalpur](https://zonoir.com/emr-software-for-doctors-in-bahawalpur)
+- [Sargodha](https://zonoir.com/emr-software-for-doctors-in-sargodha)
+- [Sukkur](https://zonoir.com/emr-software-for-doctors-in-sukkur)
+- [Abbottabad](https://zonoir.com/emr-software-for-doctors-in-abbottabad)
+
+## API & Sitemap
+
+- [Dynamic Sitemap (XML)](https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap)
+- [Static Sitemap (XML)](https://zonoir.com/sitemap.xml)
+
+## Contact
+
+- Website: https://zonoir.com
+- Contact Page: https://zonoir.com/contact
