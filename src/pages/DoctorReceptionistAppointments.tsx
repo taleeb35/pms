@@ -94,6 +94,56 @@ const DoctorReceptionistAppointments = () => {
     setSelectedAppointment(appointment);
   };
 
+  const toggleSelectAll = () => {
+    if (selectedIds.size === paginatedAppointments.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(paginatedAppointments.map((a: any) => a.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (selectedIds.size === 0) return;
+    try {
+      const ids = Array.from(selectedIds);
+      const { error } = await supabase
+        .from("appointments")
+        .update({ status: newStatus as any })
+        .in("id", ids);
+      if (error) throw error;
+
+      for (const id of ids) {
+        const apt = appointments.find((a: any) => a.id === id);
+        const action = newStatus === "cancelled" ? "appointment_cancelled"
+          : newStatus === "completed" ? "appointment_completed"
+          : "appointment_status_changed";
+        await logActivity({
+          action,
+          entityType: "appointment",
+          entityId: id,
+          details: {
+            doctorId,
+            patient_name: apt?.patients?.full_name || "Unknown",
+            new_status: newStatus,
+          },
+        });
+      }
+
+      toast({ title: "Success", description: `${ids.length} appointment(s) updated to ${newStatus}` });
+      setSelectedIds(new Set());
+      fetchAppointments();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   if (doctorLoading || loading) {
     return <DashboardSkeleton />;
   }
