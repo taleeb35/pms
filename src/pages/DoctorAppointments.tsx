@@ -935,6 +935,7 @@ const DoctorAppointments = () => {
                             onCheckedChange={() => toggleSelect(apt.id)}
                           />
                         </TableCell>
+                        <TableCell className="font-medium text-primary">#{appointmentNumberMap.get(apt.id) || 0}</TableCell>
                         <TableCell className="font-medium">{apt.patients?.full_name || "-"}</TableCell>
                         <TableCell>{apt.patients?.phone || "-"}</TableCell>
                         {isGynecologist && (
