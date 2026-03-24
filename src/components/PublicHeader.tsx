@@ -121,16 +121,6 @@ const PublicHeader = () => {
                   </Button>
                   <Button
                     asChild
-                    variant="outline"
-                    className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  >
-                    <a href="https://calendar.app.google/vkzUUndGFT4Afq1D9" target="_blank" rel="noopener noreferrer" onClick={() => setMobileMenuOpen(false)}>
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Request A Demo
-                    </a>
-                  </Button>
-                  <Button
-                    asChild
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   >
                     <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
