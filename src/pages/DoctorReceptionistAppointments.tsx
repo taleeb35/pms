@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Calendar, Clock } from "lucide-react";
+import { Search, Calendar, Clock, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
 import { ImprovedAppointmentCalendar } from "@/components/ImprovedAppointmentCalendar";
 import { TableSkeleton } from "@/components/TableSkeleton";
 import { DashboardSkeleton } from "@/components/DashboardSkeleton";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
+import { logActivity } from "@/lib/activityLogger";
 
 const DoctorReceptionistAppointments = () => {
   const { toast } = useToast();
