@@ -864,6 +864,21 @@ const ClinicAppointmentDetail = () => {
                       </Select>
                     )}
                   </div>
+                  <AIPrescriptionAssistant
+                    chiefComplaint={formData.chief_complaint}
+                    diagnosis={icdCodes.find(c => c.id === selectedICDCode)?.description}
+                    patientAge={appointment?.patients ? differenceInYears(new Date(), new Date(appointment.patients.date_of_birth)) : 0}
+                    patientGender={appointment?.patients?.gender || "unknown"}
+                    allergies={appointment?.patients?.allergies}
+                    diseases={appointment?.patients?.major_diseases}
+                    vitalSigns={[
+                      formData.blood_pressure && `BP: ${formData.blood_pressure}`,
+                      formData.temperature && `Temp: ${formData.temperature}°F`,
+                      formData.pulse && `Pulse: ${formData.pulse}`,
+                      formData.weight && `Weight: ${formData.weight}kg`,
+                    ].filter(Boolean).join(", ") || undefined}
+                    onApplySuggestion={(text) => setFormData(prev => ({ ...prev, current_prescription: text }))}
+                  />
                   <Textarea
                     placeholder="Enter prescription..."
                     value={formData.current_prescription}
