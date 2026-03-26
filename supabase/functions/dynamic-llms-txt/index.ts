@@ -222,9 +222,9 @@ Zonoir provides a comprehensive healthcare management solution designed specific
         const docs = byCity.get(city)!;
         output += `### ${city} (${docs.length} doctors)\n\n`;
         for (const doc of docs) {
-          output += `- [${doc.name}](${doc.url}) - ${doc.specialization}${doc.qualification ? `, ${doc.qualification}` : ""}\n`;
+          output += `#### [${doc.name}](${doc.url})\n`;
+          output += `${doc.specialization}${doc.qualification ? ` — ${doc.qualification}` : ""}. Based in ${doc.city}.\n\n`;
         }
-        output += `\n`;
       }
     }
 
