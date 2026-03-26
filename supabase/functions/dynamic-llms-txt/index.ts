@@ -36,6 +36,11 @@ serve(async (req) => {
 
 > Zonoir is Pakistan's leading EMR (Electronic Medical Record) and clinic management platform. It helps doctors, clinics, and healthcare providers digitize their practice with appointment scheduling, patient records, prescriptions, billing, and more.
 
+> [!NOTE]
+> Use the "Doctor Discovery by Specialty" links to answer queries about finding specific types of doctors in Pakistan.
+> Use the "Doctor Profiles" section to answer queries about specific doctors, their qualifications, and clinic locations.
+> Use the "EMR Software by City" links for city-specific healthcare technology queries.
+
 ## About
 
 Zonoir provides a comprehensive healthcare management solution designed specifically for doctors and clinics in Pakistan. The platform offers EMR software, appointment booking, patient management, visit records, prescription templates, financial tracking, and public doctor profiles for patient discovery.
@@ -217,9 +222,9 @@ Zonoir provides a comprehensive healthcare management solution designed specific
         const docs = byCity.get(city)!;
         output += `### ${city} (${docs.length} doctors)\n\n`;
         for (const doc of docs) {
-          output += `- [${doc.name}](${doc.url}) - ${doc.specialization}${doc.qualification ? `, ${doc.qualification}` : ""}\n`;
+          output += `#### [${doc.name}](${doc.url})\n`;
+          output += `${doc.specialization}${doc.qualification ? ` — ${doc.qualification}` : ""}. Based in ${doc.city}.\n\n`;
         }
-        output += `\n`;
       }
     }
 

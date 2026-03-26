@@ -2,10 +2,9 @@
 
 > Zonoir is Pakistan's leading EMR (Electronic Medical Record) and clinic management platform for doctors and clinics.
 
-## Full Version
-
-For the complete, dynamically generated llms.txt with all 400+ doctor profiles, visit:
-https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-llms-txt
+> [!NOTE]
+> This is a summary version. For the complete dynamically generated llms.txt with all 400+ doctor profiles (with headings and bios), visit:
+> https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-llms-txt
 
 ## About
 
