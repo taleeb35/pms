@@ -37,6 +37,7 @@ import { calculatePregnancyDuration, calculateExpectedDueDate } from "@/lib/preg
 import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { logActivity } from "@/lib/activityLogger";
+import { AIPrescriptionAssistant } from "@/components/AIPrescriptionAssistant";
 import { useClinicId } from "@/hooks/useClinicId";
 
 interface Procedure {
