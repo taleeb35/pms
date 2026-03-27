@@ -168,6 +168,23 @@ export const AIRevenueForecast = ({ role }: AIRevenueForecastProps) => {
 
   const { forecast, monthly_data, summary } = data;
 
+  if (isCollapsed) {
+    return (
+      <Card className="border-dashed border-2 border-primary/20 bg-primary/5">
+        <CardContent className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <span className="font-semibold">AI Revenue Forecast</span>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setIsCollapsed(false)} className="gap-1">
+            <BarChart3 className="h-3.5 w-3.5" />
+            Show Forecast
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -176,10 +193,15 @@ export const AIRevenueForecast = ({ role }: AIRevenueForecastProps) => {
             <Sparkles className="h-5 w-5 text-primary" />
             AI Revenue Forecast
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={fetchForecast} disabled={loading} className="gap-1">
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" onClick={fetchForecast} disabled={loading} className="gap-1">
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsCollapsed(true)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-5">
