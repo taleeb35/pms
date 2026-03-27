@@ -401,13 +401,13 @@ export const PublicDoctorFinderChat = () => {
 
                   {/* Clickable options */}
                   {msg.options && (
-                    <div className={`mt-2 ${msg.options.length > 6 ? "max-h-36 overflow-y-auto rounded-xl border bg-background" : "flex flex-wrap gap-1.5"}`}>
+                    <div className={`mt-2 ${msg.options.length > 6 ? "max-h-40 overflow-y-auto overscroll-contain rounded-xl border bg-background scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent" : "flex flex-wrap gap-1.5"}`}>
                       {msg.options.length > 6 ? (
                         msg.options.map((opt) => (
                           <button
                             key={opt.value}
                             onClick={() => handleOptionClick(opt.value, opt.label)}
-                            className="w-full text-left text-xs px-3 py-2 hover:bg-accent transition-colors text-foreground border-b last:border-b-0 flex items-center gap-2"
+                            className="w-full text-left text-xs px-3 py-2.5 hover:bg-primary hover:text-primary-foreground transition-colors text-foreground border-b last:border-b-0 flex items-center gap-2"
                           >
                             {opt.icon === "city" && <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />}
                             {opt.icon === "specialty" && <Stethoscope className="h-3 w-3 text-muted-foreground shrink-0" />}
