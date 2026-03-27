@@ -312,6 +312,13 @@ const App = () => (
               }
             />
             <Route
+              path="/doctor/reports"
+              element={
+                <Layout>
+                  <DoctorReports />
+                </Layout>
+              }
+            <Route
               path="/doctor/walk-in"
               element={
                 <Layout>
