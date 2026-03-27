@@ -56,8 +56,10 @@ export const PublicDoctorFinderChat = () => {
   const location = useLocation();
 
   // Only show on public pages
-  const dashboardPrefixes = ["/doctor-", "/doctor/dashboard", "/doctor/patients", "/doctor/appointments", "/doctor/profile", "/doctor/schedule", "/doctor/finance", "/doctor/subscription", "/doctor/support", "/doctor/walk-in", "/doctor/templates", "/doctor/diseases", "/doctor/allergies", "/doctor/icd-codes", "/doctor/procedures", "/doctor/receptionists", "/doctor/activity-logs", "/clinic/", "/admin/", "/receptionist/", "/content-writer/", "/referral-partner/"];
-  const isDashboard = dashboardPrefixes.some(p => location.pathname.startsWith(p)) || location.pathname === "/doctor/login";
+  const dashboardPaths = ["/dashboard", "/patients", "/appointments", "/admin", "/receptionist", "/content-writer", "/referral-partner/dashboard"];
+  const dashboardPrefixes = ["/clinic/", "/admin/", "/receptionist/", "/content-writer/", "/referral-partner/dashboard"];
+  const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
+  const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
