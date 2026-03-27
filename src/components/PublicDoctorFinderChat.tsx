@@ -401,16 +401,30 @@ export const PublicDoctorFinderChat = () => {
 
                   {/* Clickable options */}
                   {msg.options && (
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {msg.options.map((opt) => (
-                        <button
-                          key={opt.value}
-                          onClick={() => handleOptionClick(opt.value, opt.label)}
-                          className="text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-accent transition-colors text-foreground"
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
+                    <div className={`mt-2 ${msg.options.length > 6 ? "max-h-36 overflow-y-auto rounded-xl border bg-background" : "flex flex-wrap gap-1.5"}`}>
+                      {msg.options.length > 6 ? (
+                        msg.options.map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => handleOptionClick(opt.value, opt.label)}
+                            className="w-full text-left text-xs px-3 py-2 hover:bg-accent transition-colors text-foreground border-b last:border-b-0 flex items-center gap-2"
+                          >
+                            {opt.icon === "city" && <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />}
+                            {opt.icon === "specialty" && <Stethoscope className="h-3 w-3 text-muted-foreground shrink-0" />}
+                            {opt.label}
+                          </button>
+                        ))
+                      ) : (
+                        msg.options.map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => handleOptionClick(opt.value, opt.label)}
+                            className="text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-accent transition-colors text-foreground"
+                          >
+                            {opt.label}
+                          </button>
+                        ))
+                      )}
                     </div>
                   )}
 
