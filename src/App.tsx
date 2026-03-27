@@ -48,6 +48,7 @@ import WaitlistPatients from "./pages/WaitlistPatients";
 import PatientDetail from "./pages/PatientDetail";
 import DoctorSupport from "./pages/DoctorSupport";
 import DoctorFinance from "./pages/DoctorFinance";
+import DoctorReports from "./pages/DoctorReports";
 import DoctorWalkIn from "./pages/DoctorWalkIn";
 import DoctorProcedures from "./pages/DoctorProcedures";
 import DoctorAllergies from "./pages/DoctorAllergies";
