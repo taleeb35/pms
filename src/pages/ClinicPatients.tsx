@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Eye, ArrowLeft, Plus, Calendar as CalendarIcon, Search, Edit, Trash2, X, Upload, FileSpreadsheet } from "lucide-react";
+import AIPatientInsights from "@/components/AIPatientInsights";
 import PatientImportExport from "@/components/PatientImportExport";
 import { useToast } from "@/hooks/use-toast";
 import {
