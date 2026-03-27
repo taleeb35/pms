@@ -259,6 +259,9 @@ const ClinicDashboard = () => {
         </Alert>
       )}
 
+      {/* AI Revenue Forecast */}
+      <AIRevenueForecast role="clinic" />
+
       {/* Analytics Charts */}
       <ClinicAnalyticsCharts />
 

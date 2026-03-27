@@ -162,6 +162,9 @@ const DoctorDashboard = () => {
         </Card>
       </div>
 
+      {/* AI Revenue Forecast */}
+      <AIRevenueForecast role="doctor" />
+
       {/* Analytics Charts */}
       <DoctorAnalyticsCharts />
 
