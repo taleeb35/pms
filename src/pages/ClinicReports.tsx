@@ -10,7 +10,7 @@ import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Download, BarChart3
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import TableSkeleton from "@/components/TableSkeleton";
+import DashboardSkeleton from "@/components/DashboardSkeleton";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
