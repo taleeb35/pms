@@ -68,6 +68,7 @@ import ClinicAppointments from "./pages/ClinicAppointments";
 import ClinicAppointmentDetail from "./pages/ClinicAppointmentDetail";
 import ClinicWalkIn from "./pages/ClinicWalkIn";
 import ClinicFinance from "./pages/ClinicFinance";
+import ClinicReports from "./pages/ClinicReports";
 import ClinicExpenses from "./pages/ClinicExpenses";
 import ClinicSupport from "./pages/ClinicSupport";
 import ClinicSpecializations from "./pages/ClinicSpecializations";
