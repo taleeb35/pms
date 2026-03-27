@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
@@ -160,6 +161,9 @@ const DoctorDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Revenue Forecast */}
+      <AIRevenueForecast role="doctor" />
 
       {/* Analytics Charts */}
       <DoctorAnalyticsCharts />

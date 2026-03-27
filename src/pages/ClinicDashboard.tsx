@@ -11,6 +11,7 @@ import { format, addMonths, startOfMonth } from "date-fns";
 import clinicLogo from "@/assets/main-logo.webp";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
@@ -257,6 +258,9 @@ const ClinicDashboard = () => {
           </AlertDescription>
         </Alert>
       )}
+
+      {/* AI Revenue Forecast */}
+      <AIRevenueForecast role="clinic" />
 
       {/* Analytics Charts */}
       <ClinicAnalyticsCharts />
