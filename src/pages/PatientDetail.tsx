@@ -445,6 +445,8 @@ const PatientDetail = () => {
         </Button>
       </div>
 
+      <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
+
       <Tabs defaultValue="info" className="space-y-4">
         <TabsList>
           <TabsTrigger value="info">Patient Information</TabsTrigger>
