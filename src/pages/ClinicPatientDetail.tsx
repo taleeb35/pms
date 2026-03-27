@@ -7,6 +7,7 @@ import { ArrowLeft, User, Phone, Mail, Calendar, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import AIPatientInsights from "@/components/AIPatientInsights";
 
 interface Patient {
   id: string;
@@ -88,6 +89,8 @@ const ClinicPatientDetail = () => {
         <ArrowLeft className="h-4 w-4" />
         Back to Patients
       </Button>
+
+      <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
 
       <div className="grid gap-6">
         <Card>
