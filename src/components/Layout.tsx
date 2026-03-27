@@ -33,6 +33,7 @@ import {
   Activity,
   PanelLeftClose,
   PanelLeft,
+  BarChart3,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -255,6 +256,7 @@ const Layout = ({ children }: LayoutProps) => {
     ...(doctorClinicId ? [] : [{ path: "/doctor/receptionists", icon: UserCog, label: "Receptionists" }]),
     { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
     { path: "/doctor/finance", icon: Banknote, label: "Finance" },
+    { path: "/doctor/reports", icon: BarChart3, label: "Reports" },
     // Only show Subscription for single doctors (not linked to a clinic)
     ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
@@ -327,6 +329,7 @@ const Layout = ({ children }: LayoutProps) => {
       icon: Banknote,
       items: [
         { path: "/clinic/finance", icon: Banknote, label: "Finance" },
+        { path: "/clinic/reports", icon: BarChart3, label: "Reports" },
         { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
         { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/clinic/profile", icon: UserCog, label: "Profile" },

@@ -58,7 +58,7 @@ export const PublicDoctorFinderChat = () => {
   // Only show on public pages
   const dashboardPaths = ["/dashboard", "/patients", "/appointments", "/admin", "/receptionist", "/content-writer", "/referral-partner/dashboard"];
   const dashboardPrefixes = ["/clinic/", "/admin/", "/receptionist/", "/content-writer/", "/referral-partner/dashboard"];
-  const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
+  const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|reports|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
   const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
   const scrollToBottom = () => {
