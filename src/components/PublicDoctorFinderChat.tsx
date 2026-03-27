@@ -286,8 +286,13 @@ export const PublicDoctorFinderChat = () => {
   };
 
   const handleDoctorClick = (doctor: Doctor) => {
-    const slug = generateDoctorSlug(doctor.full_name);
-    navigate(`/doctors/${slug}`);
+    if (doctor.city && doctor.specialization) {
+      const url = generateDoctorProfileUrl(doctor.city, doctor.specialization, doctor.full_name);
+      navigate(url);
+    } else {
+      const slug = generateDoctorSlug(doctor.full_name);
+      navigate(`/doctors/${slug}`);
+    }
     setIsOpen(false);
   };
 
