@@ -56,6 +56,7 @@ export const AIRevenueForecast = ({ role }: AIRevenueForecastProps) => {
   const [data, setData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { toast } = useToast();
 
   const fetchForecast = async () => {
