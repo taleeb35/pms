@@ -264,7 +264,7 @@ const DoctorReports = () => {
     doc.save(`doctor-report-${format(new Date(), "yyyy-MM-dd")}.pdf`);
   };
 
-  if (loading) return <TableSkeleton />;
+  if (loading) return <DashboardSkeleton />;
 
   return (
     <div className="space-y-6">
