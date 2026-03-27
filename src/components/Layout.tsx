@@ -33,6 +33,7 @@ import {
   Activity,
   PanelLeftClose,
   PanelLeft,
+  BarChart3,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
