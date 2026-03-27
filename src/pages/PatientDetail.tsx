@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Eye, Trash2, Edit, Plus, X, Calendar as CalendarIcon, ArrowLeft } from "lucide-react";
+import AIPatientInsights from "@/components/AIPatientInsights";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";

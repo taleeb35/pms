@@ -90,6 +90,8 @@ const ClinicPatientDetail = () => {
         Back to Patients
       </Button>
 
+      <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
+
       <div className="grid gap-6">
         <Card>
           <CardHeader>
