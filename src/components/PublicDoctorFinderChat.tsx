@@ -56,8 +56,10 @@ export const PublicDoctorFinderChat = () => {
   const location = useLocation();
 
   // Only show on public pages
-  const dashboardPrefixes = ["/doctor", "/clinic", "/admin", "/receptionist", "/content-writer", "/referral-partner"];
-  const isDashboard = dashboardPrefixes.some(p => location.pathname.startsWith(p));
+  const dashboardPaths = ["/dashboard", "/patients", "/appointments", "/admin", "/receptionist", "/content-writer", "/referral-partner/dashboard"];
+  const dashboardPrefixes = ["/clinic/", "/admin/", "/receptionist/", "/content-writer/", "/referral-partner/dashboard"];
+  const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
+  const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
