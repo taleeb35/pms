@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, X, Send, MapPin, Stethoscope, Search, ArrowLeft, User, Loader2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorSlug } from "@/lib/slugUtils";
 import { useNavigate } from "react-router-dom";
