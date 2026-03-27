@@ -674,6 +674,27 @@ const DoctorAppointmentDetail = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <AIVisitSummary
+            patientName={appointment.patients.full_name}
+            patientAge={differenceInYears(new Date(), new Date(appointment.patients.date_of_birth))}
+            patientGender={appointment.patients.gender}
+            bloodGroup={appointment.patients.blood_group}
+            allergies={appointment.patients.allergies}
+            diseases={appointment.patients.major_diseases}
+            chiefComplaint={formData.chief_complaint}
+            diagnosis={icdCodes.find(c => c.id === selectedICDCode)?.description}
+            prescription={formData.current_prescription}
+            vitalSigns={[
+              formData.blood_pressure && `BP: ${formData.blood_pressure}`,
+              formData.temperature && `Temp: ${formData.temperature}°F`,
+              formData.pulse && `Pulse: ${formData.pulse}`,
+              formData.weight && `Weight: ${formData.weight}kg`,
+              formData.height && `Height: ${formData.height}cm`,
+            ].filter(Boolean).join(", ") || undefined}
+            testReports={formData.test_reports}
+            nextVisitNotes={formData.next_visit_notes}
+            nextVisitDate={nextVisitDate ? format(nextVisitDate, "PPP") : undefined}
+          />
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
             Print
