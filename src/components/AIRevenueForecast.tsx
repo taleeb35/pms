@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, TrendingDown, Minus, Sparkles, AlertTriangle, Lightbulb, Target, RefreshCw, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Sparkles, AlertTriangle, Lightbulb, Target, RefreshCw, BarChart3, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
