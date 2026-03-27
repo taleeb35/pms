@@ -37,6 +37,7 @@ import {
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import AIChatbot from "@/components/AIChatbot";
 
 interface LayoutProps {
   children: ReactNode;
@@ -711,6 +712,11 @@ const Layout = ({ children }: LayoutProps) => {
           {children}
         </main>
       </div>
+
+      {/* AI Chatbot - visible for clinic and doctor roles */}
+      {(userRole === "clinic" || userRole === "doctor") && (
+        <AIChatbot role={userRole as "clinic" | "doctor"} />
+      )}
     </div>
   );
 };
