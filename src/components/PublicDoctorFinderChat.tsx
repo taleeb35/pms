@@ -58,7 +58,6 @@ export const PublicDoctorFinderChat = () => {
   // Only show on public pages
   const dashboardPrefixes = ["/doctor", "/clinic", "/admin", "/receptionist", "/content-writer", "/referral-partner"];
   const isDashboard = dashboardPrefixes.some(p => location.pathname.startsWith(p));
-  if (isDashboard) return null;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
