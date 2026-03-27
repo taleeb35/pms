@@ -38,6 +38,7 @@ import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { logActivity } from "@/lib/activityLogger";
 import { AIPrescriptionAssistant } from "@/components/AIPrescriptionAssistant";
+import { AIVisitSummary } from "@/components/AIVisitSummary";
 
 interface Procedure {
   id: string;
