@@ -401,7 +401,7 @@ export const PublicDoctorFinderChat = () => {
 
                   {/* Clickable options */}
                   {msg.options && (
-                    <div className={`mt-2 ${msg.options.length > 6 ? "max-h-36 overflow-y-auto rounded-xl border bg-background" : "flex flex-wrap gap-1.5"}`}>
+                    <div className={`mt-2 ${msg.options.length > 6 ? "max-h-40 overflow-y-auto overscroll-contain rounded-xl border bg-background scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent" : "flex flex-wrap gap-1.5"}`}>
                       {msg.options.length > 6 ? (
                         msg.options.map((opt) => (
                           <button
