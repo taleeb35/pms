@@ -543,6 +543,7 @@ const App = () => (
                   <ClinicReports />
                 </Layout>
               }
+            />
             <Route
               path="/clinic/expenses"
               element={
