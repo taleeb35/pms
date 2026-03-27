@@ -6,7 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MessageCircle, X, Send, MapPin, Stethoscope, Search, ArrowLeft, User, Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { generateDoctorSlug } from "@/lib/slugUtils";
+import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
 import { useNavigate } from "react-router-dom";
 
 interface Doctor {
@@ -286,8 +286,13 @@ export const PublicDoctorFinderChat = () => {
   };
 
   const handleDoctorClick = (doctor: Doctor) => {
-    const slug = generateDoctorSlug(doctor.full_name);
-    navigate(`/doctors/${slug}`);
+    if (doctor.city && doctor.specialization) {
+      const url = generateDoctorProfileUrl(doctor.city, doctor.specialization, doctor.full_name);
+      navigate(url);
+    } else {
+      const slug = generateDoctorSlug(doctor.full_name);
+      navigate(`/doctors/${slug}`);
+    }
     setIsOpen(false);
   };
 
