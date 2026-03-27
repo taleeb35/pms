@@ -328,6 +328,7 @@ const Layout = ({ children }: LayoutProps) => {
       icon: Banknote,
       items: [
         { path: "/clinic/finance", icon: Banknote, label: "Finance" },
+        { path: "/clinic/reports", icon: BarChart3, label: "Reports" },
         { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
         { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/clinic/profile", icon: UserCog, label: "Profile" },
