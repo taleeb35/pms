@@ -132,6 +132,7 @@ const App = () => (
         <FloatingWhatsApp />
         <BrowserRouter>
           <ScrollToTop />
+          <PublicDoctorFinderChat />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/features" element={<Features />} />
