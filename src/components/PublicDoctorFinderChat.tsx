@@ -83,6 +83,8 @@ export const PublicDoctorFinderChat = () => {
     }
   }, [isOpen]);
 
+  if (isDashboard) return null;
+
   const addBotMessage = (text: string, extras?: Partial<ChatMessage>) => {
     const msg: ChatMessage = {
       id: Date.now().toString(),
