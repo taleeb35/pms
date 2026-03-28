@@ -144,6 +144,33 @@ const ClinicReports = () => {
     return ((current - previous) / Math.abs(previous) * 100);
   }, [revenueTrendData]);
 
+  // ======= GROWTH METRICS =======
+  const growthMetrics = useMemo(() => {
+    const completedAppts = appointments.filter(a => a.status !== "cancelled");
+    const uniquePatients = new Set(completedAppts.map(a => a.patient_id)).size;
+    const netRev = totalRevenue - totalRefunds;
+    const revenuePerPatient = uniquePatients > 0 ? netRev / uniquePatients : 0;
+    const workingDays = new Set(completedAppts.map(a => a.appointment_date)).size;
+    const dailyAvgRevenue = workingDays > 0 ? netRev / workingDays : 0;
+    const uniqueHours = new Set<string>();
+    completedAppts.forEach(a => {
+      if (a.appointment_date && a.appointment_time) uniqueHours.add(`${a.appointment_date}_${a.appointment_time.split(":")[0]}`);
+    });
+    const revenuePerHour = uniqueHours.size > 0 ? netRev / uniqueHours.size : 0;
+    const momGrowth = revenueTrendData.length >= 2 ? (() => {
+      const curr = revenueTrendData[revenueTrendData.length - 1]?.profit || 0;
+      const prev = revenueTrendData[revenueTrendData.length - 2]?.profit || 0;
+      return prev !== 0 ? ((curr - prev) / Math.abs(prev)) * 100 : 0;
+    })() : 0;
+    const yoyGrowth = revenueTrendData.length >= 4 ? (() => {
+      const half = Math.floor(revenueTrendData.length / 2);
+      const firstHalf = revenueTrendData.slice(0, half).reduce((s, d) => s + (d.profit || 0), 0);
+      const secondHalf = revenueTrendData.slice(half).reduce((s, d) => s + (d.profit || 0), 0);
+      return firstHalf !== 0 ? ((secondHalf - firstHalf) / Math.abs(firstHalf)) * 100 : 0;
+    })() : 0;
+    return { revenuePerPatient, revenuePerHour, dailyAvgRevenue, momGrowth, yoyGrowth };
+  }, [appointments, totalRevenue, totalRefunds, revenueTrendData]);
+
   // ======= DOCTOR PERFORMANCE SCORECARD =======
   const doctorScorecard = useMemo(() => {
     return doctors.map(doc => {
