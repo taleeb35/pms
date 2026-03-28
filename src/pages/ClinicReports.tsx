@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { format, subMonths, eachMonthOfInterval, getDay, parseISO } from "date-fns";
+import { format, subMonths, eachMonthOfInterval, getDay, parseISO, differenceInDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Download, BarChart3, Star, Award } from "lucide-react";
+import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Download, BarChart3, Star, Award, Zap } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -143,6 +143,33 @@ const ClinicReports = () => {
     const previous = revenueTrendData[revenueTrendData.length - 2]?.profit || 1;
     return ((current - previous) / Math.abs(previous) * 100);
   }, [revenueTrendData]);
+
+  // ======= GROWTH METRICS =======
+  const growthMetrics = useMemo(() => {
+    const completedAppts = appointments.filter(a => a.status !== "cancelled");
+    const uniquePatients = new Set(completedAppts.map(a => a.patient_id)).size;
+    const netRev = totalRevenue - totalRefunds;
+    const revenuePerPatient = uniquePatients > 0 ? netRev / uniquePatients : 0;
+    const workingDays = new Set(completedAppts.map(a => a.appointment_date)).size;
+    const dailyAvgRevenue = workingDays > 0 ? netRev / workingDays : 0;
+    const uniqueHours = new Set<string>();
+    completedAppts.forEach(a => {
+      if (a.appointment_date && a.appointment_time) uniqueHours.add(`${a.appointment_date}_${a.appointment_time.split(":")[0]}`);
+    });
+    const revenuePerHour = uniqueHours.size > 0 ? netRev / uniqueHours.size : 0;
+    const momGrowth = revenueTrendData.length >= 2 ? (() => {
+      const curr = revenueTrendData[revenueTrendData.length - 1]?.profit || 0;
+      const prev = revenueTrendData[revenueTrendData.length - 2]?.profit || 0;
+      return prev !== 0 ? ((curr - prev) / Math.abs(prev)) * 100 : 0;
+    })() : 0;
+    const yoyGrowth = revenueTrendData.length >= 4 ? (() => {
+      const half = Math.floor(revenueTrendData.length / 2);
+      const firstHalf = revenueTrendData.slice(0, half).reduce((s, d) => s + (d.profit || 0), 0);
+      const secondHalf = revenueTrendData.slice(half).reduce((s, d) => s + (d.profit || 0), 0);
+      return firstHalf !== 0 ? ((secondHalf - firstHalf) / Math.abs(firstHalf)) * 100 : 0;
+    })() : 0;
+    return { revenuePerPatient, revenuePerHour, dailyAvgRevenue, momGrowth, yoyGrowth };
+  }, [appointments, totalRevenue, totalRefunds, revenueTrendData]);
 
   // ======= DOCTOR PERFORMANCE SCORECARD =======
   const doctorScorecard = useMemo(() => {
@@ -366,6 +393,44 @@ const ClinicReports = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Growth Metrics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Zap className="h-4 w-4 text-primary" /> Growth Metrics
+          </CardTitle>
+          <CardDescription>Key performance indicators for clinic growth</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Revenue / Patient</p>
+              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerPatient).toLocaleString()}</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Revenue / Working Hour</p>
+              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerHour).toLocaleString()}</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Daily Avg Revenue</p>
+              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.dailyAvgRevenue).toLocaleString()}</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Month-over-Month</p>
+              <p className={cn("text-lg font-bold", growthMetrics.momGrowth >= 0 ? "text-green-600" : "text-destructive")}>
+                {growthMetrics.momGrowth >= 0 ? "+" : ""}{growthMetrics.momGrowth.toFixed(1)}%
+              </p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Period Growth</p>
+              <p className={cn("text-lg font-bold", growthMetrics.yoyGrowth >= 0 ? "text-green-600" : "text-destructive")}>
+                {growthMetrics.yoyGrowth >= 0 ? "+" : ""}{growthMetrics.yoyGrowth.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* P&L Trend */}
       <Card>
