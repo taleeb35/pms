@@ -446,9 +446,16 @@ const DoctorAppointmentDetail = () => {
     if (!appointment) return;
     
     try {
+      const updateData: any = { status: newStatus };
+      if (newStatus === "start") {
+        updateData.started_at = new Date().toISOString();
+      } else if (newStatus === "completed") {
+        updateData.completed_at = new Date().toISOString();
+      }
+
       const { error } = await supabase
         .from("appointments")
-        .update({ status: newStatus })
+        .update(updateData)
         .eq("id", appointment.id);
 
       if (error) throw error;
