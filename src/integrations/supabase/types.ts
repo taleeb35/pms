@@ -57,6 +57,7 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           appointment_type: string | null
+          completed_at: string | null
           confidential_notes: string | null
           consultation_fee: number | null
           created_at: string
@@ -72,6 +73,7 @@ export type Database = {
           procedure_id: string | null
           reason: string | null
           refund: number | null
+          started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"] | null
           total_fee: number | null
           updated_at: string
@@ -80,6 +82,7 @@ export type Database = {
           appointment_date: string
           appointment_time: string
           appointment_type?: string | null
+          completed_at?: string | null
           confidential_notes?: string | null
           consultation_fee?: number | null
           created_at?: string
@@ -95,6 +98,7 @@ export type Database = {
           procedure_id?: string | null
           reason?: string | null
           refund?: number | null
+          started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
           updated_at?: string
@@ -103,6 +107,7 @@ export type Database = {
           appointment_date?: string
           appointment_time?: string
           appointment_type?: string | null
+          completed_at?: string | null
           confidential_notes?: string | null
           consultation_fee?: number | null
           created_at?: string
@@ -118,6 +123,7 @@ export type Database = {
           procedure_id?: string | null
           reason?: string | null
           refund?: number | null
+          started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
           updated_at?: string

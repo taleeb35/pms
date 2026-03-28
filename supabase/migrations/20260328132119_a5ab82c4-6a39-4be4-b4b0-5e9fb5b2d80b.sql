@@ -1,0 +1,3 @@
+ALTER TABLE public.appointments 
+ADD COLUMN IF NOT EXISTS started_at TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ;

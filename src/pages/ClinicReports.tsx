@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Download, BarChart3, Star, Award, Zap } from "lucide-react";
+import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Download, BarChart3, Star, Award, Zap, Clock } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +82,7 @@ const ClinicReports = () => {
         doctorIds.length > 0
           ? supabase
               .from("appointments")
-              .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, doctor_id, duration_minutes")
+              .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, doctor_id, duration_minutes, started_at, completed_at")
               .in("doctor_id", doctorIds)
               .gte("appointment_date", from)
               .lte("appointment_date", to)
@@ -170,6 +170,39 @@ const ClinicReports = () => {
     })() : 0;
     return { revenuePerPatient, revenuePerHour, dailyAvgRevenue, momGrowth, yoyGrowth };
   }, [appointments, totalRevenue, totalRefunds, revenueTrendData]);
+
+  // ======= AVERAGE CONSULTATION TIME =======
+  const consultationTimeData = useMemo(() => {
+    const months = eachMonthOfInterval({ start: dateFrom, end: dateTo });
+    return months.map(month => {
+      const monthStr = format(month, "yyyy-MM");
+      const monthAppts = appointments.filter(a => 
+        a.appointment_date?.startsWith(monthStr) && 
+        a.started_at && a.completed_at && a.status === "completed"
+      );
+      const durations = monthAppts.map(a => {
+        const start = new Date(a.started_at).getTime();
+        const end = new Date(a.completed_at).getTime();
+        return Math.max(0, (end - start) / 60000);
+      }).filter(d => d > 0 && d < 300);
+      const avg = durations.length > 0 ? Math.round(durations.reduce((s, d) => s + d, 0) / durations.length) : 0;
+      const min = durations.length > 0 ? Math.round(Math.min(...durations)) : 0;
+      const max = durations.length > 0 ? Math.round(Math.max(...durations)) : 0;
+      return { month: format(month, "MMM yyyy"), avg, min, max, count: durations.length };
+    });
+  }, [appointments, dateFrom, dateTo]);
+
+  const overallAvgTime = useMemo(() => {
+    const allDurations = appointments
+      .filter(a => a.started_at && a.completed_at && a.status === "completed")
+      .map(a => {
+        const start = new Date(a.started_at).getTime();
+        const end = new Date(a.completed_at).getTime();
+        return Math.max(0, (end - start) / 60000);
+      })
+      .filter(d => d > 0 && d < 300);
+    return allDurations.length > 0 ? Math.round(allDurations.reduce((s, d) => s + d, 0) / allDurations.length) : 0;
+  }, [appointments]);
 
   // ======= DOCTOR PERFORMANCE SCORECARD =======
   const doctorScorecard = useMemo(() => {
@@ -671,6 +704,65 @@ const ClinicReports = () => {
           </Card>
         )}
       </div>
+
+      {/* Average Consultation Time */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Average Consultation Time
+              </CardTitle>
+              <CardDescription>Time patients spend with doctors per appointment</CardDescription>
+            </div>
+            {overallAvgTime > 0 && (
+              <div className="text-right">
+                <p className="text-3xl font-bold">{overallAvgTime} min</p>
+                <p className="text-xs text-muted-foreground">Overall Average</p>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {consultationTimeData.every(d => d.count === 0) ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Clock className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p className="font-medium">No consultation time data yet</p>
+              <p className="text-sm mt-1">Time tracking starts when appointments are marked as "Started" and then "Completed"</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={consultationTimeData.filter(d => d.count > 0)}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+                    <YAxis tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" label={{ value: "Minutes", angle: -90, position: "insideLeft", style: { fill: "hsl(var(--muted-foreground))" } }} />
+                    <Tooltip 
+                      contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }}
+                      formatter={(value: number, name: string) => [`${value} min`, name === "avg" ? "Average" : name === "min" ? "Shortest" : "Longest"]}
+                    />
+                    <Legend formatter={(value) => value === "avg" ? "Average" : value === "min" ? "Shortest" : "Longest"} />
+                    <Bar dataKey="avg" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="avg" />
+                    <Bar dataKey="min" fill="hsl(var(--chart-2, 160 60% 45%))" radius={[4, 4, 0, 0]} name="min" />
+                    <Bar dataKey="max" fill="hsl(var(--chart-3, 30 80% 55%))" radius={[4, 4, 0, 0]} name="max" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {consultationTimeData.filter(d => d.count > 0).slice(-4).map((d) => (
+                  <div key={d.month} className="p-3 rounded-lg bg-muted/50 text-center">
+                    <p className="text-xs text-muted-foreground">{d.month}</p>
+                    <p className="text-lg font-bold">{d.avg} min</p>
+                    <p className="text-xs text-muted-foreground">{d.count} appointments</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
