@@ -6,7 +6,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Users, UserPlus, UserCheck, Clock, XCircle, Download, BarChart3 } from "lucide-react";
+import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Users, UserPlus, UserCheck, Clock, XCircle, Download, BarChart3, Zap } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from "recharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import jsPDF from "jspdf";
