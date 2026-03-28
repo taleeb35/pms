@@ -82,7 +82,7 @@ const ClinicReports = () => {
         doctorIds.length > 0
           ? supabase
               .from("appointments")
-              .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, doctor_id, duration_minutes")
+              .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, doctor_id, duration_minutes, started_at, completed_at")
               .in("doctor_id", doctorIds)
               .gte("appointment_date", from)
               .lte("appointment_date", to)
