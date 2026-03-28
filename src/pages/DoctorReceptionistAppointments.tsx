@@ -113,9 +113,15 @@ const DoctorReceptionistAppointments = () => {
     if (selectedIds.size === 0) return;
     try {
       const ids = Array.from(selectedIds);
+      const updateData: any = { status: newStatus as any };
+      if (newStatus === "start") {
+        updateData.started_at = new Date().toISOString();
+      } else if (newStatus === "completed") {
+        updateData.completed_at = new Date().toISOString();
+      }
       const { error } = await supabase
         .from("appointments")
-        .update({ status: newStatus as any })
+        .update(updateData)
         .in("id", ids);
       if (error) throw error;
 
