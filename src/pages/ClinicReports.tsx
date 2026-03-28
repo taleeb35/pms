@@ -171,6 +171,39 @@ const ClinicReports = () => {
     return { revenuePerPatient, revenuePerHour, dailyAvgRevenue, momGrowth, yoyGrowth };
   }, [appointments, totalRevenue, totalRefunds, revenueTrendData]);
 
+  // ======= AVERAGE CONSULTATION TIME =======
+  const consultationTimeData = useMemo(() => {
+    const months = eachMonthOfInterval({ start: dateFrom, end: dateTo });
+    return months.map(month => {
+      const monthStr = format(month, "yyyy-MM");
+      const monthAppts = appointments.filter(a => 
+        a.appointment_date?.startsWith(monthStr) && 
+        a.started_at && a.completed_at && a.status === "completed"
+      );
+      const durations = monthAppts.map(a => {
+        const start = new Date(a.started_at).getTime();
+        const end = new Date(a.completed_at).getTime();
+        return Math.max(0, (end - start) / 60000);
+      }).filter(d => d > 0 && d < 300);
+      const avg = durations.length > 0 ? Math.round(durations.reduce((s, d) => s + d, 0) / durations.length) : 0;
+      const min = durations.length > 0 ? Math.round(Math.min(...durations)) : 0;
+      const max = durations.length > 0 ? Math.round(Math.max(...durations)) : 0;
+      return { month: format(month, "MMM yyyy"), avg, min, max, count: durations.length };
+    });
+  }, [appointments, dateFrom, dateTo]);
+
+  const overallAvgTime = useMemo(() => {
+    const allDurations = appointments
+      .filter(a => a.started_at && a.completed_at && a.status === "completed")
+      .map(a => {
+        const start = new Date(a.started_at).getTime();
+        const end = new Date(a.completed_at).getTime();
+        return Math.max(0, (end - start) / 60000);
+      })
+      .filter(d => d > 0 && d < 300);
+    return allDurations.length > 0 ? Math.round(allDurations.reduce((s, d) => s + d, 0) / allDurations.length) : 0;
+  }, [appointments]);
+
   // ======= DOCTOR PERFORMANCE SCORECARD =======
   const doctorScorecard = useMemo(() => {
     return doctors.map(doc => {
