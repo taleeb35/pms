@@ -96,6 +96,32 @@ const DoctorReports = () => {
   const totalRefunds = revenueTrendData.reduce((s, d) => s + d.refunds, 0);
   const totalNet = totalRevenue - totalRefunds;
 
+  // ======= GROWTH METRICS =======
+  const growthMetrics = useMemo(() => {
+    const completedAppts = appointments.filter(a => a.status !== "cancelled");
+    const uniquePatients = new Set(completedAppts.map(a => a.patient_id)).size;
+    const revenuePerPatient = uniquePatients > 0 ? totalNet / uniquePatients : 0;
+    const workingDays = new Set(completedAppts.map(a => a.appointment_date)).size;
+    const dailyAvgRevenue = workingDays > 0 ? totalNet / workingDays : 0;
+    const uniqueHours = new Set<string>();
+    completedAppts.forEach(a => {
+      if (a.appointment_date && a.appointment_time) uniqueHours.add(`${a.appointment_date}_${a.appointment_time.split(":")[0]}`);
+    });
+    const revenuePerHour = uniqueHours.size > 0 ? totalNet / uniqueHours.size : 0;
+    const momGrowth = revenueTrendData.length >= 2 ? (() => {
+      const curr = revenueTrendData[revenueTrendData.length - 1]?.net || 0;
+      const prev = revenueTrendData[revenueTrendData.length - 2]?.net || 0;
+      return prev !== 0 ? ((curr - prev) / Math.abs(prev)) * 100 : 0;
+    })() : 0;
+    const yoyGrowth = revenueTrendData.length >= 4 ? (() => {
+      const half = Math.floor(revenueTrendData.length / 2);
+      const firstHalf = revenueTrendData.slice(0, half).reduce((s, d) => s + (d.net || 0), 0);
+      const secondHalf = revenueTrendData.slice(half).reduce((s, d) => s + (d.net || 0), 0);
+      return firstHalf !== 0 ? ((secondHalf - firstHalf) / Math.abs(firstHalf)) * 100 : 0;
+    })() : 0;
+    return { revenuePerPatient, revenuePerHour, dailyAvgRevenue, momGrowth, yoyGrowth };
+  }, [appointments, totalNet, revenueTrendData]);
+
   // ======= PATIENT DEMOGRAPHICS =======
   const genderData = useMemo(() => {
     const counts: Record<string, number> = {};
