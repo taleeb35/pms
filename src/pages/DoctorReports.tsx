@@ -363,6 +363,44 @@ const DoctorReports = () => {
         </Card>
       </div>
 
+      {/* Growth Metrics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Zap className="h-4 w-4 text-primary" /> Growth Metrics
+          </CardTitle>
+          <CardDescription>Key performance indicators for practice growth</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Revenue / Patient</p>
+              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerPatient).toLocaleString()}</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Revenue / Working Hour</p>
+              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerHour).toLocaleString()}</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Daily Avg Revenue</p>
+              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.dailyAvgRevenue).toLocaleString()}</p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Month-over-Month</p>
+              <p className={cn("text-lg font-bold", growthMetrics.momGrowth >= 0 ? "text-green-600" : "text-destructive")}>
+                {growthMetrics.momGrowth >= 0 ? "+" : ""}{growthMetrics.momGrowth.toFixed(1)}%
+              </p>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-muted/50">
+              <p className="text-xs text-muted-foreground mb-1">Period Growth</p>
+              <p className={cn("text-lg font-bold", growthMetrics.yoyGrowth >= 0 ? "text-green-600" : "text-destructive")}>
+                {growthMetrics.yoyGrowth >= 0 ? "+" : ""}{growthMetrics.yoyGrowth.toFixed(1)}%
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Revenue Trend */}
       <Card>
         <CardHeader>
