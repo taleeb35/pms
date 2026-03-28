@@ -121,7 +121,7 @@ const DoctorReceptionistAppointments = () => {
       }
       const { error } = await supabase
         .from("appointments")
-        .update(updateData)
+        .update(updateData as any)
         .in("id", ids);
       if (error) throw error;
 
