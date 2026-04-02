@@ -27,6 +27,9 @@ const DoctorReports = () => {
   const [dateTo, setDateTo] = useState<Date>(new Date());
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
+  const [allAppointments, setAllAppointments] = useState<any[]>([]);
+  const [medicalRecords, setMedicalRecords] = useState<any[]>([]);
+  const [icdCodes, setIcdCodes] = useState<any[]>([]);
 
   useEffect(() => {
     fetchData();
