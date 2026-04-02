@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { calculatePregnancyWeeks, calculateExpectedDueDate, getTrimester, getTrimesterLabel } from "@/lib/pregnancyUtils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subMonths, startOfMonth, endOfMonth, subDays, parseISO, eachDayOfInterval, eachMonthOfInterval, getDay, differenceInDays, subYears } from "date-fns";
@@ -6,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Users, UserPlus, UserCheck, Clock, XCircle, Download, BarChart3, Zap, AlertTriangle, Activity, Stethoscope, ShieldAlert } from "lucide-react";
+import { Calendar as CalendarIcon, TrendingUp, TrendingDown, Users, UserPlus, UserCheck, Clock, XCircle, Download, BarChart3, Zap, AlertTriangle, Activity, Stethoscope, ShieldAlert, Baby, Heart } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from "recharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import jsPDF from "jspdf";
@@ -30,6 +31,7 @@ const DoctorReports = () => {
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [medicalRecords, setMedicalRecords] = useState<any[]>([]);
   const [icdCodes, setIcdCodes] = useState<any[]>([]);
+  const [isGynecologist, setIsGynecologist] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -44,7 +46,7 @@ const DoctorReports = () => {
       const from = format(dateFrom, "yyyy-MM-dd");
       const to = format(dateTo, "yyyy-MM-dd");
 
-      const [apptRes, patientRes, allApptRes, medRecRes, icdRes] = await Promise.all([
+      const [apptRes, patientRes, allApptRes, medRecRes, icdRes, doctorRes] = await Promise.all([
         supabase
           .from("appointments")
           .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, duration_minutes, started_at, completed_at, icd_code_id")
@@ -54,7 +56,7 @@ const DoctorReports = () => {
           .order("appointment_date"),
         supabase
           .from("patients")
-          .select("id, full_name, gender, date_of_birth, city, created_at, allergies")
+          .select("id, full_name, gender, date_of_birth, city, created_at, allergies, pregnancy_start_date")
           .eq("created_by", user.id),
         supabase
           .from("appointments")
@@ -70,6 +72,11 @@ const DoctorReports = () => {
           .from("doctor_icd_codes")
           .select("id, code, description")
           .eq("doctor_id", user.id),
+        supabase
+          .from("doctors")
+          .select("specialization")
+          .eq("id", user.id)
+          .maybeSingle(),
       ]);
 
       setAppointments(apptRes.data || []);
@@ -77,6 +84,8 @@ const DoctorReports = () => {
       setAllAppointments(allApptRes.data || []);
       setMedicalRecords(medRecRes.data || []);
       setIcdCodes(icdRes.data || []);
+      const spec = doctorRes.data?.specialization?.toLowerCase() || "";
+      setIsGynecologist(spec.includes("gynecol") || spec.includes("obstetr") || spec.includes("gynae"));
     } catch (err) {
       console.error("Error fetching report data:", err);
     } finally {
@@ -1074,6 +1083,156 @@ const DoctorReports = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* ======= GYNECOLOGIST-SPECIFIC REPORTS ======= */}
+      {isGynecologist && (
+        <>
+          {/* Trimester Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Baby className="h-5 w-5 text-primary" />
+                Trimester Distribution
+              </CardTitle>
+              <CardDescription>Pregnant patients grouped by trimester</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const pregnantPatients = patients.filter(p => p.pregnancy_start_date);
+                const trimesterCounts = [
+                  { name: "1st Trimester (Week 1-12)", value: 0, fill: COLORS[0] },
+                  { name: "2nd Trimester (Week 13-26)", value: 0, fill: COLORS[1] },
+                  { name: "3rd Trimester (Week 27+)", value: 0, fill: COLORS[2] },
+                ];
+                pregnantPatients.forEach(p => {
+                  const t = getTrimester(p.pregnancy_start_date);
+                  if (t === 1) trimesterCounts[0].value++;
+                  else if (t === 2) trimesterCounts[1].value++;
+                  else if (t === 3) trimesterCounts[2].value++;
+                });
+                const hasData = trimesterCounts.some(t => t.value > 0);
+
+                return hasData ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={trimesterCounts.filter(t => t.value > 0)} cx="50%" cy="50%" innerRadius={50} outerRadius={90} paddingAngle={5} dataKey="value" label={({ name, value }) => `${value}`}>
+                            {trimesterCounts.filter(t => t.value > 0).map((entry, index) => (
+                              <Cell key={index} fill={entry.fill} />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="space-y-3">
+                      <p className="text-sm font-medium mb-2">Total Pregnant Patients: {pregnantPatients.length}</p>
+                      {trimesterCounts.map((t, i) => (
+                        <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <div className="flex items-center gap-2">
+                            <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: t.fill }} />
+                            <span className="text-sm">{t.name}</span>
+                          </div>
+                          <span className="text-sm font-bold">{t.value} patients</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Baby className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No pregnant patients found</p>
+                    <p className="text-xs mt-1">Set pregnancy start date on patient profiles to track trimesters</p>
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+
+          {/* Delivery Due Report */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="h-5 w-5 text-primary" />
+                Delivery Due
+              </CardTitle>
+              <CardDescription>Patients with upcoming expected delivery dates</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {(() => {
+                const now = new Date();
+                const pregnantWithDue = patients
+                  .filter(p => p.pregnancy_start_date)
+                  .map(p => ({
+                    ...p,
+                    dueDate: calculateExpectedDueDate(p.pregnancy_start_date),
+                    weeks: calculatePregnancyWeeks(p.pregnancy_start_date),
+                    trimester: getTrimester(p.pregnancy_start_date),
+                  }))
+                  .filter(p => p.dueDate && p.dueDate >= now)
+                  .sort((a, b) => (a.dueDate!.getTime() - b.dueDate!.getTime()));
+
+                const buckets = [
+                  { label: "Delivery in 7 days", patients: pregnantWithDue.filter(p => differenceInDays(p.dueDate!, now) <= 7) },
+                  { label: "Delivery in 14 days", patients: pregnantWithDue.filter(p => { const d = differenceInDays(p.dueDate!, now); return d > 7 && d <= 14; }) },
+                  { label: "Delivery in 30 days", patients: pregnantWithDue.filter(p => { const d = differenceInDays(p.dueDate!, now); return d > 14 && d <= 30; }) },
+                  { label: "Delivery in 2 months", patients: pregnantWithDue.filter(p => { const d = differenceInDays(p.dueDate!, now); return d > 30 && d <= 60; }) },
+                  { label: "Delivery in 3 months", patients: pregnantWithDue.filter(p => { const d = differenceInDays(p.dueDate!, now); return d > 60 && d <= 90; }) },
+                ];
+
+                const bucketChartData = buckets.map((b, i) => ({ name: b.label, count: b.patients.length, fill: COLORS[i % COLORS.length] }));
+                const hasData = pregnantWithDue.length > 0;
+
+                return hasData ? (
+                  <div className="space-y-6">
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={bucketChartData}>
+                          <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                          <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-20} textAnchor="end" height={60} />
+                          <YAxis allowDecimals={false} />
+                          <Tooltip />
+                          <Bar dataKey="count" name="Patients" radius={[4, 4, 0, 0]}>
+                            {bucketChartData.map((entry, index) => (
+                              <Cell key={index} fill={entry.fill} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="space-y-2 max-h-72 overflow-y-auto">
+                      <p className="text-sm font-medium">Upcoming Deliveries ({pregnantWithDue.length})</p>
+                      {pregnantWithDue.slice(0, 20).map((p, i) => (
+                        <div key={p.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <div>
+                            <p className="text-sm font-medium">{p.full_name}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Week {p.weeks} · {getTrimesterLabel(p.trimester)}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold">{format(p.dueDate!, "dd MMM yyyy")}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {differenceInDays(p.dueDate!, now)} days left
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Heart className="h-10 w-10 mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No upcoming deliveries</p>
+                    <p className="text-xs mt-1">Set pregnancy start date on patient profiles to track delivery dates</p>
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 };
