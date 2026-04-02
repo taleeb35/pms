@@ -419,34 +419,471 @@ const DoctorReports = () => {
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("Doctor Analytics Report", 14, 22);
-    doc.setFontSize(10);
-    doc.text(`Period: ${format(dateFrom, "dd MMM yyyy")} - ${format(dateTo, "dd MMM yyyy")}`, 14, 30);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 14;
+    const primary = [59, 130, 246]; // blue
+    const green = [16, 185, 129];
+    const orange = [245, 158, 11];
+    const purple = [139, 92, 246];
+    const red = [239, 68, 68];
+    const pink = [236, 72, 153];
+    const sectionColors = [primary, green, orange, purple, red, pink];
 
-    doc.setFontSize(12);
-    doc.text("Revenue Summary", 14, 42);
+    const addPageIfNeeded = (needed: number) => {
+      if (y + needed > doc.internal.pageSize.getHeight() - 20) {
+        doc.addPage();
+        y = 14;
+      }
+    };
+
+    const sectionHeader = (title: string, color: number[]) => {
+      addPageIfNeeded(16);
+      doc.setFillColor(color[0], color[1], color[2]);
+      doc.roundedRect(14, y, pageWidth - 28, 10, 2, 2, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.text(title, 18, y + 7);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "normal");
+      y += 14;
+    };
+
+    // ===== TITLE =====
+    doc.setFillColor(primary[0], primary[1], primary[2]);
+    doc.roundedRect(14, y, pageWidth - 28, 18, 3, 3, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Doctor Analytics Report", pageWidth / 2, y + 8, { align: "center" });
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${format(dateFrom, "dd MMM yyyy")} - ${format(dateTo, "dd MMM yyyy")}`, pageWidth / 2, y + 14, { align: "center" });
+    doc.setTextColor(0, 0, 0);
+    y += 24;
+
+    // ===== REVENUE SUMMARY =====
+    sectionHeader("Revenue Summary", primary);
     autoTable(doc, {
-      startY: 46,
+      startY: y,
       head: [["Metric", "Value"]],
       body: [
         ["Total Revenue", `Rs. ${totalRevenue.toLocaleString()}`],
         ["Total Refunds", `Rs. ${totalRefunds.toLocaleString()}`],
         ["Net Revenue", `Rs. ${totalNet.toLocaleString()}`],
-        ["Total Appointments", appointments.length.toString()],
+        ["Revenue Growth", `${revenueGrowth >= 0 ? "+" : ""}${revenueGrowth.toFixed(1)}%`],
+      ],
+      headStyles: { fillColor: primary, textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [239, 246, 255] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 6;
+
+    // ===== GROWTH KPIs =====
+    sectionHeader("Growth KPIs", green);
+    autoTable(doc, {
+      startY: y,
+      head: [["KPI", "Value"]],
+      body: [
+        ["Revenue per Patient", `Rs. ${growthMetrics.revenuePerPatient.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
+        ["Revenue per Hour", `Rs. ${growthMetrics.revenuePerHour.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
+        ["Daily Avg Revenue", `Rs. ${growthMetrics.dailyAvgRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
+        ["MoM Growth", `${growthMetrics.momGrowth >= 0 ? "+" : ""}${growthMetrics.momGrowth.toFixed(1)}%`],
+        ["Period Growth", `${growthMetrics.yoyGrowth >= 0 ? "+" : ""}${growthMetrics.yoyGrowth.toFixed(1)}%`],
+      ],
+      headStyles: { fillColor: green, textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [236, 253, 245] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 6;
+
+    // ===== MONTHLY REVENUE =====
+    sectionHeader("Monthly Revenue Trend", orange);
+    autoTable(doc, {
+      startY: y,
+      head: [["Month", "Revenue", "Refunds", "Net", "Consultation", "Procedures"]],
+      body: revenueTrendData.map(d => [
+        d.month,
+        `Rs. ${d.revenue.toLocaleString()}`,
+        `Rs. ${d.refunds.toLocaleString()}`,
+        `Rs. ${d.net.toLocaleString()}`,
+        `Rs. ${d.consultation.toLocaleString()}`,
+        `Rs. ${d.procedures.toLocaleString()}`,
+      ]),
+      headStyles: { fillColor: orange, textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [255, 251, 235] },
+      styles: { fontSize: 8 },
+      margin: { left: 14, right: 14 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 6;
+
+    // ===== APPOINTMENT ANALYTICS =====
+    sectionHeader("Appointment Analytics", purple);
+    const totalAppts = appointments.length;
+    autoTable(doc, {
+      startY: y,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Total Appointments", totalAppts.toString()],
         ["Completion Rate", `${completionRate}%`],
         ["Cancellation Rate", `${noShowRate}%`],
         ["Total Patients", patients.length.toString()],
       ],
+      headStyles: { fillColor: purple, textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [245, 243, 255] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
     });
+    y = (doc as any).lastAutoTable.finalY + 4;
 
-    doc.setFontSize(12);
-    doc.text("Monthly Revenue", 14, (doc as any).lastAutoTable.finalY + 14);
+    // Appointment Status Breakdown
+    if (appointmentStatusData.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["Status", "Count", "Percentage"]],
+        body: appointmentStatusData.map(d => [
+          d.name,
+          d.value.toString(),
+          `${totalAppts > 0 ? ((d.value / totalAppts) * 100).toFixed(1) : 0}%`,
+        ]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 4;
+    }
+
+    // Appointment Type
+    if (appointmentTypeData.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["Type", "Count"]],
+        body: appointmentTypeData.map(d => [d.name, d.value.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 4;
+    }
+
+    // Daily Volume
+    if (dailyVolume.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["Month", "Appointments"]],
+        body: dailyVolume.map(d => [d.month, d.appointments.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== PATIENT DEMOGRAPHICS =====
+    sectionHeader("Patient Demographics", pink);
+    // Gender
+    if (genderData.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["Gender", "Count"]],
+        body: genderData.map(d => [d.name, d.value.toString()]),
+        headStyles: { fillColor: pink, textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [253, 242, 248] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 4;
+    }
+
+    // Age Distribution
+    if (ageDistribution.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["Age Range", "Count"]],
+        body: ageDistribution.map(d => [d.range, d.count.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 4;
+    }
+
+    // City Distribution
+    if (cityDistribution.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["City", "Patients"]],
+        body: cityDistribution.map(d => [d.city, d.count.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 4;
+    }
+
+    // New vs Returning
+    if (patientRetention.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["Month", "New Patients", "Returning", "Total"]],
+        body: patientRetention.map(d => [d.month, d.new.toString(), d.returning.toString(), d.total.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== PEAK HOURS HEATMAP =====
+    if (heatmapData.length > 0) {
+      sectionHeader("Peak Hours Heatmap", [75, 85, 99]);
+      autoTable(doc, {
+        startY: y,
+        head: [["Hour", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]],
+        body: heatmapData.map(row => [
+          row.hour,
+          row.Mon || "–", row.Tue || "–", row.Wed || "–",
+          row.Thu || "–", row.Fri || "–", row.Sat || "–", row.Sun || "–",
+        ]),
+        headStyles: { fillColor: [75, 85, 99], textColor: [255, 255, 255], fontStyle: "bold" },
+        styles: { fontSize: 8, halign: "center" },
+        columnStyles: { 0: { halign: "left" } },
+        didParseCell: function(data: any) {
+          if (data.section === "body" && data.column.index > 0) {
+            const val = parseInt(data.cell.raw) || 0;
+            if (val > 0) {
+              const intensity = Math.min(val * 40, 200);
+              data.cell.styles.fillColor = [59, 130, 246 - intensity + 50];
+              data.cell.styles.textColor = intensity > 120 ? [255, 255, 255] : [0, 0, 0];
+            }
+          }
+        },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== GYNECOLOGIST REPORTS =====
+    if (isGynecologist) {
+      const pregnantPatients = patients.filter((p: any) => p.pregnancy_start_date);
+      const trimesterCounts = [
+        { name: "1st Trimester (Week 1-12)", value: 0 },
+        { name: "2nd Trimester (Week 13-26)", value: 0 },
+        { name: "3rd Trimester (Week 27+)", value: 0 },
+      ];
+      pregnantPatients.forEach((p: any) => {
+        const t = getTrimester(p.pregnancy_start_date);
+        if (t === 1) trimesterCounts[0].value++;
+        else if (t === 2) trimesterCounts[1].value++;
+        else if (t === 3) trimesterCounts[2].value++;
+      });
+
+      if (trimesterCounts.some(t => t.value > 0)) {
+        sectionHeader("Trimester Distribution", [236, 72, 153]);
+        autoTable(doc, {
+          startY: y,
+          head: [["Trimester", "Patients"]],
+          body: trimesterCounts.map(t => [t.name, t.value.toString()]),
+          headStyles: { fillColor: [236, 72, 153], textColor: [255, 255, 255], fontStyle: "bold" },
+          alternateRowStyles: { fillColor: [253, 242, 248] },
+          styles: { fontSize: 9 },
+          margin: { left: 14, right: 14 },
+          foot: [["Total Pregnant", pregnantPatients.length.toString()]],
+          footStyles: { fillColor: [236, 72, 153], textColor: [255, 255, 255], fontStyle: "bold" },
+        });
+        y = (doc as any).lastAutoTable.finalY + 6;
+      }
+
+      // Delivery Due
+      const now = new Date();
+      const pregnantWithDue = pregnantPatients
+        .map((p: any) => ({
+          name: p.full_name,
+          dueDate: calculateExpectedDueDate(p.pregnancy_start_date),
+          weeks: calculatePregnancyWeeks(p.pregnancy_start_date),
+          trimester: getTrimesterLabel(getTrimester(p.pregnancy_start_date)),
+        }))
+        .filter(p => p.dueDate && p.dueDate >= now)
+        .sort((a, b) => a.dueDate!.getTime() - b.dueDate!.getTime());
+
+      if (pregnantWithDue.length > 0) {
+        sectionHeader("Delivery Due", [220, 38, 38]);
+        autoTable(doc, {
+          startY: y,
+          head: [["Patient", "Due Date", "Weeks", "Days Left", "Trimester"]],
+          body: pregnantWithDue.map(p => [
+            p.name,
+            format(p.dueDate!, "dd MMM yyyy"),
+            `Week ${p.weeks}`,
+            `${differenceInDays(p.dueDate!, now)} days`,
+            p.trimester,
+          ]),
+          headStyles: { fillColor: [220, 38, 38], textColor: [255, 255, 255], fontStyle: "bold" },
+          alternateRowStyles: { fillColor: [254, 242, 242] },
+          styles: { fontSize: 8 },
+          margin: { left: 14, right: 14 },
+          didParseCell: function(data: any) {
+            if (data.section === "body" && data.column.index === 3) {
+              const daysLeft = parseInt(data.cell.raw) || 999;
+              if (daysLeft <= 7) {
+                data.cell.styles.textColor = [220, 38, 38];
+                data.cell.styles.fontStyle = "bold";
+              } else if (daysLeft <= 14) {
+                data.cell.styles.textColor = [245, 158, 11];
+                data.cell.styles.fontStyle = "bold";
+              }
+            }
+          },
+        });
+        y = (doc as any).lastAutoTable.finalY + 6;
+      }
+    }
+
+    // ===== PATIENT VISIT FREQUENCY =====
+    sectionHeader("Patient Visit Frequency", [99, 102, 241]);
     autoTable(doc, {
-      startY: (doc as any).lastAutoTable.finalY + 18,
-      head: [["Month", "Revenue", "Refunds", "Net"]],
-      body: revenueTrendData.map(d => [d.month, `Rs. ${d.revenue.toLocaleString()}`, `Rs. ${d.refunds.toLocaleString()}`, `Rs. ${d.net.toLocaleString()}`]),
+      startY: y,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Avg Visits/Patient", visitFrequencyData.avgVisits.toString()],
+        ["Total Patients", visitFrequencyData.totalPatients.toString()],
+      ],
+      headStyles: { fillColor: [99, 102, 241], textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [238, 242, 255] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
     });
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    // Visit Distribution
+    autoTable(doc, {
+      startY: y,
+      head: [["Visit Range", "Patients"]],
+      body: visitFrequencyData.distributionData.map(d => [d.range, d.count.toString()]),
+      headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [249, 250, 251] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    // Top Recurring
+    if (visitFrequencyData.topRecurring.length > 0) {
+      autoTable(doc, {
+        startY: y,
+        head: [["#", "Patient", "Visits"]],
+        body: visitFrequencyData.topRecurring.map((p, i) => [(i + 1).toString(), p.name, p.visits.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== DROP-OFF ANALYSIS =====
+    sectionHeader("Patient Drop-off Analysis", red);
+    autoTable(doc, {
+      startY: y,
+      head: [["Inactivity Period", "Patients"]],
+      body: dropOffData.summaryData.map(d => [d.range, d.count.toString()]),
+      headStyles: { fillColor: red, textColor: [255, 255, 255], fontStyle: "bold" },
+      alternateRowStyles: { fillColor: [254, 242, 242] },
+      styles: { fontSize: 9 },
+      margin: { left: 14, right: 14 },
+      foot: [["Total At-Risk", dropOffData.total.toString()]],
+      footStyles: { fillColor: red, textColor: [255, 255, 255], fontStyle: "bold" },
+    });
+    y = (doc as any).lastAutoTable.finalY + 4;
+
+    // Drop-off patient lists
+    const dropOffLists = [
+      { label: "30-60 Days", data: dropOffData.over30 },
+      { label: "60-90 Days", data: dropOffData.over60 },
+      { label: "90+ Days", data: dropOffData.over90 },
+    ];
+    dropOffLists.forEach(list => {
+      if (list.data.length > 0) {
+        addPageIfNeeded(30);
+        autoTable(doc, {
+          startY: y,
+          head: [[`${list.label} (${list.data.length} patients)`, "Last Visit", "Days Since"]],
+          body: list.data.slice(0, 15).map(p => [p.name, p.lastDate, `${p.daysSince} days`]),
+          headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+          alternateRowStyles: { fillColor: [249, 250, 251] },
+          styles: { fontSize: 8 },
+          margin: { left: 14, right: 14 },
+        });
+        y = (doc as any).lastAutoTable.finalY + 4;
+      }
+    });
+    y += 2;
+
+    // ===== TOP DISEASES =====
+    if (topDiseasesData.length > 0) {
+      sectionHeader("Top Diseases / Diagnoses", [14, 165, 233]);
+      autoTable(doc, {
+        startY: y,
+        head: [["#", "Diagnosis", "Cases"]],
+        body: topDiseasesData.map((d, i) => [(i + 1).toString(), d.fullName || d.name, d.count.toString()]),
+        headStyles: { fillColor: [14, 165, 233], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [240, 249, 255] },
+        styles: { fontSize: 8 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== ALLERGY DISTRIBUTION =====
+    if (allergyData.length > 0) {
+      sectionHeader("Allergy Distribution", [234, 88, 12]);
+      autoTable(doc, {
+        startY: y,
+        head: [["#", "Allergy", "Patients"]],
+        body: allergyData.map((a, i) => [(i + 1).toString(), a.name, `${a.count} patients`]),
+        headStyles: { fillColor: [234, 88, 12], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [255, 247, 237] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== CONSULTATION TIME =====
+    const validTimeData = consultationTimeData.filter(d => d.count > 0);
+    if (validTimeData.length > 0) {
+      sectionHeader("Average Consultation Time", [107, 114, 128]);
+      autoTable(doc, {
+        startY: y,
+        head: [["Month", "Avg (min)", "Shortest", "Longest", "Appointments"]],
+        body: validTimeData.map(d => [d.month, `${d.avg}`, `${d.min}`, `${d.max}`, d.count.toString()]),
+        headStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [249, 250, 251] },
+        styles: { fontSize: 9 },
+        margin: { left: 14, right: 14 },
+        foot: [["Overall Average", `${overallAvgTime} min`, "", "", ""]],
+        footStyles: { fillColor: [107, 114, 128], textColor: [255, 255, 255], fontStyle: "bold" },
+      });
+      y = (doc as any).lastAutoTable.finalY + 6;
+    }
+
+    // ===== FOOTER =====
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(150, 150, 150);
+      doc.text(`Generated on ${format(new Date(), "dd MMM yyyy, hh:mm a")}`, 14, doc.internal.pageSize.getHeight() - 10);
+      doc.text(`Page ${i} of ${pageCount}`, pageWidth - 14, doc.internal.pageSize.getHeight() - 10, { align: "right" });
+    }
 
     doc.save(`doctor-report-${format(new Date(), "yyyy-MM-dd")}.pdf`);
   };
