@@ -712,15 +712,21 @@ const ClinicAppointmentDetail = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleStatusChange("start")}>
-                <Play className="h-4 w-4 mr-2" /> Start
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("completed")}>
-                <CheckCircle className="h-4 w-4 mr-2" /> Mark Completed
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("cancelled")} className="text-destructive">
-                <XCircle className="h-4 w-4 mr-2" /> Cancel Appointment
-              </DropdownMenuItem>
+              {appointment.status === "scheduled" && (
+                <DropdownMenuItem onClick={() => handleStatusChange("start")}>
+                  <Play className="h-4 w-4 mr-2" /> Start
+                </DropdownMenuItem>
+              )}
+              {(appointment.status === "scheduled" || appointment.status === "start") && (
+                <DropdownMenuItem onClick={() => handleStatusChange("completed")}>
+                  <CheckCircle className="h-4 w-4 mr-2" /> Mark Completed
+                </DropdownMenuItem>
+              )}
+              {appointment.status !== "completed" && appointment.status !== "cancelled" && (
+                <DropdownMenuItem onClick={() => handleStatusChange("cancelled")} className="text-destructive">
+                  <XCircle className="h-4 w-4 mr-2" /> Cancel Appointment
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
