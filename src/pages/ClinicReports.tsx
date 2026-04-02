@@ -233,6 +233,65 @@ const ClinicReports = () => {
     }).sort((a, b) => b.totalRevenue - a.totalRevenue);
   }, [doctors, appointments]);
 
+  // ======= REVENUE BY SPECIALIZATION =======
+  const revenueBySpecialization = useMemo(() => {
+    const specMap: Record<string, { revenue: number; refunds: number; patients: Set<string>; appointments: number }> = {};
+    appointments.filter(a => a.status !== "cancelled").forEach(a => {
+      const doc = doctors.find(d => d.id === a.doctor_id);
+      const spec = doc?.specialization || "Unknown";
+      if (!specMap[spec]) specMap[spec] = { revenue: 0, refunds: 0, patients: new Set(), appointments: 0 };
+      specMap[spec].revenue += Number(a.total_fee) || 0;
+      specMap[spec].refunds += Number(a.refund) || 0;
+      specMap[spec].patients.add(a.patient_id);
+      specMap[spec].appointments++;
+    });
+    return Object.entries(specMap)
+      .map(([name, data]) => ({
+        name,
+        revenue: data.revenue,
+        net: data.revenue - data.refunds,
+        refunds: data.refunds,
+        patients: data.patients.size,
+        appointments: data.appointments,
+        avgPerPatient: data.patients.size > 0 ? Math.round((data.revenue - data.refunds) / data.patients.size) : 0,
+      }))
+      .sort((a, b) => b.net - a.net);
+  }, [appointments, doctors]);
+
+  // ======= REVENUE BY DOCTOR (with clinic share splits) =======
+  const revenueByDoctor = useMemo(() => {
+    return doctors.map(doc => {
+      const docAppts = appointments.filter(a => a.doctor_id === doc.id && a.status !== "cancelled");
+      const gross = docAppts.reduce((s, a) => s + (Number(a.total_fee) || 0), 0);
+      const refunds = docAppts.reduce((s, a) => s + (Number(a.refund) || 0), 0);
+      const net = gross - refunds;
+      const clinicPct = doc.clinic_percentage || 0;
+      const clinicShare = net * (clinicPct / 100);
+      const doctorShare = net - clinicShare;
+      const uniquePatients = new Set(docAppts.map(a => a.patient_id)).size;
+      const consultationRev = docAppts.reduce((s, a) => s + (Number(a.consultation_fee) || 0), 0);
+      const procedureRev = docAppts.reduce((s, a) => s + (Number(a.procedure_fee) || 0), 0);
+      const otherRev = docAppts.reduce((s, a) => s + (Number(a.other_fee) || 0), 0);
+      return {
+        id: doc.id,
+        name: doc.full_name,
+        specialization: doc.specialization,
+        clinicPct,
+        gross,
+        refunds,
+        net,
+        clinicShare,
+        doctorShare,
+        appointments: docAppts.length,
+        patients: uniquePatients,
+        consultationRev,
+        procedureRev,
+        otherRev,
+        avgPerAppointment: docAppts.length > 0 ? Math.round(net / docAppts.length) : 0,
+      };
+    }).sort((a, b) => b.net - a.net);
+  }, [doctors, appointments]);
+
   // ======= PATIENT DEMOGRAPHICS =======
   const genderData = useMemo(() => {
     const counts: Record<string, number> = {};
