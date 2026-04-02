@@ -584,13 +584,13 @@ const DoctorReports = () => {
       </div>
 
       {/* Appointment Heatmap */}
-      {heatmapData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Peak Hours Heatmap</CardTitle>
-            <CardDescription>Appointment density by day of week and hour</CardDescription>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Peak Hours Heatmap</CardTitle>
+          <CardDescription>Appointment density by day of week and hour</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {heatmapData.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
@@ -630,9 +630,14 @@ const DoctorReports = () => {
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <BarChart3 className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No appointment data for heatmap in selected period</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Appointment Type */}
       <div className="grid md:grid-cols-2 gap-4">
