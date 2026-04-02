@@ -46,7 +46,7 @@ const DoctorReports = () => {
       const from = format(dateFrom, "yyyy-MM-dd");
       const to = format(dateTo, "yyyy-MM-dd");
 
-      const [apptRes, patientRes, allApptRes, medRecRes, icdRes] = await Promise.all([
+      const [apptRes, patientRes, allApptRes, medRecRes, icdRes, doctorRes] = await Promise.all([
         supabase
           .from("appointments")
           .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, duration_minutes, started_at, completed_at, icd_code_id")
@@ -56,7 +56,7 @@ const DoctorReports = () => {
           .order("appointment_date"),
         supabase
           .from("patients")
-          .select("id, full_name, gender, date_of_birth, city, created_at, allergies")
+          .select("id, full_name, gender, date_of_birth, city, created_at, allergies, pregnancy_start_date")
           .eq("created_by", user.id),
         supabase
           .from("appointments")
@@ -72,6 +72,11 @@ const DoctorReports = () => {
           .from("doctor_icd_codes")
           .select("id, code, description")
           .eq("doctor_id", user.id),
+        supabase
+          .from("doctors")
+          .select("specialization")
+          .eq("id", user.id)
+          .maybeSingle(),
       ]);
 
       setAppointments(apptRes.data || []);
