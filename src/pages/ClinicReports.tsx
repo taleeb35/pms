@@ -201,7 +201,7 @@ const ClinicReports = () => {
         return Math.max(0, (end - start) / 60000);
       })
       .filter(d => d > 0 && d < 300);
-    return allDurations.length > 0 ? Math.round(allDurations.reduce((s, d) => s + d, 0) / allDurations.length) : 0;
+    return allDurations.length > 0 ? parseFloat((allDurations.reduce((s, d) => s + d, 0) / allDurations.length).toFixed(1)) : 0;
   }, [appointments]);
 
   // ======= DOCTOR PERFORMANCE SCORECARD =======
