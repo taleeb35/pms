@@ -31,6 +31,7 @@ const DoctorReports = () => {
   const [allAppointments, setAllAppointments] = useState<any[]>([]);
   const [medicalRecords, setMedicalRecords] = useState<any[]>([]);
   const [icdCodes, setIcdCodes] = useState<any[]>([]);
+  const [isGynecologist, setIsGynecologist] = useState(false);
 
   useEffect(() => {
     fetchData();
