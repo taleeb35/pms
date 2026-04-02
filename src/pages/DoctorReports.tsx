@@ -861,6 +861,219 @@ const DoctorReports = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* ======= PATIENT VISIT FREQUENCY ======= */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" /> Patient Visit Frequency
+          </CardTitle>
+          <CardDescription>Average visits per patient and top recurring patients</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 rounded-lg bg-primary/10 text-center">
+                  <p className="text-2xl font-bold text-primary">{visitFrequencyData.avgVisits}</p>
+                  <p className="text-xs text-muted-foreground">Avg Visits/Patient</p>
+                </div>
+                <div className="p-3 rounded-lg bg-muted/50 text-center">
+                  <p className="text-2xl font-bold">{visitFrequencyData.totalPatients}</p>
+                  <p className="text-xs text-muted-foreground">Total Patients</p>
+                </div>
+              </div>
+              <p className="text-sm font-medium mb-2">Visit Distribution</p>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={visitFrequencyData.distributionData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="range" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip />
+                    <Bar dataKey="count" fill={COLORS[0]} radius={[4, 4, 0, 0]} name="Patients" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-2">Top Recurring Patients</p>
+              {visitFrequencyData.topRecurring.length > 0 ? (
+                <div className="space-y-2 max-h-72 overflow-y-auto">
+                  {visitFrequencyData.topRecurring.map((p, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-muted-foreground w-5">#{i + 1}</span>
+                        <span className="text-sm font-medium truncate max-w-[180px]">{p.name}</span>
+                      </div>
+                      <span className="text-sm font-bold text-primary">{p.visits} visits</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">No patient data available</p>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ======= PATIENT DROP-OFF ANALYSIS ======= */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-warning" /> Patient Drop-off Analysis
+              </CardTitle>
+              <CardDescription>Patients who haven't returned in 30/60/90+ days</CardDescription>
+            </div>
+            {dropOffData.total > 0 && (
+              <div className="text-right">
+                <p className="text-2xl font-bold text-destructive">{dropOffData.total}</p>
+                <p className="text-xs text-muted-foreground">Inactive Patients</p>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={dropOffData.summaryData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis type="number" tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="range" tick={{ fontSize: 11 }} width={90} />
+                  <Tooltip />
+                  <Bar dataKey="count" name="Patients" radius={[0, 4, 4, 0]}>
+                    {dropOffData.summaryData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div>
+              <p className="text-sm font-medium mb-2">90+ Days Inactive (Needs Attention)</p>
+              {dropOffData.over90.length > 0 ? (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {dropOffData.over90.slice(0, 10).map((p, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-destructive/5 border border-destructive/10">
+                      <span className="text-sm font-medium truncate max-w-[180px]">{p.name}</span>
+                      <div className="text-right">
+                        <span className="text-sm font-bold text-destructive">{p.daysSince}d ago</span>
+                        <p className="text-xs text-muted-foreground">{format(parseISO(p.lastDate), "dd MMM yyyy")}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 text-muted-foreground">
+                  <UserCheck className="h-8 w-8 mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No patients inactive for 90+ days</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ======= TOP DISEASES / DIAGNOSES ======= */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Stethoscope className="h-4 w-4 text-primary" /> Top Diseases & Diagnoses
+          </CardTitle>
+          <CardDescription>Most common conditions treated (from ICD codes & medical records)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {topDiseasesData.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topDiseasesData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis type="number" tick={{ fontSize: 11 }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={150} />
+                    <Tooltip formatter={(val: number, _: string, props: any) => [val, props.payload.fullName || "Cases"]} />
+                    <Bar dataKey="count" name="Cases" radius={[0, 4, 4, 0]}>
+                      {topDiseasesData.map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2">Breakdown</p>
+                <div className="space-y-2 max-h-56 overflow-y-auto">
+                  {topDiseasesData.map((d, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                        <span className="text-sm truncate max-w-[200px]" title={d.fullName}>{d.fullName}</span>
+                      </div>
+                      <span className="text-sm font-bold">{d.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Stethoscope className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No diagnosis data available yet</p>
+              <p className="text-xs mt-1">Add ICD codes to appointments or diagnoses to medical records</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ======= ALLERGY DISTRIBUTION ======= */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4 text-warning" /> Allergy Distribution
+          </CardTitle>
+          <CardDescription>Most common allergies across your patient base</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {allergyData.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={allergyData.slice(0, 8)} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="count" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                      {allergyData.slice(0, 8).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2">All Allergies ({allergyData.length})</p>
+                <div className="space-y-2 max-h-56 overflow-y-auto">
+                  {allergyData.map((a, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                        <span className="text-sm">{a.name}</span>
+                      </div>
+                      <span className="text-sm font-bold">{a.count} patients</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <ShieldAlert className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No allergy data recorded</p>
+              <p className="text-xs mt-1">Add allergies to patient profiles to see distribution</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
