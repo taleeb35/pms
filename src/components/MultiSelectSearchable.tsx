@@ -71,7 +71,7 @@ export const MultiSelectSearchable = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between bg-background font-normal min-h-[40px] h-auto"
+            className="w-full justify-between bg-background font-normal min-h-[40px] h-auto data-[state=open]:bg-background data-[state=open]:text-foreground"
             disabled={disabled}
           >
             <div className="flex flex-wrap gap-1 flex-1">

@@ -55,7 +55,7 @@ export const SearchableSelect = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between bg-background font-normal"
+            className="w-full justify-between bg-background font-normal data-[state=open]:bg-background data-[state=open]:text-foreground"
             disabled={disabled}
           >
             {selectedOption ? selectedOption.label : placeholder}
