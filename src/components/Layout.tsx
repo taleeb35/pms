@@ -331,11 +331,17 @@ const Layout = ({ children }: LayoutProps) => {
       ],
     },
     {
+      label: "My Reports",
+      icon: BarChart3,
+      items: [
+        { path: "/clinic/reports", icon: BarChart3, label: "My Reports" },
+      ],
+    },
+    {
       label: "Finance & Settings",
       icon: Banknote,
       items: [
         { path: "/clinic/finance", icon: Banknote, label: "Finance" },
-        { path: "/clinic/reports", icon: BarChart3, label: "Reports" },
         { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
         { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/clinic/profile", icon: UserCog, label: "Profile" },
