@@ -21,7 +21,8 @@ export const isTimeSlotAvailable = async (
       .eq("doctor_id", doctorId)
       .eq("appointment_date", date)
       .eq("appointment_time", time)
-      .neq("status", "cancelled"); // Don't count cancelled appointments
+      .neq("status", "cancelled") // Don't count cancelled appointments
+      .neq("status", "completed"); // Don't count completed appointments
 
     if (excludeAppointmentId) {
       query = query.neq("id", excludeAppointmentId);
