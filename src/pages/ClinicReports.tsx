@@ -963,6 +963,38 @@ const ClinicReports = () => {
                   </div>
                 ))}
               </div>
+              {/* Per-Doctor Breakdown */}
+              {perDoctorConsultationTime.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-sm font-semibold mb-3">Average Time by Doctor</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 px-3 font-medium text-muted-foreground">Doctor</th>
+                          <th className="text-left py-2 px-3 font-medium text-muted-foreground">Specialization</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Appointments</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Avg Time</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Shortest</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Longest</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {perDoctorConsultationTime.map((doc) => (
+                          <tr key={doc.name} className="border-b border-border/50 hover:bg-muted/30">
+                            <td className="py-2 px-3 font-medium">{doc.name}</td>
+                            <td className="py-2 px-3 text-muted-foreground">{doc.specialization}</td>
+                            <td className="py-2 px-3 text-center">{doc.count}</td>
+                            <td className="py-2 px-3 text-center font-semibold text-primary">{doc.avg} min</td>
+                            <td className="py-2 px-3 text-center text-emerald-600">{doc.min} min</td>
+                            <td className="py-2 px-3 text-center text-orange-600">{doc.max} min</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
