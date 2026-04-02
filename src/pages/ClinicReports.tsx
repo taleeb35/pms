@@ -754,6 +754,134 @@ const ClinicReports = () => {
         )}
       </div>
 
+      {/* Revenue by Specialization */}
+      {revenueBySpecialization.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Revenue by Specialization
+            </CardTitle>
+            <CardDescription>Which specialties generate the most income</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={revenueBySpecialization} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis type="number" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `Rs.${(v / 1000).toFixed(0)}k`} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={120} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(v: number) => [`Rs. ${v.toLocaleString()}`, ""]} />
+                    <Bar dataKey="net" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Net Revenue" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="space-y-2 overflow-auto max-h-72">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Specialization</TableHead>
+                      <TableHead className="text-right">Revenue</TableHead>
+                      <TableHead className="text-right">Patients</TableHead>
+                      <TableHead className="text-right">Avg/Patient</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {revenueBySpecialization.map((s, i) => (
+                      <TableRow key={s.name}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                            <span className="font-medium text-sm">{s.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">Rs. {s.net.toLocaleString()}</TableCell>
+                        <TableCell className="text-right">{s.patients}</TableCell>
+                        <TableCell className="text-right">Rs. {s.avgPerPatient.toLocaleString()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Revenue by Doctor */}
+      {revenueByDoctor.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5" />
+              Revenue by Doctor
+            </CardTitle>
+            <CardDescription>Per-doctor earnings breakdown with clinic share splits</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-6 h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueByDoctor}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                  <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `Rs.${(v / 1000).toFixed(0)}k`} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(v: number) => [`Rs. ${v.toLocaleString()}`, ""]} />
+                  <Legend />
+                  <Bar dataKey="clinicShare" stackId="a" fill="hsl(var(--primary))" name="Clinic Share" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="doctorShare" stackId="a" fill="hsl(var(--chart-2, 160 60% 45%))" name="Doctor Share" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Doctor</TableHead>
+                    <TableHead>Specialization</TableHead>
+                    <TableHead className="text-right">Gross</TableHead>
+                    <TableHead className="text-right">Refunds</TableHead>
+                    <TableHead className="text-right">Net</TableHead>
+                    <TableHead className="text-right">Clinic %</TableHead>
+                    <TableHead className="text-right">Clinic Share</TableHead>
+                    <TableHead className="text-right">Dr Share</TableHead>
+                    <TableHead className="text-right">Appts</TableHead>
+                    <TableHead className="text-right">Avg/Appt</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {revenueByDoctor.map((d) => (
+                    <TableRow key={d.id}>
+                      <TableCell className="font-medium">{d.name}</TableCell>
+                      <TableCell><Badge variant="outline" className="text-xs">{d.specialization}</Badge></TableCell>
+                      <TableCell className="text-right">Rs. {d.gross.toLocaleString()}</TableCell>
+                      <TableCell className="text-right text-destructive">{d.refunds > 0 ? `Rs. ${d.refunds.toLocaleString()}` : "–"}</TableCell>
+                      <TableCell className="text-right font-semibold">Rs. {d.net.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{d.clinicPct}%</TableCell>
+                      <TableCell className="text-right font-semibold" style={{ color: "hsl(var(--primary))" }}>Rs. {d.clinicShare.toLocaleString()}</TableCell>
+                      <TableCell className="text-right" style={{ color: "hsl(var(--chart-2, 160 60% 45%))" }}>Rs. {d.doctorShare.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{d.appointments}</TableCell>
+                      <TableCell className="text-right">Rs. {d.avgPerAppointment.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow className="bg-muted/50 font-bold">
+                    <TableCell colSpan={2}>Total</TableCell>
+                    <TableCell className="text-right">Rs. {revenueByDoctor.reduce((s, d) => s + d.gross, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right text-destructive">Rs. {revenueByDoctor.reduce((s, d) => s + d.refunds, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">Rs. {revenueByDoctor.reduce((s, d) => s + d.net, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">–</TableCell>
+                    <TableCell className="text-right" style={{ color: "hsl(var(--primary))" }}>Rs. {revenueByDoctor.reduce((s, d) => s + d.clinicShare, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right" style={{ color: "hsl(var(--chart-2, 160 60% 45%))" }}>Rs. {revenueByDoctor.reduce((s, d) => s + d.doctorShare, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{revenueByDoctor.reduce((s, d) => s + d.appointments, 0)}</TableCell>
+                    <TableCell className="text-right">–</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Average Consultation Time */}
       <Card>
         <CardHeader>
