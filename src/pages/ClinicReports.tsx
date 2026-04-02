@@ -365,16 +365,6 @@ const ClinicReports = () => {
     });
   }, [appointments]);
 
-  // Revenue by specialization
-  const revenueBySpecialization = useMemo(() => {
-    const specMap: Record<string, number> = {};
-    doctors.forEach(doc => {
-      const docAppts = appointments.filter(a => a.doctor_id === doc.id && a.status !== "cancelled");
-      const rev = docAppts.reduce((s, a) => s + (Number(a.total_fee) || 0), 0);
-      specMap[doc.specialization] = (specMap[doc.specialization] || 0) + rev;
-    });
-    return Object.entries(specMap).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
-  }, [doctors, appointments]);
 
   // Expense categories
   const expenseByCategory = useMemo(() => {
