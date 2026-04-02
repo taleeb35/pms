@@ -26,11 +26,11 @@ const TimeSelect = ({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Generate time slots with 30-minute intervals
+  // Generate time slots with 15-minute intervals
   const timeSlots = useMemo(() => {
-    return Array.from({ length: 48 }, (_, i) => {
-      const hours = Math.floor(i / 2);
-      const minutes = (i % 2) * 30;
+    return Array.from({ length: 96 }, (_, i) => {
+      const hours = Math.floor(i / 4);
+      const minutes = (i % 4) * 15;
       const time24 = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       
       // Convert to 12-hour format for display

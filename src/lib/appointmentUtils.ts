@@ -257,9 +257,9 @@ export const getAvailableTimeSlots = async (
     console.error("Error generating time slots:", error);
     // Return all slots as fallback
     const allSlots: { value: string; label: string }[] = [];
-    for (let i = 0; i < 48; i++) {
-      const hours = Math.floor(i / 2);
-      const minutes = (i % 2) * 30;
+    for (let i = 0; i < 96; i++) {
+      const hours = Math.floor(i / 4);
+      const minutes = (i % 4) * 15;
       const time24 = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       const period = hours >= 12 ? 'PM' : 'AM';
       const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
