@@ -44,22 +44,39 @@ const DoctorReports = () => {
       const from = format(dateFrom, "yyyy-MM-dd");
       const to = format(dateTo, "yyyy-MM-dd");
 
-      const [apptRes, patientRes] = await Promise.all([
+      const [apptRes, patientRes, allApptRes, medRecRes, icdRes] = await Promise.all([
         supabase
           .from("appointments")
-          .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, duration_minutes, started_at, completed_at")
+          .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, duration_minutes, started_at, completed_at, icd_code_id")
           .eq("doctor_id", user.id)
           .gte("appointment_date", from)
           .lte("appointment_date", to)
           .order("appointment_date"),
         supabase
           .from("patients")
-          .select("id, full_name, gender, date_of_birth, city, created_at")
+          .select("id, full_name, gender, date_of_birth, city, created_at, allergies")
           .eq("created_by", user.id),
+        supabase
+          .from("appointments")
+          .select("id, appointment_date, patient_id, status")
+          .eq("doctor_id", user.id)
+          .order("appointment_date"),
+        supabase
+          .from("medical_records")
+          .select("id, diagnosis, patient_id, visit_date")
+          .eq("doctor_id", user.id)
+          .order("visit_date", { ascending: false }),
+        supabase
+          .from("doctor_icd_codes")
+          .select("id, code, description")
+          .eq("doctor_id", user.id),
       ]);
 
       setAppointments(apptRes.data || []);
       setPatients(patientRes.data || []);
+      setAllAppointments(allApptRes.data || []);
+      setMedicalRecords(medRecRes.data || []);
+      setIcdCodes(icdRes.data || []);
     } catch (err) {
       console.error("Error fetching report data:", err);
     } finally {
