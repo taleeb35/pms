@@ -204,6 +204,33 @@ const ClinicReports = () => {
     return allDurations.length > 0 ? parseFloat((allDurations.reduce((s, d) => s + d, 0) / allDurations.length).toFixed(1)) : 0;
   }, [appointments]);
 
+  // ======= PER-DOCTOR CONSULTATION TIME =======
+  const perDoctorConsultationTime = useMemo(() => {
+    return doctors.map(doc => {
+      const docAppts = appointments.filter(
+        a => a.doctor_id === doc.id && a.started_at && a.completed_at && a.status === "completed"
+      );
+      const durations = docAppts.map(a => {
+        const start = new Date(a.started_at).getTime();
+        const end = new Date(a.completed_at).getTime();
+        return Math.max(0, (end - start) / 60000);
+      }).filter(d => d > 0 && d < 300);
+
+      const avg = durations.length > 0 ? parseFloat((durations.reduce((s, d) => s + d, 0) / durations.length).toFixed(1)) : 0;
+      const min = durations.length > 0 ? parseFloat(Math.min(...durations).toFixed(1)) : 0;
+      const max = durations.length > 0 ? parseFloat(Math.max(...durations).toFixed(1)) : 0;
+
+      return {
+        name: doc.full_name,
+        specialization: doc.specialization,
+        avg,
+        min,
+        max,
+        count: durations.length,
+      };
+    }).filter(d => d.count > 0).sort((a, b) => b.avg - a.avg);
+  }, [doctors, appointments]);
+
   // ======= DOCTOR PERFORMANCE SCORECARD =======
   const doctorScorecard = useMemo(() => {
     return doctors.map(doc => {
@@ -936,6 +963,38 @@ const ClinicReports = () => {
                   </div>
                 ))}
               </div>
+              {/* Per-Doctor Breakdown */}
+              {perDoctorConsultationTime.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-sm font-semibold mb-3">Average Time by Doctor</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left py-2 px-3 font-medium text-muted-foreground">Doctor</th>
+                          <th className="text-left py-2 px-3 font-medium text-muted-foreground">Specialization</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Appointments</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Avg Time</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Shortest</th>
+                          <th className="text-center py-2 px-3 font-medium text-muted-foreground">Longest</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {perDoctorConsultationTime.map((doc) => (
+                          <tr key={doc.name} className="border-b border-border/50 hover:bg-muted/30">
+                            <td className="py-2 px-3 font-medium">{doc.name}</td>
+                            <td className="py-2 px-3 text-muted-foreground">{doc.specialization}</td>
+                            <td className="py-2 px-3 text-center">{doc.count}</td>
+                            <td className="py-2 px-3 text-center font-semibold text-primary">{doc.avg} min</td>
+                            <td className="py-2 px-3 text-center text-emerald-600">{doc.min} min</td>
+                            <td className="py-2 px-3 text-center text-orange-600">{doc.max} min</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </CardContent>
