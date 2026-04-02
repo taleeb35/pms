@@ -421,13 +421,12 @@ const DoctorReports = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     let y = 14;
-    const primary = [59, 130, 246]; // blue
-    const green = [16, 185, 129];
-    const orange = [245, 158, 11];
-    const purple = [139, 92, 246];
-    const red = [239, 68, 68];
-    const pink = [236, 72, 153];
-    const sectionColors = [primary, green, orange, purple, red, pink];
+    const primary: [number, number, number] = [59, 130, 246];
+    const green: [number, number, number] = [16, 185, 129];
+    const orange: [number, number, number] = [245, 158, 11];
+    const purple: [number, number, number] = [139, 92, 246];
+    const red: [number, number, number] = [239, 68, 68];
+    const pink: [number, number, number] = [236, 72, 153];
 
     const addPageIfNeeded = (needed: number) => {
       if (y + needed > doc.internal.pageSize.getHeight() - 20) {
