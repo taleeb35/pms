@@ -563,6 +563,7 @@ const ClinicAppointmentDetail = () => {
         other_fee: otherFee,
         refund: refundAmount,
         status: 'completed',
+        completed_at: new Date().toISOString(),
         confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
       };
