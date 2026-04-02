@@ -435,7 +435,7 @@ const DoctorReports = () => {
       }
     };
 
-    const sectionHeader = (title: string, color: number[]) => {
+    const sectionHeader = (title: string, color: [number, number, number]) => {
       addPageIfNeeded(16);
       doc.setFillColor(color[0], color[1], color[2]);
       doc.roundedRect(14, y, pageWidth - 28, 10, 2, 2, "F");
