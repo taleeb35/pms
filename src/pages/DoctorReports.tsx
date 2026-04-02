@@ -84,6 +84,8 @@ const DoctorReports = () => {
       setAllAppointments(allApptRes.data || []);
       setMedicalRecords(medRecRes.data || []);
       setIcdCodes(icdRes.data || []);
+      const spec = doctorRes.data?.specialization?.toLowerCase() || "";
+      setIsGynecologist(spec.includes("gynecol") || spec.includes("obstetr") || spec.includes("gynae"));
     } catch (err) {
       console.error("Error fetching report data:", err);
     } finally {
