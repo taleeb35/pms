@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { calculatePregnancyWeeks, calculateExpectedDueDate, getTrimester, getTrimesterLabel } from "@/lib/pregnancyUtils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subMonths, startOfMonth, endOfMonth, subDays, parseISO, eachDayOfInterval, eachMonthOfInterval, getDay, differenceInDays, subYears } from "date-fns";
