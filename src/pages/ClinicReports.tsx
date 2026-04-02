@@ -204,6 +204,33 @@ const ClinicReports = () => {
     return allDurations.length > 0 ? parseFloat((allDurations.reduce((s, d) => s + d, 0) / allDurations.length).toFixed(1)) : 0;
   }, [appointments]);
 
+  // ======= PER-DOCTOR CONSULTATION TIME =======
+  const perDoctorConsultationTime = useMemo(() => {
+    return doctors.map(doc => {
+      const docAppts = appointments.filter(
+        a => a.doctor_id === doc.id && a.started_at && a.completed_at && a.status === "completed"
+      );
+      const durations = docAppts.map(a => {
+        const start = new Date(a.started_at).getTime();
+        const end = new Date(a.completed_at).getTime();
+        return Math.max(0, (end - start) / 60000);
+      }).filter(d => d > 0 && d < 300);
+
+      const avg = durations.length > 0 ? parseFloat((durations.reduce((s, d) => s + d, 0) / durations.length).toFixed(1)) : 0;
+      const min = durations.length > 0 ? parseFloat(Math.min(...durations).toFixed(1)) : 0;
+      const max = durations.length > 0 ? parseFloat(Math.max(...durations).toFixed(1)) : 0;
+
+      return {
+        name: doc.full_name,
+        specialization: doc.specialization,
+        avg,
+        min,
+        max,
+        count: durations.length,
+      };
+    }).filter(d => d.count > 0).sort((a, b) => b.avg - a.avg);
+  }, [doctors, appointments]);
+
   // ======= DOCTOR PERFORMANCE SCORECARD =======
   const doctorScorecard = useMemo(() => {
     return doctors.map(doc => {
