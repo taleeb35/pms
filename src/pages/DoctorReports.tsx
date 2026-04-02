@@ -309,6 +309,105 @@ const DoctorReports = () => {
     });
   }, [appointments, dateFrom, dateTo]);
 
+  // ======= 1. PATIENT VISIT FREQUENCY =======
+  const visitFrequencyData = useMemo(() => {
+    const patientVisitMap: Record<string, { name: string; visits: number }> = {};
+    const completedAppts = allAppointments.filter(a => a.status === "completed" || a.status === "scheduled" || a.status === "start");
+    completedAppts.forEach(a => {
+      if (!patientVisitMap[a.patient_id]) {
+        const patient = patients.find(p => p.id === a.patient_id);
+        patientVisitMap[a.patient_id] = { name: patient?.full_name || "Unknown", visits: 0 };
+      }
+      patientVisitMap[a.patient_id].visits++;
+    });
+    const allVisits = Object.values(patientVisitMap);
+    const avgVisits = allVisits.length > 0 ? parseFloat((allVisits.reduce((s, p) => s + p.visits, 0) / allVisits.length).toFixed(1)) : 0;
+    const topRecurring = allVisits.sort((a, b) => b.visits - a.visits).slice(0, 10);
+    const distribution: Record<string, number> = { "1 visit": 0, "2-3 visits": 0, "4-5 visits": 0, "6-10 visits": 0, "10+ visits": 0 };
+    allVisits.forEach(p => {
+      if (p.visits === 1) distribution["1 visit"]++;
+      else if (p.visits <= 3) distribution["2-3 visits"]++;
+      else if (p.visits <= 5) distribution["4-5 visits"]++;
+      else if (p.visits <= 10) distribution["6-10 visits"]++;
+      else distribution["10+ visits"]++;
+    });
+    const distributionData = Object.entries(distribution).map(([range, count]) => ({ range, count }));
+    return { avgVisits, topRecurring, distributionData, totalPatients: allVisits.length };
+  }, [allAppointments, patients]);
+
+  // ======= 2. PATIENT DROP-OFF ANALYSIS =======
+  const dropOffData = useMemo(() => {
+    const today = new Date();
+    const patientLastVisit: Record<string, { name: string; lastDate: string; daysSince: number }> = {};
+    const completedAppts = allAppointments.filter(a => a.status === "completed");
+    completedAppts.forEach(a => {
+      const patient = patients.find(p => p.id === a.patient_id);
+      if (!patientLastVisit[a.patient_id] || a.appointment_date > patientLastVisit[a.patient_id].lastDate) {
+        patientLastVisit[a.patient_id] = {
+          name: patient?.full_name || "Unknown",
+          lastDate: a.appointment_date,
+          daysSince: differenceInDays(today, parseISO(a.appointment_date)),
+        };
+      }
+    });
+    const allPatientData = Object.values(patientLastVisit);
+    const over30 = allPatientData.filter(p => p.daysSince >= 30 && p.daysSince < 60).sort((a, b) => b.daysSince - a.daysSince);
+    const over60 = allPatientData.filter(p => p.daysSince >= 60 && p.daysSince < 90).sort((a, b) => b.daysSince - a.daysSince);
+    const over90 = allPatientData.filter(p => p.daysSince >= 90).sort((a, b) => b.daysSince - a.daysSince);
+    const summaryData = [
+      { range: "30-60 days", count: over30.length, color: "hsl(var(--chart-3, 30 80% 55%))" },
+      { range: "60-90 days", count: over60.length, color: "hsl(var(--chart-5, 340 75% 55%))" },
+      { range: "90+ days", count: over90.length, color: "hsl(var(--destructive))" },
+    ];
+    return { over30, over60, over90, summaryData, total: over30.length + over60.length + over90.length };
+  }, [allAppointments, patients]);
+
+  // ======= 3. TOP DISEASES / DIAGNOSES =======
+  const topDiseasesData = useMemo(() => {
+    const diseaseCounts: Record<string, number> = {};
+    // From ICD codes in appointments
+    appointments.forEach(a => {
+      if (a.icd_code_id) {
+        const icd = icdCodes.find(c => c.id === a.icd_code_id);
+        if (icd) {
+          const label = `${icd.code} - ${icd.description}`;
+          diseaseCounts[label] = (diseaseCounts[label] || 0) + 1;
+        }
+      }
+    });
+    // From medical records diagnosis
+    medicalRecords.forEach(r => {
+      if (r.diagnosis) {
+        const diagnosisText = r.diagnosis.trim();
+        if (diagnosisText) {
+          diseaseCounts[diagnosisText] = (diseaseCounts[diagnosisText] || 0) + 1;
+        }
+      }
+    });
+    return Object.entries(diseaseCounts)
+      .map(([name, count]) => ({ name: name.length > 40 ? name.substring(0, 37) + "..." : name, fullName: name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [appointments, icdCodes, medicalRecords]);
+
+  // ======= 4. ALLERGY DISTRIBUTION =======
+  const allergyData = useMemo(() => {
+    const allergyCounts: Record<string, number> = {};
+    patients.forEach(p => {
+      if (p.allergies) {
+        const parts = p.allergies.split(/[,;]+/).map((a: string) => a.trim().toLowerCase()).filter(Boolean);
+        parts.forEach((allergy: string) => {
+          const normalized = allergy.charAt(0).toUpperCase() + allergy.slice(1);
+          allergyCounts[normalized] = (allergyCounts[normalized] || 0) + 1;
+        });
+      }
+    });
+    return Object.entries(allergyCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+  }, [patients]);
+
   const handleExportPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
