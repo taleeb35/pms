@@ -238,7 +238,7 @@ const AIChatbot = ({ role }: AIChatbotProps) => {
                       <button
                         key={i}
                         onClick={() => sendMessage(q)}
-                        className="w-full text-left text-xs px-3 py-2 rounded-lg border border-border/50 hover:bg-accent hover:border-primary/30 transition-colors text-foreground/80"
+                        className="w-full text-left text-xs px-3 py-2 rounded-lg border border-border/50 hover:bg-primary hover:text-primary-foreground hover:border-primary/30 transition-colors text-foreground/80"
                       >
                         {q}
                       </button>
