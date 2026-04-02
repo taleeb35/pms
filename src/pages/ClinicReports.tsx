@@ -623,44 +623,26 @@ const ClinicReports = () => {
         </CardContent>
       </Card>
 
-      {/* Revenue by Specialization + Expense Categories */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Revenue by Specialization</CardTitle></CardHeader>
-          <CardContent>
-            <div className="h-56">
+      {/* Expense Categories */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Expense Categories</CardTitle></CardHeader>
+        <CardContent>
+          <div className="h-56">
+            {expenseByCategory.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={revenueBySpecialization}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="name" tick={{ fontSize: 9 }} angle={-20} textAnchor="end" height={50} />
-                  <YAxis tick={{ fontSize: 10 }} />
+                <PieChart>
+                  <Pie data={expenseByCategory} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {expenseByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
                   <Tooltip formatter={(val: number) => `Rs. ${val.toLocaleString()}`} />
-                  <Bar dataKey="value" fill={COLORS[0]} radius={[4, 4, 0, 0]} name="Revenue" />
-                </BarChart>
+                </PieChart>
               </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-base">Expense Categories</CardTitle></CardHeader>
-          <CardContent>
-            <div className="h-56">
-              {expenseByCategory.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={expenseByCategory} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                      {expenseByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip formatter={(val: number) => `Rs. ${val.toLocaleString()}`} />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-muted-foreground text-sm">No expenses recorded</div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            ) : (
+              <div className="h-full flex items-center justify-center text-muted-foreground text-sm">No expenses recorded</div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Patient Demographics */}
       <div className="grid md:grid-cols-3 gap-4">
