@@ -26,7 +26,8 @@ const pakistanCities = [
   "Sheikhupura", "Dera Ismail Khan", "Mirpur Khas", "Okara", "Chiniot",
   "Kamoke", "Mandi Bahauddin", "Jhelum", "Sadiqabad", "Jacobabad",
   "Shikarpur", "Khanewal", "Hafizabad", "Kohat", "Muzaffargarh",
-  "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari"
+  "Khanpur", "Gojra", "Mandi Burewala", "Daska", "Vehari",
+  "Malakand", "Narowal", "Nowshera", "Khushab"
 ].sort();
 
 interface CitySelectProps {
