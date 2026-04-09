@@ -2325,7 +2325,7 @@ const DoctorPatients = () => {
                 />
               </div>
               {/* Pregnancy Start Date - Only for Gynecologists and Female Patients */}
-              {isGynecologist && editForm.gender === "female" && (
+              {isGynecologist && editForm.gender === "female" && selectedPatient?.delivery_status !== "completed" && !((selectedPatient?.pregnancy_start_date && (calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0) >= 40)) && (
                 <div className="col-span-2 p-4 bg-primary/5 rounded-lg border border-primary/20">
                   <Label>Pregnancy Start Date (Optional)</Label>
                   <Popover open={editPregnancyStartDatePopoverOpen} onOpenChange={setEditPregnancyStartDatePopoverOpen}>
