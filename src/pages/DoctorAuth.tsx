@@ -612,8 +612,8 @@ const DoctorAuth = () => {
                   </span>
                   <div className="font-semibold text-sm">Yearly</div>
                   <div className="text-xs text-muted-foreground">
-                    <span className="line-through mr-1">{formatPrice(PKR_ORIGINAL_PRICE)}</span>
-                    {formatPrice(yearlyMonthlyRate)}/month
+                    <span className="line-through mr-1">{formatPrice(PKR_ORIGINAL_PRICE * 12)}</span>
+                    {formatPrice(yearlyMonthlyRate * 12)}/year
                   </div>
                   <span className="text-[10px] text-red-500 font-semibold">{PKR_DISCOUNT_PERCENT}% OFF</span>
                 </button>
