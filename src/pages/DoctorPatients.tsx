@@ -409,6 +409,8 @@ const DoctorPatients = () => {
       if (filterDelivery && filterDelivery !== "all") {
         if (filterDelivery === "no_pregnancy") {
           filteredData = filteredData.filter(patient => !patient.pregnancy_start_date);
+        } else if (filterDelivery === "delivery_completed") {
+          filteredData = filteredData.filter(patient => patient.delivery_status === "completed");
         } else {
         filteredData = filteredData.filter(patient => {
           if (!patient.pregnancy_start_date) return false;
