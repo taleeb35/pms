@@ -377,7 +377,17 @@ const DoctorPatients = () => {
         query = query.eq("city", filterCity);
       }
 
-      const result = await query.range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      // If client-side filters are active (delivery, trimester, age), fetch all data
+      const hasClientSideFilters = (filterDelivery && filterDelivery !== "all") || 
+                                    (filterTrimester && filterTrimester !== "all") || 
+                                    (filterAge && filterAge !== "all");
+
+      let result;
+      if (hasClientSideFilters) {
+        result = await query;
+      } else {
+        result = await query.range((currentPage - 1) * pageSize, currentPage * pageSize - 1);
+      }
 
       if (result.error) {
         console.error("Error fetching patients:", result.error);
@@ -455,8 +465,15 @@ const DoctorPatients = () => {
         });
       }
 
-      setPatients(filteredData);
-      setTotalCount(result.count || 0);
+      if (hasClientSideFilters) {
+        // Client-side pagination
+        setTotalCount(filteredData.length);
+        const startIdx = (currentPage - 1) * pageSize;
+        setPatients(filteredData.slice(startIdx, startIdx + pageSize));
+      } else {
+        setPatients(filteredData);
+        setTotalCount(result.count || 0);
+      }
     } catch (error) {
       console.error("Error fetching patients:", error);
       toast({ title: "Error fetching patients", variant: "destructive" });
