@@ -77,7 +77,6 @@ const ReceptionistDashboard = () => {
       if (doctorsError) throw doctorsError;
 
       const doctorIds = doctors?.map((d) => d.id) || [];
-      setDoctorIds(doctorIds);
 
       // Get total patients
       let totalPatients = 0;
