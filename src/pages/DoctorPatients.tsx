@@ -1539,10 +1539,43 @@ const DoctorPatients = () => {
                                         </>
                                       );
                                     })()}
+                                    {/* Auto-completed (40+ weeks, not manually marked) - show set location option */}
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0) >= 40 && (
+                                      <div className="col-span-2">
+                                        <Badge className="bg-green-100 text-green-800 mb-2">Delivery Completed (Auto)</Badge>
+                                        <div className="flex gap-2 mt-1">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openDeliveryLocationDialog(selectedPatient);
+                                            }}
+                                          >
+                                            Set Delivery Location
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    )}
+                                    {/* Manually completed - show location or set location */}
                                     {isGynecologist && selectedPatient.gender === "female" && selectedPatient.delivery_status === "completed" && (
                                       <div className="col-span-2">
-                                        <Badge className="bg-green-100 text-green-800 mb-2">Delivery Completed</Badge>
-                                        <div>
+                                        <Badge className="bg-green-100 text-green-800 mb-2">
+                                          {(selectedPatient as any).delivery_location === "here" ? "Delivered Here" : (selectedPatient as any).delivery_location === "elsewhere" ? "Delivered Elsewhere" : "Delivery Completed"}
+                                        </Badge>
+                                        <div className="flex gap-2 mt-1">
+                                          {!(selectedPatient as any).delivery_location && (
+                                            <Button
+                                              size="sm"
+                                              variant="outline"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                openDeliveryLocationDialog(selectedPatient);
+                                              }}
+                                            >
+                                              Set Delivery Location
+                                            </Button>
+                                          )}
                                           <Button
                                             size="sm"
                                             variant="outline"
