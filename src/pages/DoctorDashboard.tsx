@@ -11,6 +11,7 @@ import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
+import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
