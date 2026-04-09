@@ -26,6 +26,8 @@ import {
   handleNumberInput
 } from "@/lib/validations";
 
+const ORIGINAL_PRICE = 80;
+const DISCOUNT_PERCENT = 75;
 const MONTHLY_PRICE_PER_DOCTOR = 19.99;
 const YEARLY_DISCOUNT = 0.17; // 17% discount
 
