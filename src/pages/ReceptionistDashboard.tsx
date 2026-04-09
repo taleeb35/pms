@@ -254,6 +254,8 @@ const ReceptionistDashboard = () => {
           </div>
         </CardContent>
       </Card>
+      {/* Peak Hours Heatmap */}
+      <PeakHoursHeatmap doctorIds={doctorIds} />
     </div>
   );
 };
