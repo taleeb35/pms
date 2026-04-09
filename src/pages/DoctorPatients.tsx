@@ -465,8 +465,15 @@ const DoctorPatients = () => {
         });
       }
 
-      setPatients(filteredData);
-      setTotalCount(result.count || 0);
+      if (hasClientSideFilters) {
+        // Client-side pagination
+        setTotalCount(filteredData.length);
+        const startIdx = (currentPage - 1) * pageSize;
+        setPatients(filteredData.slice(startIdx, startIdx + pageSize));
+      } else {
+        setPatients(filteredData);
+        setTotalCount(result.count || 0);
+      }
     } catch (error) {
       console.error("Error fetching patients:", error);
       toast({ title: "Error fetching patients", variant: "destructive" });
