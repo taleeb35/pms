@@ -1,0 +1,1 @@
+ALTER TABLE public.patients ADD COLUMN delivery_location text DEFAULT NULL;

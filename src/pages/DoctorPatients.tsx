@@ -70,6 +70,8 @@ interface MedicalHistoryEntry {
 const DoctorPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [deliveryLocationDialogOpen, setDeliveryLocationDialogOpen] = useState(false);
+  const [pendingDeliveryPatient, setPendingDeliveryPatient] = useState<Patient | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -428,6 +430,10 @@ const DoctorPatients = () => {
             }
             return false;
           });
+        } else if (filterDelivery === "delivered_here") {
+          filteredData = filteredData.filter(patient => patient.delivery_status === "completed" && (patient as any).delivery_location === "here");
+        } else if (filterDelivery === "delivered_elsewhere") {
+          filteredData = filteredData.filter(patient => patient.delivery_status === "completed" && (patient as any).delivery_location === "elsewhere");
         } else {
         filteredData = filteredData.filter(patient => {
           if (!patient.pregnancy_start_date) return false;
@@ -639,19 +645,26 @@ const DoctorPatients = () => {
     }
   };
 
-  const handleMarkDeliveryCompleted = async (patient: Patient) => {
+  const handleMarkDeliveryCompleted = async (patient: Patient, location: "here" | "elsewhere") => {
     try {
       const { error } = await supabase
         .from("patients")
-        .update({ delivery_status: "completed", pregnancy_start_date: null } as any)
+        .update({ delivery_status: "completed", pregnancy_start_date: null, delivery_location: location } as any)
         .eq("id", patient.id);
       if (error) throw error;
-      toast({ title: "Delivery marked as completed" });
+      toast({ title: "Delivery marked as completed", description: location === "here" ? "Delivered at your clinic" : "Delivered elsewhere" });
       fetchPatients();
       setSelectedPatient(null);
+      setDeliveryLocationDialogOpen(false);
+      setPendingDeliveryPatient(null);
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     }
+  };
+
+  const openDeliveryLocationDialog = (patient: Patient) => {
+    setPendingDeliveryPatient(patient);
+    setDeliveryLocationDialogOpen(true);
   };
 
   const handleReactivatePregnancy = async (patient: Patient) => {
@@ -1266,6 +1279,8 @@ const DoctorPatients = () => {
                       <SelectItem value="30">Delivery in 30 days</SelectItem>
                       <SelectItem value="60">Delivery in 2 months</SelectItem>
                       <SelectItem value="90">Delivery in 3 months</SelectItem>
+                      <SelectItem value="delivered_here">Delivered Here</SelectItem>
+                      <SelectItem value="delivered_elsewhere">Delivered Elsewhere</SelectItem>
                     </SelectContent>
                   </Select>
                 </>
@@ -1352,7 +1367,7 @@ const DoctorPatients = () => {
                             )}
                             {isGynecologist && patient.delivery_status === "completed" && (
                               <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
-                                Delivery Completed
+                                {(patient as any).delivery_location === "elsewhere" ? "Delivered Elsewhere" : "Delivered Here"}
                               </Badge>
                             )}
                             {isGynecologist && patient.pregnancy_start_date && patient.delivery_status !== "completed" && (calculatePregnancyWeeks(patient.pregnancy_start_date) ?? 0) >= 40 && (
@@ -1515,7 +1530,7 @@ const DoctorPatients = () => {
                                               variant={isOverdue ? "default" : "outline"}
                                               onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleMarkDeliveryCompleted(selectedPatient);
+                                                openDeliveryLocationDialog(selectedPatient);
                                               }}
                                             >
                                               ✓ Mark Delivery Completed
@@ -2571,6 +2586,30 @@ const DoctorPatients = () => {
               <Button type="submit">Create Appointment</Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delivery Location Dialog */}
+      <Dialog open={deliveryLocationDialogOpen} onOpenChange={setDeliveryLocationDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Where was the delivery done?</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-2">
+            <Button
+              onClick={() => pendingDeliveryPatient && handleMarkDeliveryCompleted(pendingDeliveryPatient, "here")}
+              className="w-full"
+            >
+              Delivered Here (My Clinic)
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => pendingDeliveryPatient && handleMarkDeliveryCompleted(pendingDeliveryPatient, "elsewhere")}
+              className="w-full"
+            >
+              Delivered Elsewhere
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
