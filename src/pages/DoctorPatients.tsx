@@ -2588,6 +2588,30 @@ const DoctorPatients = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Delivery Location Dialog */}
+      <Dialog open={deliveryLocationDialogOpen} onOpenChange={setDeliveryLocationDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Where was the delivery done?</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-2">
+            <Button
+              onClick={() => pendingDeliveryPatient && handleMarkDeliveryCompleted(pendingDeliveryPatient, "here")}
+              className="w-full"
+            >
+              Delivered Here (My Clinic)
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => pendingDeliveryPatient && handleMarkDeliveryCompleted(pendingDeliveryPatient, "elsewhere")}
+              className="w-full"
+            >
+              Delivered Elsewhere
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
