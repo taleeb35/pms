@@ -609,6 +609,36 @@ const DoctorPatients = () => {
     }
   };
 
+  const handleMarkDeliveryCompleted = async (patient: Patient) => {
+    try {
+      const { error } = await supabase
+        .from("patients")
+        .update({ delivery_status: "completed", pregnancy_start_date: null } as any)
+        .eq("id", patient.id);
+      if (error) throw error;
+      toast({ title: "Delivery marked as completed" });
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleReactivatePregnancy = async (patient: Patient) => {
+    try {
+      const { error } = await supabase
+        .from("patients")
+        .update({ delivery_status: "active" } as any)
+        .eq("id", patient.id);
+      if (error) throw error;
+      toast({ title: "Pregnancy re-activated. Set a new pregnancy start date by editing the patient." });
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   const handleEditPatient = (patient: Patient) => {
     setEditForm({
       full_name: patient.full_name,
