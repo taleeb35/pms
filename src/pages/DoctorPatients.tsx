@@ -70,6 +70,8 @@ interface MedicalHistoryEntry {
 const DoctorPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [deliveryLocationDialogOpen, setDeliveryLocationDialogOpen] = useState(false);
+  const [pendingDeliveryPatient, setPendingDeliveryPatient] = useState<Patient | null>(null);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
