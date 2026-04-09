@@ -11,10 +11,12 @@ import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
+import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
   const [doctorName, setDoctorName] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [paymentPlan, setPaymentPlan] = useState<string | null>(null);
   const [isSingleDoctor, setIsSingleDoctor] = useState(false);
@@ -33,6 +35,7 @@ const DoctorDashboard = () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
+        setUserId(user.id);
 
         const today = new Date().toISOString().split('T')[0];
 
@@ -233,6 +236,8 @@ const DoctorDashboard = () => {
           </div>
         </CardContent>
       </Card>
+      {/* Peak Hours Heatmap */}
+      <PeakHoursHeatmap doctorId={userId || undefined} />
     </div>
   );
 };
