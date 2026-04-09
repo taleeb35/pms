@@ -1324,8 +1324,8 @@ const DoctorPatients = () => {
                               </Badge>
                             )}
                             {isGynecologist && patient.pregnancy_start_date && patient.delivery_status !== "completed" && (calculatePregnancyWeeks(patient.pregnancy_start_date) ?? 0) >= 40 && (
-                              <Badge variant="secondary" className="bg-red-100 text-red-800 hover:bg-red-200">
-                                Overdue
+                              <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
+                                Delivery Completed
                               </Badge>
                             )}
                           </div>
@@ -1456,34 +1456,42 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Allergies</p>
                                       <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
                                     </div>
-                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (
-                                      <>
-                                        <div>
-                                          <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
-                                          <p className="font-medium text-primary">{calculatePregnancyDuration(selectedPatient.pregnancy_start_date)}</p>
-                                        </div>
-                                        <div>
-                                          <p className="text-sm text-muted-foreground">Expected Delivery Date</p>
-                                          <p className="font-medium text-primary">
-                                            {calculateExpectedDueDate(selectedPatient.pregnancy_start_date) 
-                                              ? format(calculateExpectedDueDate(selectedPatient.pregnancy_start_date)!, "PPP")
-                                              : "N/A"}
-                                          </p>
-                                        </div>
-                                        <div className="col-span-2">
-                                          <Button
-                                            size="sm"
-                                            variant={(calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0) >= 40 ? "default" : "outline"}
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleMarkDeliveryCompleted(selectedPatient);
-                                            }}
-                                          >
-                                            ✓ Mark Delivery Completed
-                                          </Button>
-                                        </div>
-                                      </>
-                                    )}
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (() => {
+                                      const weeks = calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0;
+                                      const isOverdue = weeks >= 40;
+                                      const expectedDate = calculateExpectedDueDate(selectedPatient.pregnancy_start_date);
+                                      const isExpectedDatePast = expectedDate && expectedDate < new Date();
+                                      return (
+                                        <>
+                                          {!isOverdue && (
+                                            <div>
+                                              <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
+                                              <p className="font-medium text-primary">{calculatePregnancyDuration(selectedPatient.pregnancy_start_date)}</p>
+                                            </div>
+                                          )}
+                                          {!isExpectedDatePast && expectedDate && (
+                                            <div>
+                                              <p className="text-sm text-muted-foreground">Expected Delivery Date</p>
+                                              <p className="font-medium text-primary">
+                                                {format(expectedDate, "PPP")}
+                                              </p>
+                                            </div>
+                                          )}
+                                          <div className="col-span-2">
+                                            <Button
+                                              size="sm"
+                                              variant={isOverdue ? "default" : "outline"}
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleMarkDeliveryCompleted(selectedPatient);
+                                              }}
+                                            >
+                                              ✓ Mark Delivery Completed
+                                            </Button>
+                                          </div>
+                                        </>
+                                      );
+                                    })()}
                                     {isGynecologist && selectedPatient.gender === "female" && selectedPatient.delivery_status === "completed" && (
                                       <div className="col-span-2">
                                         <Badge className="bg-green-100 text-green-800 mb-2">Delivery Completed</Badge>
