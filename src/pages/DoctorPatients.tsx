@@ -24,7 +24,7 @@ import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentU
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
-import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester } from "@/lib/pregnancyUtils";
+import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester, calculatePregnancyWeeks } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 import { TablePagination } from "@/components/TablePagination";
