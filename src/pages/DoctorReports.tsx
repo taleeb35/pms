@@ -1438,8 +1438,8 @@ const DoctorReports = () => {
             <div>
               <p className="text-sm font-medium mb-2">90+ Days Inactive (Needs Attention)</p>
               {dropOffData.over90.length > 0 ? (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {dropOffData.over90.slice(0, 10).map((p, i) => (
+                <div className="space-y-2 max-h-72 overflow-y-auto">
+                  {dropOffData.over90.slice(0, 50).map((p, i) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-destructive/5 border border-destructive/10">
                       <span className="text-sm font-medium truncate max-w-[180px]">{p.name}</span>
                       <div className="text-right">
