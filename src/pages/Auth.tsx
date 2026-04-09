@@ -408,7 +408,7 @@ const Auth = () => {
                   </span>
                   <div className="font-semibold text-sm">Yearly</div>
                   <div className="text-xs text-muted-foreground">
-                    <span className="line-through mr-1">{formatPrice(ORIGINAL_PRICE)}</span>
+                    <span className="line-through mr-1">{formatPrice(ORIGINAL_PRICE * 12)}</span>
                     {formatPrice(yearlyMonthlyRate)}/doctor/month
                   </div>
                   <span className="text-[10px] text-red-500 font-semibold">{DISCOUNT_PERCENT}% OFF</span>
