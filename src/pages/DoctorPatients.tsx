@@ -407,6 +407,9 @@ const DoctorPatients = () => {
 
       // Apply delivery date filter for gynecologists
       if (filterDelivery && filterDelivery !== "all") {
+        if (filterDelivery === "no_pregnancy") {
+          filteredData = filteredData.filter(patient => !patient.pregnancy_start_date);
+        } else {
         filteredData = filteredData.filter(patient => {
           if (!patient.pregnancy_start_date) return false;
           
@@ -424,6 +427,7 @@ const DoctorPatients = () => {
           if (filterDelivery === "90") return daysUntilDelivery >= 0 && daysUntilDelivery <= 90;
           return true;
         });
+        }
       }
 
       // Apply trimester filter for gynecologists
@@ -1229,6 +1233,7 @@ const DoctorPatients = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Patients</SelectItem>
+                      <SelectItem value="no_pregnancy">No Pregnancy Date Set</SelectItem>
                       <SelectItem value="7">Delivery in 7 days</SelectItem>
                       <SelectItem value="14">Delivery in 14 days</SelectItem>
                       <SelectItem value="30">Delivery in 30 days</SelectItem>
