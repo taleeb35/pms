@@ -407,6 +407,9 @@ const DoctorPatients = () => {
 
       // Apply delivery date filter for gynecologists
       if (filterDelivery && filterDelivery !== "all") {
+        if (filterDelivery === "no_pregnancy") {
+          filteredData = filteredData.filter(patient => !patient.pregnancy_start_date);
+        } else {
         filteredData = filteredData.filter(patient => {
           if (!patient.pregnancy_start_date) return false;
           
