@@ -430,6 +430,10 @@ const DoctorPatients = () => {
             }
             return false;
           });
+        } else if (filterDelivery === "delivered_here") {
+          filteredData = filteredData.filter(patient => patient.delivery_status === "completed" && (patient as any).delivery_location === "here");
+        } else if (filterDelivery === "delivered_elsewhere") {
+          filteredData = filteredData.filter(patient => patient.delivery_status === "completed" && (patient as any).delivery_location === "elsewhere");
         } else {
         filteredData = filteredData.filter(patient => {
           if (!patient.pregnancy_start_date) return false;
