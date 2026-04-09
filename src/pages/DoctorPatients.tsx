@@ -1524,7 +1524,7 @@ const DoctorPatients = () => {
                                               variant={isOverdue ? "default" : "outline"}
                                               onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleMarkDeliveryCompleted(selectedPatient);
+                                                openDeliveryLocationDialog(selectedPatient);
                                               }}
                                             >
                                               ✓ Mark Delivery Completed
