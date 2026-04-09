@@ -41,7 +41,7 @@ const Pricing = () => {
     {
       question: "How does the pricing work?",
       answer:
-        "You pay $19.99 per doctor per month. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
+        "Our standard rate is $80 per doctor per month, but with our 75% launch discount, you only pay $19.99. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
     },
     {
       question: "Is there a free trial?",
@@ -50,7 +50,7 @@ const Pricing = () => {
     {
       question: "What's the yearly discount?",
       answer:
-        "When you choose annual billing, you get 17% off - that's $16.59 per doctor per month instead of $19.99.",
+        "When you choose annual billing, you get an additional 17% off - that's $16.59 per doctor per month instead of $19.99.",
     },
     {
       question: "Can I switch between monthly and yearly?",
