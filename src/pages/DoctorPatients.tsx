@@ -1275,6 +1275,8 @@ const DoctorPatients = () => {
                       <SelectItem value="30">Delivery in 30 days</SelectItem>
                       <SelectItem value="60">Delivery in 2 months</SelectItem>
                       <SelectItem value="90">Delivery in 3 months</SelectItem>
+                      <SelectItem value="delivered_here">Delivered Here</SelectItem>
+                      <SelectItem value="delivered_elsewhere">Delivered Elsewhere</SelectItem>
                     </SelectContent>
                   </Select>
                 </>
