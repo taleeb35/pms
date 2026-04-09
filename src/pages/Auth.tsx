@@ -389,8 +389,10 @@ const Auth = () => {
                 >
                   <div className="font-semibold text-sm">Monthly</div>
                   <div className="text-xs text-muted-foreground">
+                    <span className="line-through mr-1">{formatPrice(ORIGINAL_PRICE)}</span>
                     {formatPrice(MONTHLY_PRICE_PER_DOCTOR)}/doctor/month
                   </div>
+                  <span className="text-[10px] text-red-500 font-semibold">{DISCOUNT_PERCENT}% OFF</span>
                 </button>
                 <button
                   type="button"

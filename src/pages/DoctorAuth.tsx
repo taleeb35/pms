@@ -583,14 +583,18 @@ const DoctorAuth = () => {
                 <button
                   type="button"
                   onClick={() => setPaymentPlan("monthly")}
-                  className={`p-3 rounded-lg border-2 transition-all text-left ${
+                  className={`p-3 rounded-lg border-2 transition-all text-left relative ${
                     paymentPlan === "monthly"
                       ? "border-teal-500 bg-teal-50"
                       : "border-gray-200 hover:border-teal-300"
                   }`}
                 >
+                  <span className="absolute -top-2 -left-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                    {PKR_DISCOUNT_PERCENT}% OFF
+                  </span>
                   <div className="font-semibold text-sm">Monthly</div>
                   <div className="text-xs text-muted-foreground">
+                    <span className="line-through mr-1">{formatPrice(PKR_ORIGINAL_PRICE)}</span>
                     {formatPrice(MONTHLY_PRICE_PER_DOCTOR)}/month
                   </div>
                 </button>

@@ -141,6 +141,12 @@ const Pricing = () => {
             <CardContent className="pb-8">
               {/* Price Display */}
               <div className="text-center mb-6">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <span className="text-2xl text-muted-foreground/60 line-through font-medium">
+                    {formatPrice(ORIGINAL_PRICE)}
+                  </span>
+                  <Badge className="bg-red-500 text-white border-0 text-xs">{DISCOUNT_PERCENT}% OFF</Badge>
+                </div>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-bold text-foreground">
                     {formatPrice(isAnnual ? yearlyMonthlyRate : MONTHLY_PRICE_PER_DOCTOR)}
