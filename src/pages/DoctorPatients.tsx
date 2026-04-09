@@ -1488,7 +1488,7 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Allergies</p>
                                       <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
                                     </div>
-                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (() => {
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0) < 40 && (() => {
                                       const weeks = calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0;
                                       const isOverdue = weeks >= 40;
                                       const expectedDate = calculateExpectedDueDate(selectedPatient.pregnancy_start_date);
