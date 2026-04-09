@@ -14,7 +14,6 @@ import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
-import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 interface Clinic {
   clinic_name: string;
@@ -314,8 +313,6 @@ const ClinicDashboard = () => {
           </div>
         </CardContent>
       </Card>
-      {/* Peak Hours Heatmap */}
-      <PeakHoursHeatmap doctorIds={doctors.map(d => d.id)} />
     </div>
   );
 };

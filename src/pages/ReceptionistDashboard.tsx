@@ -9,7 +9,6 @@ import { format } from "date-fns";
 import clinicLogo from "@/assets/main-logo.webp";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
-import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 interface ClinicInfo {
   clinic_name: string;
@@ -27,7 +26,6 @@ const ReceptionistDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [clinicId, setClinicId] = useState<string | null>(null);
-  const [doctorIds, setDoctorIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -79,7 +77,6 @@ const ReceptionistDashboard = () => {
       if (doctorsError) throw doctorsError;
 
       const doctorIds = doctors?.map((d) => d.id) || [];
-      setDoctorIds(doctorIds);
 
       // Get total patients
       let totalPatients = 0;
@@ -254,8 +251,6 @@ const ReceptionistDashboard = () => {
           </div>
         </CardContent>
       </Card>
-      {/* Peak Hours Heatmap */}
-      <PeakHoursHeatmap doctorIds={doctorIds} />
     </div>
   );
 };
