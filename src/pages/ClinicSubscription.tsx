@@ -250,7 +250,15 @@ const ClinicSubscription = () => {
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b">
-              <span className="text-muted-foreground">Base rate per doctor</span>
+              <span className="text-muted-foreground">Original rate per doctor</span>
+              <span className="font-medium line-through text-muted-foreground/60">PKR {originalRate.toLocaleString()} / month</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b text-red-600">
+              <span>Launch discount ({discountPercent}% OFF)</span>
+              <span className="font-medium">- PKR {(originalRate - monthlyRate).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b">
+              <span className="text-muted-foreground">Discounted rate per doctor</span>
               <span className="font-medium">PKR 5,999 / month</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
