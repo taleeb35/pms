@@ -313,8 +313,6 @@ const ClinicDashboard = () => {
           </div>
         </CardContent>
       </Card>
-      {/* Peak Hours Heatmap */}
-      <PeakHoursHeatmap doctorIds={doctors.map(d => d.id)} />
     </div>
   );
 };

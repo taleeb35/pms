@@ -202,8 +202,6 @@ const Dashboard = () => {
           </div>
         </CardContent>
       </Card>
-      {/* Peak Hours Heatmap */}
-      <PeakHoursHeatmap showAll />
     </div>
   );
 };
