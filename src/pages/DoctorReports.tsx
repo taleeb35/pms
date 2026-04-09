@@ -1147,62 +1147,6 @@ const DoctorReports = () => {
         </Card>
       </div>
 
-      {/* Appointment Heatmap */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Peak Hours Heatmap</CardTitle>
-          <CardDescription>Appointment density by day of week and hour</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {heatmapData.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr>
-                    <th className="py-1 px-2 text-left font-medium text-muted-foreground">Hour</th>
-                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => (
-                      <th key={d} className="py-1 px-2 text-center font-medium text-muted-foreground">{d}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {heatmapData.map(row => {
-                    const maxVal = Math.max(...["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => row[d] || 0), 1);
-                    return (
-                      <tr key={row.hour}>
-                        <td className="py-1 px-2 font-medium text-muted-foreground">{row.hour}</td>
-                        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => {
-                          const val = row[d] || 0;
-                          const intensity = val > 0 ? Math.max(0.15, val / maxVal) : 0;
-                          return (
-                            <td key={d} className="py-1 px-2 text-center">
-                              <div
-                                className="rounded-md mx-auto flex items-center justify-center h-7 w-10 text-xs font-medium"
-                                style={{
-                                  backgroundColor: val > 0 ? `hsl(var(--primary) / ${intensity})` : "hsl(var(--muted))",
-                                  color: intensity > 0.5 ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
-                                }}
-                              >
-                                {val || "–"}
-                              </div>
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted-foreground">
-              <BarChart3 className="h-10 w-10 mx-auto mb-2 opacity-30" />
-              <p className="text-sm">No appointment data for heatmap in selected period</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Appointment Type */}
       <div className="grid md:grid-cols-2 gap-4">
         <Card>
@@ -1672,6 +1616,62 @@ const DoctorReports = () => {
         </CardContent>
       </Card>
 
+
+      {/* Appointment Heatmap */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Peak Hours Heatmap</CardTitle>
+          <CardDescription>Appointment density by day of week and hour</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {heatmapData.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr>
+                    <th className="py-1 px-2 text-left font-medium text-muted-foreground">Hour</th>
+                    {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => (
+                      <th key={d} className="py-1 px-2 text-center font-medium text-muted-foreground">{d}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {heatmapData.map(row => {
+                    const maxVal = Math.max(...["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => row[d] || 0), 1);
+                    return (
+                      <tr key={row.hour}>
+                        <td className="py-1 px-2 font-medium text-muted-foreground">{row.hour}</td>
+                        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => {
+                          const val = row[d] || 0;
+                          const intensity = val > 0 ? Math.max(0.15, val / maxVal) : 0;
+                          return (
+                            <td key={d} className="py-1 px-2 text-center">
+                              <div
+                                className="rounded-md mx-auto flex items-center justify-center h-7 w-10 text-xs font-medium"
+                                style={{
+                                  backgroundColor: val > 0 ? `hsl(var(--primary) / ${intensity})` : "hsl(var(--muted))",
+                                  color: intensity > 0.5 ? "hsl(var(--primary-foreground))" : "hsl(var(--foreground))",
+                                }}
+                              >
+                                {val || "–"}
+                              </div>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <BarChart3 className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No appointment data for heatmap in selected period</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
