@@ -420,7 +420,14 @@ const DoctorPatients = () => {
         if (filterDelivery === "no_pregnancy") {
           filteredData = filteredData.filter(patient => !patient.pregnancy_start_date);
         } else if (filterDelivery === "delivery_completed") {
-          filteredData = filteredData.filter(patient => patient.delivery_status === "completed");
+          filteredData = filteredData.filter(patient => {
+            if (patient.delivery_status === "completed") return true;
+            if (patient.pregnancy_start_date) {
+              const weeks = calculatePregnancyWeeks(patient.pregnancy_start_date);
+              if (weeks !== null && weeks >= 40) return true;
+            }
+            return false;
+          });
         } else {
         filteredData = filteredData.filter(patient => {
           if (!patient.pregnancy_start_date) return false;
