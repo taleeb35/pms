@@ -73,6 +73,8 @@ const ClinicSubscription = () => {
 
   const trialStatus = clinic ? getTrialStatus() : null;
   const nextRenewal = getNextRenewalDate();
+  const originalRate = 23999;
+  const discountPercent = 75;
   const monthlyRate = 5999;
   const yearlyRate = Math.round(5999 * 12 * 0.83); // 17% discount
 
