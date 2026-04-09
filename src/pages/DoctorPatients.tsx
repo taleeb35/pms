@@ -1229,6 +1229,7 @@ const DoctorPatients = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Patients</SelectItem>
+                      <SelectItem value="no_pregnancy">No Pregnancy Date Set</SelectItem>
                       <SelectItem value="7">Delivery in 7 days</SelectItem>
                       <SelectItem value="14">Delivery in 14 days</SelectItem>
                       <SelectItem value="30">Delivery in 30 days</SelectItem>
