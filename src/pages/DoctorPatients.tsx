@@ -641,19 +641,26 @@ const DoctorPatients = () => {
     }
   };
 
-  const handleMarkDeliveryCompleted = async (patient: Patient) => {
+  const handleMarkDeliveryCompleted = async (patient: Patient, location: "here" | "elsewhere") => {
     try {
       const { error } = await supabase
         .from("patients")
-        .update({ delivery_status: "completed", pregnancy_start_date: null } as any)
+        .update({ delivery_status: "completed", pregnancy_start_date: null, delivery_location: location } as any)
         .eq("id", patient.id);
       if (error) throw error;
-      toast({ title: "Delivery marked as completed" });
+      toast({ title: "Delivery marked as completed", description: location === "here" ? "Delivered at your clinic" : "Delivered elsewhere" });
       fetchPatients();
       setSelectedPatient(null);
+      setDeliveryLocationDialogOpen(false);
+      setPendingDeliveryPatient(null);
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     }
+  };
+
+  const openDeliveryLocationDialog = (patient: Patient) => {
+    setPendingDeliveryPatient(patient);
+    setDeliveryLocationDialogOpen(true);
   };
 
   const handleReactivatePregnancy = async (patient: Patient) => {
