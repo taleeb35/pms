@@ -44,6 +44,8 @@ const pakistanCities = [
 import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 
+const PKR_ORIGINAL_PRICE = 23999;
+const PKR_DISCOUNT_PERCENT = 75;
 const MONTHLY_PRICE_PER_DOCTOR = 5999;
 const YEARLY_DISCOUNT = 0.17; // 17% discount
 
