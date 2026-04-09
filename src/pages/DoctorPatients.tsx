@@ -427,6 +427,7 @@ const DoctorPatients = () => {
           if (filterDelivery === "90") return daysUntilDelivery >= 0 && daysUntilDelivery <= 90;
           return true;
         });
+        }
       }
 
       // Apply trimester filter for gynecologists
