@@ -24,7 +24,7 @@ import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentU
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
-import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester } from "@/lib/pregnancyUtils";
+import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester, calculatePregnancyWeeks } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 import { TablePagination } from "@/components/TablePagination";
@@ -48,6 +48,7 @@ interface Patient {
   city: string | null;
   major_diseases: string | null;
   pregnancy_start_date: string | null;
+  delivery_status: string | null;
   created_at: string;
 }
 
@@ -605,6 +606,36 @@ const DoctorPatients = () => {
         description: "Failed to upload document",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleMarkDeliveryCompleted = async (patient: Patient) => {
+    try {
+      const { error } = await supabase
+        .from("patients")
+        .update({ delivery_status: "completed", pregnancy_start_date: null } as any)
+        .eq("id", patient.id);
+      if (error) throw error;
+      toast({ title: "Delivery marked as completed" });
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleReactivatePregnancy = async (patient: Patient) => {
+    try {
+      const { error } = await supabase
+        .from("patients")
+        .update({ delivery_status: "active" } as any)
+        .eq("id", patient.id);
+      if (error) throw error;
+      toast({ title: "Pregnancy re-activated. Set a new pregnancy start date by editing the patient." });
+      fetchPatients();
+      setSelectedPatient(null);
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     }
   };
 
@@ -1287,6 +1318,16 @@ const DoctorPatients = () => {
                                 Waitlist
                               </Badge>
                             )}
+                            {isGynecologist && patient.delivery_status === "completed" && (
+                              <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
+                                Delivery Completed
+                              </Badge>
+                            )}
+                            {isGynecologist && patient.pregnancy_start_date && patient.delivery_status !== "completed" && (calculatePregnancyWeeks(patient.pregnancy_start_date) ?? 0) >= 40 && (
+                              <Badge variant="secondary" className="bg-red-100 text-red-800 hover:bg-red-200">
+                                Overdue
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>{patient.phone}</TableCell>
@@ -1415,7 +1456,7 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Allergies</p>
                                       <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
                                     </div>
-                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && (
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (
                                       <>
                                         <div>
                                           <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
@@ -1429,7 +1470,36 @@ const DoctorPatients = () => {
                                               : "N/A"}
                                           </p>
                                         </div>
+                                        <div className="col-span-2">
+                                          <Button
+                                            size="sm"
+                                            variant={(calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0) >= 40 ? "default" : "outline"}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleMarkDeliveryCompleted(selectedPatient);
+                                            }}
+                                          >
+                                            ✓ Mark Delivery Completed
+                                          </Button>
+                                        </div>
                                       </>
+                                    )}
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.delivery_status === "completed" && (
+                                      <div className="col-span-2">
+                                        <Badge className="bg-green-100 text-green-800 mb-2">Delivery Completed</Badge>
+                                        <div>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleReactivatePregnancy(selectedPatient);
+                                            }}
+                                          >
+                                            Re-activate Pregnancy
+                                          </Button>
+                                        </div>
+                                      </div>
                                     )}
                                   </div>
                                 </TabsContent>
