@@ -9,6 +9,7 @@ import { format } from "date-fns";
 import clinicLogo from "@/assets/main-logo.webp";
 import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 interface ClinicInfo {
   clinic_name: string;
