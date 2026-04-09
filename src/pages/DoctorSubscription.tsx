@@ -168,7 +168,9 @@ const DoctorSubscription = () => {
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
+              <span className="line-through mr-1">PKR {originalRate.toLocaleString()}</span>
               PKR {doctor.payment_plan === "yearly" ? yearlyRate.toLocaleString() : monthlyRate.toLocaleString()} / {doctor.payment_plan === "yearly" ? "year" : "month"}
+              <span className="ml-1 text-red-500 font-semibold">{discountPercent}% OFF</span>
             </p>
           </CardContent>
         </Card>
