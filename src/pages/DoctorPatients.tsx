@@ -48,6 +48,7 @@ interface Patient {
   city: string | null;
   major_diseases: string | null;
   pregnancy_start_date: string | null;
+  delivery_status: string | null;
   created_at: string;
 }
 
