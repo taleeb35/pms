@@ -15,7 +15,6 @@ import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 const DoctorDashboard = () => {
   const navigate = useNavigate();
   const [doctorName, setDoctorName] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [paymentPlan, setPaymentPlan] = useState<string | null>(null);
   const [isSingleDoctor, setIsSingleDoctor] = useState(false);
