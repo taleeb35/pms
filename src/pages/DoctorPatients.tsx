@@ -1288,6 +1288,16 @@ const DoctorPatients = () => {
                                 Waitlist
                               </Badge>
                             )}
+                            {isGynecologist && patient.delivery_status === "completed" && (
+                              <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200">
+                                Delivery Completed
+                              </Badge>
+                            )}
+                            {isGynecologist && patient.pregnancy_start_date && patient.delivery_status !== "completed" && (calculatePregnancyWeeks(patient.pregnancy_start_date) ?? 0) >= 40 && (
+                              <Badge variant="secondary" className="bg-red-100 text-red-800 hover:bg-red-200">
+                                Overdue
+                              </Badge>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>{patient.phone}</TableCell>
