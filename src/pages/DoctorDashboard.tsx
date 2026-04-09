@@ -233,6 +233,8 @@ const DoctorDashboard = () => {
           </div>
         </CardContent>
       </Card>
+      {/* Peak Hours Heatmap */}
+      <PeakHoursHeatmap doctorId={undefined} />
     </div>
   );
 };
