@@ -26,7 +26,6 @@ const ReceptionistDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [clinicId, setClinicId] = useState<string | null>(null);
-  const [doctorIds, setDoctorIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
