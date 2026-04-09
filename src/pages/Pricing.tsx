@@ -96,7 +96,9 @@ const Pricing = () => {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            $19.99 per doctor per month. Save 17% with yearly billing.
+            <span className="line-through text-muted-foreground/60">${ORIGINAL_PRICE}</span>{" "}
+            <span className="font-bold text-foreground">${MONTHLY_PRICE_PER_DOCTOR}</span> per doctor per month.{" "}
+            <Badge className="bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20 text-sm">{DISCOUNT_PERCENT}% OFF</Badge>
           </p>
 
           {/* Billing Toggle */}
