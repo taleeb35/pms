@@ -143,15 +143,15 @@ const Pricing = () => {
               <div className="text-center mb-6">
                 <div className="flex items-center justify-center gap-2 mb-1">
                   <span className="text-2xl text-muted-foreground/60 line-through font-medium">
-                    {formatPrice(ORIGINAL_PRICE)}
+                    {formatPrice(isAnnual ? ORIGINAL_PRICE * 12 : ORIGINAL_PRICE)}
                   </span>
                   <Badge className="bg-red-500 text-white border-0 text-xs">{DISCOUNT_PERCENT}% OFF</Badge>
                 </div>
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-bold text-foreground">
-                    {formatPrice(isAnnual ? yearlyMonthlyRate : MONTHLY_PRICE_PER_DOCTOR)}
+                    {formatPrice(isAnnual ? yearlyMonthlyRate * 12 : MONTHLY_PRICE_PER_DOCTOR)}
                   </span>
-                  <span className="text-muted-foreground">/doctor/month</span>
+                  <span className="text-muted-foreground">/doctor/{isAnnual ? "year" : "month"}</span>
                 </div>
                 {isAnnual && (
                   <div className="mt-2">
