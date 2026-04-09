@@ -6,6 +6,7 @@ import { Users, Calendar, Clock, Activity, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 const DoctorReceptionistDashboard = () => {
   const navigate = useNavigate();
