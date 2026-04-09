@@ -1426,7 +1426,7 @@ const DoctorPatients = () => {
                                       <p className="text-sm text-muted-foreground">Allergies</p>
                                       <p className="font-medium">{selectedPatient.allergies || "N/A"}</p>
                                     </div>
-                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && (
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.pregnancy_start_date && selectedPatient.delivery_status !== "completed" && (
                                       <>
                                         <div>
                                           <p className="text-sm text-muted-foreground">Pregnancy Duration</p>
@@ -1440,7 +1440,36 @@ const DoctorPatients = () => {
                                               : "N/A"}
                                           </p>
                                         </div>
+                                        <div className="col-span-2">
+                                          <Button
+                                            size="sm"
+                                            variant={(calculatePregnancyWeeks(selectedPatient.pregnancy_start_date) ?? 0) >= 40 ? "default" : "outline"}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleMarkDeliveryCompleted(selectedPatient);
+                                            }}
+                                          >
+                                            ✓ Mark Delivery Completed
+                                          </Button>
+                                        </div>
                                       </>
+                                    )}
+                                    {isGynecologist && selectedPatient.gender === "female" && selectedPatient.delivery_status === "completed" && (
+                                      <div className="col-span-2">
+                                        <Badge className="bg-green-100 text-green-800 mb-2">Delivery Completed</Badge>
+                                        <div>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              handleReactivatePregnancy(selectedPatient);
+                                            }}
+                                          >
+                                            Re-activate Pregnancy
+                                          </Button>
+                                        </div>
+                                      </div>
                                     )}
                                   </div>
                                 </TabsContent>
