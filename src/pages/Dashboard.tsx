@@ -9,7 +9,6 @@ import { format } from "date-fns";
 import clinicLogo from "@/assets/main-logo.webp";
 import AdminAnalyticsCharts from "@/components/AdminAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
-import PeakHoursHeatmap from "@/components/PeakHoursHeatmap";
 
 const Dashboard = () => {
   const navigate = useNavigate();
