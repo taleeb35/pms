@@ -119,6 +119,7 @@ import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import PatientVideoCall from "./pages/PatientVideoCall";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -168,6 +169,7 @@ const App = () => (
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/video-call" element={<PatientVideoCall />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />
