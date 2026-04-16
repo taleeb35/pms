@@ -63,7 +63,8 @@ export const PublicDoctorFinderChat = () => {
   const [loading, setLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
-  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat">("welcome");
+  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name">("welcome");
+  const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -124,12 +125,14 @@ export const PublicDoctorFinderChat = () => {
       });
     } else if (value === "search_name") {
       addUserMessage("Search by Name");
-      setStep("free_chat");
-      addBotMessage("Type the doctor's name and I'll find them for you:");
+      setStep("search_name");
+      addBotMessage("🔍 Type the doctor's name below and I'll find them for you:");
+      setTimeout(() => inputRef.current?.focus(), 100);
     } else if (value === "free_chat") {
       addUserMessage("Describe what I need");
       setStep("free_chat");
       addBotMessage("Tell me what kind of doctor you need and which city — for example:\n\n• \"I need a skin doctor in Lahore\"\n• \"Best cardiologist in Karachi\"\n• \"Child specialist near Islamabad\"");
+      setTimeout(() => inputRef.current?.focus(), 100);
     } else if (step === "city" || CITIES.includes(value)) {
       addUserMessage(value);
       setSelectedCity(value);
@@ -199,10 +202,14 @@ export const PublicDoctorFinderChat = () => {
       const doctors: Doctor[] = data.doctors || [];
 
       if (doctors.length === 0) {
-        addBotMessage("😔 No doctors found matching your criteria. Try a different specialization or city.", {
+        const noResultMsg = name 
+          ? `😔 I couldn't find a doctor named "${name}". Try a different spelling or search by specialization instead.`
+          : "😔 No doctors found matching your criteria. Try a different specialization or city.";
+        addBotMessage(noResultMsg, {
           options: [
-            { label: "🔄 Start Over", value: "browse_city" },
-            { label: "💬 Try different search", value: "free_chat" },
+            { label: "🔍 Search by Name", value: "search_name" },
+            { label: "🏙️ Browse by City", value: "browse_city" },
+            { label: "💬 Describe what you need", value: "free_chat" },
           ],
         });
       } else {
@@ -296,7 +303,10 @@ export const PublicDoctorFinderChat = () => {
     setInputValue("");
     addUserMessage(text);
 
-    if (step === "free_chat" || step === "welcome" || step === "results") {
+    if (step === "search_name") {
+      // Direct name search — faster than AI for name lookups
+      await searchDoctors(null, null, text);
+    } else if (step === "free_chat" || step === "welcome" || step === "results") {
       await handleAISearch(text);
     } else if (step === "specialty") {
       // User typed a specialty instead of clicking
@@ -552,10 +562,13 @@ export const PublicDoctorFinderChat = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={
+                  step === "search_name" ? "Enter doctor's name e.g. Dr. Ahmed..." :
                   step === "city" ? "Type a city name..." :
                   step === "specialty" ? "Type a specialization..." :
+                  step === "free_chat" ? "Describe what you need e.g. skin doctor in Lahore..." :
                   "Type your question..."
                 }
+                ref={inputRef}
                 className="flex-1 rounded-full text-sm"
                 disabled={loading}
               />
