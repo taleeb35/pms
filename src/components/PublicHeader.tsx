@@ -9,10 +9,11 @@ const PublicHeader = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleNavClick = (path: string) => {
-    setMobileMenuOpen(false);
-    navigate(path);
-  };
+  const desktopNavButtonClass =
+    "rounded-full px-4 text-muted-foreground transition-all duration-200 hover:bg-primary hover:!text-primary-foreground focus-visible:ring-primary";
+
+  const mobileNavButtonClass =
+    "w-full justify-start rounded-xl text-lg font-medium text-muted-foreground transition-all duration-200 hover:bg-primary hover:!text-primary-foreground focus-visible:ring-primary";
 
   const navItems = [
     { label: "Features", path: "/features" },
@@ -41,7 +42,7 @@ const PublicHeader = () => {
                 key={item.path}
                 variant="ghost"
                 asChild
-                className="text-muted-foreground hover:text-foreground font-medium"
+                className={desktopNavButtonClass}
               >
                 <Link to={item.path}>
                   {item.icon && <item.icon className="mr-1.5 h-4 w-4" />}
@@ -101,7 +102,7 @@ const PublicHeader = () => {
                       key={item.path}
                       variant="ghost"
                       asChild
-                      className="w-full justify-start text-lg font-medium"
+                      className={mobileNavButtonClass}
                     >
                       <Link to={item.path} onClick={() => setMobileMenuOpen(false)}>
                         {item.icon && <item.icon className="mr-2 h-5 w-5" />}
