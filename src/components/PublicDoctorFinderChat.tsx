@@ -226,7 +226,7 @@ export const PublicDoctorFinderChat = () => {
     }
   };
 
-  const searchDoctors = async (city: string | null, specialization: string | null, name: string | null) => {
+  const searchDoctors = async (city: string | null, specialization: string | null, name: string | null, area?: string, gender?: string, max_fee?: number, sort_by?: string) => {
     setLoading(true);
     try {
       const res = await fetch(
@@ -237,7 +237,7 @@ export const PublicDoctorFinderChat = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ action: "search_doctors", city, specialization, name }),
+          body: JSON.stringify({ action: "search_doctors", city, specialization, name, area, gender, max_fee, sort_by }),
         }
       );
       const data = await res.json();
