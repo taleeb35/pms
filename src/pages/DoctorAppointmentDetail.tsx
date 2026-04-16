@@ -39,6 +39,7 @@ import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { logActivity } from "@/lib/activityLogger";
 import { AIPrescriptionAssistant } from "@/components/AIPrescriptionAssistant";
 import { AIVisitSummary } from "@/components/AIVisitSummary";
+import StartVideoConsultation from "@/components/StartVideoConsultation";
 
 interface Procedure {
   id: string;
