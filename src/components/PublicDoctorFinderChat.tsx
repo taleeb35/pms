@@ -690,7 +690,7 @@ export const PublicDoctorFinderChat = () => {
                                 navigate(url);
                                 setIsOpen(false);
                               }}
-                              className="flex items-center justify-center gap-1 text-xs py-2 px-3 rounded-lg border border-border hover:bg-accent transition-colors text-muted-foreground"
+                              className="flex items-center justify-center gap-1 text-xs py-2 px-3 rounded-lg border border-border hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors text-muted-foreground"
                             >
                               <ExternalLink className="h-3 w-3" />
                               Profile
