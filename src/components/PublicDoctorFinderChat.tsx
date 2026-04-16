@@ -63,7 +63,8 @@ export const PublicDoctorFinderChat = () => {
   const [loading, setLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
-  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat">("welcome");
+  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name">("welcome");
+  const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -124,12 +125,14 @@ export const PublicDoctorFinderChat = () => {
       });
     } else if (value === "search_name") {
       addUserMessage("Search by Name");
-      setStep("free_chat");
-      addBotMessage("Type the doctor's name and I'll find them for you:");
+      setStep("search_name");
+      addBotMessage("🔍 Type the doctor's name below and I'll find them for you:");
+      setTimeout(() => inputRef.current?.focus(), 100);
     } else if (value === "free_chat") {
       addUserMessage("Describe what I need");
       setStep("free_chat");
       addBotMessage("Tell me what kind of doctor you need and which city — for example:\n\n• \"I need a skin doctor in Lahore\"\n• \"Best cardiologist in Karachi\"\n• \"Child specialist near Islamabad\"");
+      setTimeout(() => inputRef.current?.focus(), 100);
     } else if (step === "city" || CITIES.includes(value)) {
       addUserMessage(value);
       setSelectedCity(value);
