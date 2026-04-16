@@ -34,6 +34,8 @@ import {
   PanelLeftClose,
   PanelLeft,
   BarChart3,
+  PenLine,
+  MessageSquareText,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
