@@ -192,6 +192,12 @@ export const PublicDoctorFinderChat = () => {
   };
 
   const handleOptionClick = async (value: string, label: string) => {
+    if (value === "skip_email" && step === "intake_email") {
+      addUserMessage("Skip");
+      await saveLead({ full_name: userInfo.full_name!, phone: userInfo.phone! });
+      showWelcomeMenu(userInfo.full_name);
+      return;
+    }
     if (value === "browse_city") {
       addUserMessage("Browse by City");
       setStep("city");
