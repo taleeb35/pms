@@ -1909,6 +1909,81 @@ export type Database = {
           },
         ]
       }
+      video_consultations: {
+        Row: {
+          appointment_id: string
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          doctor_token: string | null
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          patient_id: string
+          patient_join_url: string | null
+          patient_token: string | null
+          recording_url: string | null
+          room_name: string
+          room_url: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          appointment_id: string
+          created_at?: string
+          created_by?: string | null
+          doctor_id: string
+          doctor_token?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          patient_id: string
+          patient_join_url?: string | null
+          patient_token?: string | null
+          recording_url?: string | null
+          room_name: string
+          room_url: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          created_at?: string
+          created_by?: string | null
+          doctor_id?: string
+          doctor_token?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          patient_id?: string
+          patient_join_url?: string | null
+          patient_token?: string | null
+          recording_url?: string | null
+          room_name?: string
+          room_url?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_consultations_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_consultations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visit_records: {
         Row: {
           appointment_id: string | null
