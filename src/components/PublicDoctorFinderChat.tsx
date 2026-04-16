@@ -458,7 +458,7 @@ export const PublicDoctorFinderChat = () => {
                           <button
                             key={opt.value}
                             onClick={() => handleOptionClick(opt.value, opt.label)}
-                            className="text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-accent transition-colors text-foreground"
+                            className="text-xs px-3 py-2 rounded-full border border-primary/30 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary hover:shadow-md transition-all duration-200 text-foreground font-medium"
                           >
                             {opt.label}
                           </button>
