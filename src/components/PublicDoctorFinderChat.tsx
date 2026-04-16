@@ -467,7 +467,7 @@ export const PublicDoctorFinderChat = () => {
                           className="w-full text-left p-3 border rounded-xl bg-background hover:bg-accent/50 transition-colors block"
                         >
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10 shrink-0">
+                             <Avatar className="h-10 w-10 shrink-0">
                               <AvatarImage src={doc.avatar_url || undefined} />
                               <AvatarFallback className="bg-primary/10 text-primary text-xs">
                                 {doc.full_name.split(" ").map(n => n[0]).join("").slice(0, 2)}
@@ -476,7 +476,10 @@ export const PublicDoctorFinderChat = () => {
                             <div className="min-w-0 flex-1">
                               <h4 className="font-semibold text-sm truncate">{doc.full_name}</h4>
                               <p className="text-xs text-muted-foreground truncate">{doc.specialization}</p>
-                              <div className="flex items-center gap-2 mt-0.5">
+                              {doc.qualification && (
+                                <p className="text-xs text-muted-foreground truncate">{doc.qualification}</p>
+                              )}
+                              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                                 {doc.city && (
                                   <span className="text-xs text-muted-foreground flex items-center gap-0.5">
                                     <MapPin className="h-3 w-3" />{doc.city}
@@ -488,6 +491,36 @@ export const PublicDoctorFinderChat = () => {
                                   </span>
                                 )}
                               </div>
+                              {/* Fee */}
+                              {doc.consultation_fee && (
+                                <div className="mt-1">
+                                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                                    💰 Rs. {doc.consultation_fee}
+                                  </span>
+                                </div>
+                              )}
+                              {/* Today's timing */}
+                              {doc.today_timing && (
+                                <div className="mt-0.5">
+                                  <span className={`text-xs font-medium ${doc.today_timing === "Closed" ? "text-red-500" : "text-blue-600 dark:text-blue-400"}`}>
+                                    🕐 Today: {doc.today_timing}
+                                  </span>
+                                </div>
+                              )}
+                              {/* Clinic */}
+                              {doc.clinic_name && (
+                                <div className="mt-0.5">
+                                  <span className="text-xs text-muted-foreground">
+                                    🏥 {doc.clinic_name}
+                                  </span>
+                                </div>
+                              )}
+                              {/* Multiple clinics */}
+                              {doc.all_clinics && doc.all_clinics.length > 1 && (
+                                <div className="mt-1 text-xs text-primary font-medium">
+                                  📍 Available at {doc.all_clinics.length} clinics
+                                </div>
+                              )}
                             </div>
                           </div>
                         </button>
