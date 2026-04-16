@@ -107,7 +107,7 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
 
   if (city) seoQuery = seoQuery.ilike("city", city);
   if (name) seoQuery = seoQuery.ilike("full_name", `%${name}%`);
-  if (gender) seoQuery = seoQuery.ilike("gender", gender);
+  // Gender filtering done post-query via name inference
   if (relatedSpecs.length > 1) {
     seoQuery = seoQuery.or(relatedSpecs.map(s => `specialization.ilike.%${s}%`).join(","));
   } else if (specialization) {
