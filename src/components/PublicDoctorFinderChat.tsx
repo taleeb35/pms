@@ -202,10 +202,14 @@ export const PublicDoctorFinderChat = () => {
       const doctors: Doctor[] = data.doctors || [];
 
       if (doctors.length === 0) {
-        addBotMessage("😔 No doctors found matching your criteria. Try a different specialization or city.", {
+        const noResultMsg = name 
+          ? `😔 I couldn't find a doctor named "${name}". Try a different spelling or search by specialization instead.`
+          : "😔 No doctors found matching your criteria. Try a different specialization or city.";
+        addBotMessage(noResultMsg, {
           options: [
-            { label: "🔄 Start Over", value: "browse_city" },
-            { label: "💬 Try different search", value: "free_chat" },
+            { label: "🔍 Search by Name", value: "search_name" },
+            { label: "🏙️ Browse by City", value: "browse_city" },
+            { label: "💬 Describe what you need", value: "free_chat" },
           ],
         });
       } else {
