@@ -558,10 +558,13 @@ export const PublicDoctorFinderChat = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={
+                  step === "search_name" ? "Enter doctor's name e.g. Dr. Ahmed..." :
                   step === "city" ? "Type a city name..." :
                   step === "specialty" ? "Type a specialization..." :
+                  step === "free_chat" ? "Describe what you need e.g. skin doctor in Lahore..." :
                   "Type your question..."
                 }
+                ref={inputRef}
                 className="flex-1 rounded-full text-sm"
                 disabled={loading}
               />
