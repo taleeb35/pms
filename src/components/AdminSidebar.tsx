@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Building2, Stethoscope, LifeBuoy, Settings, LayoutDashboard, User, Share2, PenLine, CreditCard, ChevronDown, FolderKanban } from "lucide-react";
+import { Building2, Stethoscope, LifeBuoy, Settings, LayoutDashboard, User, Share2, PenLine, CreditCard, ChevronDown, FolderKanban, MessageSquareText } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Sidebar,
