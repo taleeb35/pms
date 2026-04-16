@@ -72,6 +72,7 @@ interface AppointmentData {
   doctor_id: string;
   appointment_date: string;
   appointment_time: string;
+  appointment_type: string | null;
   status: string;
   reason: string | null;
   notes: string | null;
@@ -702,13 +703,15 @@ const ClinicAppointmentDetail = () => {
             nextVisitNotes={formData.next_visit_notes}
             nextVisitDate={nextVisitDate ? format(nextVisitDate, "PPP") : undefined}
           />
-          <StartVideoConsultation
-            appointmentId={appointment.id}
-            doctorId={appointment.doctor_id}
-            patientId={appointment.patient_id}
-            patientName={appointment.patients.full_name}
-            patientPhone={appointment.patients.phone}
-          />
+          {appointment.appointment_type === "video_consultation" && (
+            <StartVideoConsultation
+              appointmentId={appointment.id}
+              doctorId={appointment.doctor_id}
+              patientId={appointment.patient_id}
+              patientName={appointment.patients.full_name}
+              patientPhone={appointment.patients.phone}
+            />
+          )}
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
             Print

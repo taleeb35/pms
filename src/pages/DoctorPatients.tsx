@@ -2601,6 +2601,7 @@ const DoctorPatients = () => {
                   <SelectItem value="new">New</SelectItem>
                   <SelectItem value="follow_up">Follow Up</SelectItem>
                   <SelectItem value="report_check">Report Check</SelectItem>
+                  <SelectItem value="video_consultation">Video Consultation</SelectItem>
                 </SelectContent>
               </Select>
             </div>
