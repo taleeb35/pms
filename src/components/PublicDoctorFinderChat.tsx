@@ -524,69 +524,107 @@ export const PublicDoctorFinderChat = () => {
                   {msg.doctors && msg.doctors.length > 0 && (
                     <div className="space-y-2 mt-2">
                       {msg.doctors.map((doc) => (
-                        <button
+                        <div
                           key={doc.id}
-                          onClick={() => handleDoctorClick(doc)}
-                          className="w-full text-left p-3 border rounded-xl bg-background hover:bg-accent/50 transition-colors block"
+                          className="w-full text-left p-3 border rounded-xl bg-background hover:bg-accent/50 transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                             <Avatar className="h-10 w-10 shrink-0">
-                              <AvatarImage src={doc.avatar_url || undefined} />
-                              <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                {doc.full_name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-semibold text-sm truncate">{doc.full_name}</h4>
-                              <p className="text-xs text-muted-foreground truncate">{doc.specialization}</p>
-                              {doc.qualification && (
-                                <p className="text-xs text-muted-foreground truncate">{doc.qualification}</p>
-                              )}
-                              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                {doc.city && (
-                                  <span className="text-xs text-muted-foreground flex items-center gap-0.5">
-                                    <MapPin className="h-3 w-3" />{doc.city}
-                                  </span>
+                          <button
+                            onClick={() => handleDoctorClick(doc)}
+                            className="w-full text-left"
+                          >
+                            <div className="flex items-center gap-3">
+                               <Avatar className="h-10 w-10 shrink-0">
+                                <AvatarImage src={doc.avatar_url || undefined} />
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                  {doc.full_name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <h4 className="font-semibold text-sm truncate">{doc.full_name}</h4>
+                                  {doc.gender && (
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${doc.gender === "female" ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"}`}>
+                                      {doc.gender === "female" ? "♀" : "♂"}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground truncate">{doc.specialization}</p>
+                                {doc.qualification && (
+                                  <p className="text-xs text-muted-foreground truncate">{doc.qualification}</p>
                                 )}
-                                {doc.experience_years && (
-                                  <span className="text-xs text-muted-foreground">
-                                    {doc.experience_years}y exp
-                                  </span>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                  {doc.city && (
+                                    <span className="text-xs text-muted-foreground flex items-center gap-0.5">
+                                      <MapPin className="h-3 w-3" />{doc.city}
+                                    </span>
+                                  )}
+                                  {doc.experience_years && (
+                                    <span className="text-xs text-muted-foreground">
+                                      {doc.experience_years}y exp
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Fee */}
+                                {doc.consultation_fee && (
+                                  <div className="mt-1">
+                                    <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                                      💰 Rs. {doc.consultation_fee}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Today's timing */}
+                                {doc.today_timing && (
+                                  <div className="mt-0.5">
+                                    <span className={`text-xs font-medium ${doc.today_timing === "Closed" ? "text-destructive" : "text-blue-600 dark:text-blue-400"}`}>
+                                      🕐 Today: {doc.today_timing}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Clinic with location */}
+                                {doc.clinic_name && (
+                                  <div className="mt-0.5">
+                                    <span className="text-xs text-muted-foreground">
+                                      🏥 {doc.clinic_name}{doc.clinic_location ? ` — ${doc.clinic_location}` : ""}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Multiple clinics */}
+                                {doc.all_clinics && doc.all_clinics.length > 1 && (
+                                  <div className="mt-1 text-xs text-primary font-medium">
+                                    📍 Available at {doc.all_clinics.length} clinics
+                                  </div>
                                 )}
                               </div>
-                              {/* Fee */}
-                              {doc.consultation_fee && (
-                                <div className="mt-1">
-                                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                                    💰 Rs. {doc.consultation_fee}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Today's timing */}
-                              {doc.today_timing && (
-                                <div className="mt-0.5">
-                                  <span className={`text-xs font-medium ${doc.today_timing === "Closed" ? "text-red-500" : "text-blue-600 dark:text-blue-400"}`}>
-                                    🕐 Today: {doc.today_timing}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Clinic */}
-                              {doc.clinic_name && (
-                                <div className="mt-0.5">
-                                  <span className="text-xs text-muted-foreground">
-                                    🏥 {doc.clinic_name}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Multiple clinics */}
-                              {doc.all_clinics && doc.all_clinics.length > 1 && (
-                                <div className="mt-1 text-xs text-primary font-medium">
-                                  📍 Available at {doc.all_clinics.length} clinics
-                                </div>
-                              )}
                             </div>
+                          </button>
+                          {/* Book Appointment Button */}
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const url = getDoctorProfileUrl(doc);
+                                navigate(url);
+                                setIsOpen(false);
+                              }}
+                              className="flex-1 flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
+                            >
+                              <Calendar className="h-3 w-3" />
+                              Book Appointment
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const url = getDoctorProfileUrl(doc);
+                                navigate(url);
+                                setIsOpen(false);
+                              }}
+                              className="flex items-center justify-center gap-1 text-xs py-2 px-3 rounded-lg border border-border hover:bg-accent transition-colors text-muted-foreground"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Profile
+                            </button>
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   )}
