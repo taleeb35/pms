@@ -31,6 +31,7 @@ interface Doctor {
   timing?: string | null;
   today_timing?: string | null;
   introduction?: string | null;
+  gender?: string | null;
   all_clinics?: DoctorClinic[];
   source: string;
 }
