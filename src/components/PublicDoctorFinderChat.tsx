@@ -118,9 +118,20 @@ export const PublicDoctorFinderChat = () => {
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([{
-        id: "welcome",
+        id: "intake-name",
         type: "bot",
-        text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
+        text: "👋 Hi! I'm your Doctor Finder assistant.\n\nBefore we start, may I know your **name**? (so I can assist you better)",
+      }]);
+      setStep("intake_name");
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
+
+  const showWelcomeMenu = (greetingName?: string) => {
+    const name = greetingName || userInfo.full_name;
+    addBotMessage(
+      `Thanks${name ? `, ${name}` : ""}! 🎉\n\nHow would you like to find a doctor?`,
+      {
         options: [
           { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
           { label: "🔍 Search by Name", value: "search_name" },
@@ -130,9 +141,26 @@ export const PublicDoctorFinderChat = () => {
           { label: "💬 Describe what you need", value: "free_chat" },
         ],
         step: "welcome",
-      }]);
+      }
+    );
+    setStep("welcome");
+  };
+
+  const saveLead = async (info: { full_name: string; phone: string; email?: string }) => {
+    if (leadSaved) return;
+    try {
+      await supabase.from("chatbot_leads").insert({
+        full_name: info.full_name,
+        phone: info.phone,
+        email: info.email || null,
+        source: "doctor_finder_chat",
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      });
+      setLeadSaved(true);
+    } catch (err) {
+      console.error("Failed to save lead:", err);
     }
-  }, [isOpen]);
+  };
 
   if (isDashboard) return null;
 
