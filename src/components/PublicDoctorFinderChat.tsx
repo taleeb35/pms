@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, X, Send, MapPin, Stethoscope, Search, ArrowLeft, User, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, MapPin, Stethoscope, Search, ArrowLeft, User, Loader2, Calendar, ExternalLink } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
