@@ -564,21 +564,33 @@ export const PublicDoctorFinderChat = () => {
     setSelectedCity(null);
     setSelectedSpecialty(null);
     setBudgetFilter(null);
-    setStep("welcome");
-    setMessages([{
-      id: "welcome",
-      type: "bot",
-      text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
-      options: [
-        { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
-        { label: "🔍 Search by Name", value: "search_name" },
-        { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
-        { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
-        { label: "💰 Filter by Budget", value: "filter_budget" },
-        { label: "💬 Describe what you need", value: "free_chat" },
-      ],
-      step: "welcome",
-    }]);
+    if (leadSaved && userInfo.full_name) {
+      // User already gave info — go straight to welcome menu
+      setStep("welcome");
+      setMessages([{
+        id: createMessageId(),
+        type: "bot",
+        text: `Welcome back, ${userInfo.full_name}! 👋\n\nHow would you like to find a doctor?`,
+        options: [
+          { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
+          { label: "🔍 Search by Name", value: "search_name" },
+          { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
+          { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
+          { label: "💰 Filter by Budget", value: "filter_budget" },
+          { label: "💬 Describe what you need", value: "free_chat" },
+        ],
+        step: "welcome",
+      }]);
+    } else {
+      // Restart full intake
+      setStep("intake_name");
+      setMessages([{
+        id: createMessageId(),
+        type: "bot",
+        text: "👋 Hi! I'm your Doctor Finder assistant.\n\nBefore we start, may I know your **name**?",
+      }]);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
   };
 
   const getDoctorProfileUrl = (doctor: Doctor) => {
