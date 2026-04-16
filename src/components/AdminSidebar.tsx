@@ -20,6 +20,7 @@ const managementItems = [
   { title: "Referral Partners", url: "/admin/referral-partners", icon: Share2 },
   { title: "Content Writers", url: "/admin/content-writers", icon: PenLine },
   { title: "Payment Tracking", url: "/admin/finance", icon: CreditCard },
+  { title: "Chatbot Leads", url: "/admin/chatbot-leads", icon: MessageSquareText },
   { title: "Support Tickets", url: "/support-tickets", icon: LifeBuoy },
 ];
 
