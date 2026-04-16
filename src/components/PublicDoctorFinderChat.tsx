@@ -465,6 +465,49 @@ export const PublicDoctorFinderChat = () => {
     setInputValue("");
     addUserMessage(text);
 
+    // Intake flow: collect name → phone → optional email
+    if (step === "intake_name") {
+      if (text.length < 2) {
+        addBotMessage("Please enter your full name (at least 2 characters).");
+        return;
+      }
+      setUserInfo(prev => ({ ...prev, full_name: text }));
+      setStep("intake_phone");
+      addBotMessage(`Nice to meet you, ${text}! 👋\n\nWhat's your **phone number**? (so we can reach you if needed)`);
+      setTimeout(() => inputRef.current?.focus(), 100);
+      return;
+    }
+
+    if (step === "intake_phone") {
+      const digits = text.replace(/\D/g, "");
+      if (digits.length < 10 || digits.length > 15) {
+        addBotMessage("Please enter a valid phone number (10–15 digits). e.g. 03001234567");
+        return;
+      }
+      setUserInfo(prev => ({ ...prev, phone: text }));
+      setStep("intake_email");
+      addBotMessage("Got it! 📱\n\nLastly, your **email** is optional — type it now or tap **Skip** to continue.", {
+        options: [{ label: "⏭️ Skip", value: "skip_email" }],
+      });
+      setTimeout(() => inputRef.current?.focus(), 100);
+      return;
+    }
+
+    if (step === "intake_email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(text)) {
+        addBotMessage("That doesn't look like a valid email. Try again or tap **Skip**.", {
+          options: [{ label: "⏭️ Skip", value: "skip_email" }],
+        });
+        return;
+      }
+      const updated = { ...userInfo, email: text };
+      setUserInfo(updated);
+      await saveLead({ full_name: updated.full_name!, phone: updated.phone!, email: updated.email });
+      showWelcomeMenu(updated.full_name);
+      return;
+    }
+
     if (step === "search_name") {
       // Direct name search — faster than AI for name lookups
       await searchDoctors(null, null, text);
