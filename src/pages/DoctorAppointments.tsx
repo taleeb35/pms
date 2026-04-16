@@ -132,7 +132,7 @@ const DoctorAppointments = () => {
   const [isOnLeave, setIsOnLeave] = useState(false);
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
   const [sortColumn, setSortColumn] = useState<string>("date");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
@@ -194,7 +194,8 @@ const DoctorAppointments = () => {
         `,
         )
         .eq("doctor_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("appointment_date", { ascending: false })
+        .order("appointment_time", { ascending: false });
 
       if (error) throw error;
 
@@ -629,7 +630,7 @@ const DoctorAppointments = () => {
       setSortDirection(prev => prev === "asc" ? "desc" : "asc");
     } else {
       setSortColumn(column);
-      setSortDirection("asc");
+      setSortDirection(column === "date" ? "desc" : "asc");
     }
     setCurrentPage(1);
   };
