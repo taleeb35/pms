@@ -24,6 +24,7 @@ import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentU
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester, calculatePregnancyWeeks } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
@@ -2603,9 +2604,18 @@ const DoctorPatients = () => {
                   <SelectItem value="new">New</SelectItem>
                   <SelectItem value="follow_up">Follow Up</SelectItem>
                   <SelectItem value="report_check">Report Check</SelectItem>
-                  <SelectItem value="video_consultation">Video Consultation</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="flex items-center gap-2 rounded-md border p-3 bg-muted/30">
+              <Checkbox
+                id="video-consultation-patient"
+                checked={appointmentIsVideo}
+                onCheckedChange={(c) => setAppointmentIsVideo(c === true)}
+              />
+              <Label htmlFor="video-consultation-patient" className="cursor-pointer font-normal">
+                📹 This is a Video Consultation
+              </Label>
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Reason for Visit</Label>
