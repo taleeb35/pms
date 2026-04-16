@@ -34,6 +34,8 @@ import {
   PanelLeftClose,
   PanelLeft,
   BarChart3,
+  PenLine,
+  MessageSquareText,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -220,7 +222,9 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/admin/clinics", icon: Building2, label: "Manage Clinics" },
         { path: "/doctors", icon: Stethoscope, label: "Doctors" },
         { path: "/admin/referral-partners", icon: Share2, label: "Referral Partners" },
+        { path: "/admin/content-writers", icon: PenLine, label: "Content Writers" },
         { path: "/admin/finance", icon: Banknote, label: "Payment Tracking" },
+        { path: "/admin/chatbot-leads", icon: MessageSquareText, label: "Chatbot Leads" },
         { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
       ],
     },
