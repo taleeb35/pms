@@ -162,12 +162,19 @@ const DoctorTimeSelect = ({
                     type="button"
                     onClick={() => handleSelect(slot.value)}
                   className={cn(
-                    "w-full text-left px-3 py-2 text-sm rounded-md hover:bg-primary hover:text-primary-foreground transition-colors",
+                    "group w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-primary hover:text-primary-foreground",
                     value === slot.value && "bg-primary text-primary-foreground"
                   )}
                   >
                     <span className="font-medium">{slot.value}</span>
-                    <span className="ml-2 text-muted-foreground">({slot.label})</span>
+                    <span
+                      className={cn(
+                        "ml-2 text-muted-foreground transition-colors group-hover:text-primary-foreground/80",
+                        value === slot.value && "text-primary-foreground/80"
+                      )}
+                    >
+                      ({slot.label})
+                    </span>
                   </button>
                 ))
               )}
