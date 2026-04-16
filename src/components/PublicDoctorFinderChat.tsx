@@ -70,7 +70,9 @@ export const PublicDoctorFinderChat = () => {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
   const [budgetFilter, setBudgetFilter] = useState<{ maxFee?: number; gender?: string; city?: string; specialty?: string } | null>(null);
-  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name" | "budget_city" | "budget_specialty" | "budget_fee">("welcome");
+  const [step, setStep] = useState<"intake_name" | "intake_phone" | "intake_email" | "welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name" | "budget_city" | "budget_specialty" | "budget_fee">("intake_name");
+  const [userInfo, setUserInfo] = useState<{ full_name?: string; phone?: string; email?: string }>({});
+  const [leadSaved, setLeadSaved] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -116,9 +118,20 @@ export const PublicDoctorFinderChat = () => {
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setMessages([{
-        id: "welcome",
+        id: "intake-name",
         type: "bot",
-        text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
+        text: "👋 Hi! I'm your Doctor Finder assistant.\n\nBefore we start, may I know your **name**? (so I can assist you better)",
+      }]);
+      setStep("intake_name");
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
+
+  const showWelcomeMenu = (greetingName?: string) => {
+    const name = greetingName || userInfo.full_name;
+    addBotMessage(
+      `Thanks${name ? `, ${name}` : ""}! 🎉\n\nHow would you like to find a doctor?`,
+      {
         options: [
           { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
           { label: "🔍 Search by Name", value: "search_name" },
@@ -128,9 +141,26 @@ export const PublicDoctorFinderChat = () => {
           { label: "💬 Describe what you need", value: "free_chat" },
         ],
         step: "welcome",
-      }]);
+      }
+    );
+    setStep("welcome");
+  };
+
+  const saveLead = async (info: { full_name: string; phone: string; email?: string }) => {
+    if (leadSaved) return;
+    try {
+      await supabase.from("chatbot_leads").insert({
+        full_name: info.full_name,
+        phone: info.phone,
+        email: info.email || null,
+        source: "doctor_finder_chat",
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      });
+      setLeadSaved(true);
+    } catch (err) {
+      console.error("Failed to save lead:", err);
     }
-  }, [isOpen]);
+  };
 
   if (isDashboard) return null;
 
@@ -162,6 +192,12 @@ export const PublicDoctorFinderChat = () => {
   };
 
   const handleOptionClick = async (value: string, label: string) => {
+    if (value === "skip_email" && step === "intake_email") {
+      addUserMessage("Skip");
+      await saveLead({ full_name: userInfo.full_name!, phone: userInfo.phone! });
+      showWelcomeMenu(userInfo.full_name);
+      return;
+    }
     if (value === "browse_city") {
       addUserMessage("Browse by City");
       setStep("city");
@@ -435,6 +471,49 @@ export const PublicDoctorFinderChat = () => {
     setInputValue("");
     addUserMessage(text);
 
+    // Intake flow: collect name → phone → optional email
+    if (step === "intake_name") {
+      if (text.length < 2) {
+        addBotMessage("Please enter your full name (at least 2 characters).");
+        return;
+      }
+      setUserInfo(prev => ({ ...prev, full_name: text }));
+      setStep("intake_phone");
+      addBotMessage(`Nice to meet you, ${text}! 👋\n\nWhat's your **phone number**? (so we can reach you if needed)`);
+      setTimeout(() => inputRef.current?.focus(), 100);
+      return;
+    }
+
+    if (step === "intake_phone") {
+      const digits = text.replace(/\D/g, "");
+      if (digits.length < 10 || digits.length > 15) {
+        addBotMessage("Please enter a valid phone number (10–15 digits). e.g. 03001234567");
+        return;
+      }
+      setUserInfo(prev => ({ ...prev, phone: text }));
+      setStep("intake_email");
+      addBotMessage("Got it! 📱\n\nLastly, your **email** is optional — type it now or tap **Skip** to continue.", {
+        options: [{ label: "⏭️ Skip", value: "skip_email" }],
+      });
+      setTimeout(() => inputRef.current?.focus(), 100);
+      return;
+    }
+
+    if (step === "intake_email") {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(text)) {
+        addBotMessage("That doesn't look like a valid email. Try again or tap **Skip**.", {
+          options: [{ label: "⏭️ Skip", value: "skip_email" }],
+        });
+        return;
+      }
+      const updated = { ...userInfo, email: text };
+      setUserInfo(updated);
+      await saveLead({ full_name: updated.full_name!, phone: updated.phone!, email: updated.email });
+      showWelcomeMenu(updated.full_name);
+      return;
+    }
+
     if (step === "search_name") {
       // Direct name search — faster than AI for name lookups
       await searchDoctors(null, null, text);
@@ -485,21 +564,33 @@ export const PublicDoctorFinderChat = () => {
     setSelectedCity(null);
     setSelectedSpecialty(null);
     setBudgetFilter(null);
-    setStep("welcome");
-    setMessages([{
-      id: "welcome",
-      type: "bot",
-      text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
-      options: [
-        { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
-        { label: "🔍 Search by Name", value: "search_name" },
-        { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
-        { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
-        { label: "💰 Filter by Budget", value: "filter_budget" },
-        { label: "💬 Describe what you need", value: "free_chat" },
-      ],
-      step: "welcome",
-    }]);
+    if (leadSaved && userInfo.full_name) {
+      // User already gave info — go straight to welcome menu
+      setStep("welcome");
+      setMessages([{
+        id: createMessageId(),
+        type: "bot",
+        text: `Welcome back, ${userInfo.full_name}! 👋\n\nHow would you like to find a doctor?`,
+        options: [
+          { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
+          { label: "🔍 Search by Name", value: "search_name" },
+          { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
+          { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
+          { label: "💰 Filter by Budget", value: "filter_budget" },
+          { label: "💬 Describe what you need", value: "free_chat" },
+        ],
+        step: "welcome",
+      }]);
+    } else {
+      // Restart full intake
+      setStep("intake_name");
+      setMessages([{
+        id: createMessageId(),
+        type: "bot",
+        text: "👋 Hi! I'm your Doctor Finder assistant.\n\nBefore we start, may I know your **name**?",
+      }]);
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
   };
 
   const getDoctorProfileUrl = (doctor: Doctor) => {
@@ -774,6 +865,9 @@ export const PublicDoctorFinderChat = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={
+                  step === "intake_name" ? "Enter your full name..." :
+                  step === "intake_phone" ? "e.g. 03001234567" :
+                  step === "intake_email" ? "your@email.com (or tap Skip)" :
                   step === "search_name" ? "Enter doctor's name e.g. Dr. Ahmed..." :
                   step === "city" ? "Type a city name..." :
                   step === "specialty" ? "Type a specialization..." :

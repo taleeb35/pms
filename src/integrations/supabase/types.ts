@@ -214,6 +214,36 @@ export type Database = {
         }
         Relationships: []
       }
+      chatbot_leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          phone: string
+          source: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          phone: string
+          source?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          phone?: string
+          source?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       clinic_allergies: {
         Row: {
           clinic_id: string
