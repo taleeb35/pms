@@ -158,8 +158,15 @@ img.main_logo.new_logo {
 a.back_home:hover {
   color: #5e5974 !important;
 }
-.des_nav button.inline-flex:hover {
-  color: #fff !important;
+.public-header-nav-link:hover,
+.public-header-nav-link:focus-visible {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.public-header-nav-link:hover svg,
+.public-header-nav-link:focus-visible svg {
+  color: hsl(var(--primary-foreground)) !important;
 }
 .home_login:hover {
   color: #8a36e9 !important;
