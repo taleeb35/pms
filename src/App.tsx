@@ -59,6 +59,7 @@ import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
 import AdminClinics from "./pages/AdminClinics";
+import AdminChatbotLeads from "./pages/AdminChatbotLeads";
 import ClinicDashboard from "./pages/ClinicDashboard";
 import ClinicAddDoctor from "./pages/ClinicAddDoctor";
 import ClinicDoctors from "./pages/ClinicDoctors";
