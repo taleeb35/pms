@@ -60,6 +60,30 @@ function getTodayScheduleFromTimingStr(timing: string | null): string | null {
   return parts[1]?.trim() || null;
 }
 
+// Common Pakistani female name indicators for gender inference
+const FEMALE_NAME_PARTS = [
+  "mariam", "maria", "fatima", "ayesha", "aisha", "sadia", "huma", "zill e huma",
+  "nadia", "saima", "rabia", "bushra", "amina", "khadija", "mehreen", "samina",
+  "farzana", "rubina", "shabana", "nasreen", "tahira", "sajida", "uzma", "asma",
+  "attia", "farah", "kanwal", "hina", "sana", "nimra", "iqra", "maryam", "zubaida",
+  "shazia", "fauzia", "riffat", "naheed", "anjum", "parveen", "rukhsana", "ghazala",
+  "farhat", "tabassum", "shaista", "afshan", "nighat", "lubna", "naila", "ambreen",
+  "saira", "tehmina", "anum", "sidra", "arooj", "madiha", "sumera", "noreen",
+  "humaira", "shagufta", "fouzia", "fariha", "muneeba", "javeria", "irum", "saba",
+  "zainab", "wardah", "sehrish", "mahwish", "mehwish", "komal", "anam", "rahat",
+  "mrs", "ms", "miss", "begum", "bibi"
+];
+
+function inferGender(fullName: string, dbGender: string | null): string | null {
+  if (dbGender) return dbGender.toLowerCase();
+  const lower = fullName.toLowerCase();
+  const isFemale = FEMALE_NAME_PARTS.some(part => {
+    const words = lower.split(/[\s.]+/);
+    return words.some(w => w === part) || lower.includes(part);
+  });
+  return isFemale ? "female" : null; // Return null if uncertain, not "male"
+}
+
 interface SearchFilters {
   city?: string | null;
   specialization?: string | null;
@@ -83,7 +107,7 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
 
   if (city) seoQuery = seoQuery.ilike("city", city);
   if (name) seoQuery = seoQuery.ilike("full_name", `%${name}%`);
-  if (gender) seoQuery = seoQuery.ilike("gender", gender);
+  // Gender filtering done post-query via name inference
   if (relatedSpecs.length > 1) {
     seoQuery = seoQuery.or(relatedSpecs.map(s => `specialization.ilike.%${s}%`).join(","));
   } else if (specialization) {
@@ -122,7 +146,7 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
 
   if (city) regQuery = regQuery.ilike("city", city);
   if (name) regQuery = regQuery.ilike("profiles.full_name", `%${name}%`);
-  if (gender) regQuery = regQuery.ilike("profiles.gender", gender);
+  // Gender filtering done post-query via name inference
   if (relatedSpecs.length > 1) {
     regQuery = regQuery.or(relatedSpecs.map(s => `specialization.ilike.%${s}%`).join(","));
   } else if (specialization) {
@@ -222,8 +246,14 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
     };
   });
 
-  // Deduplicate
   let all = [...seoDoctors, ...registeredDoctors];
+
+  // Infer gender for all results
+  all.forEach(d => {
+    d.gender = inferGender(d.full_name, d.gender);
+  });
+
+  // Deduplicate
   const seen = new Set<string>();
   all = all.filter(d => {
     const key = d.full_name.toLowerCase();
@@ -231,6 +261,17 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
     seen.add(key);
     return true;
   });
+
+  // Apply gender filter (post-query using inference)
+  if (gender) {
+    const genderLower = gender.toLowerCase();
+    if (genderLower === "female") {
+      all = all.filter(d => d.gender === "female");
+    } else if (genderLower === "male") {
+      // If gender not inferred as female, assume male
+      all = all.filter(d => d.gender !== "female");
+    }
+  }
 
   // Apply max_fee filter
   if (max_fee) {
