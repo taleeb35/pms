@@ -10,10 +10,10 @@ const PublicHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const desktopNavButtonClass =
-    "rounded-full px-4 text-muted-foreground transition-all duration-200 hover:bg-primary hover:!text-primary-foreground focus-visible:ring-primary";
+    "public-header-nav-link rounded-full px-4 text-muted-foreground transition-all duration-200 focus-visible:ring-primary [&_svg]:text-current";
 
   const mobileNavButtonClass =
-    "w-full justify-start rounded-xl text-lg font-medium text-muted-foreground transition-all duration-200 hover:bg-primary hover:!text-primary-foreground focus-visible:ring-primary";
+    "public-header-nav-link w-full justify-start rounded-xl text-lg font-medium text-muted-foreground transition-all duration-200 focus-visible:ring-primary [&_svg]:text-current";
 
   const navItems = [
     { label: "Features", path: "/features" },
