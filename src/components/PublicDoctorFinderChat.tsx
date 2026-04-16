@@ -141,10 +141,40 @@ export const PublicDoctorFinderChat = () => {
       setStep("search_name");
       addBotMessage("🔍 Type the doctor's name below and I'll find them for you:");
       setTimeout(() => inputRef.current?.focus(), 100);
+    } else if (value === "filter_female" || value === "filter_male") {
+      const gender = value === "filter_female" ? "female" : "male";
+      const genderLabel = gender === "female" ? "Female" : "Male";
+      addUserMessage(`${genderLabel} Doctor`);
+      setStep("city");
+      addBotMessage(`👤 Looking for ${genderLabel} doctors. Select a city:`, {
+        options: CITIES.map(c => ({ label: c, value: `gender_${gender}_${c}`, icon: "city" as const })),
+        step: "city",
+      });
+    } else if (value.startsWith("gender_")) {
+      const parts = value.split("_");
+      const gender = parts[1];
+      const city = parts.slice(2).join("_");
+      addUserMessage(city);
+      setSelectedCity(city);
+      setStep("results");
+      await searchDoctors(city, null, null, undefined, gender);
+    } else if (value === "filter_cheap") {
+      addUserMessage("Cheapest Doctors");
+      setStep("city");
+      addBotMessage("💰 Find affordable doctors! Select a city:", {
+        options: CITIES.map(c => ({ label: c, value: `cheap_${c}`, icon: "city" as const })),
+        step: "city",
+      });
+    } else if (value.startsWith("cheap_")) {
+      const city = value.replace("cheap_", "");
+      addUserMessage(city);
+      setSelectedCity(city);
+      setStep("results");
+      await searchDoctors(city, null, null, undefined, undefined, 1500, "fee_low");
     } else if (value === "free_chat") {
       addUserMessage("Describe what I need");
       setStep("free_chat");
-      addBotMessage("Tell me what kind of doctor you need and which city — for example:\n\n• \"I need a skin doctor in Lahore\"\n• \"Best cardiologist in Karachi\"\n• \"Child specialist near Islamabad\"");
+      addBotMessage("Tell me what you need — for example:\n\n• \"Female skin doctor in DHA Karachi\"\n• \"Cheapest cardiologist in Lahore\"\n• \"ENT specialist in Gulshan-e-Iqbal\"\n• \"Lady gynecologist near Model Town\"");
       setTimeout(() => inputRef.current?.focus(), 100);
     } else if (step === "city" || CITIES.includes(value)) {
       addUserMessage(value);
@@ -155,7 +185,6 @@ export const PublicDoctorFinderChat = () => {
       addUserMessage(value);
       setSelectedSpecialty(value);
       setStep("results");
-      // If user selected a specialty from AI suggestions without a city set, use AI search
       if (!selectedCity) {
         await handleAISearch(`${value} doctor`);
       } else {
