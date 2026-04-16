@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Loader2, Video } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/TableSkeleton";
@@ -38,6 +38,7 @@ interface Appointment {
   appointment_time: string;
   status: string;
   reason: string | null;
+  appointment_type: string | null;
   notes: string | null;
   duration_minutes: number | null;
   consultation_fee: number | null;
@@ -834,7 +835,16 @@ const ClinicAppointments = () => {
                           />
                         </TableCell>
                         <TableCell className="font-medium">{apt.doctors?.profiles?.full_name || "Unknown Doctor"}</TableCell>
-                        <TableCell className="font-medium">{apt.patients.full_name}</TableCell>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <span>{apt.patients.full_name}</span>
+                            {apt.appointment_type === "video_consultation" && (
+                              <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
+                                <Video className="h-3 w-3" />
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell>{apt.patients.phone}</TableCell>
                         <TableCell>
                           {format(new Date(apt.appointment_date), "PPP")}

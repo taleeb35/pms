@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Search, Calendar, Clock, CheckCircle, XCircle } from "lucide-react";
+import { Search, Calendar, Clock, CheckCircle, XCircle, Video } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useDoctorReceptionistId } from "@/hooks/useDoctorReceptionistId";
@@ -257,7 +257,14 @@ const DoctorReceptionistAppointments = () => {
                           />
                         </TableCell>
                         <TableCell className="font-medium">
-                          {appt.patients?.full_name || "N/A"}
+                          <div className="flex items-center gap-2">
+                            <span>{appt.patients?.full_name || "N/A"}</span>
+                            {appt.appointment_type === "video_consultation" && (
+                              <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
+                                <Video className="h-3 w-3" />
+                              </span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           {format(new Date(appt.appointment_date), "MMM d, yyyy")}
