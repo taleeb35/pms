@@ -68,6 +68,7 @@ export const PublicDoctorFinderChat = () => {
   const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name" | "budget_city" | "budget_specialty" | "budget_fee">("welcome");
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pendingScrollTargetRef = useRef<"result" | "latest_bot" | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -77,20 +78,27 @@ export const PublicDoctorFinderChat = () => {
   const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|reports|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
   const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
-  const scrollToLatestBot = () => {
-    // Find the last bot message element and scroll it to the top of the chat
+  const scrollToTargetMessage = () => {
     const container = messagesEndRef.current?.parentElement;
     if (!container) return;
-    const botMessages = container.querySelectorAll('[data-bot-msg]');
-    if (botMessages.length > 0) {
-      const lastBot = botMessages[botMessages.length - 1] as HTMLElement;
-      lastBot.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+
+    const selector = pendingScrollTargetRef.current === "result"
+      ? '[data-result-msg="true"]'
+      : '[data-bot-msg="true"]';
+
+    const candidates = container.querySelectorAll(selector);
+    const fallbackCandidates = container.querySelectorAll('[data-bot-msg="true"]');
+    const target = (candidates[candidates.length - 1] || fallbackCandidates[fallbackCandidates.length - 1]) as HTMLElement | undefined;
+
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    pendingScrollTargetRef.current = null;
   };
 
   useEffect(() => {
-    // Small delay to let DOM render
-    const t = setTimeout(scrollToLatestBot, 100);
+    if (!pendingScrollTargetRef.current) return;
+    const t = setTimeout(scrollToTargetMessage, 80);
     return () => clearTimeout(t);
   }, [messages]);
 
@@ -116,6 +124,9 @@ export const PublicDoctorFinderChat = () => {
   if (isDashboard) return null;
 
   const addBotMessage = (text: string, extras?: Partial<ChatMessage>) => {
+    const isResultMessage = Boolean(extras?.doctors?.length);
+    pendingScrollTargetRef.current = isResultMessage ? "result" : (pendingScrollTargetRef.current ?? "latest_bot");
+
     const msg: ChatMessage = {
       id: Date.now().toString(),
       type: "bot",
@@ -561,7 +572,12 @@ export const PublicDoctorFinderChat = () => {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((msg) => (
-              <div key={msg.id} {...(msg.type === "bot" ? { "data-bot-msg": true } : {})} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={msg.id}
+                {...(msg.type === "bot" ? { "data-bot-msg": true } : {})}
+                {...(msg.doctors?.length ? { "data-result-msg": true } : {})}
+                className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
+              >
                 <div className={`max-w-[85%] ${msg.type === "user"
                     ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2"
                     : "space-y-2"
