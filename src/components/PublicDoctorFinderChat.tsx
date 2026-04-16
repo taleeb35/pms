@@ -454,6 +454,7 @@ export const PublicDoctorFinderChat = () => {
     setMessages([]);
     setSelectedCity(null);
     setSelectedSpecialty(null);
+    setBudgetFilter(null);
     setStep("welcome");
     setMessages([{
       id: "welcome",
@@ -464,7 +465,7 @@ export const PublicDoctorFinderChat = () => {
         { label: "🔍 Search by Name", value: "search_name" },
         { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
         { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
-        { label: "💰 Cheapest Doctors", value: "filter_cheap" },
+        { label: "💰 Filter by Budget", value: "filter_budget" },
         { label: "💬 Describe what you need", value: "free_chat" },
       ],
       step: "welcome",
