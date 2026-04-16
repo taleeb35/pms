@@ -246,8 +246,9 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
     };
   });
 
-  // Deduplicate
-  // Infer gender for all results and add to objects
+  let all = [...seoDoctors, ...registeredDoctors];
+
+  // Infer gender for all results
   all.forEach(d => {
     d.gender = inferGender(d.full_name, d.gender);
   });
