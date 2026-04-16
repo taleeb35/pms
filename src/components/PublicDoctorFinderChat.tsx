@@ -126,7 +126,12 @@ export const PublicDoctorFinderChat = () => {
       addUserMessage(value);
       setSelectedSpecialty(value);
       setStep("results");
-      await searchDoctors(selectedCity, value, null);
+      // If user selected a specialty from AI suggestions without a city set, use AI search
+      if (!selectedCity) {
+        await handleAISearch(`${value} doctor`);
+      } else {
+        await searchDoctors(selectedCity, value, null);
+      }
     }
   };
 
@@ -246,13 +251,24 @@ export const PublicDoctorFinderChat = () => {
             });
           }, 500);
         } else {
-          addBotMessage(data.response_text, {
-            options: [
-              { label: "🏙️ Browse by City", value: "browse_city" },
-              { label: "💬 Try different search", value: "free_chat" },
-            ],
-          });
+          // Show available specializations as clickable options if provided
+          const availableSpecs: string[] = data.available_specializations || [];
+          const options = availableSpecs.length > 0
+            ? availableSpecs.slice(0, 8).map((s: string) => ({ label: s, value: s, icon: "specialty" as const }))
+            : [
+                { label: "🏙️ Browse by City", value: "browse_city" },
+                { label: "💬 Try different search", value: "free_chat" },
+              ];
+          
+          addBotMessage(data.response_text, { options, step: availableSpecs.length > 0 ? "specialty" : undefined });
         }
+      } else if (doctors.length === 0) {
+        addBotMessage("😔 I couldn't find any matching doctors. Try a different search.", {
+          options: [
+            { label: "🏙️ Browse by City", value: "browse_city" },
+            { label: "💬 Try different search", value: "free_chat" },
+          ],
+        });
       }
     } catch {
       addBotMessage("Sorry, I couldn't process your request. Please try again.");
