@@ -57,6 +57,11 @@ const POPULAR_SPECIALTIES = [
   "Neurologist", "Ophthalmologist", "Psychiatrist", "Gastroenterologist",
 ];
 
+const RESULT_FOLLOW_UP_OPTIONS = [
+  { label: "🔄 New Search", value: "browse_city" },
+  { label: "💬 Ask something else", value: "free_chat" },
+];
+
 export const PublicDoctorFinderChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -67,7 +72,9 @@ export const PublicDoctorFinderChat = () => {
   const [budgetFilter, setBudgetFilter] = useState<{ maxFee?: number; gender?: string; city?: string; specialty?: string } | null>(null);
   const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name" | "budget_city" | "budget_specialty" | "budget_fee">("welcome");
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pendingScrollTargetRef = useRef<"result" | "latest_bot" | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -77,20 +84,32 @@ export const PublicDoctorFinderChat = () => {
   const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|reports|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
   const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
-  const scrollToLatestBot = () => {
-    // Find the last bot message element and scroll it to the top of the chat
-    const container = messagesEndRef.current?.parentElement;
+  const scrollToTargetMessage = () => {
+    const container = messagesContainerRef.current;
     if (!container) return;
-    const botMessages = container.querySelectorAll('[data-bot-msg]');
-    if (botMessages.length > 0) {
-      const lastBot = botMessages[botMessages.length - 1] as HTMLElement;
-      lastBot.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+
+    const selector = pendingScrollTargetRef.current === "result"
+      ? '[data-result-msg="true"]'
+      : '[data-bot-msg="true"]';
+
+    const candidates = container.querySelectorAll(selector);
+    const fallbackCandidates = container.querySelectorAll('[data-bot-msg="true"]');
+    const target = (candidates[candidates.length - 1] || fallbackCandidates[fallbackCandidates.length - 1]) as HTMLElement | undefined;
+
+    if (!target) return;
+
+    const targetOffset = target.offsetTop - container.offsetTop;
+    container.scrollTo({
+      top: Math.max(0, targetOffset),
+      behavior: "smooth",
+    });
+
+    pendingScrollTargetRef.current = null;
   };
 
   useEffect(() => {
-    // Small delay to let DOM render
-    const t = setTimeout(scrollToLatestBot, 100);
+    if (!pendingScrollTargetRef.current) return;
+    const t = setTimeout(scrollToTargetMessage, 80);
     return () => clearTimeout(t);
   }, [messages]);
 
@@ -115,9 +134,22 @@ export const PublicDoctorFinderChat = () => {
 
   if (isDashboard) return null;
 
-  const addBotMessage = (text: string, extras?: Partial<ChatMessage>) => {
+  const createMessageId = () => crypto.randomUUID();
+
+  const addBotMessage = (
+    text: string,
+    extras?: Partial<ChatMessage>,
+    scrollTargetOverride?: "result" | "latest_bot"
+  ) => {
+    const isResultMessage = Boolean(extras?.doctors?.length);
+    pendingScrollTargetRef.current = scrollTargetOverride
+      ? scrollTargetOverride
+      : isResultMessage
+        ? "result"
+        : (pendingScrollTargetRef.current ?? "latest_bot");
+
     const msg: ChatMessage = {
-      id: Date.now().toString(),
+      id: createMessageId(),
       type: "bot",
       text,
       ...extras,
@@ -126,7 +158,7 @@ export const PublicDoctorFinderChat = () => {
   };
 
   const addUserMessage = (text: string) => {
-    setMessages(prev => [...prev, { id: Date.now().toString(), type: "user", text }]);
+    setMessages(prev => [...prev, { id: createMessageId(), type: "user", text }]);
   };
 
   const handleOptionClick = async (value: string, label: string) => {
@@ -330,16 +362,8 @@ export const PublicDoctorFinderChat = () => {
         const specText = specialization ? ` ${specialization}` : "";
         addBotMessage(`Found **${doctors.length}${specText}** doctor${doctors.length > 1 ? "s" : ""}${cityText}:`, {
           doctors,
+          options: RESULT_FOLLOW_UP_OPTIONS,
         });
-        // Add restart options after results
-        setTimeout(() => {
-          addBotMessage("Need more help?", {
-            options: [
-              { label: "🔄 New Search", value: "browse_city" },
-              { label: "💬 Ask something else", value: "free_chat" },
-            ],
-          });
-        }, 500);
       }
     } catch {
       addBotMessage("Sorry, something went wrong. Please try again.");
@@ -374,15 +398,10 @@ export const PublicDoctorFinderChat = () => {
 
       if (data.response_text) {
         if (doctors.length > 0) {
-          addBotMessage(data.response_text, { doctors });
-          setTimeout(() => {
-            addBotMessage("Need more help?", {
-              options: [
-                { label: "🔄 New Search", value: "browse_city" },
-                { label: "💬 Ask something else", value: "free_chat" },
-              ],
-            });
-          }, 500);
+          addBotMessage(data.response_text, {
+            doctors,
+            options: RESULT_FOLLOW_UP_OPTIONS,
+          });
         } else {
           // Show available specializations as clickable options if provided
           const availableSpecs: string[] = data.available_specializations || [];
@@ -559,9 +578,14 @@ export const PublicDoctorFinderChat = () => {
           )}
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((msg) => (
-              <div key={msg.id} {...(msg.type === "bot" ? { "data-bot-msg": true } : {})} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                key={msg.id}
+                {...(msg.type === "bot" ? { "data-bot-msg": true } : {})}
+                {...(msg.doctors?.length ? { "data-result-msg": true } : {})}
+                className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
+              >
                 <div className={`max-w-[85%] ${msg.type === "user"
                     ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2"
                     : "space-y-2"
@@ -575,7 +599,7 @@ export const PublicDoctorFinderChat = () => {
                   )}
 
                   {/* Clickable options */}
-                  {msg.options && (
+                  {msg.options && !msg.doctors?.length && (
                     <div className={`mt-2 ${msg.options.length > 6 ? "max-h-40 overflow-y-auto overscroll-contain rounded-xl border bg-background scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent" : "flex flex-wrap gap-1.5"}`}>
                       {msg.options.length > 6 ? (
                         msg.options.map((opt) => (
@@ -709,6 +733,20 @@ export const PublicDoctorFinderChat = () => {
                           </div>
                         </div>
                       ))}
+
+                      {msg.options && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {msg.options.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => handleOptionClick(opt.value, opt.label)}
+                              className="text-xs px-3 py-2 rounded-full border border-primary/30 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary hover:shadow-md transition-all duration-200 text-foreground font-medium"
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
