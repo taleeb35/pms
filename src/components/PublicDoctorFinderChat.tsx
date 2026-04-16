@@ -75,12 +75,21 @@ export const PublicDoctorFinderChat = () => {
   const isDoctorDashboard = /^\/doctor\/(dashboard|patients|appointments|profile|schedule|finance|reports|subscription|support|walk-in|templates|diseases|allergies|icd-codes|procedures|receptionists|activity-logs)/.test(location.pathname) || /^\/doctor-receptionist\//.test(location.pathname);
   const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToLatestBot = () => {
+    // Find the last bot message element and scroll it to the top of the chat
+    const container = messagesEndRef.current?.parentElement;
+    if (!container) return;
+    const botMessages = container.querySelectorAll('[data-bot-msg]');
+    if (botMessages.length > 0) {
+      const lastBot = botMessages[botMessages.length - 1] as HTMLElement;
+      lastBot.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Small delay to let DOM render
+    const t = setTimeout(scrollToLatestBot, 100);
+    return () => clearTimeout(t);
   }, [messages]);
 
   useEffect(() => {
