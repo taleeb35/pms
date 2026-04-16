@@ -215,6 +215,7 @@ const DoctorPatients = () => {
   const [appointmentDatePopoverOpen, setAppointmentDatePopoverOpen] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState("");
   const [appointmentType, setAppointmentType] = useState("new");
+  const [appointmentIsVideo, setAppointmentIsVideo] = useState(false);
   const [appointmentIsOnLeave, setAppointmentIsOnLeave] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -1149,7 +1150,7 @@ const DoctorPatients = () => {
           notes: (formData.get("notes") as string) || null,
           status: "scheduled" as const,
           created_by: doctorId,
-          appointment_type: appointmentType,
+          appointment_type: appointmentIsVideo ? "video_consultation" : appointmentType,
         })
         .select();
 
@@ -1183,6 +1184,7 @@ const DoctorPatients = () => {
       setAppointmentDate(undefined);
       setAppointmentTime("");
       setAppointmentType("new");
+      setAppointmentIsVideo(false);
       fetchWaitlistPatients();
     } catch (error: any) {
       toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });

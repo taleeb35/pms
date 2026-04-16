@@ -125,6 +125,7 @@ const DoctorAppointments = () => {
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
   const [icdCodeFilter, setIcdCodeFilter] = useState("all");
   const [selectedAppointmentType, setSelectedAppointmentType] = useState("new");
+  const [isVideoConsultation, setIsVideoConsultation] = useState(false);
   const [doctorId, setDoctorId] = useState<string>("");
   const [isOnLeave, setIsOnLeave] = useState(false);
   const [editIsOnLeave, setEditIsOnLeave] = useState(false);
@@ -313,7 +314,7 @@ const DoctorAppointments = () => {
           notes: (formData.get("notes") as string) || null,
           status: "scheduled" as const,
           created_by: user?.id || null,
-          appointment_type: selectedAppointmentType,
+          appointment_type: isVideoConsultation ? "video_consultation" : selectedAppointmentType,
         })
         .select();
       if (error) throw error;
@@ -347,6 +348,7 @@ const DoctorAppointments = () => {
       setSelectedPatientId("");
       setSelectedTime("");
       setSelectedAppointmentType("new");
+      setIsVideoConsultation(false);
       setSelectedTime("");
       fetchAppointments();
       fetchWaitlistPatients();
@@ -769,9 +771,18 @@ const DoctorAppointments = () => {
                     <SelectItem value="new">New</SelectItem>
                     <SelectItem value="follow_up">Follow Up</SelectItem>
                     <SelectItem value="report_check">Report Check</SelectItem>
-                    <SelectItem value="video_consultation">Video Consultation</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center gap-2 rounded-md border p-3 bg-muted/30">
+                <Checkbox
+                  id="video-consultation"
+                  checked={isVideoConsultation}
+                  onCheckedChange={(c) => setIsVideoConsultation(c === true)}
+                />
+                <Label htmlFor="video-consultation" className="cursor-pointer font-normal">
+                  📹 This is a Video Consultation
+                </Label>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="reason">Reason for Visit</Label>
