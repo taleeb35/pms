@@ -57,6 +57,11 @@ const POPULAR_SPECIALTIES = [
   "Neurologist", "Ophthalmologist", "Psychiatrist", "Gastroenterologist",
 ];
 
+const RESULT_FOLLOW_UP_OPTIONS = [
+  { label: "🔄 New Search", value: "browse_city" },
+  { label: "💬 Ask something else", value: "free_chat" },
+];
+
 export const PublicDoctorFinderChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -357,16 +362,8 @@ export const PublicDoctorFinderChat = () => {
         const specText = specialization ? ` ${specialization}` : "";
         addBotMessage(`Found **${doctors.length}${specText}** doctor${doctors.length > 1 ? "s" : ""}${cityText}:`, {
           doctors,
+          options: RESULT_FOLLOW_UP_OPTIONS,
         });
-        // Add restart options after results
-        setTimeout(() => {
-          addBotMessage("Need more help?", {
-            options: [
-              { label: "🔄 New Search", value: "browse_city" },
-              { label: "💬 Ask something else", value: "free_chat" },
-            ],
-          }, "result");
-        }, 500);
       }
     } catch {
       addBotMessage("Sorry, something went wrong. Please try again.");
@@ -401,15 +398,10 @@ export const PublicDoctorFinderChat = () => {
 
       if (data.response_text) {
         if (doctors.length > 0) {
-          addBotMessage(data.response_text, { doctors });
-          setTimeout(() => {
-            addBotMessage("Need more help?", {
-              options: [
-                { label: "🔄 New Search", value: "browse_city" },
-                { label: "💬 Ask something else", value: "free_chat" },
-              ],
-            }, "result");
-          }, 500);
+          addBotMessage(data.response_text, {
+            doctors,
+            options: RESULT_FOLLOW_UP_OPTIONS,
+          });
         } else {
           // Show available specializations as clickable options if provided
           const availableSpecs: string[] = data.available_specializations || [];
@@ -607,7 +599,7 @@ export const PublicDoctorFinderChat = () => {
                   )}
 
                   {/* Clickable options */}
-                  {msg.options && (
+                  {msg.options && !msg.doctors?.length && (
                     <div className={`mt-2 ${msg.options.length > 6 ? "max-h-40 overflow-y-auto overscroll-contain rounded-xl border bg-background scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent" : "flex flex-wrap gap-1.5"}`}>
                       {msg.options.length > 6 ? (
                         msg.options.map((opt) => (
@@ -741,6 +733,20 @@ export const PublicDoctorFinderChat = () => {
                           </div>
                         </div>
                       ))}
+
+                      {msg.options && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {msg.options.map((opt) => (
+                            <button
+                              key={opt.value}
+                              onClick={() => handleOptionClick(opt.value, opt.label)}
+                              className="text-xs px-3 py-2 rounded-full border border-primary/30 bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary hover:shadow-md transition-all duration-200 text-foreground font-medium"
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
