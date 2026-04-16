@@ -247,7 +247,12 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
   });
 
   // Deduplicate
-  let all = [...seoDoctors, ...registeredDoctors];
+  // Infer gender for all results and add to objects
+  all.forEach(d => {
+    d.gender = inferGender(d.full_name, d.gender);
+  });
+
+  // Deduplicate
   const seen = new Set<string>();
   all = all.filter(d => {
     const key = d.full_name.toLowerCase();
@@ -255,6 +260,17 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
     seen.add(key);
     return true;
   });
+
+  // Apply gender filter (post-query using inference)
+  if (gender) {
+    const genderLower = gender.toLowerCase();
+    if (genderLower === "female") {
+      all = all.filter(d => d.gender === "female");
+    } else if (genderLower === "male") {
+      // If gender not inferred as female, assume male
+      all = all.filter(d => d.gender !== "female");
+    }
+  }
 
   // Apply max_fee filter
   if (max_fee) {
