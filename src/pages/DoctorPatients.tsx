@@ -24,6 +24,7 @@ import { isTimeSlotAvailable, checkDoctorAvailability } from "@/lib/appointmentU
 import { cn } from "@/lib/utils";
 import { CitySelect } from "@/components/CitySelect";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { calculatePregnancyDuration, calculateExpectedDueDate, getTrimester, calculatePregnancyWeeks } from "@/lib/pregnancyUtils";
 import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
@@ -215,6 +216,7 @@ const DoctorPatients = () => {
   const [appointmentDatePopoverOpen, setAppointmentDatePopoverOpen] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState("");
   const [appointmentType, setAppointmentType] = useState("new");
+  const [appointmentIsVideo, setAppointmentIsVideo] = useState(false);
   const [appointmentIsOnLeave, setAppointmentIsOnLeave] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -1149,7 +1151,7 @@ const DoctorPatients = () => {
           notes: (formData.get("notes") as string) || null,
           status: "scheduled" as const,
           created_by: doctorId,
-          appointment_type: appointmentType,
+          appointment_type: appointmentIsVideo ? "video_consultation" : appointmentType,
         })
         .select();
 
@@ -1183,6 +1185,7 @@ const DoctorPatients = () => {
       setAppointmentDate(undefined);
       setAppointmentTime("");
       setAppointmentType("new");
+      setAppointmentIsVideo(false);
       fetchWaitlistPatients();
     } catch (error: any) {
       toast({ title: "Error creating appointment", description: error.message, variant: "destructive" });
@@ -2601,9 +2604,18 @@ const DoctorPatients = () => {
                   <SelectItem value="new">New</SelectItem>
                   <SelectItem value="follow_up">Follow Up</SelectItem>
                   <SelectItem value="report_check">Report Check</SelectItem>
-                  <SelectItem value="video_consultation">Video Consultation</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="flex items-center gap-2 rounded-md border p-3 bg-muted/30">
+              <Checkbox
+                id="video-consultation-patient"
+                checked={appointmentIsVideo}
+                onCheckedChange={(c) => setAppointmentIsVideo(c === true)}
+              />
+              <Label htmlFor="video-consultation-patient" className="cursor-pointer font-normal">
+                📹 This is a Video Consultation
+              </Label>
             </div>
             <div className="space-y-2">
               <Label htmlFor="reason">Reason for Visit</Label>
