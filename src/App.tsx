@@ -419,6 +419,14 @@ const App = () => (
               }
             />
             <Route
+              path="/admin/chatbot-leads"
+              element={
+                <Layout>
+                  <AdminChatbotLeads />
+                </Layout>
+              }
+            />
+            <Route
               path="/admin/referral-partners"
               element={
                 <Layout>
