@@ -865,6 +865,9 @@ export const PublicDoctorFinderChat = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={
+                  step === "intake_name" ? "Enter your full name..." :
+                  step === "intake_phone" ? "e.g. 03001234567" :
+                  step === "intake_email" ? "your@email.com (or tap Skip)" :
                   step === "search_name" ? "Enter doctor's name e.g. Dr. Ahmed..." :
                   step === "city" ? "Type a city name..." :
                   step === "specialty" ? "Type a specialization..." :
