@@ -60,6 +60,30 @@ function getTodayScheduleFromTimingStr(timing: string | null): string | null {
   return parts[1]?.trim() || null;
 }
 
+// Common Pakistani female name indicators for gender inference
+const FEMALE_NAME_PARTS = [
+  "mariam", "maria", "fatima", "ayesha", "aisha", "sadia", "huma", "zill e huma",
+  "nadia", "saima", "rabia", "bushra", "amina", "khadija", "mehreen", "samina",
+  "farzana", "rubina", "shabana", "nasreen", "tahira", "sajida", "uzma", "asma",
+  "attia", "farah", "kanwal", "hina", "sana", "nimra", "iqra", "maryam", "zubaida",
+  "shazia", "fauzia", "riffat", "naheed", "anjum", "parveen", "rukhsana", "ghazala",
+  "farhat", "tabassum", "shaista", "afshan", "nighat", "lubna", "naila", "ambreen",
+  "saira", "tehmina", "anum", "sidra", "arooj", "madiha", "sumera", "noreen",
+  "humaira", "shagufta", "fouzia", "fariha", "muneeba", "javeria", "irum", "saba",
+  "zainab", "wardah", "sehrish", "mahwish", "mehwish", "komal", "anam", "rahat",
+  "mrs", "ms", "miss", "begum", "bibi"
+];
+
+function inferGender(fullName: string, dbGender: string | null): string | null {
+  if (dbGender) return dbGender.toLowerCase();
+  const lower = fullName.toLowerCase();
+  const isFemale = FEMALE_NAME_PARTS.some(part => {
+    const words = lower.split(/[\s.]+/);
+    return words.some(w => w === part) || lower.includes(part);
+  });
+  return isFemale ? "female" : null; // Return null if uncertain, not "male"
+}
+
 interface SearchFilters {
   city?: string | null;
   specialization?: string | null;
