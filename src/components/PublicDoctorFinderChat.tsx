@@ -98,10 +98,13 @@ export const PublicDoctorFinderChat = () => {
       setMessages([{
         id: "welcome",
         type: "bot",
-        text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor in your city.\n\nHow would you like to search?",
+        text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
         options: [
           { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
           { label: "🔍 Search by Name", value: "search_name" },
+          { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
+          { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
+          { label: "💰 Cheapest Doctors", value: "filter_cheap" },
           { label: "💬 Describe what you need", value: "free_chat" },
         ],
         step: "welcome",
