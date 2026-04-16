@@ -67,6 +67,7 @@ export const PublicDoctorFinderChat = () => {
   const [budgetFilter, setBudgetFilter] = useState<{ maxFee?: number; gender?: string; city?: string; specialty?: string } | null>(null);
   const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name" | "budget_city" | "budget_specialty" | "budget_fee">("welcome");
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pendingScrollTargetRef = useRef<"result" | "latest_bot" | null>(null);
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export const PublicDoctorFinderChat = () => {
   const isDashboard = isDoctorDashboard || dashboardPrefixes.some(p => location.pathname.startsWith(p)) || dashboardPaths.includes(location.pathname);
 
   const scrollToTargetMessage = () => {
-    const container = messagesEndRef.current?.parentElement;
+    const container = messagesContainerRef.current;
     if (!container) return;
 
     const selector = pendingScrollTargetRef.current === "result"
@@ -92,7 +93,12 @@ export const PublicDoctorFinderChat = () => {
 
     if (!target) return;
 
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    const targetOffset = target.offsetTop - container.offsetTop;
+    container.scrollTo({
+      top: Math.max(0, targetOffset),
+      behavior: "smooth",
+    });
+
     pendingScrollTargetRef.current = null;
   };
 
@@ -123,12 +129,22 @@ export const PublicDoctorFinderChat = () => {
 
   if (isDashboard) return null;
 
-  const addBotMessage = (text: string, extras?: Partial<ChatMessage>) => {
+  const createMessageId = () => crypto.randomUUID();
+
+  const addBotMessage = (
+    text: string,
+    extras?: Partial<ChatMessage>,
+    scrollTargetOverride?: "result" | "latest_bot"
+  ) => {
     const isResultMessage = Boolean(extras?.doctors?.length);
-    pendingScrollTargetRef.current = isResultMessage ? "result" : (pendingScrollTargetRef.current ?? "latest_bot");
+    pendingScrollTargetRef.current = scrollTargetOverride
+      ? scrollTargetOverride
+      : isResultMessage
+        ? "result"
+        : (pendingScrollTargetRef.current ?? "latest_bot");
 
     const msg: ChatMessage = {
-      id: Date.now().toString(),
+      id: createMessageId(),
       type: "bot",
       text,
       ...extras,
@@ -137,7 +153,7 @@ export const PublicDoctorFinderChat = () => {
   };
 
   const addUserMessage = (text: string) => {
-    setMessages(prev => [...prev, { id: Date.now().toString(), type: "user", text }]);
+    setMessages(prev => [...prev, { id: createMessageId(), type: "user", text }]);
   };
 
   const handleOptionClick = async (value: string, label: string) => {
@@ -349,7 +365,7 @@ export const PublicDoctorFinderChat = () => {
               { label: "🔄 New Search", value: "browse_city" },
               { label: "💬 Ask something else", value: "free_chat" },
             ],
-          });
+          }, "result");
         }, 500);
       }
     } catch {
@@ -392,7 +408,7 @@ export const PublicDoctorFinderChat = () => {
                 { label: "🔄 New Search", value: "browse_city" },
                 { label: "💬 Ask something else", value: "free_chat" },
               ],
-            });
+            }, "result");
           }, 500);
         } else {
           // Show available specializations as clickable options if provided
@@ -570,7 +586,7 @@ export const PublicDoctorFinderChat = () => {
           )}
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.map((msg) => (
               <div
                 key={msg.id}
