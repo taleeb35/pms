@@ -1,0 +1,1 @@
+ALTER TABLE public.seo_doctor_listings ADD COLUMN gender text;
