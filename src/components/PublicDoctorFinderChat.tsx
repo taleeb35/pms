@@ -64,7 +64,8 @@ export const PublicDoctorFinderChat = () => {
   const [loading, setLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
-  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name">("welcome");
+  const [budgetFilter, setBudgetFilter] = useState<{ maxFee?: number; gender?: string; city?: string; specialty?: string } | null>(null);
+  const [step, setStep] = useState<"welcome" | "city" | "specialty" | "results" | "free_chat" | "search_name" | "budget_city" | "budget_specialty" | "budget_fee">("welcome");
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
