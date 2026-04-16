@@ -299,7 +299,10 @@ export const PublicDoctorFinderChat = () => {
     setInputValue("");
     addUserMessage(text);
 
-    if (step === "free_chat" || step === "welcome" || step === "results") {
+    if (step === "search_name") {
+      // Direct name search — faster than AI for name lookups
+      await searchDoctors(null, null, text);
+    } else if (step === "free_chat" || step === "welcome" || step === "results") {
       await handleAISearch(text);
     } else if (step === "specialty") {
       // User typed a specialty instead of clicking
