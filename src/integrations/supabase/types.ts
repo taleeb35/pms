@@ -1687,6 +1687,7 @@ export type Database = {
           created_by: string
           experience_years: number | null
           full_name: string
+          gender: string | null
           id: string
           introduction: string | null
           is_published: boolean
@@ -1705,6 +1706,7 @@ export type Database = {
           created_by: string
           experience_years?: number | null
           full_name: string
+          gender?: string | null
           id?: string
           introduction?: string | null
           is_published?: boolean
@@ -1723,6 +1725,7 @@ export type Database = {
           created_by?: string
           experience_years?: number | null
           full_name?: string
+          gender?: string | null
           id?: string
           introduction?: string | null
           is_published?: boolean

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MessageCircle, X, Send, MapPin, Stethoscope, Search, ArrowLeft, User, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, MapPin, Stethoscope, Search, ArrowLeft, User, Loader2, Calendar, ExternalLink } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
@@ -31,6 +31,7 @@ interface Doctor {
   timing?: string | null;
   today_timing?: string | null;
   introduction?: string | null;
+  gender?: string | null;
   all_clinics?: DoctorClinic[];
   source: string;
 }
@@ -97,10 +98,13 @@ export const PublicDoctorFinderChat = () => {
       setMessages([{
         id: "welcome",
         type: "bot",
-        text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor in your city.\n\nHow would you like to search?",
+        text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
         options: [
           { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
           { label: "🔍 Search by Name", value: "search_name" },
+          { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
+          { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
+          { label: "💰 Cheapest Doctors", value: "filter_cheap" },
           { label: "💬 Describe what you need", value: "free_chat" },
         ],
         step: "welcome",
@@ -137,10 +141,40 @@ export const PublicDoctorFinderChat = () => {
       setStep("search_name");
       addBotMessage("🔍 Type the doctor's name below and I'll find them for you:");
       setTimeout(() => inputRef.current?.focus(), 100);
+    } else if (value === "filter_female" || value === "filter_male") {
+      const gender = value === "filter_female" ? "female" : "male";
+      const genderLabel = gender === "female" ? "Female" : "Male";
+      addUserMessage(`${genderLabel} Doctor`);
+      setStep("city");
+      addBotMessage(`👤 Looking for ${genderLabel} doctors. Select a city:`, {
+        options: CITIES.map(c => ({ label: c, value: `gender_${gender}_${c}`, icon: "city" as const })),
+        step: "city",
+      });
+    } else if (value.startsWith("gender_")) {
+      const parts = value.split("_");
+      const gender = parts[1];
+      const city = parts.slice(2).join("_");
+      addUserMessage(city);
+      setSelectedCity(city);
+      setStep("results");
+      await searchDoctors(city, null, null, undefined, gender);
+    } else if (value === "filter_cheap") {
+      addUserMessage("Cheapest Doctors");
+      setStep("city");
+      addBotMessage("💰 Find affordable doctors! Select a city:", {
+        options: CITIES.map(c => ({ label: c, value: `cheap_${c}`, icon: "city" as const })),
+        step: "city",
+      });
+    } else if (value.startsWith("cheap_")) {
+      const city = value.replace("cheap_", "");
+      addUserMessage(city);
+      setSelectedCity(city);
+      setStep("results");
+      await searchDoctors(city, null, null, undefined, undefined, 1500, "fee_low");
     } else if (value === "free_chat") {
       addUserMessage("Describe what I need");
       setStep("free_chat");
-      addBotMessage("Tell me what kind of doctor you need and which city — for example:\n\n• \"I need a skin doctor in Lahore\"\n• \"Best cardiologist in Karachi\"\n• \"Child specialist near Islamabad\"");
+      addBotMessage("Tell me what you need — for example:\n\n• \"Female skin doctor in DHA Karachi\"\n• \"Cheapest cardiologist in Lahore\"\n• \"ENT specialist in Gulshan-e-Iqbal\"\n• \"Lady gynecologist near Model Town\"");
       setTimeout(() => inputRef.current?.focus(), 100);
     } else if (step === "city" || CITIES.includes(value)) {
       addUserMessage(value);
@@ -151,7 +185,6 @@ export const PublicDoctorFinderChat = () => {
       addUserMessage(value);
       setSelectedSpecialty(value);
       setStep("results");
-      // If user selected a specialty from AI suggestions without a city set, use AI search
       if (!selectedCity) {
         await handleAISearch(`${value} doctor`);
       } else {
@@ -193,7 +226,7 @@ export const PublicDoctorFinderChat = () => {
     }
   };
 
-  const searchDoctors = async (city: string | null, specialization: string | null, name: string | null) => {
+  const searchDoctors = async (city: string | null, specialization: string | null, name: string | null, area?: string, gender?: string, max_fee?: number, sort_by?: string) => {
     setLoading(true);
     try {
       const res = await fetch(
@@ -204,7 +237,7 @@ export const PublicDoctorFinderChat = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ action: "search_doctors", city, specialization, name }),
+          body: JSON.stringify({ action: "search_doctors", city, specialization, name, area, gender, max_fee, sort_by }),
         }
       );
       const data = await res.json();
@@ -354,14 +387,25 @@ export const PublicDoctorFinderChat = () => {
     setMessages([{
       id: "welcome",
       type: "bot",
-      text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor in your city.\n\nHow would you like to search?",
+      text: "👋 Hi! I'm your Doctor Finder assistant. I can help you find the right doctor quickly.\n\nHow would you like to search?",
       options: [
         { label: "🏙️ Browse by City", value: "browse_city", icon: "city" },
         { label: "🔍 Search by Name", value: "search_name" },
+        { label: "👩‍⚕️ Female Doctor", value: "filter_female" },
+        { label: "👨‍⚕️ Male Doctor", value: "filter_male" },
+        { label: "💰 Cheapest Doctors", value: "filter_cheap" },
         { label: "💬 Describe what you need", value: "free_chat" },
       ],
       step: "welcome",
     }]);
+  };
+
+  const getDoctorProfileUrl = (doctor: Doctor) => {
+    if (doctor.city && doctor.specialization) {
+      return generateDoctorProfileUrl(doctor.city, doctor.specialization, doctor.full_name);
+    }
+    const slug = generateDoctorSlug(doctor.full_name);
+    return `/doctors/${slug}`;
   };
 
   return (
@@ -480,69 +524,107 @@ export const PublicDoctorFinderChat = () => {
                   {msg.doctors && msg.doctors.length > 0 && (
                     <div className="space-y-2 mt-2">
                       {msg.doctors.map((doc) => (
-                        <button
+                        <div
                           key={doc.id}
-                          onClick={() => handleDoctorClick(doc)}
-                          className="w-full text-left p-3 border rounded-xl bg-background hover:bg-accent/50 transition-colors block"
+                          className="w-full text-left p-3 border rounded-xl bg-background hover:bg-accent/50 transition-colors"
                         >
-                          <div className="flex items-center gap-3">
-                             <Avatar className="h-10 w-10 shrink-0">
-                              <AvatarImage src={doc.avatar_url || undefined} />
-                              <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                {doc.full_name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="min-w-0 flex-1">
-                              <h4 className="font-semibold text-sm truncate">{doc.full_name}</h4>
-                              <p className="text-xs text-muted-foreground truncate">{doc.specialization}</p>
-                              {doc.qualification && (
-                                <p className="text-xs text-muted-foreground truncate">{doc.qualification}</p>
-                              )}
-                              <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                {doc.city && (
-                                  <span className="text-xs text-muted-foreground flex items-center gap-0.5">
-                                    <MapPin className="h-3 w-3" />{doc.city}
-                                  </span>
+                          <button
+                            onClick={() => handleDoctorClick(doc)}
+                            className="w-full text-left"
+                          >
+                            <div className="flex items-center gap-3">
+                               <Avatar className="h-10 w-10 shrink-0">
+                                <AvatarImage src={doc.avatar_url || undefined} />
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                  {doc.full_name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <h4 className="font-semibold text-sm truncate">{doc.full_name}</h4>
+                                  {doc.gender && (
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${doc.gender === "female" ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"}`}>
+                                      {doc.gender === "female" ? "♀" : "♂"}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-muted-foreground truncate">{doc.specialization}</p>
+                                {doc.qualification && (
+                                  <p className="text-xs text-muted-foreground truncate">{doc.qualification}</p>
                                 )}
-                                {doc.experience_years && (
-                                  <span className="text-xs text-muted-foreground">
-                                    {doc.experience_years}y exp
-                                  </span>
+                                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                                  {doc.city && (
+                                    <span className="text-xs text-muted-foreground flex items-center gap-0.5">
+                                      <MapPin className="h-3 w-3" />{doc.city}
+                                    </span>
+                                  )}
+                                  {doc.experience_years && (
+                                    <span className="text-xs text-muted-foreground">
+                                      {doc.experience_years}y exp
+                                    </span>
+                                  )}
+                                </div>
+                                {/* Fee */}
+                                {doc.consultation_fee && (
+                                  <div className="mt-1">
+                                    <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                                      💰 Rs. {doc.consultation_fee}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Today's timing */}
+                                {doc.today_timing && (
+                                  <div className="mt-0.5">
+                                    <span className={`text-xs font-medium ${doc.today_timing === "Closed" ? "text-destructive" : "text-blue-600 dark:text-blue-400"}`}>
+                                      🕐 Today: {doc.today_timing}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Clinic with location */}
+                                {doc.clinic_name && (
+                                  <div className="mt-0.5">
+                                    <span className="text-xs text-muted-foreground">
+                                      🏥 {doc.clinic_name}{doc.clinic_location ? ` — ${doc.clinic_location}` : ""}
+                                    </span>
+                                  </div>
+                                )}
+                                {/* Multiple clinics */}
+                                {doc.all_clinics && doc.all_clinics.length > 1 && (
+                                  <div className="mt-1 text-xs text-primary font-medium">
+                                    📍 Available at {doc.all_clinics.length} clinics
+                                  </div>
                                 )}
                               </div>
-                              {/* Fee */}
-                              {doc.consultation_fee && (
-                                <div className="mt-1">
-                                  <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                                    💰 Rs. {doc.consultation_fee}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Today's timing */}
-                              {doc.today_timing && (
-                                <div className="mt-0.5">
-                                  <span className={`text-xs font-medium ${doc.today_timing === "Closed" ? "text-red-500" : "text-blue-600 dark:text-blue-400"}`}>
-                                    🕐 Today: {doc.today_timing}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Clinic */}
-                              {doc.clinic_name && (
-                                <div className="mt-0.5">
-                                  <span className="text-xs text-muted-foreground">
-                                    🏥 {doc.clinic_name}
-                                  </span>
-                                </div>
-                              )}
-                              {/* Multiple clinics */}
-                              {doc.all_clinics && doc.all_clinics.length > 1 && (
-                                <div className="mt-1 text-xs text-primary font-medium">
-                                  📍 Available at {doc.all_clinics.length} clinics
-                                </div>
-                              )}
                             </div>
+                          </button>
+                          {/* Book Appointment Button */}
+                          <div className="mt-2 flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const url = getDoctorProfileUrl(doc);
+                                navigate(url);
+                                setIsOpen(false);
+                              }}
+                              className="flex-1 flex items-center justify-center gap-1.5 text-xs py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
+                            >
+                              <Calendar className="h-3 w-3" />
+                              Book Appointment
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const url = getDoctorProfileUrl(doc);
+                                navigate(url);
+                                setIsOpen(false);
+                              }}
+                              className="flex items-center justify-center gap-1 text-xs py-2 px-3 rounded-lg border border-border hover:bg-accent transition-colors text-muted-foreground"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Profile
+                            </button>
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   )}
