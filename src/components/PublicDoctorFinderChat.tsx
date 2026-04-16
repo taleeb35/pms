@@ -126,7 +126,12 @@ export const PublicDoctorFinderChat = () => {
       addUserMessage(value);
       setSelectedSpecialty(value);
       setStep("results");
-      await searchDoctors(selectedCity, value, null);
+      // If user selected a specialty from AI suggestions without a city set, use AI search
+      if (!selectedCity) {
+        await handleAISearch(`${value} doctor`);
+      } else {
+        await searchDoctors(selectedCity, value, null);
+      }
     }
   };
 
