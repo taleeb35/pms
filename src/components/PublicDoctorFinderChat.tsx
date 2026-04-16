@@ -421,18 +421,29 @@ export const PublicDoctorFinderChat = () => {
       await searchDoctors(null, null, text);
     } else if (step === "free_chat" || step === "welcome" || step === "results") {
       await handleAISearch(text);
-    } else if (step === "specialty") {
-      // User typed a specialty instead of clicking
+    } else if (step === "specialty" || step === "budget_specialty") {
       setSelectedSpecialty(text);
       setStep("results");
-      await searchDoctors(selectedCity, text, null);
-    } else if (step === "city") {
-      // Check if user typed a city name
+      await searchDoctors(selectedCity || budgetFilter?.city || null, text, null);
+    } else if (step === "city" || step === "budget_city") {
       const matchedCity = CITIES.find(c => c.toLowerCase() === text.toLowerCase());
       if (matchedCity) {
-        setSelectedCity(matchedCity);
-        setStep("specialty");
-        await fetchSpecializations(matchedCity);
+        if (step === "budget_city") {
+          handleOptionClick(`budget_city_${matchedCity}`, matchedCity);
+        } else {
+          setSelectedCity(matchedCity);
+          setStep("specialty");
+          await fetchSpecializations(matchedCity);
+        }
+      } else {
+        await handleAISearch(text);
+      }
+    } else if (step === "budget_fee") {
+      // Try to parse a number from user input
+      const num = parseInt(text.replace(/[^0-9]/g, ""));
+      if (num > 0) {
+        setStep("results");
+        await searchDoctors(budgetFilter?.city || null, budgetFilter?.specialty || null, null, undefined, undefined, num, "fee_low");
       } else {
         await handleAISearch(text);
       }
