@@ -168,7 +168,8 @@ const ClinicAppointments = () => {
           icd_code:clinic_icd_codes(id, code, description)
         `)
         .in("doctor_id", doctors.map(d => d.id))
-        .order("created_at", { ascending: false });
+        .order("appointment_date", { ascending: false })
+        .order("appointment_time", { ascending: false });
 
       if (error) throw error;
       setAppointments(data || []);

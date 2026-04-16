@@ -45,7 +45,8 @@ const DoctorReceptionistAppointments = () => {
           patients (id, full_name, phone, patient_id)
         `)
         .eq("doctor_id", doctorId)
-        .order("created_at", { ascending: false });
+        .order("appointment_date", { ascending: false })
+        .order("appointment_time", { ascending: false });
 
       if (error) throw error;
       setAppointments(data || []);
