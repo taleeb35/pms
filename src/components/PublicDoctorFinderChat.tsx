@@ -571,10 +571,10 @@ export const PublicDoctorFinderChat = () => {
                           <button
                             key={opt.value}
                             onClick={() => handleOptionClick(opt.value, opt.label)}
-                            className="w-full text-left text-xs px-3 py-2.5 hover:bg-primary hover:text-primary-foreground transition-colors text-foreground border-b last:border-b-0 flex items-center gap-2"
+                            className="w-full text-left text-xs px-3 py-2.5 hover:bg-primary hover:text-primary-foreground transition-colors text-foreground border-b last:border-b-0 flex items-center gap-2 group/item"
                           >
-                            {opt.icon === "city" && <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />}
-                            {opt.icon === "specialty" && <Stethoscope className="h-3 w-3 text-muted-foreground shrink-0" />}
+                            {opt.icon === "city" && <MapPin className="h-3 w-3 text-muted-foreground group-hover/item:text-primary-foreground shrink-0" />}
+                            {opt.icon === "specialty" && <Stethoscope className="h-3 w-3 text-muted-foreground group-hover/item:text-primary-foreground shrink-0" />}
                             {opt.label}
                           </button>
                         ))
