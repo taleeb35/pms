@@ -159,13 +159,83 @@ export const PublicDoctorFinderChat = () => {
       setSelectedCity(city);
       setStep("results");
       await searchDoctors(city, null, null, undefined, gender);
-    } else if (value === "filter_cheap") {
-      addUserMessage("Cheapest Doctors");
-      setStep("city");
-      addBotMessage("💰 Find affordable doctors! Select a city:", {
-        options: CITIES.map(c => ({ label: c, value: `cheap_${c}`, icon: "city" as const })),
-        step: "city",
+    } else if (value === "filter_budget") {
+      addUserMessage("Filter by Budget");
+      setStep("budget_city");
+      setBudgetFilter({});
+      addBotMessage("💰 Let's find doctors within your budget!\n\nFirst, select a city:", {
+        options: CITIES.map(c => ({ label: c, value: `budget_city_${c}`, icon: "city" as const })),
+        step: "budget_city",
       });
+    } else if (value.startsWith("budget_city_")) {
+      const city = value.replace("budget_city_", "");
+      addUserMessage(city);
+      setBudgetFilter(prev => ({ ...prev, city }));
+      setStep("budget_specialty");
+      // Fetch specializations for this city
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/find-doctor-chatbot`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({ action: "get_specializations", city }),
+          }
+        );
+        const data = await res.json();
+        const specs: string[] = data.specializations || [];
+        const popular = POPULAR_SPECIALTIES.filter(s => specs.includes(s));
+        const others = specs.filter(s => !popular.includes(s));
+        const allSpecs = [...popular, ...others];
+        addBotMessage("Now select a doctor type (or skip for all):", {
+          options: [
+            { label: "All Types", value: "budget_spec_all" },
+            ...allSpecs.map(s => ({ label: s, value: `budget_spec_${s}`, icon: "specialty" as const })),
+          ],
+          step: "budget_specialty",
+        });
+      } catch {
+        addBotMessage("Select a fee range:", {
+          options: [
+            { label: "Under Rs. 1,000", value: "budget_fee_1000" },
+            { label: "Under Rs. 1,500", value: "budget_fee_1500" },
+            { label: "Under Rs. 2,000", value: "budget_fee_2000" },
+            { label: "Under Rs. 3,000", value: "budget_fee_3000" },
+          ],
+          step: "budget_fee",
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else if (value.startsWith("budget_spec_")) {
+      const spec = value.replace("budget_spec_", "");
+      const specLabel = spec === "all" ? "All Types" : spec;
+      addUserMessage(specLabel);
+      setBudgetFilter(prev => ({ ...prev, specialty: spec === "all" ? undefined : spec }));
+      setStep("budget_fee");
+      addBotMessage("💵 Select your maximum budget:", {
+        options: [
+          { label: "Under Rs. 1,000", value: "budget_fee_1000" },
+          { label: "Under Rs. 1,500", value: "budget_fee_1500" },
+          { label: "Under Rs. 2,000", value: "budget_fee_2000" },
+          { label: "Under Rs. 3,000", value: "budget_fee_3000" },
+          { label: "Any Budget", value: "budget_fee_any" },
+        ],
+        step: "budget_fee",
+      });
+    } else if (value.startsWith("budget_fee_")) {
+      const feeStr = value.replace("budget_fee_", "");
+      const maxFee = feeStr === "any" ? undefined : parseInt(feeStr);
+      const feeLabel = maxFee ? `Under Rs. ${maxFee.toLocaleString()}` : "Any Budget";
+      addUserMessage(feeLabel);
+      setStep("results");
+      const city = budgetFilter?.city || null;
+      const specialty = budgetFilter?.specialty || null;
+      await searchDoctors(city, specialty, null, undefined, undefined, maxFee, "fee_low");
     } else if (value.startsWith("cheap_")) {
       const city = value.replace("cheap_", "");
       addUserMessage(city);
