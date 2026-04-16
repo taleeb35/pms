@@ -69,6 +69,7 @@ interface Appointment {
   appointment_time: string;
   status: string;
   reason: string | null;
+  appointment_type: string | null;
   notes: string | null;
   duration_minutes: number | null;
   patient_id: string;
