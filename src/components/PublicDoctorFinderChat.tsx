@@ -9,6 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
 import { useNavigate } from "react-router-dom";
 
+interface DoctorClinic {
+  clinic_name: string;
+  clinic_location?: string;
+  fee?: number | null;
+  timing?: string | null;
+  today_timing?: string | null;
+}
+
 interface Doctor {
   id: string;
   full_name: string;
@@ -18,7 +26,12 @@ interface Doctor {
   experience_years?: number;
   avatar_url?: string | null;
   clinic_name?: string;
-  consultation_fee?: number;
+  clinic_location?: string;
+  consultation_fee?: number | null;
+  timing?: string | null;
+  today_timing?: string | null;
+  introduction?: string | null;
+  all_clinics?: DoctorClinic[];
   source: string;
 }
 
