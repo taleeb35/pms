@@ -250,6 +250,135 @@ const MobileReports = () => {
     return Object.entries(counts).map(([range, count]) => ({ range, count }));
   }, [pregnant]);
 
+  // Avg consultation time per month
+  const consultationTimeData = useMemo(() => {
+    const months = eachMonthOfInterval({ start: dateFrom, end: dateTo });
+    return months.map((month) => {
+      const monthStr = format(month, "yyyy-MM");
+      const ma = appointments.filter((a) => a.appointment_date?.startsWith(monthStr) && a.started_at && a.completed_at && a.status === "completed");
+      const durations = ma
+        .map((a) => Math.max(0, (new Date(a.completed_at).getTime() - new Date(a.started_at).getTime()) / 60000))
+        .filter((d) => d > 0 && d < 300);
+      const avg = durations.length ? parseFloat((durations.reduce((s, d) => s + d, 0) / durations.length).toFixed(1)) : 0;
+      return { month: format(month, "MMM yy"), avg };
+    });
+  }, [appointments, dateFrom, dateTo]);
+
+  const overallAvgTime = useMemo(() => {
+    const all = appointments
+      .filter((a) => a.started_at && a.completed_at && a.status === "completed")
+      .map((a) => Math.max(0, (new Date(a.completed_at).getTime() - new Date(a.started_at).getTime()) / 60000))
+      .filter((d) => d > 0 && d < 300);
+    return all.length ? parseFloat((all.reduce((s, d) => s + d, 0) / all.length).toFixed(1)) : 0;
+  }, [appointments]);
+
+  // Peak hours heatmap
+  const heatmapData = useMemo(() => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const counts: Record<string, Record<string, number>> = {};
+    days.forEach((d) => (counts[d] = {}));
+    appointments.forEach((a) => {
+      if (!a.appointment_date || !a.appointment_time) return;
+      const day = days[getDay(parseISO(a.appointment_date))];
+      const hour = `${a.appointment_time.split(":")[0]}:00`;
+      counts[day][hour] = (counts[day][hour] || 0) + 1;
+    });
+    const allHours = new Set<string>();
+    Object.values(counts).forEach((h) => Object.keys(h).forEach((k) => allHours.add(k)));
+    const sorted = Array.from(allHours).sort();
+    const max = Math.max(1, ...sorted.flatMap((h) => days.map((d) => counts[d][h] || 0)));
+    return { hours: sorted, days, counts, max };
+  }, [appointments]);
+
+  // Visit frequency
+  const visitFrequency = useMemo(() => {
+    const map: Record<string, { name: string; visits: number }> = {};
+    allAppointments.forEach((a) => {
+      if (!map[a.patient_id]) {
+        const p = patients.find((pt) => pt.id === a.patient_id);
+        map[a.patient_id] = { name: p?.full_name || "Unknown", visits: 0 };
+      }
+      map[a.patient_id].visits++;
+    });
+    const all = Object.values(map);
+    const avg = all.length ? parseFloat((all.reduce((s, p) => s + p.visits, 0) / all.length).toFixed(1)) : 0;
+    const top = [...all].sort((a, b) => b.visits - a.visits).slice(0, 5);
+    const dist: Record<string, number> = { "1": 0, "2-3": 0, "4-5": 0, "6-10": 0, "10+": 0 };
+    all.forEach((p) => {
+      if (p.visits === 1) dist["1"]++;
+      else if (p.visits <= 3) dist["2-3"]++;
+      else if (p.visits <= 5) dist["4-5"]++;
+      else if (p.visits <= 10) dist["6-10"]++;
+      else dist["10+"]++;
+    });
+    return {
+      avg,
+      top,
+      total: all.length,
+      distribution: Object.entries(dist).map(([range, count]) => ({ range, count })),
+    };
+  }, [allAppointments, patients]);
+
+  // Drop-off
+  const dropOff = useMemo(() => {
+    const today = new Date();
+    const last: Record<string, { name: string; daysSince: number }> = {};
+    allAppointments.filter((a) => a.status === "completed").forEach((a) => {
+      const p = patients.find((pt) => pt.id === a.patient_id);
+      const days = differenceInDays(today, parseISO(a.appointment_date));
+      if (!last[a.patient_id] || days < last[a.patient_id].daysSince) {
+        last[a.patient_id] = { name: p?.full_name || "Unknown", daysSince: days };
+      }
+    });
+    const all = Object.values(last);
+    const r30 = all.filter((p) => p.daysSince >= 30 && p.daysSince < 60).length;
+    const r60 = all.filter((p) => p.daysSince >= 60 && p.daysSince < 90).length;
+    const r90 = all.filter((p) => p.daysSince >= 90).length;
+    return {
+      summary: [
+        { range: "30-60d", count: r30 },
+        { range: "60-90d", count: r60 },
+        { range: "90+d", count: r90 },
+      ],
+      total: r30 + r60 + r90,
+    };
+  }, [allAppointments, patients]);
+
+  // Top diseases
+  const topDiseases = useMemo(() => {
+    const counts: Record<string, number> = {};
+    appointments.forEach((a) => {
+      if (a.icd_code_id) {
+        const icd = icdCodes.find((c) => c.id === a.icd_code_id);
+        if (icd) {
+          const lbl = `${icd.code} - ${icd.description}`;
+          counts[lbl] = (counts[lbl] || 0) + 1;
+        }
+      }
+    });
+    medicalRecords.forEach((r) => {
+      if (r.diagnosis?.trim()) counts[r.diagnosis.trim()] = (counts[r.diagnosis.trim()] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([name, count]) => ({ name: name.length > 28 ? name.slice(0, 25) + "…" : name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8);
+  }, [appointments, icdCodes, medicalRecords]);
+
+  // Allergy distribution
+  const allergyDist = useMemo(() => {
+    const counts: Record<string, number> = {};
+    patients.forEach((p) => {
+      if (p.allergies) {
+        p.allergies.split(/[,;]+/).map((s: string) => s.trim().toLowerCase()).filter(Boolean).forEach((a: string) => {
+          const n = a.charAt(0).toUpperCase() + a.slice(1);
+          counts[n] = (counts[n] || 0) + 1;
+        });
+      }
+    });
+    return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 8);
+  }, [patients]);
+
   const fmtPKR = (n: number) => `Rs ${n.toLocaleString()}`;
   const tickFont = { fontSize: 10 };
 
