@@ -158,10 +158,10 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <FloatingWhatsApp />
         <BrowserRouter>
           <ScrollToTop />
           <StandaloneRedirect />
+          <FloatingWhatsApp />
           <PublicDoctorFinderChat />
         <Routes>
           <Route path="/" element={<Index />} />
