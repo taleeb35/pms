@@ -125,6 +125,7 @@ import PatientVideoCall from "./pages/PatientVideoCall";
 import MobileHome from "./pages/app/MobileHome";
 import MobileAppointments from "./pages/app/MobileAppointments";
 import MobilePatients from "./pages/app/MobilePatients";
+import MobilePatientDetail from "./pages/app/MobilePatientDetail";
 import MobileReports from "./pages/app/MobileReports";
 import MobileMore from "./pages/app/MobileMore";
 import MobileFinance from "./pages/app/MobileFinance";
@@ -167,6 +168,7 @@ const App = () => (
           <Route path="/app" element={<MobileHome />} />
           <Route path="/app/appointments" element={<MobileAppointments />} />
           <Route path="/app/patients" element={<MobilePatients />} />
+          <Route path="/app/patients/:id" element={<MobilePatientDetail />} />
           <Route path="/app/reports" element={<MobileReports />} />
           <Route path="/app/more" element={<MobileMore />} />
           <Route path="/app/finance" element={<MobileFinance />} />
