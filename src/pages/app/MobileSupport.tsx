@@ -183,7 +183,7 @@ const MobileSupport = () => {
       title="Support"
       subtitle={`${tickets.length} ticket${tickets.length === 1 ? "" : "s"}`}
       back="/app/more"
-      fab={<MobileFAB onClick={() => setShowForm(true)} label="New" icon={Plus} />}
+      fab={<MobileFAB onClick={() => setShowForm(true)} label="New" icon={<Plus className="h-5 w-5" />} />}
     >
       {loading ? (
         <div className="space-y-2">
