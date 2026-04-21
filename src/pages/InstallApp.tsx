@@ -19,7 +19,7 @@ const InstallApp = () => {
     title: "Install the Zonoir App | Clinic Dashboard on Your Phone",
     description:
       "Install Zonoir on your phone or tablet. Open your clinic dashboard, reports & analytics in one tap — no need to log in every time.",
-    canonical: "https://zonoir.com/install",
+    canonicalUrl: "https://zonoir.com/install",
   });
 
   return (
