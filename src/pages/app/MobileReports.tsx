@@ -600,6 +600,160 @@ const MobileReports = () => {
         </div>
       </Card>
 
+      {/* AVG CONSULTATION TIME */}
+      <Card className="p-3 mb-4 border-border/50">
+        <div className="flex items-center gap-2 mb-1">
+          <Clock className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Avg Consultation Time</h3>
+        </div>
+        <p className="text-[11px] text-muted-foreground mb-2">Overall: <span className="font-semibold text-foreground">{overallAvgTime} min</span></p>
+        <div className="h-[180px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={consultationTimeData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+              <XAxis dataKey="month" tick={tickFont} />
+              <YAxis tick={tickFont} width={30} unit="m" />
+              <Tooltip />
+              <Line type="monotone" dataKey="avg" stroke="#8b5cf6" strokeWidth={2.5} dot={{ r: 3 }} name="Avg (min)" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* PEAK HOURS HEATMAP */}
+      <Card className="p-3 mb-4 border-border/50">
+        <div className="flex items-center gap-2 mb-1">
+          <BarChart3 className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Peak Hours</h3>
+        </div>
+        <p className="text-[11px] text-muted-foreground mb-2">Day × Hour appointment density</p>
+        <div className="overflow-x-auto -mx-1 px-1">
+          <table className="text-[9px] border-collapse">
+            <thead>
+              <tr>
+                <th className="px-1.5 py-1 text-left font-medium text-muted-foreground sticky left-0 bg-card">Hour</th>
+                {heatmapData.days.map((d) => (
+                  <th key={d} className="px-1.5 py-1 text-center font-medium text-muted-foreground">{d}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {heatmapData.hours.map((h) => (
+                <tr key={h}>
+                  <td className="px-1.5 py-0.5 font-medium sticky left-0 bg-card">{h}</td>
+                  {heatmapData.days.map((d) => {
+                    const v = heatmapData.counts[d][h] || 0;
+                    const op = v ? 0.15 + (v / heatmapData.max) * 0.75 : 0;
+                    return (
+                      <td key={d} className="px-1.5 py-0.5 text-center" style={{ backgroundColor: v ? `rgba(99,102,241,${op})` : "transparent", color: op > 0.5 ? "white" : undefined }}>
+                        {v || ""}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* VISIT FREQUENCY */}
+      <Card className="p-3 mb-4 border-border/50">
+        <div className="flex items-center gap-2 mb-1">
+          <Activity className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold">Patient Visit Frequency</h3>
+        </div>
+        <p className="text-[11px] text-muted-foreground mb-2">Avg <span className="font-semibold text-foreground">{visitFrequency.avg}</span> visits / patient · {visitFrequency.total} patients</p>
+        <div className="h-[180px] mb-3">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={visitFrequency.distribution}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+              <XAxis dataKey="range" tick={tickFont} />
+              <YAxis tick={tickFont} width={30} />
+              <Tooltip />
+              <Bar dataKey="count" fill="#6366f1" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        {visitFrequency.top.length > 0 && (
+          <div className="space-y-1.5">
+            <div className="text-[10px] text-muted-foreground uppercase tracking-wide">Top Recurring</div>
+            {visitFrequency.top.map((p, i) => (
+              <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                <span className="text-xs truncate">{i + 1}. {p.name}</span>
+                <span className="text-xs font-bold text-primary">{p.visits} visits</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* DROP-OFF */}
+      <Card className="p-3 mb-4 border-border/50">
+        <div className="flex items-center gap-2 mb-1">
+          <AlertTriangle className="h-4 w-4 text-destructive" />
+          <h3 className="text-sm font-semibold">Patient Drop-off</h3>
+        </div>
+        <p className="text-[11px] text-muted-foreground mb-2">At-risk patients: <span className="font-semibold text-destructive">{dropOff.total}</span></p>
+        <div className="h-[160px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dropOff.summary}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+              <XAxis dataKey="range" tick={tickFont} />
+              <YAxis tick={tickFont} width={30} />
+              <Tooltip />
+              <Bar dataKey="count" radius={[6, 6, 0, 0]}>
+                {dropOff.summary.map((_, i) => <Cell key={i} fill={["#f59e0b", "#ec4899", "#ef4444"][i]} />)}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* TOP DISEASES */}
+      {topDiseases.length > 0 && (
+        <Card className="p-3 mb-4 border-border/50">
+          <div className="flex items-center gap-2 mb-1">
+            <Stethoscope className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold">Top Diseases / Diagnoses</h3>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-2">Most frequent in this period</p>
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={topDiseases} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                <XAxis type="number" tick={tickFont} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 9 }} width={120} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#06b6d4" radius={[0, 6, 6, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
+      {/* ALLERGY DISTRIBUTION */}
+      {allergyDist.length > 0 && (
+        <Card className="p-3 mb-4 border-border/50">
+          <div className="flex items-center gap-2 mb-1">
+            <ShieldAlert className="h-4 w-4 text-warning" />
+            <h3 className="text-sm font-semibold">Allergy Distribution</h3>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-2">Common allergies among patients</p>
+          <div className="h-[220px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={allergyDist} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.05)" />
+                <XAxis type="number" tick={tickFont} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 9 }} width={90} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#f59e0b" radius={[0, 6, 6, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
       {/* GYNO ONLY */}
       {isGynecologist && (
         <>
