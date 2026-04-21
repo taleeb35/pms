@@ -134,7 +134,7 @@ const MobileExpenses = () => {
     return (
       <MobileFormScreen
         title={editing ? "Edit Expense" : "New Expense"}
-        back={() => setShowForm(false) as any}
+        back={() => setShowForm(false)}
         onSubmit={submit}
         onCancel={() => setShowForm(false)}
         loading={saving}

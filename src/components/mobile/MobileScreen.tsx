@@ -5,7 +5,8 @@ import { ChevronLeft } from "lucide-react";
 interface MobileScreenProps {
   title: string;
   subtitle?: string;
-  back?: boolean | string; // true = navigate(-1); string = path
+  /** true = navigate(-1); string = path; function = custom handler; false = no button */
+  back?: boolean | string | (() => void);
   rightAction?: ReactNode;
   children: ReactNode;
   fab?: ReactNode;
@@ -31,7 +32,8 @@ const MobileScreen = ({
   const navigate = useNavigate();
 
   const handleBack = () => {
-    if (typeof back === "string") navigate(back);
+    if (typeof back === "function") back();
+    else if (typeof back === "string") navigate(back);
     else navigate(-1);
   };
 

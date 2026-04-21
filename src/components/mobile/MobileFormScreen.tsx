@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 interface MobileFormScreenProps {
   title: string;
   subtitle?: string;
-  back?: boolean | string;
+  back?: boolean | string | (() => void);
   children: ReactNode;
   onSubmit: (e: React.FormEvent) => void;
   submitLabel?: string;

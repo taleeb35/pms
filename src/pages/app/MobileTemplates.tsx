@@ -138,7 +138,7 @@ const MobileTemplates = () => {
     return (
       <MobileFormScreen
         title={editing ? "Edit Template" : "New Disease Template"}
-        back={() => setShowForm(false) as any}
+        back={() => setShowForm(false)}
         onSubmit={submit}
         onCancel={() => setShowForm(false)}
         loading={saving}
