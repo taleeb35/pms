@@ -4,10 +4,10 @@ import MobileAppShell from "@/components/MobileAppShell";
 import { Card } from "@/components/ui/card";
 import {
   TrendingUp, TrendingDown, Users, DollarSign, CheckCircle2, XCircle,
-  Zap, Activity, Baby, Heart,
+  Zap, Activity, Baby, Heart, Clock, Stethoscope, ShieldAlert, AlertTriangle, BarChart3,
 } from "lucide-react";
 import {
-  format, subMonths, eachMonthOfInterval, parseISO, differenceInDays,
+  format, subMonths, eachMonthOfInterval, parseISO, differenceInDays, getDay,
 } from "date-fns";
 import {
   ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line,
