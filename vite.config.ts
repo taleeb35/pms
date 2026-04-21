@@ -23,16 +23,16 @@ export default defineConfig(({ mode }) => ({
         display: "standalone",
         orientation: "portrait",
         scope: "/",
-        start_url: "/dashboard",
+        start_url: "/app",
         icons: [
           { src: "/pwa-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
           { src: "/pwa-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
           { src: "/pwa-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
         shortcuts: [
-          { name: "Dashboard", short_name: "Dashboard", url: "/dashboard" },
-          { name: "Doctor Reports", short_name: "Reports", url: "/doctor/reports" },
-          { name: "Appointments", short_name: "Appts", url: "/doctor/appointments" },
+          { name: "Home", short_name: "Home", url: "/app" },
+          { name: "Reports", short_name: "Reports", url: "/app/reports" },
+          { name: "Appointments", short_name: "Appts", url: "/app/appointments" },
         ],
       },
       workbox: {
