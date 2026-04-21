@@ -126,6 +126,24 @@ import MobileHome from "./pages/app/MobileHome";
 import MobileAppointments from "./pages/app/MobileAppointments";
 import MobilePatients from "./pages/app/MobilePatients";
 import MobileReports from "./pages/app/MobileReports";
+import MobileMore from "./pages/app/MobileMore";
+import MobileFinance from "./pages/app/MobileFinance";
+import MobileWalkIn from "./pages/app/MobileWalkIn";
+import MobileSchedule from "./pages/app/MobileSchedule";
+import MobileTemplates from "./pages/app/MobileTemplates";
+import MobileAllergies from "./pages/app/MobileAllergies";
+import MobileDiseases from "./pages/app/MobileDiseases";
+import MobileICDCodes from "./pages/app/MobileICDCodes";
+import MobileProcedures from "./pages/app/MobileProcedures";
+import MobileReceptionists from "./pages/app/MobileReceptionists";
+import MobileActivityLogs from "./pages/app/MobileActivityLogs";
+import MobileProfile from "./pages/app/MobileProfile";
+import MobileSubscription from "./pages/app/MobileSubscription";
+import MobileSupport from "./pages/app/MobileSupport";
+import MobileDoctors from "./pages/app/MobileDoctors";
+import MobileDoctorSchedules from "./pages/app/MobileDoctorSchedules";
+import MobileExpenses from "./pages/app/MobileExpenses";
+import MobileSpecializations from "./pages/app/MobileSpecializations";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
@@ -150,6 +168,24 @@ const App = () => (
           <Route path="/app/appointments" element={<MobileAppointments />} />
           <Route path="/app/patients" element={<MobilePatients />} />
           <Route path="/app/reports" element={<MobileReports />} />
+          <Route path="/app/more" element={<MobileMore />} />
+          <Route path="/app/finance" element={<MobileFinance />} />
+          <Route path="/app/walk-in" element={<MobileWalkIn />} />
+          <Route path="/app/schedule" element={<MobileSchedule />} />
+          <Route path="/app/templates" element={<MobileTemplates />} />
+          <Route path="/app/allergies" element={<MobileAllergies />} />
+          <Route path="/app/diseases" element={<MobileDiseases />} />
+          <Route path="/app/icd-codes" element={<MobileICDCodes />} />
+          <Route path="/app/procedures" element={<MobileProcedures />} />
+          <Route path="/app/receptionists" element={<MobileReceptionists />} />
+          <Route path="/app/activity-logs" element={<MobileActivityLogs />} />
+          <Route path="/app/profile" element={<MobileProfile />} />
+          <Route path="/app/subscription" element={<MobileSubscription />} />
+          <Route path="/app/support" element={<MobileSupport />} />
+          <Route path="/app/doctors" element={<MobileDoctors />} />
+          <Route path="/app/doctor-schedules" element={<MobileDoctorSchedules />} />
+          <Route path="/app/expenses" element={<MobileExpenses />} />
+          <Route path="/app/specializations" element={<MobileSpecializations />} />
           <Route path="/features" element={<Features />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/pricing" element={<Pricing />} />
