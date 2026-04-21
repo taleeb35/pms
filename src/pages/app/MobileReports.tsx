@@ -147,11 +147,22 @@ const MobileReports = () => {
     loadRevenue();
   }, [period]);
 
+  const totalAppts = stats.apptsThisMonth || 0;
+  const completionRate = totalAppts ? Math.round((stats.completed / totalAppts) * 100) : 0;
+  const noShowRate = totalAppts ? Math.round((stats.cancelled / totalAppts) * 100) : 0;
+  const netRevenue = stats.revenue - stats.refunds;
+
   const cards = [
-    { label: "Revenue (this month)", value: `PKR ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "bg-success/10 text-success" },
-    { label: "Appointments (this month)", value: stats.apptsThisMonth, icon: Calendar, color: "bg-primary/10 text-primary" },
-    { label: "Last 7 days", value: stats.apptsLast7, icon: TrendingUp, color: "bg-info/10 text-info" },
-    { label: "New patients", value: stats.newPatients, icon: Users, color: "bg-warning/10 text-warning" },
+    { label: "Revenue (month)", value: `PKR ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "bg-success/10 text-success" },
+    { label: "Net revenue", value: `PKR ${netRevenue.toLocaleString()}`, icon: TrendingUp, color: "bg-success/10 text-success" },
+    { label: "Appointments (month)", value: stats.apptsThisMonth, icon: Calendar, color: "bg-primary/10 text-primary" },
+    { label: "Last 7 days", value: stats.apptsLast7, icon: Activity, color: "bg-info/10 text-info" },
+    { label: "Completed", value: `${stats.completed} · ${completionRate}%`, icon: CheckCircle2, color: "bg-success/10 text-success" },
+    { label: "Cancelled", value: `${stats.cancelled} · ${noShowRate}%`, icon: XCircle, color: "bg-destructive/10 text-destructive" },
+    { label: "Avg consult", value: `${stats.avgConsultMins} min`, icon: Clock, color: "bg-warning/10 text-warning" },
+    { label: "New patients", value: stats.newPatients, icon: UserPlus, color: "bg-info/10 text-info" },
+    { label: "Total patients", value: stats.totalPatients, icon: Users, color: "bg-primary/10 text-primary" },
+    { label: "Returning", value: stats.returningPatients, icon: Repeat, color: "bg-warning/10 text-warning" },
   ];
 
   // Chart datasets
