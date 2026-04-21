@@ -2,15 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileAppShell from "@/components/MobileAppShell";
+import MobileFAB from "@/components/mobile/MobileFAB";
+import MobileEmptyState from "@/components/mobile/MobileEmptyState";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, User, SlidersHorizontal, X, ChevronRight, Phone, MapPin } from "lucide-react";
+import { Search, User, SlidersHorizontal, X, ChevronRight, Phone, MapPin, Users } from "lucide-react";
 import { CitySelect } from "@/components/CitySelect";
 import { calculatePregnancyWeeks } from "@/lib/pregnancyUtils";
+import { useMobileRole } from "@/hooks/useMobileRole";
 
 const calcAge = (dob: string) => {
   const b = new Date(dob);
@@ -23,11 +26,11 @@ const calcAge = (dob: string) => {
 
 const MobilePatients = () => {
   const navigate = useNavigate();
+  const { id: userId, role } = useMobileRole();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGynecologist, setIsGynecologist] = useState(false);
 
-  // Filter state (mirrors web)
   const [q, setQ] = useState("");
   const [gender, setGender] = useState("all");
   const [age, setAge] = useState("all");
@@ -37,28 +40,44 @@ const MobilePatients = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
+    if (!userId || !role) return;
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      setLoading(true);
 
-      const { data: doc } = await supabase
-        .from("doctors")
-        .select("specialization")
-        .eq("id", user.id)
-        .maybeSingle();
-      setIsGynecologist(!!doc?.specialization?.toLowerCase().includes("gynecologist"));
+      if (role === "doctor") {
+        const { data: doc } = await supabase
+          .from("doctors")
+          .select("specialization")
+          .eq("id", userId)
+          .maybeSingle();
+        setIsGynecologist(!!doc?.specialization?.toLowerCase().includes("gynecologist"));
 
-      const { data } = await supabase
-        .from("patients")
-        .select("id, full_name, phone, gender, patient_id, created_at, city, date_of_birth, pregnancy_start_date, delivery_status")
-        .eq("created_by", user.id)
-        .order("created_at", { ascending: false })
-        .limit(500);
-      setItems(data || []);
+        const { data } = await supabase
+          .from("patients")
+          .select("id, full_name, phone, gender, patient_id, created_at, city, date_of_birth, pregnancy_start_date, delivery_status")
+          .eq("created_by", userId)
+          .order("created_at", { ascending: false })
+          .limit(500);
+        setItems(data || []);
+      } else {
+        // Clinic owner — fetch all patients created by clinic's doctors + clinic itself
+        const { data: docs } = await supabase
+          .from("doctors")
+          .select("id")
+          .eq("clinic_id", userId);
+        const ids = [userId, ...(docs?.map((d) => d.id) || [])];
+        const { data } = await supabase
+          .from("patients")
+          .select("id, full_name, phone, gender, patient_id, created_at, city, date_of_birth, pregnancy_start_date, delivery_status, created_by")
+          .in("created_by", ids)
+          .order("created_at", { ascending: false })
+          .limit(500);
+        setItems(data || []);
+      }
       setLoading(false);
     };
     load();
-  }, []);
+  }, [userId, role]);
 
   const filtered = useMemo(() => {
     return items.filter((p) => {
@@ -109,9 +128,13 @@ const MobilePatients = () => {
     delivery !== "all" && isGynecologist && { key: "del", label: `Delivery: ${delivery.replace("_", " ")}`, clear: () => setDelivery("all") },
   ].filter(Boolean) as { key: string; label: string; clear: () => void }[];
 
+  const resetAll = () => {
+    setGender("all"); setAge("all"); setCity("all");
+    setTrimester("all"); setDelivery("all");
+  };
+
   return (
     <MobileAppShell title="Patients">
-      {/* Search + filter trigger */}
       <div className="space-y-2 mb-3">
         <div className="flex gap-2">
           <div className="relative flex-1">
@@ -125,11 +148,7 @@ const MobilePatients = () => {
           </div>
           <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
             <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-11 w-11 rounded-xl relative shrink-0"
-              >
+              <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl relative shrink-0">
                 <SlidersHorizontal className="h-4 w-4" />
                 {activeFilters.length > 0 && (
                   <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[10px] flex items-center justify-center font-bold">
@@ -201,14 +220,7 @@ const MobilePatients = () => {
                   </>
                 )}
                 <div className="flex gap-2 pt-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => {
-                      setGender("all"); setAge("all"); setCity("all");
-                      setTrimester("all"); setDelivery("all");
-                    }}
-                  >Reset</Button>
+                  <Button variant="outline" className="flex-1" onClick={resetAll}>Reset</Button>
                   <Button className="flex-1" onClick={() => setFiltersOpen(false)}>
                     Show {filtered.length}
                   </Button>
@@ -218,7 +230,6 @@ const MobilePatients = () => {
           </Sheet>
         </div>
 
-        {/* Active filter chips */}
         {activeFilters.length > 0 && (
           <div className="flex gap-1.5 flex-wrap">
             {activeFilters.map((f) => (
@@ -240,9 +251,17 @@ const MobilePatients = () => {
       </div>
 
       {loading ? (
-        <div className="text-sm text-muted-foreground text-center py-12">Loading…</div>
+        <div className="space-y-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-[72px] rounded-lg bg-muted/40 animate-pulse" />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
-        <div className="text-sm text-muted-foreground text-center py-12">No patients match</div>
+        <MobileEmptyState
+          icon={Users}
+          title={items.length === 0 ? "No patients yet" : "No patients match"}
+          description={items.length === 0 ? "Tap the + button to register your first patient." : "Try adjusting your filters."}
+        />
       ) : (
         <div className="space-y-2">
           {filtered.map((p) => {
@@ -250,7 +269,7 @@ const MobilePatients = () => {
             return (
               <Card
                 key={p.id}
-                onClick={() => navigate(`/patients/${p.id}`)}
+                onClick={() => navigate(`/app/patients/${p.id}`)}
                 className="p-3 flex items-center gap-3 border-border/50 cursor-pointer active:scale-[0.98] transition-transform"
               >
                 <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
@@ -277,6 +296,8 @@ const MobilePatients = () => {
           })}
         </div>
       )}
+
+      <MobileFAB onClick={() => navigate("/app/walk-in")} ariaLabel="Add patient" />
     </MobileAppShell>
   );
 };
