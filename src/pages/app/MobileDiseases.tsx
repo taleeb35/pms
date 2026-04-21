@@ -1,11 +1,26 @@
-import MobilePlaceholder from "@/components/mobile/MobilePlaceholder";
+import MobileCatalogScreen from "@/components/mobile/MobileCatalogScreen";
 import { useMobileRole } from "@/hooks/useMobileRole";
-import { Pill } from "lucide-react";
+import { Activity } from "lucide-react";
 
 const MobileDiseases = () => {
-  const { role } = useMobileRole();
-  const webPath = role === "clinic" ? "/clinic/diseases" : "/doctor/diseases";
-  return <MobilePlaceholder title="Diseases" icon={Pill} webPath={webPath} />;
+  const { id, role, loading } = useMobileRole();
+  const isClinic = role === "clinic";
+  return (
+    <MobileCatalogScreen
+      title="Diseases"
+      icon={Activity}
+      table={isClinic ? "clinic_diseases" : "doctor_diseases"}
+      ownerColumn={isClinic ? "clinic_id" : "doctor_id"}
+      ownerId={id || null}
+      loadingOwner={loading}
+      titleField="name"
+      searchFields={["name"]}
+      orderBy="name"
+      fields={[
+        { key: "name", label: "Disease Name", placeholder: "e.g. Diabetes", required: true },
+      ]}
+    />
+  );
 };
 
 export default MobileDiseases;
