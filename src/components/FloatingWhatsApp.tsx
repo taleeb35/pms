@@ -1,8 +1,14 @@
 import { MessageCircle } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { isStandalonePWA } from "@/lib/pwaUtils";
 
 const FloatingWhatsApp = () => {
   const phoneNumber = "923004313139";
   const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  const location = useLocation();
+
+  // Hide inside the mobile app shell or when running as installed PWA
+  if (location.pathname.startsWith("/app") || isStandalonePWA()) return null;
 
   return (
     <a

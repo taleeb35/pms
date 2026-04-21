@@ -37,26 +37,29 @@ const MobileAppShell = ({ children, title }: MobileAppShellProps) => {
   return (
     <div className="min-h-screen bg-background flex flex-col pb-20">
       <header
-        className="sticky top-0 z-40 bg-gradient-to-b from-primary to-primary/90 text-primary-foreground shadow-md"
+        className="sticky top-0 z-40 bg-gradient-to-br from-primary via-primary to-primary/85 text-primary-foreground shadow-lg"
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <div className="px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={clinicLogo} alt="Logo" className="h-8 w-auto" />
+        <div className="px-4 pt-3 pb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="h-10 w-10 rounded-xl bg-white shadow-sm flex items-center justify-center p-1.5">
+              <img src={clinicLogo} alt="Zonoir" className="h-full w-full object-contain" />
+            </div>
+            <span className="text-lg font-bold tracking-tight text-white">Zonoir</span>
           </div>
           <button
             type="button"
-            className="h-10 w-10 rounded-full bg-primary-foreground/10 flex items-center justify-center active:scale-95 transition-transform"
+            className="h-10 w-10 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center active:scale-95 transition-transform"
             aria-label="Notifications"
           >
-            <Bell className="h-5 w-5" />
+            <Bell className="h-5 w-5 text-white" />
           </button>
         </div>
         {title && (
-          <div className="px-4 pb-3">
-            <h1 className="text-lg font-semibold leading-tight">{title}</h1>
+          <div className="px-4 pb-4 pt-1">
+            <h1 className="text-2xl font-bold leading-tight text-white">{title}</h1>
             {name && (
-              <p className="text-xs text-primary-foreground/80">
+              <p className="text-sm text-white/90 mt-0.5 font-medium">
                 {role === "clinic" ? `Hi, ${name}` : `Hi, Dr. ${name}`}
               </p>
             )}

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MobileAppShell from "@/components/MobileAppShell";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TrendingUp, Users, Calendar, DollarSign } from "lucide-react";
+import { TrendingUp, Users, Calendar, DollarSign, Clock, CheckCircle2, XCircle, UserPlus, Repeat, Activity } from "lucide-react";
 import { format, subDays, startOfMonth } from "date-fns";
 import {
   Chart as ChartJS,
@@ -49,6 +49,12 @@ const MobileReports = () => {
     apptsLast7: 0,
     newPatients: 0,
     revenue: 0,
+    refunds: 0,
+    completed: 0,
+    cancelled: 0,
+    avgConsultMins: 0,
+    totalPatients: 0,
+    returningPatients: 0,
   });
   const [revenueSeries, setRevenueSeries] = useState<{ date: string; total: number }[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
@@ -60,22 +66,50 @@ const MobileReports = () => {
       const monthStart = format(startOfMonth(new Date()), "yyyy-MM-dd");
       const last7 = format(subDays(new Date(), 7), "yyyy-MM-dd");
 
-      const [m, l7, np, rev] = await Promise.all([
+      const [m, l7, np, monthAppts, allAppts, totalP] = await Promise.all([
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).gte("appointment_date", monthStart),
         supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).gte("appointment_date", last7),
         supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id).gte("created_at", monthStart),
-        supabase.from("appointments").select("total_fee").eq("doctor_id", user.id).gte("appointment_date", monthStart),
+        supabase.from("appointments").select("total_fee, refund, status, started_at, completed_at").eq("doctor_id", user.id).gte("appointment_date", monthStart),
+        supabase.from("appointments").select("patient_id, status").eq("doctor_id", user.id),
+        supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),
       ]);
 
-      const revenue = (rev.data || []).reduce((s: number, r: any) => s + (Number(r.total_fee) || 0), 0);
+      const monthRows = monthAppts.data || [];
+      const revenue = monthRows.reduce((s: number, r: any) => s + (Number(r.total_fee) || 0), 0);
+      const refunds = monthRows.reduce((s: number, r: any) => s + (Number(r.refund) || 0), 0);
+      const completed = monthRows.filter((r: any) => r.status === "completed").length;
+      const cancelled = monthRows.filter((r: any) => r.status === "cancelled").length;
+
+      const durations = monthRows
+        .filter((r: any) => r.started_at && r.completed_at && r.status === "completed")
+        .map((r: any) => (new Date(r.completed_at).getTime() - new Date(r.started_at).getTime()) / 60000)
+        .filter((d: number) => d > 0 && d < 300);
+      const avgConsultMins = durations.length
+        ? Math.round(durations.reduce((s: number, d: number) => s + d, 0) / durations.length)
+        : 0;
+
+      // Returning vs new across all-time
+      const allRows = allAppts.data || [];
+      const visitCount: Record<string, number> = {};
+      allRows.forEach((r: any) => {
+        if (r.status !== "cancelled") visitCount[r.patient_id] = (visitCount[r.patient_id] || 0) + 1;
+      });
+      const returningPatients = Object.values(visitCount).filter((c) => c > 1).length;
+
       setStats({
         apptsThisMonth: m.count || 0,
         apptsLast7: l7.count || 0,
         newPatients: np.count || 0,
         revenue,
+        refunds,
+        completed,
+        cancelled,
+        avgConsultMins,
+        totalPatients: totalP.count || 0,
+        returningPatients,
       });
 
-      // patients for demographic charts
       const { data: ps } = await supabase
         .from("patients")
         .select("gender, date_of_birth")
@@ -113,11 +147,22 @@ const MobileReports = () => {
     loadRevenue();
   }, [period]);
 
+  const totalAppts = stats.apptsThisMonth || 0;
+  const completionRate = totalAppts ? Math.round((stats.completed / totalAppts) * 100) : 0;
+  const noShowRate = totalAppts ? Math.round((stats.cancelled / totalAppts) * 100) : 0;
+  const netRevenue = stats.revenue - stats.refunds;
+
   const cards = [
-    { label: "Revenue (this month)", value: `PKR ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "bg-success/10 text-success" },
-    { label: "Appointments (this month)", value: stats.apptsThisMonth, icon: Calendar, color: "bg-primary/10 text-primary" },
-    { label: "Last 7 days", value: stats.apptsLast7, icon: TrendingUp, color: "bg-info/10 text-info" },
-    { label: "New patients", value: stats.newPatients, icon: Users, color: "bg-warning/10 text-warning" },
+    { label: "Revenue (month)", value: `PKR ${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "bg-success/10 text-success" },
+    { label: "Net revenue", value: `PKR ${netRevenue.toLocaleString()}`, icon: TrendingUp, color: "bg-success/10 text-success" },
+    { label: "Appointments (month)", value: stats.apptsThisMonth, icon: Calendar, color: "bg-primary/10 text-primary" },
+    { label: "Last 7 days", value: stats.apptsLast7, icon: Activity, color: "bg-info/10 text-info" },
+    { label: "Completed", value: `${stats.completed} · ${completionRate}%`, icon: CheckCircle2, color: "bg-success/10 text-success" },
+    { label: "Cancelled", value: `${stats.cancelled} · ${noShowRate}%`, icon: XCircle, color: "bg-destructive/10 text-destructive" },
+    { label: "Avg consult", value: `${stats.avgConsultMins} min`, icon: Clock, color: "bg-warning/10 text-warning" },
+    { label: "New patients", value: stats.newPatients, icon: UserPlus, color: "bg-info/10 text-info" },
+    { label: "Total patients", value: stats.totalPatients, icon: Users, color: "bg-primary/10 text-primary" },
+    { label: "Returning", value: stats.returningPatients, icon: Repeat, color: "bg-warning/10 text-warning" },
   ];
 
   // Chart datasets
