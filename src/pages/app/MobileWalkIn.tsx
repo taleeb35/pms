@@ -169,21 +169,21 @@ const MobileWalkIn = () => {
         <Field label="Full name" required error={errors.full_name}>
           <Input
             value={form.full_name}
-            onChange={(e) => update("full_name", handleNameInput(e.target.value))}
+            onChange={(e) => update("full_name", handleNameInput(e))}
             className="h-11 rounded-lg"
             placeholder="Patient name"
           />
         </Field>
 
         <Field label="Father / Guardian name">
-          <Input value={form.father_name} onChange={(e) => update("father_name", handleNameInput(e.target.value))} className="h-11 rounded-lg" />
+          <Input value={form.father_name} onChange={(e) => update("father_name", handleNameInput(e))} className="h-11 rounded-lg" />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="Phone" required error={errors.phone}>
             <Input
               value={form.phone}
-              onChange={(e) => update("phone", handlePhoneInput(e.target.value))}
+              onChange={(e) => update("phone", handlePhoneInput(e))}
               className="h-11 rounded-lg"
               placeholder="03001234567"
               inputMode="tel"
@@ -228,7 +228,7 @@ const MobileWalkIn = () => {
         </Field>
 
         <Field label="CNIC" error={errors.cnic}>
-          <Input value={form.cnic} onChange={(e) => update("cnic", handleCNICInput(e.target.value))} className="h-11 rounded-lg" placeholder="35201-1234567-1" />
+          <Input value={form.cnic} onChange={(e) => update("cnic", handleCNICInput(e))} className="h-11 rounded-lg" placeholder="35201-1234567-1" />
         </Field>
 
         <Field label="City">

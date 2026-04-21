@@ -137,10 +137,10 @@ const MobilePatientDetail = () => {
 
       {/* Pregnancy strip */}
       {pregnancyWk && (
-        <Card className="mt-3 border-pink-200 dark:border-pink-900/40 bg-pink-50/60 dark:bg-pink-950/20">
+        <Card className="mt-3 border-warning/30 bg-warning/5">
           <CardContent className="p-3 flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-pink-500/20 flex items-center justify-center">
-              <Heart className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+            <div className="h-9 w-9 rounded-full bg-warning/15 flex items-center justify-center">
+              <Heart className="h-4 w-4 text-warning" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-xs font-semibold">Pregnancy</div>
