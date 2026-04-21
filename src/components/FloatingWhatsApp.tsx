@@ -11,7 +11,7 @@ const FloatingWhatsApp = () => {
   if (location.pathname.startsWith("/app") || isStandalonePWA()) return null;
 
   return (
-    <
+    <a
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
