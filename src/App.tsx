@@ -122,9 +122,14 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import InstallApp from "./pages/InstallApp";
 import PatientVideoCall from "./pages/PatientVideoCall";
+import MobileHome from "./pages/app/MobileHome";
+import MobileAppointments from "./pages/app/MobileAppointments";
+import MobilePatients from "./pages/app/MobilePatients";
+import MobileReports from "./pages/app/MobileReports";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import StandaloneRedirect from "./components/StandaloneRedirect";
 
 const queryClient = new QueryClient();
 
@@ -137,9 +142,14 @@ const App = () => (
         <FloatingWhatsApp />
         <BrowserRouter>
           <ScrollToTop />
+          <StandaloneRedirect />
           <PublicDoctorFinderChat />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/app" element={<MobileHome />} />
+          <Route path="/app/appointments" element={<MobileAppointments />} />
+          <Route path="/app/patients" element={<MobilePatients />} />
+          <Route path="/app/reports" element={<MobileReports />} />
           <Route path="/features" element={<Features />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/pricing" element={<Pricing />} />
