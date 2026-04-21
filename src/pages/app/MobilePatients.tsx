@@ -170,7 +170,7 @@ const MobilePatients = () => {
                 </div>
                 <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1.5 block">City</label>
-                  <CitySelect value={city === "all" ? "" : city} onValueChange={(v) => setCity(v || "all")} placeholder="All cities" />
+                  <CitySelect value={city === "all" ? "" : city} onValueChange={(v) => setCity(v || "all")} />
                 </div>
                 {isGynecologist && (
                   <>
