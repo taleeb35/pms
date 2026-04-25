@@ -80,9 +80,9 @@ const DoctorDashboard = () => {
     <div className="space-y-6">
       {/* Trial Banner for Single Doctors */}
       <TrialBanner userType="doctor" />
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Badge variant="outline" className="bg-success/10 text-success border-success/20">
               <Activity className="h-3 w-3 mr-1" />
               Doctor Mode
@@ -94,21 +94,21 @@ const DoctorDashboard = () => {
               </Badge>
             )}
           </div>
-          <h2 className="text-4xl font-bold tracking-tight mb-1">Welcome Dr. {doctorName}</h2>
-          <p className="text-muted-foreground text-base">
+          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight mb-1 truncate">Welcome Dr. {doctorName}</h2>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Overview of your patients, appointments & waitlist in one glance.
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-muted-foreground">Today: <span className="font-semibold text-foreground">{today}</span></p>
-          <p className="text-sm text-muted-foreground mt-1">
+        <div className="text-left sm:text-right bg-muted/30 sm:bg-transparent rounded-lg p-2 sm:p-0 self-start sm:self-auto">
+          <p className="text-xs sm:text-sm text-muted-foreground">Today: <span className="font-semibold text-foreground">{today}</span></p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Next: <span className="font-semibold text-foreground">{stats.todayAppointments} appointments</span> scheduled
           </p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctor/patients")}>
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
