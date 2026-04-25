@@ -162,7 +162,7 @@ const ReceptionistDashboard = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-1">{clinicInfo?.clinic_name || "Loading..."}</div>
+            <div className="text-base sm:text-xl font-bold mb-1 truncate">{clinicInfo?.clinic_name || "Loading..."}</div>
             <p className="text-xs text-muted-foreground">Your workplace</p>
           </CardContent>
         </Card>
