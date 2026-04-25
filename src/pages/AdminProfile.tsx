@@ -247,7 +247,7 @@ const AdminProfile = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-muted-foreground mb-1">Member Since</p>
               <p className="font-semibold">

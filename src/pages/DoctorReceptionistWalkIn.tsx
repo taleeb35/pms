@@ -160,7 +160,7 @@ const DoctorReceptionistWalkIn = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <Button
                 type="button"
                 variant={isNewPatient ? "default" : "outline"}
@@ -179,7 +179,7 @@ const DoctorReceptionistWalkIn = () => {
             </div>
 
             {isNewPatient ? (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Full Name *</Label>
                   <Input
@@ -227,7 +227,7 @@ const DoctorReceptionistWalkIn = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Reason for Visit</Label>
                 <Input

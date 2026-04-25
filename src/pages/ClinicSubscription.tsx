@@ -102,7 +102,7 @@ const ClinicSubscription = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Subscription</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
         <p className="text-muted-foreground">Manage your clinic subscription and billing</p>
       </div>
 
@@ -114,7 +114,7 @@ const ClinicSubscription = () => {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-2xl font-bold capitalize">{clinic.payment_plan}</span>
               <Badge variant={clinic.payment_plan === "yearly" ? "default" : "secondary"}>
                 {clinic.payment_plan === "yearly" ? "17% Savings" : "Standard"}
@@ -175,7 +175,7 @@ const ClinicSubscription = () => {
           <CardContent>
             {trialStatus?.isOnTrial ? (
               <>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-2xl font-bold text-success">{trialStatus.daysLeft}</span>
                   <Badge variant="outline" className="border-success text-success">Active</Badge>
                 </div>
@@ -185,7 +185,7 @@ const ClinicSubscription = () => {
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-2xl font-bold">Expired</span>
                   <Badge variant="secondary">Trial Ended</Badge>
                 </div>
@@ -208,7 +208,7 @@ const ClinicSubscription = () => {
             )}
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-2xl font-bold capitalize">{clinic.fee_status}</span>
               <Badge variant={clinic.fee_status === "paid" ? "default" : "destructive"}>
                 {clinic.fee_status === "paid" ? "Active" : "Action Required"}

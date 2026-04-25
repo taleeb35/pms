@@ -180,7 +180,7 @@ const AdminSettings = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold">Settings</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold">Settings</h2>
         <p className="text-muted-foreground">Manage system configuration</p>
       </div>
 

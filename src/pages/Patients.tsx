@@ -74,7 +74,7 @@ const Patients = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Patients</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Patients</h2>
           <p className="text-muted-foreground">Manage patient records</p>
         </div>
         <div className="flex gap-2 flex-wrap">

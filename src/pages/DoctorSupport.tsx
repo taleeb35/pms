@@ -304,7 +304,7 @@ const DoctorSupport = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold">Support</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold">Support</h2>
         <p className="text-muted-foreground">Submit a support ticket or view your tickets</p>
       </div>
 
@@ -441,7 +441,7 @@ const DoctorSupport = () => {
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[80vh]">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Ticket Thread: {selectedTicket?.subject}</DialogTitle>
           </DialogHeader>

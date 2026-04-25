@@ -656,7 +656,7 @@ const DoctorAppointmentDetail = () => {
   return (
     <div className="space-y-6">
       {/* Breadcrumb & Header - Shopify Style */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <Breadcrumb>
             <BreadcrumbList>
@@ -683,7 +683,7 @@ const DoctorAppointmentDetail = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <AIVisitSummary
             patientName={appointment.patients.full_name}
             patientAge={differenceInYears(new Date(), new Date(appointment.patients.date_of_birth))}
@@ -762,7 +762,7 @@ const DoctorAppointmentDetail = () => {
             {/* Visit Details Card */}
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
                       <FileText className="h-3 w-3 mr-1" />
@@ -1065,7 +1065,7 @@ const DoctorAppointmentDetail = () => {
             {/* Patient Card */}
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle className="text-sm font-medium">Patient</CardTitle>
                   <Button variant="ghost" size="icon" className="h-6 w-6" asChild>
                     <Link to={`/doctor/patients/${appointment.patients.id}`}>
@@ -1094,13 +1094,13 @@ const DoctorAppointmentDetail = () => {
             {/* Contact Information */}
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle className="text-sm font-medium">Contact Information</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 {appointment.patients.phone && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <a href={`tel:${appointment.patients.phone}`} className="text-primary hover:underline">
                       {appointment.patients.phone}
@@ -1108,7 +1108,7 @@ const DoctorAppointmentDetail = () => {
                   </div>
                 )}
                 {appointment.patients.email && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Mail className="h-4 w-4 text-muted-foreground" />
                     <span>{appointment.patients.email}</span>
                   </div>

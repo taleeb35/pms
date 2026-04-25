@@ -106,7 +106,7 @@ const DoctorSubscription = () => {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Subscription</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
           <p className="text-muted-foreground">Your subscription information</p>
         </div>
         
@@ -149,7 +149,7 @@ const DoctorSubscription = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Subscription</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
         <p className="text-muted-foreground">Manage your subscription and billing</p>
       </div>
 
@@ -161,7 +161,7 @@ const DoctorSubscription = () => {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-2xl font-bold capitalize">{doctor.payment_plan}</span>
               <Badge variant={doctor.payment_plan === "yearly" ? "default" : "secondary"}>
                 {doctor.payment_plan === "yearly" ? "17% Savings" : "Standard"}
@@ -200,7 +200,7 @@ const DoctorSubscription = () => {
           <CardContent>
             {trialStatus?.isOnTrial ? (
               <>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-2xl font-bold text-success">{trialStatus.daysLeft}</span>
                   <Badge variant="outline" className="border-success text-success">Active</Badge>
                 </div>
@@ -210,7 +210,7 @@ const DoctorSubscription = () => {
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-2xl font-bold">Expired</span>
                   <Badge variant="secondary">Trial Ended</Badge>
                 </div>
@@ -233,7 +233,7 @@ const DoctorSubscription = () => {
             )}
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-2xl font-bold capitalize">{paymentStatus}</span>
               <Badge variant={paymentStatus === "paid" ? "default" : "destructive"}>
                 {paymentStatus === "paid" ? "Active" : "Action Required"}
