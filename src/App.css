@@ -43,3 +43,17 @@
 img.main_logo.hover-scale {
     width: 250px !important;
 }
+
+/* Header logo: responsive sizing — compact on phones, full on desktop */
+img.main_logo.new_logo {
+    width: auto;
+    max-width: 140px;
+    height: 32px;
+    object-fit: contain;
+}
+@media (min-width: 640px) {
+    img.main_logo.new_logo {
+        max-width: 200px;
+        height: 40px;
+    }
+}
