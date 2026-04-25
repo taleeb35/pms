@@ -327,7 +327,7 @@ const AdminReferralPartners = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Referral Partners</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Referral Partners</h1>
         <p className="text-muted-foreground">Manage referral partner applications and track performance</p>
       </div>
 
@@ -335,7 +335,7 @@ const AdminReferralPartners = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Partners</p>
                 <p className="text-3xl font-bold">{stats.total}</p>
@@ -346,7 +346,7 @@ const AdminReferralPartners = () => {
         </Card>
         <Card className="border-yellow-200 bg-yellow-50/50">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-yellow-700">Pending Approval</p>
                 <p className="text-3xl font-bold text-yellow-700">{stats.pending}</p>
@@ -357,7 +357,7 @@ const AdminReferralPartners = () => {
         </Card>
         <Card className="border-green-200 bg-green-50/50">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-green-700">Active Partners</p>
                 <p className="text-3xl font-bold text-green-700">{stats.approved}</p>
@@ -368,7 +368,7 @@ const AdminReferralPartners = () => {
         </Card>
         <Card className="border-purple-200 bg-purple-50/50">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-purple-700">Total Payouts</p>
                 <p className="text-3xl font-bold text-purple-700">PKR {stats.totalEarnings.toLocaleString()}</p>
@@ -431,7 +431,7 @@ const AdminReferralPartners = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <code className="bg-muted px-2 py-1 rounded text-sm font-mono">
                             {partner.referral_code}
                           </code>
@@ -510,7 +510,7 @@ const AdminReferralPartners = () => {
 
       {/* Partner Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Partner Details</DialogTitle>
             <DialogDescription>
@@ -519,7 +519,7 @@ const AdminReferralPartners = () => {
           </DialogHeader>
           {selectedPartner && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Full Name</p>
                   <p className="font-medium">{selectedPartner.full_name}</p>

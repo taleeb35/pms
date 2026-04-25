@@ -800,7 +800,7 @@ const ClinicReports = () => {
                     {revenueBySpecialization.map((s, i) => (
                       <TableRow key={s.name}>
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                             <span className="font-medium text-sm">{s.name}</span>
                           </div>
@@ -894,7 +894,7 @@ const ClinicReports = () => {
       {/* Average Consultation Time */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />

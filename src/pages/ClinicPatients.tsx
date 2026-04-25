@@ -937,12 +937,12 @@ const ClinicPatients = () => {
     <>
       <DeletingOverlay isVisible={isDeleting} message="Deleting Patient..." />
       <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
         </Button>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {selectedDoctor !== "all" && (
             <PatientImportExport 
               createdBy={selectedDoctor} 
@@ -964,7 +964,7 @@ const ClinicPatients = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">All Patients</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl font-bold">All Patients</CardTitle>
           <CardDescription>
             View and manage all patients from your clinic doctors ({totalCount} patients)
           </CardDescription>
@@ -1067,7 +1067,7 @@ const ClinicPatients = () => {
 
             <div className="space-y-2">
               <Label>Added Date Range</Label>
-              <div className="flex gap-2 items-center">
+              <div className="flex gap-2 items-center flex-wrap">
                 <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className={cn("w-[130px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>
@@ -1172,7 +1172,7 @@ const ClinicPatients = () => {
                               <div className="border-t bg-muted/30 p-6">
                                 <div className="flex justify-between items-start mb-4">
                                   <h3 className="text-lg font-semibold">Patient Details</h3>
-                                  <div className="flex gap-2">
+                                  <div className="flex gap-2 flex-wrap">
                                     <Button
                                       variant="outline"
                                       size="sm"
@@ -1217,7 +1217,7 @@ const ClinicPatients = () => {
                                     <TabsTrigger value="visits">Visit History</TabsTrigger>
                                   </TabsList>
                                   <TabsContent value="info" className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                       <div>
                                         <p className="text-sm text-muted-foreground">Patient ID</p>
                                         <p className="font-medium">{selectedPatient.patient_id}</p>
@@ -1289,7 +1289,7 @@ const ClinicPatients = () => {
                                     </div>
                                   </TabsContent>
                                   <TabsContent value="history" className="space-y-4">
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                                       <h4 className="font-semibold">Medical History</h4>
                                       <Button size="sm" onClick={() => setIsHistoryDialogOpen(true)}>
                                         <Plus className="h-4 w-4 mr-2" />
@@ -1308,7 +1308,7 @@ const ClinicPatients = () => {
                                                   {format(new Date(entry.date), "PPP")}
                                                 </p>
                                               </div>
-                                              <div className="flex gap-2">
+                                              <div className="flex gap-2 flex-wrap">
                                                 <Button
                                                   variant="ghost"
                                                   size="icon"
@@ -1408,7 +1408,7 @@ const ClinicPatients = () => {
                                                 {format(new Date(doc.created_at), "PPP")}
                                               </p>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 flex-wrap">
                                               <Button
                                                 variant="ghost"
                                                 size="icon"
@@ -1468,7 +1468,7 @@ const ClinicPatients = () => {
             <DialogTitle>Add New Patient</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Doctor Selection */}
               <div className="col-span-2">
                 <Label>Select Doctor *</Label>
@@ -1712,7 +1712,7 @@ const ClinicPatients = () => {
             <DialogTitle>Edit Patient</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Full Name *</Label>
                 <Input

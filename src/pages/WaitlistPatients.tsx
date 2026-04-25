@@ -246,7 +246,7 @@ const WaitlistPatients = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold">Waitlist Patients</h2>
           <p className="text-muted-foreground">
@@ -338,10 +338,10 @@ const WaitlistPatients = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle>Waitlist</CardTitle>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Select value={filterAge} onValueChange={setFilterAge}>
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Filter by Age" />
@@ -372,7 +372,7 @@ const WaitlistPatients = () => {
                   showAllOption={true}
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">Show:</span>
                 <Select
                   value={itemsPerPage.toString()}
@@ -461,7 +461,7 @@ const WaitlistPatients = () => {
                     Showing {startIndex + 1} to {Math.min(endIndex, waitList.length)} of{" "}
                     {waitList.length} entries
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="sm"

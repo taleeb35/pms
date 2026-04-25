@@ -255,7 +255,7 @@ const DoctorReceptionistPatients = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Patients</h1>
           <p className="text-muted-foreground">Manage patient records</p>
@@ -276,7 +276,7 @@ const DoctorReceptionistPatients = () => {
               <DialogDescription>Enter patient details</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddPatient} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Full Name *</Label>
                   <Input
@@ -373,7 +373,7 @@ const DoctorReceptionistPatients = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Allergies</Label>
                   <MultiSelectSearchable
@@ -407,7 +407,7 @@ const DoctorReceptionistPatients = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle>All Patients ({filteredPatients.length})</CardTitle>
             <div className="relative w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -467,7 +467,7 @@ const DoctorReceptionistPatients = () => {
                 <div className="text-sm text-muted-foreground">
                   Showing {paginatedPatients.length} of {filteredPatients.length} patients
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Button
                     variant="outline"
                     size="sm"

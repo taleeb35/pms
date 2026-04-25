@@ -161,7 +161,7 @@ const AdminChatbotLeads = () => {
             Visitors who interacted with the public Doctor Finder chatbot
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={fetchLeads} disabled={loading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh

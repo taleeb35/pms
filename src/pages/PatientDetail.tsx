@@ -526,7 +526,7 @@ const PatientDetail = () => {
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                 <CardTitle>Medical History</CardTitle>
                 <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
                   <DialogTrigger asChild>
@@ -617,7 +617,7 @@ const PatientDetail = () => {
                               {format(new Date(entry.date), "PPP")}
                             </p>
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -718,7 +718,7 @@ const PatientDetail = () => {
                             {format(new Date(doc.created_at), "PPP")}
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -752,7 +752,7 @@ const PatientDetail = () => {
           <DialogHeader>
             <DialogTitle>Edit Patient</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label>Full Name</Label>
               <Input

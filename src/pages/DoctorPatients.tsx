@@ -1202,9 +1202,9 @@ const DoctorPatients = () => {
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
               <CardTitle>Patients List</CardTitle>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {doctorId && (
                   <PatientImportExport 
                     createdBy={doctorId} 
@@ -1361,7 +1361,7 @@ const DoctorPatients = () => {
                       >
                         <TableCell className="font-medium">{patient.patient_id}</TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {patient.full_name}
                             {waitlistPatientIds.has(patient.id) && (
                               <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-200">
@@ -1404,7 +1404,7 @@ const DoctorPatients = () => {
                             <div className="border-t bg-muted/30 p-6">
                               <div className="flex justify-between items-start mb-4">
                                 <h3 className="text-lg font-semibold">Patient Details</h3>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap">
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -1449,7 +1449,7 @@ const DoctorPatients = () => {
                                   <TabsTrigger value="visits">Visit History</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="info" className="space-y-4">
-                                  <div className="grid grid-cols-2 gap-4">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                       <p className="text-sm text-muted-foreground">Patient ID</p>
                                       <p className="font-medium">{selectedPatient.patient_id}</p>
@@ -1595,7 +1595,7 @@ const DoctorPatients = () => {
                                   </div>
                                 </TabsContent>
                                 <TabsContent value="history" className="space-y-4">
-                                  <div className="flex justify-between items-center">
+                                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                                     <h4 className="font-semibold">Medical History</h4>
                                     <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
                                       <DialogTrigger asChild>
@@ -1680,7 +1680,7 @@ const DoctorPatients = () => {
                                                 {format(new Date(entry.date), "PPP")}
                                               </p>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 flex-wrap">
                                               <Button
                                                 variant="ghost"
                                                 size="icon"
@@ -1780,7 +1780,7 @@ const DoctorPatients = () => {
                                               {format(new Date(doc.created_at), "PPP")}
                                             </p>
                                           </div>
-                                          <div className="flex gap-2">
+                                          <div className="flex gap-2 flex-wrap">
                                             <Button
                                               variant="ghost"
                                               size="icon"
@@ -1821,7 +1821,7 @@ const DoctorPatients = () => {
             </Table>
           </div>
           <div className="flex items-center justify-between px-4 py-4 border-t">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Show:</span>
               <Select value={pageSize.toString()} onValueChange={(value) => {
                 setPageSize(Number(value));
@@ -1839,7 +1839,7 @@ const DoctorPatients = () => {
               </Select>
               <span className="text-sm text-muted-foreground">per page</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button
                 variant="outline"
                 size="sm"
@@ -1871,7 +1871,7 @@ const DoctorPatients = () => {
             <DialogTitle>Add New Patient</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Full Name *</Label>
                 <Input
@@ -2179,7 +2179,7 @@ const DoctorPatients = () => {
             <DialogTitle>Edit Patient</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Full Name *</Label>
                 <Input
@@ -2541,7 +2541,7 @@ const DoctorPatients = () => {
 
       {/* New Appointment Dialog */}
       <Dialog open={isAppointmentDialogOpen} onOpenChange={setIsAppointmentDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Schedule New Appointment</DialogTitle>
             {appointmentPatient && (
@@ -2551,7 +2551,7 @@ const DoctorPatients = () => {
             )}
           </DialogHeader>
           <form onSubmit={handleCreateAppointment} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Appointment Date *</Label>
                 <Popover open={appointmentDatePopoverOpen} onOpenChange={setAppointmentDatePopoverOpen}>

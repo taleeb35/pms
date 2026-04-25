@@ -71,12 +71,12 @@ const DoctorReceptionistICDCodes = () => {
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-  if (doctorLoading) return <div className="p-8 space-y-6"><Skeleton className="h-8 w-48" /><Skeleton className="h-64 w-full" /></div>;
+  if (doctorLoading) return <div className="p-4 md:p-8 space-y-6"><Skeleton className="h-8 w-48" /><Skeleton className="h-64 w-full" /></div>;
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">ICD Codes Management</h1>
+    <div className="p-4 md:p-8 space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <h1 className="text-2xl sm:text-3xl font-bold">ICD Codes Management</h1>
         <Button onClick={() => setShowDialog(true)} className="gap-2"><Plus className="h-4 w-4" />Add ICD Code</Button>
       </div>
       <Card>
@@ -102,8 +102,8 @@ const DoctorReceptionistICDCodes = () => {
             </TableBody>
           </Table>
           <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Rows:</span><Select value={pageSize.toString()} onValueChange={v => { setPageSize(parseInt(v)); setCurrentPage(1); }}><SelectTrigger className="w-[80px]"><SelectValue /></SelectTrigger><SelectContent>{[25,50,75,100].map(s => <SelectItem key={s} value={s.toString()}>{s}</SelectItem>)}</SelectContent></Select></div>
-            <div className="flex items-center gap-2"><Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p-1))} disabled={currentPage === 1}>Previous</Button><span className="text-sm">Page {currentPage} of {totalPages || 1}</span><Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))} disabled={currentPage >= totalPages}>Next</Button></div>
+            <div className="flex items-center gap-2 flex-wrap"><span className="text-sm text-muted-foreground">Rows:</span><Select value={pageSize.toString()} onValueChange={v => { setPageSize(parseInt(v)); setCurrentPage(1); }}><SelectTrigger className="w-[80px]"><SelectValue /></SelectTrigger><SelectContent>{[25,50,75,100].map(s => <SelectItem key={s} value={s.toString()}>{s}</SelectItem>)}</SelectContent></Select></div>
+            <div className="flex items-center gap-2 flex-wrap"><Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p-1))} disabled={currentPage === 1}>Previous</Button><span className="text-sm">Page {currentPage} of {totalPages || 1}</span><Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))} disabled={currentPage >= totalPages}>Next</Button></div>
           </div>
         </CardContent>
       </Card>

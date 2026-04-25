@@ -354,7 +354,7 @@ const ClinicScheduleEditor = ({
         {DAYS_OF_WEEK.map((day) => (
           <div key={day.id} className="flex items-center gap-4 p-3 border rounded-lg bg-muted/30">
             <div className="w-24 font-medium">{day.name}</div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Switch
                 checked={schedule[day.id]?.isWorking ?? false}
                 onCheckedChange={(checked) => updateDaySchedule(day.id, { isWorking: checked })}
@@ -365,14 +365,14 @@ const ClinicScheduleEditor = ({
             </div>
             {schedule[day.id]?.isWorking && (
               <>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm">Start:</span>
                   <TimeSelect
                     value={schedule[day.id]?.startTime || "09:00"}
                     onValueChange={(value) => updateDaySchedule(day.id, { startTime: value })}
                   />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm">End:</span>
                   <TimeSelect
                     value={schedule[day.id]?.endTime || "17:00"}
@@ -405,7 +405,7 @@ const ClinicFormCard = ({
   return (
     <Card className="border-primary/20">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
             Clinic {index + 1}
@@ -1045,7 +1045,7 @@ const ContentWriterDoctors = () => {
     <div className="space-y-6">
       <DeletingOverlay isVisible={isDeleting} message="Deleting doctor..." />
       
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <ClipboardList className="h-8 w-8 text-info" />
@@ -1067,7 +1067,7 @@ const ContentWriterDoctors = () => {
       {showAddForm && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle>Add New Doctor Listing</CardTitle>
                 <CardDescription>Fill in the details to add a new doctor profile with multiple clinics</CardDescription>
@@ -1192,7 +1192,7 @@ const ContentWriterDoctors = () => {
 
               {/* Clinics Section */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-primary" />
                     Clinic Locations
@@ -1237,7 +1237,7 @@ const ContentWriterDoctors = () => {
       {editingDoctor && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle>Edit Doctor Listing</CardTitle>
                 <CardDescription>Update the details for {editingDoctor.full_name}</CardDescription>
@@ -1362,7 +1362,7 @@ const ContentWriterDoctors = () => {
 
               {/* Clinics Section */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <h3 className="text-lg font-semibold flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-primary" />
                     Clinic Locations

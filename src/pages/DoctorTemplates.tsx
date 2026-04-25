@@ -770,7 +770,7 @@ const DoctorTemplates = () => {
                       {paginatedDiseaseTemplates.map((template) => (
                         <TableRow key={template.id}>
                           <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               {template.disease_name}
                               {!isOwnTemplate(template) && (
                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Clinic</span>
@@ -885,7 +885,7 @@ const DoctorTemplates = () => {
                       {paginatedTestTemplates.map((template) => (
                         <TableRow key={template.id}>
                           <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               {template.title}
                               {!isOwnTemplate(template) && (
                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Clinic</span>
@@ -1000,7 +1000,7 @@ const DoctorTemplates = () => {
                       {paginatedReportTemplates.map((template) => (
                         <TableRow key={template.id}>
                           <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               {template.template_name}
                               {!isOwnTemplate(template) && (
                                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Clinic</span>
@@ -1339,7 +1339,7 @@ const DoctorTemplates = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                     <Label>Fields</Label>
                     <Button
                       type="button"

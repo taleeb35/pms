@@ -157,12 +157,12 @@ const DoctorReceptionistAppointments = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Appointments</h1>
           <p className="text-muted-foreground">Manage patient appointments</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant={showCalendar ? "default" : "outline"}
             onClick={() => setShowCalendar(true)}
@@ -196,7 +196,7 @@ const DoctorReceptionistAppointments = () => {
               <div className="flex items-center gap-4">
                 <CardTitle>All Appointments ({filteredAppointments.length})</CardTitle>
                 {selectedIds.size > 0 && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
                     <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("scheduled")}>
                       Mark Scheduled
@@ -258,7 +258,7 @@ const DoctorReceptionistAppointments = () => {
                           />
                         </TableCell>
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span>{appt.patients?.full_name || "N/A"}</span>
                             {appt.appointment_type === "video_consultation" && (
                               <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
@@ -284,7 +284,7 @@ const DoctorReceptionistAppointments = () => {
                   <div className="text-sm text-muted-foreground">
                     Showing {paginatedAppointments.length} of {filteredAppointments.length} appointments
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Button
                       variant="outline"
                       size="sm"

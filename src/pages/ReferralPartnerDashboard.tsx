@@ -277,7 +277,7 @@ const ReferralPartnerDashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-purple-100 text-sm font-medium">Your Referral Code</p>
                   <p className="text-2xl font-bold mt-1">{partner.referral_code}</p>
@@ -296,7 +296,7 @@ const ReferralPartnerDashboard = () => {
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm font-medium">Total Referrals</p>
                   <p className="text-3xl font-bold text-foreground mt-1">{referrals.length}</p>
@@ -315,7 +315,7 @@ const ReferralPartnerDashboard = () => {
 
           <Card className="border-0 shadow-lg">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-muted-foreground text-sm font-medium">Commission Rate</p>
                   <p className="text-3xl font-bold text-foreground mt-1">{partner.commission_rate}%</p>
@@ -329,7 +329,7 @@ const ReferralPartnerDashboard = () => {
 
           <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-emerald-100 text-sm font-medium">Total Earnings</p>
                   <p className="text-3xl font-bold mt-1">PKR {partner.total_earnings.toLocaleString()}</p>
@@ -414,7 +414,7 @@ const ReferralPartnerDashboard = () => {
                   Your commission earnings breakdown by month
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                   <SelectTrigger className="w-[180px]">

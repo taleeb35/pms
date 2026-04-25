@@ -448,7 +448,7 @@ const DoctorSchedule = () => {
                   Schedule days off for specific dates
                 </CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   size="sm"
