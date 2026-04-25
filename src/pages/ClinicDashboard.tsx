@@ -204,7 +204,7 @@ const ClinicDashboard = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold mb-1">{clinic?.clinic_name || "Loading..."}</div>
+            <div className="text-lg sm:text-xl font-bold mb-1 truncate">{clinic?.clinic_name || "Loading..."}</div>
             <p className="text-xs text-muted-foreground">Your clinic identity</p>
           </CardContent>
         </Card>
@@ -243,7 +243,7 @@ const ClinicDashboard = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-1">{format(nextDueDate, "MMM dd, yyyy")}</div>
+            <div className="text-lg sm:text-2xl font-bold mb-1">{format(nextDueDate, "MMM dd, yyyy")}</div>
             <p className="text-xs text-muted-foreground">Monthly payment due</p>
           </CardContent>
         </Card>
