@@ -125,35 +125,35 @@ const ReceptionistDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-info/10 via-info/5 to-background p-4 border border-info/20">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-info/20 to-info/5 flex items-center justify-center shadow-sm">
-              <img src={clinicLogo} alt="Zonoir" className="h-9 w-9 object-contain" />
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-info/10 via-info/5 to-background p-3 sm:p-4 border border-info/20">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-gradient-to-br from-info/20 to-info/5 flex items-center justify-center shadow-sm shrink-0">
+              <img src={clinicLogo} alt="Zonoir" className="h-7 w-7 sm:h-9 sm:w-9 object-contain" />
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gradient-to-r from-info/10 to-primary/10 border border-info/20">
                   <Activity className="h-3 w-3 text-info animate-pulse" />
                   <span className="text-xs font-semibold text-info">Receptionist Mode</span>
                 </div>
                 <Sparkles className="h-4 w-4 text-warning animate-pulse" />
               </div>
-              <h2 className="text-2xl font-bold tracking-tight">
+              <h2 className="text-lg sm:text-2xl font-bold tracking-tight truncate">
                 Welcome {receptionistName || "Receptionist"}
               </h2>
-              <p className="text-sm text-muted-foreground">{clinicInfo?.clinic_name}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">{clinicInfo?.clinic_name}</p>
             </div>
           </div>
-          <div className="text-right bg-card/50 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/40">
+          <div className="text-left sm:text-right bg-card/50 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/40 self-start sm:self-auto">
             <p className="text-xs text-muted-foreground">{today}</p>
-            <p className="text-lg font-bold text-info">{stats.todayAppointments} <span className="text-xs font-normal text-muted-foreground">appointments today</span></p>
+            <p className="text-base sm:text-lg font-bold text-info">{stats.todayAppointments} <span className="text-xs font-normal text-muted-foreground">appts today</span></p>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="hover:shadow-md transition-all border-border/40">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Clinic</CardTitle>
