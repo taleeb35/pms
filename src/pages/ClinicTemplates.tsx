@@ -708,7 +708,7 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
                   />
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                     <Label>Fields</Label>
                     <Button type="button" variant="outline" size="sm" onClick={handleAddReportField}>
                       <Plus className="h-4 w-4 mr-1" />

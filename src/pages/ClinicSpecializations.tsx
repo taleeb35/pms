@@ -303,7 +303,7 @@ const ClinicSpecializations = () => {
 
               {/* Pagination */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-muted-foreground">Show</span>
                   <Select
                     value={itemsPerPage.toString()}
@@ -325,7 +325,7 @@ const ClinicSpecializations = () => {
                   <span className="text-sm text-muted-foreground">per page</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-muted-foreground">
                     Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredData.length)} of {filteredData.length}
                   </span>

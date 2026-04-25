@@ -341,7 +341,7 @@ const Doctors = () => {
     <>
       <DeletingOverlay isVisible={deleting} message="Deleting Doctor..." />
       <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-3xl font-bold">Doctors</h2>
           <p className="text-muted-foreground">Manage doctor profiles</p>
@@ -523,7 +523,7 @@ const Doctors = () => {
             </div>
 
             <div className="flex items-end">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">Show:</span>
                 <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
                   <SelectTrigger className="w-[80px]">
@@ -637,11 +637,11 @@ const Doctors = () => {
 
       {/* Pagination */}
       {filteredDoctors.length > 0 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-muted-foreground">
             Showing {startIndex + 1} to {Math.min(endIndex, filteredDoctors.length)} of {filteredDoctors.length} doctors
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button
               variant="outline"
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -649,7 +649,7 @@ const Doctors = () => {
             >
               Previous
             </Button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm">
                 Page {currentPage} of {totalPages}
               </span>
@@ -676,7 +676,7 @@ const Doctors = () => {
 
           {selectedDoctor && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-xl font-semibold">{selectedDoctor.profiles?.full_name || "Unknown Doctor"}</h3>
                   <p className="text-sm text-muted-foreground">{selectedDoctor.specialization}</p>
@@ -687,7 +687,7 @@ const Doctors = () => {
               </div>
 
               <div className="grid gap-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Email</p>
                     <p className="text-sm">{selectedDoctor.profiles.email}</p>
@@ -784,7 +784,7 @@ const Doctors = () => {
                 {!selectedDoctor.clinic_id && selectedDoctor.trial_end_date !== null && (
                   <div className="bg-muted/50 border rounded-lg p-4">
                     <p className="text-sm font-medium text-muted-foreground mb-2">Extend Trial (Days)</p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       <input 
                         type="number" 
                         min={1} 

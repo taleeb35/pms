@@ -597,14 +597,14 @@ const ClinicAppointments = () => {
   // No early return - show skeleton in content instead
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Appointments</h1>
+    <div className="p-4 md:p-8 space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <h1 className="text-2xl sm:text-3xl font-bold">Appointments</h1>
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus className="h-4 w-4" />New Appointment</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Schedule New Appointment</DialogTitle>
               <DialogDescription>Create a new appointment for a patient</DialogDescription>
@@ -639,7 +639,7 @@ const ClinicAppointments = () => {
                   waitlistPatientIds={waitlistPatientIds}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Appointment Date</Label>
                   <Popover open={datePopoverOpen} onOpenChange={setDatePopoverOpen}>
@@ -776,10 +776,10 @@ const ClinicAppointments = () => {
         <TabsContent value="table" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <CardTitle>All Appointments</CardTitle>
                 {selectedIds.size > 0 && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm text-muted-foreground">{selectedIds.size} selected</span>
                     <Button size="sm" variant="outline" onClick={() => handleBulkStatusUpdate("scheduled")}>
                       Mark Scheduled
@@ -836,7 +836,7 @@ const ClinicAppointments = () => {
                         </TableCell>
                         <TableCell className="font-medium">{apt.doctors?.profiles?.full_name || "Unknown Doctor"}</TableCell>
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span>{apt.patients.full_name}</span>
                             {apt.appointment_type === "video_consultation" && (
                               <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
@@ -942,7 +942,7 @@ const ClinicAppointments = () => {
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader><DialogTitle>Edit Appointment</DialogTitle></DialogHeader>
             <form onSubmit={handleEditAppointment} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Doctor</Label>
                   <Select 
@@ -978,7 +978,7 @@ const ClinicAppointments = () => {
                   </Select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Appointment Date</Label>
                   <Popover open={editDatePopoverOpen} onOpenChange={setEditDatePopoverOpen}>

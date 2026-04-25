@@ -270,7 +270,7 @@ export default function ClinicExpenses() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Clinic Expenses</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Clinic Expenses</h1>
           <p className="text-muted-foreground">Track and manage your clinic's expenses</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
@@ -376,14 +376,14 @@ export default function ClinicExpenses() {
       {/* Expenses Table */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Expense Records</CardTitle>
               <CardDescription>
                 {expenses.length} expense{expenses.length !== 1 ? "s" : ""} found
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Show:</span>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
                 <SelectTrigger className="w-[80px]">

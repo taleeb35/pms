@@ -426,9 +426,9 @@ const AdminFinance = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Payment Tracking</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Payment Tracking</h1>
           <p className="text-muted-foreground">Track monthly payments from clinics and single doctors</p>
         </div>
         <Button onClick={fetchPayments} variant="outline" className="gap-2">
@@ -477,7 +477,7 @@ const AdminFinance = () => {
       <Card className="border-border/40">
         <CardContent className="pt-6">
           <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger className="w-[200px]">
@@ -503,7 +503,7 @@ const AdminFinance = () => {
               />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Status:</span>
               <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setCurrentPage(1); }}>
                 <SelectTrigger className="w-[130px]">

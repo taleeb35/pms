@@ -187,7 +187,7 @@ const ClinicProcedures = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="text-2xl font-bold text-foreground">Procedures Management</h1>
         <Button onClick={openAddDialog}>
           <Plus className="mr-2 h-4 w-4" /> Add Procedure
@@ -250,7 +250,7 @@ const ClinicProcedures = () => {
                   <TableCell>{getDoctorName(procedure.doctor_id)}</TableCell>
                   <TableCell>{procedure.price.toFixed(2)}</TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       <Button variant="ghost" size="icon" onClick={() => openEditDialog(procedure)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -267,7 +267,7 @@ const ClinicProcedures = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-muted-foreground">
           Showing {filteredProcedures.length > 0 ? startIndex + 1 : 0}-{Math.min(startIndex + itemsPerPage, filteredProcedures.length)} of {filteredProcedures.length}
         </div>
@@ -283,7 +283,7 @@ const ClinicProcedures = () => {
               <SelectItem value="100">100</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
               Previous
             </Button>

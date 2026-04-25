@@ -78,7 +78,7 @@ const DoctorReceptionistProcedures = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
         <h1 className="text-2xl font-bold">Procedures Management</h1>
         <Button onClick={openAddDialog}><Plus className="mr-2 h-4 w-4" />Add Procedure</Button>
       </div>
@@ -93,17 +93,17 @@ const DoctorReceptionistProcedures = () => {
                 <TableRow key={p.id}>
                   <TableCell className="font-medium">{p.name}</TableCell>
                   <TableCell>{p.price.toFixed(2)}</TableCell>
-                  <TableCell><div className="flex gap-2"><Button variant="ghost" size="icon" onClick={() => openEditDialog(p)}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div></TableCell>
+                  <TableCell><div className="flex gap-2 flex-wrap"><Button variant="ghost" size="icon" onClick={() => openEditDialog(p)}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button></div></TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-muted-foreground">Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filtered.length)} of {filtered.length}</div>
         <div className="flex items-center gap-4">
           <Select value={itemsPerPage.toString()} onValueChange={v => { setItemsPerPage(Number(v)); setCurrentPage(1); }}><SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger><SelectContent>{[25,50,75,100].map(s => <SelectItem key={s} value={s.toString()}>{s}</SelectItem>)}</SelectContent></Select>
-          <div className="flex gap-2"><Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p-1)}>Previous</Button><Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(p => p+1)}>Next</Button></div>
+          <div className="flex gap-2 flex-wrap"><Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p-1)}>Previous</Button><Button variant="outline" size="sm" disabled={currentPage >= totalPages} onClick={() => setCurrentPage(p => p+1)}>Next</Button></div>
         </div>
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}><DialogContent><DialogHeader><DialogTitle>{editingProcedure ? "Edit" : "Add"} Procedure</DialogTitle></DialogHeader><form onSubmit={handleSubmit} className="space-y-4"><div><Label>Procedure Name *</Label><Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required /></div><div><Label>Price *</Label><Input type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} min="0" step="0.01" required /></div><DialogFooter><Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button><Button type="submit">{editingProcedure ? "Update" : "Add"}</Button></DialogFooter></form></DialogContent></Dialog>

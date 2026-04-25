@@ -211,7 +211,7 @@ const AdminDoctorPatients = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
@@ -313,7 +313,7 @@ const AdminDoctorPatients = () => {
               </SelectContent>
             </Select>
 
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center flex-wrap">
               <Popover open={addedDateFromPopoverOpen} onOpenChange={setAddedDateFromPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filterAddedDateFrom && "text-muted-foreground")}>

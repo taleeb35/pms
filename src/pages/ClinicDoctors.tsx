@@ -297,7 +297,7 @@ const ClinicDoctors = () => {
     <>
       <DeletingOverlay isVisible={isDeleting} message="Deleting Doctor..." />
       <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back to Dashboard
@@ -306,9 +306,9 @@ const ClinicDoctors = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="text-2xl font-bold">Doctor Listing</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl font-bold">Doctor Listing</CardTitle>
               <CardDescription>
                 Manage all doctors registered under your clinic ({doctors.length}/{requestedDoctors} used)
               </CardDescription>
@@ -422,7 +422,7 @@ const ClinicDoctors = () => {
                         <span className="font-semibold text-success">{100 - (doctor.clinic_percentage || 0)}%</span>
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <Button
                             variant="outline"
                             size="sm"
@@ -473,7 +473,7 @@ const ClinicDoctors = () => {
             <DialogTitle>Edit Doctor Details</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Full Name *</Label>
                 <Input

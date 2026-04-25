@@ -91,7 +91,7 @@ const DoctorReceptionistAllergies = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div><CardTitle>Allergies</CardTitle><CardDescription>Manage allergy options ({allergies.length} total)</CardDescription></div>
             <Button onClick={() => setIsAddDialogOpen(true)}><Plus className="h-4 w-4 mr-2" />Add Allergy</Button>
           </div>
@@ -112,7 +112,7 @@ const DoctorReceptionistAllergies = () => {
                   paginated.map(a => (
                     <TableRow key={a.id}>
                       <TableCell>{a.name}</TableCell>
-                      <TableCell><div className="flex gap-2">
+                      <TableCell><div className="flex gap-2 flex-wrap">
                         <Button variant="ghost" size="icon" onClick={() => { setEditingAllergy(a); setIsEditDialogOpen(true); }}><Pencil className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => { setDeletingAllergy(a); setIsDeleteDialogOpen(true); }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                       </div></TableCell>
@@ -122,10 +122,10 @@ const DoctorReceptionistAllergies = () => {
             </Table>
           </div>
           <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">Rows:</span>
+            <div className="flex items-center gap-2 flex-wrap"><span className="text-sm text-muted-foreground">Rows:</span>
               <Select value={pageSize.toString()} onValueChange={v => { setPageSize(Number(v)); setCurrentPage(1); }}><SelectTrigger className="w-[70px]"><SelectValue /></SelectTrigger><SelectContent>{[25,50,75,100].map(s => <SelectItem key={s} value={s.toString()}>{s}</SelectItem>)}</SelectContent></Select>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p-1))} disabled={currentPage === 1}>Previous</Button>
               <span className="text-sm">Page {currentPage} of {totalPages || 1}</span>
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p+1))} disabled={currentPage >= totalPages}>Next</Button>

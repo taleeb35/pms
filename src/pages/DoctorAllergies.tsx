@@ -238,7 +238,7 @@ const DoctorAllergies = () => {
             <Skeleton className="h-5 w-[200px]" />
           </TableCell>
           <TableCell>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Skeleton className="h-8 w-8 rounded" />
               <Skeleton className="h-8 w-8 rounded" />
             </div>
@@ -252,7 +252,7 @@ const DoctorAllergies = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle>Allergies</CardTitle>
               <CardDescription>
@@ -303,7 +303,7 @@ const DoctorAllergies = () => {
                     <TableRow key={allergy.id}>
                       <TableCell>{allergy.name}</TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -334,7 +334,7 @@ const DoctorAllergies = () => {
           </div>
 
           <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">Rows per page:</span>
                 <Select
                   value={pageSize.toString()}
@@ -354,7 +354,7 @@ const DoctorAllergies = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button
                   variant="outline"
                   size="sm"

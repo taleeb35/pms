@@ -180,9 +180,9 @@ const DoctorICDCodes = () => {
   const paginatedCodes = filteredCodes.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">ICD Codes Management</h1>
+    <div className="p-4 md:p-8 space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+        <h1 className="text-2xl sm:text-3xl font-bold">ICD Codes Management</h1>
         <Button onClick={() => setShowDialog(true)} className="gap-2">
           <Plus className="h-4 w-4" />
           Add ICD Code
@@ -261,7 +261,7 @@ const DoctorICDCodes = () => {
           </Table>
 
           <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm text-muted-foreground">Rows per page:</span>
               <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(parseInt(v)); setCurrentPage(1); }}>
                 <SelectTrigger className="w-[80px]"><SelectValue /></SelectTrigger>
@@ -270,7 +270,7 @@ const DoctorICDCodes = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</Button>
               <span className="text-sm">Page {currentPage} of {totalPages || 1}</span>
               <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage >= totalPages || totalPages === 0}>Next</Button>

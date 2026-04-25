@@ -367,7 +367,7 @@ export default function DoctorFinance() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Finance Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Finance Management</h1>
           <p className="text-muted-foreground">Track your revenue and share breakdown by date</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
