@@ -482,6 +482,11 @@ const Layout = ({ children }: LayoutProps) => {
   const dashboardItem = getDashboardItem();
   const activityLogsItem = getActivityLogsItem();
 
+  // Close mobile menu whenever route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   // Auto-expand group containing the active route on initial load only
   const initializedGroupsRef = useRef(false);
   useEffect(() => {
@@ -520,13 +525,14 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="min-h-screen bg-background">
       {/* Enhanced Header with Logo and Graphics */}
       <header className="dr sticky top-0 z-50 w-full border-b bg-gradient-to-r from-card via-card/95 to-primary/5 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="w-full px-3 sm:px-4 flex h-14 sm:h-16 items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0">
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
+              className="md:hidden shrink-0"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X /> : <Menu />}
             </Button>
@@ -534,29 +540,30 @@ const Layout = ({ children }: LayoutProps) => {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden md:flex"
+              className="hidden md:flex shrink-0"
               onClick={toggleSidebar}
               title={sidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
             >
               {sidebarCollapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
             </Button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
               <div className="relative">
                 <img
                   src={clinicLogo}
                   alt="Zonoir"
-                  className="main_logo new_logo hover:scale-110 transition-transform duration-300"
+                  className="main_logo new_logo hover:scale-110 transition-transform duration-300 h-8 sm:h-10 w-auto max-w-[140px] sm:max-w-none object-contain"
                 />
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="new_bg hidden text-sm sm:inline px-3 py-1.5 rounded-full">{user.email}</span>
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <span className="new_bg hidden text-sm md:inline px-3 py-1.5 rounded-full max-w-[220px] truncate">{user.email}</span>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleLogout}
-              className="hover:bg-destructive/10 hover:text-destructive transition-colors"
+              className="hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
+              aria-label="Log out"
             >
               <LogOut className="h-5 w-5" />
             </Button>
@@ -564,7 +571,7 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
 
-      <div className="w-full px-4 flex gap-6 py-6">
+      <div className="w-full px-2 sm:px-4 flex gap-4 lg:gap-6 py-3 sm:py-6">
         {/* Sidebar with Collapsible Groups */}
         <aside
           className={`${
@@ -727,7 +734,7 @@ const Layout = ({ children }: LayoutProps) => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 w-full overflow-hidden bg-gradient-to-br from-card via-card/50 to-primary/5 rounded-lg p-6 shadow-sm border">
+        <main className="flex-1 min-w-0 w-full overflow-x-hidden bg-gradient-to-br from-card via-card/50 to-primary/5 rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm border">
           {children}
         </main>
       </div>
