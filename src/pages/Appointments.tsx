@@ -62,9 +62,9 @@ const Appointments = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Appointments</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Appointments</h2>
           <p className="text-muted-foreground">Manage patient appointments</p>
         </div>
         <Button>
@@ -90,7 +90,7 @@ const Appointments = () => {
           appointments.map((appointment) => (
             <Card key={appointment.id}>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle className="text-lg">
                     {appointment.patients.full_name}
                   </CardTitle>
@@ -101,7 +101,7 @@ const Appointments = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-2 text-sm">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                     <span>
                       {new Date(appointment.appointment_date).toLocaleDateString()} at{" "}

@@ -437,7 +437,7 @@ const PatientDetail = () => {
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
-          <h2 className="text-3xl font-bold">{patient.full_name}</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">{patient.full_name}</h2>
           <p className="text-muted-foreground">Patient ID: {patient.patient_id}</p>
         </div>
         <Button onClick={handleEditPatient}>
@@ -607,7 +607,7 @@ const PatientDetail = () => {
                   {medicalHistory.map((entry) => (
                     <Card key={entry.id}>
                       <CardContent className="pt-4">
-                        <div className="flex justify-between items-start">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
                           <div className="flex-1">
                             <h4 className="font-semibold">{entry.title}</h4>
                             <p className="text-sm text-muted-foreground mt-1">
@@ -653,7 +653,7 @@ const PatientDetail = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
                   <Input
                     placeholder="Document title"
                     value={documentTitle}

@@ -1238,7 +1238,7 @@ const DoctorReports = () => {
                       <p className="text-sm font-medium mb-2">Total Pregnant Patients: {pregnantPatients.length}</p>
                       {trimesterCounts.map((t, i) => (
                         <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: t.fill }} />
                             <span className="text-sm">{t.name}</span>
                           </div>
@@ -1384,7 +1384,7 @@ const DoctorReports = () => {
                 <div className="space-y-2 max-h-72 overflow-y-auto">
                   {visitFrequencyData.topRecurring.map((p, i) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-bold text-muted-foreground w-5">#{i + 1}</span>
                         <span className="text-sm font-medium truncate max-w-[180px]">{p.name}</span>
                       </div>
@@ -1403,7 +1403,7 @@ const DoctorReports = () => {
       {/* ======= PATIENT DROP-OFF ANALYSIS ======= */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="text-base flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-warning" /> Patient Drop-off Analysis
@@ -1491,7 +1491,7 @@ const DoctorReports = () => {
                 <div className="space-y-2 max-h-56 overflow-y-auto">
                   {topDiseasesData.map((d, i) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                         <span className="text-sm truncate max-w-[200px]" title={d.fullName}>{d.fullName}</span>
                       </div>
@@ -1537,7 +1537,7 @@ const DoctorReports = () => {
                 <div className="space-y-2 max-h-56 overflow-y-auto">
                   {allergyData.map((a, i) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                         <span className="text-sm">{a.name}</span>
                       </div>
@@ -1560,7 +1560,7 @@ const DoctorReports = () => {
       {/* Average Consultation Time */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
@@ -1570,7 +1570,7 @@ const DoctorReports = () => {
             </div>
             {overallAvgTime > 0 && (
               <div className="text-right">
-                <p className="text-3xl font-bold">{overallAvgTime} min</p>
+                <p className="text-2xl sm:text-3xl font-bold">{overallAvgTime} min</p>
                 <p className="text-xs text-muted-foreground">Overall Average</p>
               </div>
             )}

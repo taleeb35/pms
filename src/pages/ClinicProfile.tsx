@@ -213,7 +213,7 @@ const ClinicProfile = () => {
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-1">
-            <h2 className="text-4xl font-bold tracking-tight">Clinic Profile</h2>
+            <h2 className="text-2xl sm:text-4xl font-bold tracking-tight">Clinic Profile</h2>
             <Badge variant={clinic.status === "active" ? "default" : "secondary"}>
               {clinic.status}
             </Badge>
@@ -364,7 +364,7 @@ const ClinicProfile = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Member Since</p>
                 <p className="font-semibold">
@@ -375,7 +375,7 @@ const ClinicProfile = () => {
                 <Building2 className="h-6 w-6 text-primary" />
               </div>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Monthly Fee</p>
                 <p className="font-semibold text-2xl text-success">

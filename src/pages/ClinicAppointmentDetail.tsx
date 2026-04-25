@@ -649,7 +649,7 @@ const ClinicAppointmentDetail = () => {
   return (
     <div className="space-y-6">
       {/* Breadcrumb & Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-2">
           <Breadcrumb>
             <BreadcrumbList>
@@ -681,7 +681,7 @@ const ClinicAppointmentDetail = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <AIVisitSummary
             patientName={appointment.patients.full_name}
             patientAge={differenceInYears(new Date(), new Date(appointment.patients.date_of_birth))}
@@ -752,7 +752,7 @@ const ClinicAppointmentDetail = () => {
             {/* Visit Details Card */}
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
                       <FileText className="h-3 w-3 mr-1" />
@@ -1137,7 +1137,7 @@ const ClinicAppointmentDetail = () => {
             {/* Test Reports */}
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <CardTitle className="text-sm font-medium">Test Reports</CardTitle>
                   {testTemplates.length > 0 && (
                     <Select value={selectedTestTemplate} onValueChange={handleTestTemplateChange}>

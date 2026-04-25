@@ -205,7 +205,7 @@ const DoctorProfile = () => {
           <User className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Doctor Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Doctor Profile</h1>
           <p className="text-muted-foreground">Manage your professional information</p>
         </div>
       </div>
@@ -306,7 +306,7 @@ const DoctorProfile = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Experience (Years)</Label>
                   <Input

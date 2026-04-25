@@ -95,7 +95,7 @@ const ClinicPatientDetail = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-4">
                 <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
                   <User className="h-8 w-8 text-primary" />

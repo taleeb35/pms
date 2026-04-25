@@ -904,7 +904,7 @@ const ClinicReports = () => {
             </div>
             {overallAvgTime > 0 && (
               <div className="text-right">
-                <p className="text-3xl font-bold">{overallAvgTime} min</p>
+                <p className="text-2xl sm:text-3xl font-bold">{overallAvgTime} min</p>
                 <p className="text-xs text-muted-foreground">Overall Average</p>
               </div>
             )}
