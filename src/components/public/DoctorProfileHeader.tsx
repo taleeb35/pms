@@ -15,6 +15,7 @@ import {
   Music2
 } from "lucide-react";
 import { toast } from "sonner";
+import VerifiedBadge from "@/components/public/VerifiedBadge";
 
 interface DoctorProfileHeaderProps {
   doctor: {
@@ -32,9 +33,11 @@ interface DoctorProfileHeaderProps {
     youtube_url?: string | null;
     tiktok_url?: string | null;
   };
+  isRegistered?: boolean;
+  onBookClick?: () => void;
 }
 
-const DoctorProfileHeader = ({ doctor }: DoctorProfileHeaderProps) => {
+const DoctorProfileHeader = ({ doctor, isRegistered = false, onBookClick }: DoctorProfileHeaderProps) => {
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -85,10 +88,17 @@ const DoctorProfileHeader = ({ doctor }: DoctorProfileHeaderProps) => {
         <div className="flex-1 text-center md:text-left">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                {doctor.full_name}
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 inline-flex items-center gap-2 flex-wrap justify-center md:justify-start">
+                <span>{doctor.full_name}</span>
+                {isRegistered && <VerifiedBadge size="md" />}
               </h1>
               
+              {isRegistered && (
+                <Badge className="mb-3 mr-2 bg-[#1d9bf0]/10 text-[#1d9bf0] border-[#1d9bf0]/20 hover:bg-[#1d9bf0]/20">
+                  <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                  Registered with Zonoir
+                </Badge>
+              )}
               {doctor.pmdc_verified && (
                 <Badge className="mb-3 bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20">
                   <CheckCircle className="h-3.5 w-3.5 mr-1" />
@@ -136,28 +146,42 @@ const DoctorProfileHeader = ({ doctor }: DoctorProfileHeaderProps) => {
             )}
           </div>
 
-          {/* Call Button for Mobile */}
-          {doctor.contact_number && (
-            <div className="mt-6 md:hidden">
-              <Button asChild className="w-full" size="lg">
+          {/* Mobile CTAs */}
+          <div className="mt-6 md:hidden flex flex-col gap-2">
+            {isRegistered && onBookClick && (
+              <Button onClick={onBookClick} className="w-full" size="lg">
+                <Calendar className="h-5 w-5 mr-2" />
+                Book Appointment
+              </Button>
+            )}
+            {doctor.contact_number && (
+              <Button asChild variant={isRegistered ? "outline" : "default"} className="w-full" size="lg">
                 <a href={`tel:${doctor.contact_number}`}>
                   <Phone className="h-5 w-5 mr-2" />
                   Call for Appointment
                 </a>
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Desktop CTA */}
-        {doctor.contact_number && (
+        {(isRegistered || doctor.contact_number) && (
           <div className="hidden md:flex flex-col gap-3">
-            <Button asChild size="lg" className="min-w-[200px]">
-              <a href={`tel:${doctor.contact_number}`}>
-                <Phone className="h-5 w-5 mr-2" />
-                Call Now
-              </a>
-            </Button>
+            {isRegistered && onBookClick && (
+              <Button onClick={onBookClick} size="lg" className="min-w-[200px]">
+                <Calendar className="h-5 w-5 mr-2" />
+                Book Appointment
+              </Button>
+            )}
+            {doctor.contact_number && (
+              <Button asChild size="lg" variant={isRegistered ? "outline" : "default"} className="min-w-[200px]">
+                <a href={`tel:${doctor.contact_number}`}>
+                  <Phone className="h-5 w-5 mr-2" />
+                  Call Now
+                </a>
+              </Button>
+            )}
           </div>
         )}
       </div>

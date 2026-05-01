@@ -2201,6 +2201,18 @@ export type Database = {
         Args: { _clinic_id: string; _user_id: string }
         Returns: boolean
       }
+      public_book_appointment: {
+        Args: {
+          _appointment_date: string
+          _appointment_time: string
+          _doctor_id: string
+          _full_name: string
+          _gender?: string
+          _phone: string
+          _reason?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
