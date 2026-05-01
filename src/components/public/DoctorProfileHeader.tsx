@@ -146,28 +146,42 @@ const DoctorProfileHeader = ({ doctor, isRegistered = false, onBookClick }: Doct
             )}
           </div>
 
-          {/* Call Button for Mobile */}
-          {doctor.contact_number && (
-            <div className="mt-6 md:hidden">
-              <Button asChild className="w-full" size="lg">
+          {/* Mobile CTAs */}
+          <div className="mt-6 md:hidden flex flex-col gap-2">
+            {isRegistered && onBookClick && (
+              <Button onClick={onBookClick} className="w-full" size="lg">
+                <Calendar className="h-5 w-5 mr-2" />
+                Book Appointment
+              </Button>
+            )}
+            {doctor.contact_number && (
+              <Button asChild variant={isRegistered ? "outline" : "default"} className="w-full" size="lg">
                 <a href={`tel:${doctor.contact_number}`}>
                   <Phone className="h-5 w-5 mr-2" />
                   Call for Appointment
                 </a>
               </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Desktop CTA */}
-        {doctor.contact_number && (
+        {(isRegistered || doctor.contact_number) && (
           <div className="hidden md:flex flex-col gap-3">
-            <Button asChild size="lg" className="min-w-[200px]">
-              <a href={`tel:${doctor.contact_number}`}>
-                <Phone className="h-5 w-5 mr-2" />
-                Call Now
-              </a>
-            </Button>
+            {isRegistered && onBookClick && (
+              <Button onClick={onBookClick} size="lg" className="min-w-[200px]">
+                <Calendar className="h-5 w-5 mr-2" />
+                Book Appointment
+              </Button>
+            )}
+            {doctor.contact_number && (
+              <Button asChild size="lg" variant={isRegistered ? "outline" : "default"} className="min-w-[200px]">
+                <a href={`tel:${doctor.contact_number}`}>
+                  <Phone className="h-5 w-5 mr-2" />
+                  Call Now
+                </a>
+              </Button>
+            )}
           </div>
         )}
       </div>
