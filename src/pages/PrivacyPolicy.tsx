@@ -418,58 +418,19 @@ const PrivacyPolicy = () => {
             </p>
           </section>
 
-          {/* 9. Children's Privacy */}
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold">9. Children's Privacy</h2>
-            <p className="text-muted-foreground">
-              Our Platform is for healthcare professionals and authorized staff only. Pediatric
-              patient records are managed exclusively by the authorized doctor or clinic and are
-              subject to all the same protections described in this policy.
-            </p>
-          </section>
-
-          {/* 10. Changes */}
+          {/* 9. Changes */}
           <section className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
                 <Bell className="h-5 w-5 text-amber-500" />
               </div>
-              <h2 className="text-2xl font-semibold m-0">10. Changes to This Policy</h2>
+              <h2 className="text-2xl font-semibold m-0">9. Changes to This Policy</h2>
             </div>
             <p className="text-muted-foreground">
               We may update this Privacy Policy occasionally. Material changes — especially any
               that could affect doctor or patient data privacy — will be notified by email and an
               in-app notice at least 30 days before they take effect.
             </p>
-          </section>
-
-          {/* 11. Contact */}
-          <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center flex-shrink-0">
-                <Mail className="h-5 w-5 text-rose-500" />
-              </div>
-              <h2 className="text-2xl font-semibold m-0">11. Contact Us</h2>
-            </div>
-            <p className="text-muted-foreground">
-              For any privacy questions, data requests, or concerns, contact our Privacy Team:
-            </p>
-            <div className="bg-muted/50 rounded-xl p-6 space-y-2 text-muted-foreground">
-              <p><strong>Zonoir — Privacy Team</strong></p>
-              <p>
-                Email:{" "}
-                <a href="mailto:hello@zonoir.com" className="text-primary hover:underline">
-                  hello@zonoir.com
-                </a>
-              </p>
-              <p>
-                Phone:{" "}
-                <a href="tel:+923004313139" className="text-primary hover:underline">
-                  +92 300 4313139
-                </a>
-              </p>
-              <p>Address: 140 B, Khayaban e Amin, Lahore, Pakistan 54000</p>
-            </div>
           </section>
         </div>
       </main>
