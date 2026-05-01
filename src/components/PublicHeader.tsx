@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, Menu, Gift, Sparkles } from "lucide-react";
+import { LogIn, Menu, Sparkles } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import clinicLogo from "@/assets/main-logo.webp";
 
@@ -44,7 +44,7 @@ const PublicHeader = () => {
                 className={desktopNavButtonClass}
               >
                 <Link to={item.path}>
-                  {item.icon && <item.icon className="mr-1.5 h-4 w-4" />}
+                  
                   {item.label}
                 </Link>
               </Button>
@@ -104,7 +104,7 @@ const PublicHeader = () => {
                       className={mobileNavButtonClass}
                     >
                       <Link to={item.path} onClick={() => setMobileMenuOpen(false)}>
-                        {item.icon && <item.icon className="mr-2 h-5 w-5" />}
+                        
                         {item.label}
                       </Link>
                     </Button>
