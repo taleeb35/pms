@@ -15,6 +15,7 @@ import {
   Music2
 } from "lucide-react";
 import { toast } from "sonner";
+import VerifiedBadge from "@/components/public/VerifiedBadge";
 
 interface DoctorProfileHeaderProps {
   doctor: {
@@ -32,9 +33,11 @@ interface DoctorProfileHeaderProps {
     youtube_url?: string | null;
     tiktok_url?: string | null;
   };
+  isRegistered?: boolean;
+  onBookClick?: () => void;
 }
 
-const DoctorProfileHeader = ({ doctor }: DoctorProfileHeaderProps) => {
+const DoctorProfileHeader = ({ doctor, isRegistered = false, onBookClick }: DoctorProfileHeaderProps) => {
   const getInitials = (name: string) => {
     return name
       .split(' ')
