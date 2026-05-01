@@ -14,7 +14,6 @@ const PublicFooter = () => {
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
     { name: "Contact", href: "/contact" },
-    { name: "Referral Program", href: "/referral-program" },
   ];
 
   const legalLinks = [
