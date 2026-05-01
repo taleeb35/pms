@@ -378,11 +378,10 @@ const Features = () => {
 
       {/* Stats */}
       <section className="py-16 container mx-auto px-4">
-        <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto text-center">
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto text-center">
           {[
-            { number: "50+", label: "Clinics" },
-            { number: "500+", label: "Doctors" },
-            { number: "10K+", label: "Patients" },
+            { number: "48+", label: "Doctors Managed" },
+            { number: "12,830+", label: "Patients Tracked" },
             { number: "99.9%", label: "Uptime" },
           ].map((stat, i) => (
             <div key={i} className="p-6">
