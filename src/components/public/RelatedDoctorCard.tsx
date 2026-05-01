@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Award } from "lucide-react";
 import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug } from "@/lib/slugUtils";
+import VerifiedBadge from "@/components/public/VerifiedBadge";
 
 interface RelatedDoctorCardProps {
   doctor: {
@@ -13,6 +14,7 @@ interface RelatedDoctorCardProps {
     city: string;
     experience_years: number | null;
     avatar_url: string | null;
+    isRegistered?: boolean;
   };
 }
 
@@ -40,8 +42,9 @@ const RelatedDoctorCard = ({ doctor }: RelatedDoctorCardProps) => {
               </AvatarFallback>
             </Avatar>
             <div className="space-y-1.5">
-              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                {doctor.full_name}
+              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1 inline-flex items-center gap-1 justify-center">
+                <span className="truncate">{doctor.full_name}</span>
+                {doctor.isRegistered && <VerifiedBadge size="sm" />}
               </h3>
               <p className="text-sm text-primary font-medium">{doctor.specialization}</p>
               <div className="flex items-center justify-center gap-3 pt-2 text-xs text-muted-foreground">
