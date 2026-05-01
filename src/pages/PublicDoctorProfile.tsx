@@ -319,6 +319,7 @@ const PublicDoctorProfile = () => {
               city: doc.city || "",
               experience_years: doc.experience_years,
               avatar_url: profile?.avatar_url,
+              isRegistered: true,
             });
           }
         });
@@ -356,6 +357,7 @@ const PublicDoctorProfile = () => {
               city: doc.city || "",
               experience_years: doc.experience_years,
               avatar_url: profile?.avatar_url,
+              isRegistered: true,
             });
           }
         });
