@@ -96,7 +96,7 @@ const Index = () => {
     {
       icon: Shield,
       title: "Secure & Compliant",
-      description: "Bank-level encryption with full data privacy compliance to protect patient information.",
+      description: "Your data is protected with AES-256 bank-level encryption — both in transit (TLS 1.3) and at rest. Daily encrypted backups, strict role-based access, and full HIPAA & GDPR-aligned privacy compliance ensure your patient information stays private, secure, and only accessible to you.",
       color: "from-blue-600 to-indigo-600",
     },
   ];
