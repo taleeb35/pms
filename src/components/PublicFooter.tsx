@@ -43,7 +43,7 @@ const PublicFooter = () => {
     : {
         email: "hello@zonoir.com",
         phone: "+92 300 4313139",
-        address: "Gulberg III, Lahore, Pakistan",
+        address: "140 B, Khayaban e Amin, Lahore Pakistan 54000",
         trustText: "Trusted by 50+ clinics and 500+ doctors across Pakistan",
       };
 
