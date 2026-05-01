@@ -15,7 +15,7 @@ const PublicHeader = () => {
   const mobileNavButtonClass =
     "public-header-nav-link w-full justify-start rounded-xl text-lg font-medium text-muted-foreground transition-all duration-200 focus-visible:ring-primary [&_svg]:text-current";
 
-  const navItems = [
+  const navItems: { label: string; path: string; icon?: typeof Gift }[] = [
     { label: "Features", path: "/features" },
     { label: "Pricing", path: "/pricing" },
     { label: "Contact", path: "/contact" },
