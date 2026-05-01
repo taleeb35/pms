@@ -88,10 +88,17 @@ const DoctorProfileHeader = ({ doctor, isRegistered = false, onBookClick }: Doct
         <div className="flex-1 text-center md:text-left">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                {doctor.full_name}
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 inline-flex items-center gap-2 flex-wrap justify-center md:justify-start">
+                <span>{doctor.full_name}</span>
+                {isRegistered && <VerifiedBadge size="md" />}
               </h1>
               
+              {isRegistered && (
+                <Badge className="mb-3 mr-2 bg-[#1d9bf0]/10 text-[#1d9bf0] border-[#1d9bf0]/20 hover:bg-[#1d9bf0]/20">
+                  <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                  Registered with Zonoir
+                </Badge>
+              )}
               {doctor.pmdc_verified && (
                 <Badge className="mb-3 bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20">
                   <CheckCircle className="h-3.5 w-3.5 mr-1" />
