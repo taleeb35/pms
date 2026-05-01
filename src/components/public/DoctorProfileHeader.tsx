@@ -8,7 +8,11 @@ import {
   Stethoscope,
   Phone,
   Share2,
-  Calendar
+  Calendar,
+  Facebook,
+  Instagram,
+  Youtube,
+  Music2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,6 +27,10 @@ interface DoctorProfileHeaderProps {
     contact_number?: string | null;
     consultation_fee?: number | null;
     introduction?: string | null;
+    facebook_url?: string | null;
+    instagram_url?: string | null;
+    youtube_url?: string | null;
+    tiktok_url?: string | null;
   };
 }
 
@@ -159,6 +167,59 @@ const DoctorProfileHeader = ({ doctor }: DoctorProfileHeaderProps) => {
         <div className="mt-6 pt-6 border-t border-border/50">
           <h2 className="text-lg font-semibold text-foreground mb-2">About</h2>
           <p className="text-muted-foreground leading-relaxed">{doctor.introduction}</p>
+        </div>
+      )}
+
+      {/* Social Media Links */}
+      {(doctor.facebook_url || doctor.instagram_url || doctor.youtube_url || doctor.tiktok_url) && (
+        <div className="mt-6 pt-6 border-t border-border/50">
+          <h2 className="text-sm font-semibold text-foreground mb-3">Follow on Social Media</h2>
+          <div className="flex flex-wrap gap-3">
+            {doctor.facebook_url && (
+              <a
+                href={doctor.facebook_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <Facebook className="h-5 w-5" />
+              </a>
+            )}
+            {doctor.instagram_url && (
+              <a
+                href={doctor.instagram_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="h-10 w-10 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <Instagram className="h-5 w-5" />
+              </a>
+            )}
+            {doctor.youtube_url && (
+              <a
+                href={doctor.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="h-10 w-10 rounded-full bg-red-600 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <Youtube className="h-5 w-5" />
+              </a>
+            )}
+            {doctor.tiktok_url && (
+              <a
+                href={doctor.tiktok_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+                className="h-10 w-10 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <Music2 className="h-5 w-5" />
+              </a>
+            )}
+          </div>
         </div>
       )}
     </div>
