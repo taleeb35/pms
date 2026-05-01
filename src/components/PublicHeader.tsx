@@ -19,7 +19,6 @@ const PublicHeader = () => {
     { label: "Features", path: "/features" },
     { label: "Pricing", path: "/pricing" },
     { label: "Contact", path: "/contact" },
-    { label: "Referral", path: "/referral-program", icon: Gift },
   ];
 
   return (
