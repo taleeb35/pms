@@ -189,11 +189,10 @@ const Index = () => {
 
       {/* Stats Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {[
-            { number: "50+", label: "Clinics Using", icon: Stethoscope, color: "from-blue-500 to-cyan-500" },
-            { number: "500+", label: "Doctors Managed", icon: UserPlus, color: "from-purple-500 to-pink-500" },
-            { number: "10K+", label: "Patients Tracked", icon: Users, color: "from-green-500 to-emerald-500" },
+            { number: "48+", label: "Doctors Managed", icon: UserPlus, color: "from-purple-500 to-pink-500" },
+            { number: "12,830+", label: "Patients Tracked", icon: Users, color: "from-green-500 to-emerald-500" },
             { number: "99.9%", label: "Uptime", icon: Shield, color: "from-orange-500 to-red-500" },
           ].map((stat, index) => (
             <div
