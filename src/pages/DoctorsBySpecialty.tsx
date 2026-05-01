@@ -12,6 +12,7 @@ import PublicCityCombobox from "@/components/PublicCityCombobox";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl } from "@/lib/slugUtils";
+import VerifiedBadge from "@/components/public/VerifiedBadge";
 
 const specialtyMap: Record<string, { name: string; urdu: string }> = {
   "aesthetic-physician": { name: "Aesthetic Physician", urdu: "ماہر جمالیات" },
@@ -336,8 +337,9 @@ const DoctorsBySpecialty = () => {
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-base truncate">
-                            {doctor.full_name}
+                          <h3 className="font-semibold text-base truncate inline-flex items-center gap-1">
+                            <span className="truncate">{doctor.full_name}</span>
+                            {doctor.source === "system" && <VerifiedBadge size="sm" />}
                           </h3>
                           <Badge variant="secondary" className="text-xs mt-1">
                             {doctor.specialization}
