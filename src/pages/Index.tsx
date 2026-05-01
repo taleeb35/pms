@@ -148,11 +148,7 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
               <Bot className="h-4 w-4 text-pink-600" />
-              <span className="font-medium">Your AI</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
-              <Zap className="h-4 w-4 text-orange-500" />
-              <span className="font-medium">Clinic Catalyst</span>
+              <span className="font-medium">AI Clinic Catalyst</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-4 justify-center pt-6">
