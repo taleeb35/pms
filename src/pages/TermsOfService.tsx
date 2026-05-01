@@ -204,7 +204,7 @@ const TermsOfService = () => {
               <p><strong>Zonoir</strong></p>
               <p>Email: <a href="mailto:hello@zonoir.com" className="text-primary hover:underline">hello@zonoir.com</a></p>
               <p>Phone: <a href="tel:+923004313139" className="text-primary hover:underline">+92 300 4313139</a></p>
-              <p>Address: Gulberg III, Lahore, Pakistan</p>
+              <p>Address: 140 B, Khayaban e Amin, Lahore, Pakistan 54000</p>
             </div>
           </section>
         </div>
