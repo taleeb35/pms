@@ -378,6 +378,69 @@ const DoctorProfile = () => {
                 />
               </div>
 
+              <div className="space-y-4 pt-2">
+                <h3 className="text-sm font-semibold text-foreground">Social Media Links (optional)</h3>
+                <p className="text-xs text-muted-foreground -mt-2">
+                  These will be displayed on your public doctor profile.
+                </p>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Facebook className="h-4 w-4 text-blue-600" />
+                    Facebook URL
+                  </Label>
+                  <Input
+                    type="url"
+                    value={profile.facebook_url}
+                    onChange={(e) => setProfile({ ...profile, facebook_url: e.target.value })}
+                    placeholder="https://facebook.com/your-profile"
+                    className="border-primary/20 focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Instagram className="h-4 w-4 text-pink-500" />
+                    Instagram URL
+                  </Label>
+                  <Input
+                    type="url"
+                    value={profile.instagram_url}
+                    onChange={(e) => setProfile({ ...profile, instagram_url: e.target.value })}
+                    placeholder="https://instagram.com/your-handle"
+                    className="border-primary/20 focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Youtube className="h-4 w-4 text-red-600" />
+                    YouTube URL
+                  </Label>
+                  <Input
+                    type="url"
+                    value={profile.youtube_url}
+                    onChange={(e) => setProfile({ ...profile, youtube_url: e.target.value })}
+                    placeholder="https://youtube.com/@your-channel"
+                    className="border-primary/20 focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Music2 className="h-4 w-4 text-foreground" />
+                    TikTok URL
+                  </Label>
+                  <Input
+                    type="url"
+                    value={profile.tiktok_url}
+                    onChange={(e) => setProfile({ ...profile, tiktok_url: e.target.value })}
+                    placeholder="https://tiktok.com/@your-handle"
+                    className="border-primary/20 focus:border-primary"
+                  />
+                </div>
+              </div>
+
               <Button type="submit" disabled={loading} className="w-full">
                 {loading ? "Updating..." : "Update Professional Information"}
               </Button>
