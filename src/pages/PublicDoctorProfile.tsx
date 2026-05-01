@@ -47,6 +47,7 @@ interface RelatedDoctor {
   city: string;
   experience_years: number | null;
   avatar_url: string | null;
+  isRegistered?: boolean;
 }
 
 const PublicDoctorProfile = () => {
