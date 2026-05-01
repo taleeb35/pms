@@ -198,6 +198,26 @@ const Contact = () => {
               </CardContent>
             </Card>
 
+            <Card className="border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Support Hours</h3>
+                    <p className="text-muted-foreground text-sm mb-2">We're always here to help</p>
+                    <div className="text-foreground text-sm space-y-1">
+                      <p className="font-semibold text-emerald-600 dark:text-emerald-400">Available 24/7</p>
+                      <p className="text-muted-foreground text-xs">
+                        Reach our support team any time, any day — including weekends and holidays.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Quick Actions */}
             <Card className="bg-gradient-to-br from-primary to-primary/80 border-0">
               <CardContent className="p-6 text-primary-foreground">
