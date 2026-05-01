@@ -13,6 +13,7 @@ import DoctorProfileHeader from "@/components/public/DoctorProfileHeader";
 import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTabs";
 import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
+import BookAppointmentDialog from "@/components/public/BookAppointmentDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
@@ -58,6 +59,7 @@ const PublicDoctorProfile = () => {
   const [doctor, setDoctor] = useState<DoctorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedDoctors, setRelatedDoctors] = useState<RelatedDoctor[]>([]);
+  const [bookOpen, setBookOpen] = useState(false);
 
   const cityDisplay = city ? slugToDisplayName(city) : "";
   const specialtyDisplay = specialty ? slugToDisplayName(specialty) : "";
@@ -580,7 +582,20 @@ const PublicDoctorProfile = () => {
 
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Profile Header */}
-          <DoctorProfileHeader doctor={doctor} />
+          <DoctorProfileHeader
+            doctor={doctor}
+            isRegistered={doctor.source === "approved_doctor"}
+            onBookClick={() => setBookOpen(true)}
+          />
+
+          {doctor.source === "approved_doctor" && (
+            <BookAppointmentDialog
+              open={bookOpen}
+              onOpenChange={setBookOpen}
+              doctorId={doctor.id}
+              doctorName={doctor.full_name}
+            />
+          )}
 
           {/* Practice Address and Timings Section */}
           <section>
