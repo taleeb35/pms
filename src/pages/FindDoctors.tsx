@@ -23,6 +23,7 @@ import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
 import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug } from "@/lib/slugUtils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import VerifiedBadge from "@/components/public/VerifiedBadge";
 
 interface DoctorResult {
   id: string;
@@ -724,7 +725,10 @@ const FindDoctors = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{doctor.full_name}</p>
+                            <p className="font-medium truncate inline-flex items-center gap-1">
+                              <span className="truncate">{doctor.full_name}</span>
+                              {doctor.source === "registered" && <VerifiedBadge size="sm" />}
+                            </p>
                             <p className="text-sm text-muted-foreground truncate">
                               {doctor.specialization} {doctor.city && `• ${doctor.city}`}
                             </p>
