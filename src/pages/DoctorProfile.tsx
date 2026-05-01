@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
-import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText } from "lucide-react";
+import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2 } from "lucide-react";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -27,6 +27,10 @@ const DoctorProfile = () => {
     consultation_fee: "",
     contact_number: "",
     pmdc_number: "",
+    facebook_url: "",
+    instagram_url: "",
+    youtube_url: "",
+    tiktok_url: "",
   });
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
@@ -77,6 +81,10 @@ const DoctorProfile = () => {
         consultation_fee: doctorData.consultation_fee !== null && doctorData.consultation_fee !== undefined ? doctorData.consultation_fee.toString() : "",
         contact_number: doctorData.contact_number || "",
         pmdc_number: doctorData.pmdc_number || "",
+        facebook_url: doctorData.facebook_url || "",
+        instagram_url: doctorData.instagram_url || "",
+        youtube_url: doctorData.youtube_url || "",
+        tiktok_url: doctorData.tiktok_url || "",
       };
       
       console.log("Setting profile state to:", newProfile);
@@ -135,6 +143,10 @@ const DoctorProfile = () => {
           consultation_fee: profile.consultation_fee ? parseFloat(profile.consultation_fee) : null,
           contact_number: profile.contact_number,
           pmdc_number: profile.pmdc_number || null,
+          facebook_url: profile.facebook_url?.trim() || null,
+          instagram_url: profile.instagram_url?.trim() || null,
+          youtube_url: profile.youtube_url?.trim() || null,
+          tiktok_url: profile.tiktok_url?.trim() || null,
         })
         .eq("id", user.id);
 
