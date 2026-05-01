@@ -1015,7 +1015,9 @@ export type Database = {
           contact_number: string | null
           created_at: string
           experience_years: number | null
+          facebook_url: string | null
           id: string
+          instagram_url: string | null
           introduction: string | null
           license_number: string | null
           payment_plan: string
@@ -1023,8 +1025,10 @@ export type Database = {
           qualification: string
           referred_by: string | null
           specialization: string
+          tiktok_url: string | null
           trial_end_date: string | null
           updated_at: string
+          youtube_url: string | null
         }
         Insert: {
           approved?: boolean
@@ -1037,7 +1041,9 @@ export type Database = {
           contact_number?: string | null
           created_at?: string
           experience_years?: number | null
+          facebook_url?: string | null
           id: string
+          instagram_url?: string | null
           introduction?: string | null
           license_number?: string | null
           payment_plan?: string
@@ -1045,8 +1051,10 @@ export type Database = {
           qualification: string
           referred_by?: string | null
           specialization: string
+          tiktok_url?: string | null
           trial_end_date?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Update: {
           approved?: boolean
@@ -1059,7 +1067,9 @@ export type Database = {
           contact_number?: string | null
           created_at?: string
           experience_years?: number | null
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           introduction?: string | null
           license_number?: string | null
           payment_plan?: string
@@ -1067,8 +1077,10 @@ export type Database = {
           qualification?: string
           referred_by?: string | null
           specialization?: string
+          tiktok_url?: string | null
           trial_end_date?: string | null
           updated_at?: string
+          youtube_url?: string | null
         }
         Relationships: [
           {

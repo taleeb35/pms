@@ -31,6 +31,10 @@ interface DoctorData {
   pmdc_verified?: boolean | null;
   contact_number?: string | null;
   consultation_fee?: number | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_url?: string | null;
   source: 'seo_listing' | 'approved_doctor';
 }
 
@@ -149,6 +153,10 @@ const PublicDoctorProfile = () => {
           introduction,
           consultation_fee,
           contact_number,
+          facebook_url,
+          instagram_url,
+          youtube_url,
+          tiktok_url,
           profiles!inner(full_name, avatar_url)
         `)
         .eq("approved", true);
@@ -175,6 +183,10 @@ const PublicDoctorProfile = () => {
             avatar_url: profile?.avatar_url,
             consultation_fee: matchedDoctor.consultation_fee,
             contact_number: matchedDoctor.contact_number,
+            facebook_url: (matchedDoctor as any).facebook_url,
+            instagram_url: (matchedDoctor as any).instagram_url,
+            youtube_url: (matchedDoctor as any).youtube_url,
+            tiktok_url: (matchedDoctor as any).tiktok_url,
             source: 'approved_doctor'
           });
 
