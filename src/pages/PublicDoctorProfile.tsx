@@ -13,7 +13,6 @@ import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTa
 import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
 import DoctorHeroCard from "@/components/public/DoctorHeroCard";
-import DoctorLocationMap from "@/components/public/DoctorLocationMap";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
@@ -596,12 +595,6 @@ const PublicDoctorProfile = () => {
                   primaryMapQuery={primary?.mapQuery}
                 />
 
-                {/* Map Section */}
-                <DoctorLocationMap
-                  locationName={primary?.location || doctor.clinic_location}
-                  city={doctor.city}
-                  mapQuery={primary?.mapQuery}
-                />
 
                 {/* Practice Address and Timings Section */}
                 <section>
