@@ -116,6 +116,7 @@ import ContentWriterRegisteredDoctors from "./pages/ContentWriterRegisteredDocto
 import FindDoctors from "./pages/FindDoctors";
 import DoctorsBySpecialty from "./pages/DoctorsBySpecialty";
 import PublicDoctorProfile from "./pages/PublicDoctorProfile";
+import LegacyDoctorProfileRedirect from "./pages/LegacyDoctorProfileRedirect";
 import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -213,6 +214,7 @@ const App = () => (
           <Route path="/referral-program" element={<ReferralProgram />} />
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
+          <Route path="/doctors/:specialty/:doctorSlug" element={<LegacyDoctorProfileRedirect />} />
           <Route path="/doctors/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
