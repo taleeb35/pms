@@ -2185,10 +2185,23 @@ const DoctorPatients = () => {
               )}
             </div>
             <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsAddDialogOpen(false)}
+                disabled={isAddingPatient}
+              >
                 Cancel
               </Button>
-              <Button onClick={handleAddPatient}>Add Patient</Button>
+              <Button onClick={handleAddPatient} disabled={isAddingPatient}>
+                {isAddingPatient ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Adding patient…
+                  </>
+                ) : (
+                  "Add Patient"
+                )}
+              </Button>
             </div>
           </div>
         </DialogContent>
