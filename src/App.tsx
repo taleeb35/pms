@@ -120,6 +120,7 @@ import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import ServiceStatus from "./pages/ServiceStatus";
 import InstallApp from "./pages/InstallApp";
 import PatientVideoCall from "./pages/PatientVideoCall";
 import MobileHome from "./pages/app/MobileHome";
@@ -219,6 +220,7 @@ const App = () => (
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/service-status" element={<ServiceStatus />} />
           <Route path="/install" element={<InstallApp />} />
           <Route path="/install-app" element={<InstallApp />} />
           <Route path="/video-call" element={<PatientVideoCall />} />
