@@ -759,7 +759,7 @@ const FindDoctors = () => {
               </div>
 
               {/* Search Suggestions Dropdown */}
-              {searchTerm && (filteredSpecialties.length > 0 || doctorResults.length > 0) && (
+              {searchTerm && (filteredSpecialties.length > 0 || doctorResults.length > 0 || isSearching || searchTerm.trim().length >= 1) && (
                 <div className="bg-card border rounded-lg shadow-lg mt-2 max-h-80 overflow-y-auto">
                   {/* Doctor Results */}
                   {doctorResults.length > 0 && (
