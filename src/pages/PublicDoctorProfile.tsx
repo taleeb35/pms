@@ -9,11 +9,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DoctorProfileHeader from "@/components/public/DoctorProfileHeader";
 import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTabs";
 import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
-import BookAppointmentDialog from "@/components/public/BookAppointmentDialog";
+import DoctorHeroCard from "@/components/public/DoctorHeroCard";
+import DoctorLocationMap from "@/components/public/DoctorLocationMap";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
@@ -60,7 +60,7 @@ const PublicDoctorProfile = () => {
   const [doctor, setDoctor] = useState<DoctorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedDoctors, setRelatedDoctors] = useState<RelatedDoctor[]>([]);
-  const [bookOpen, setBookOpen] = useState(false);
+  
 
   const cityDisplay = city ? slugToDisplayName(city) : "";
   const specialtyDisplay = specialty ? slugToDisplayName(specialty) : "";
@@ -583,29 +583,36 @@ const PublicDoctorProfile = () => {
         </nav>
 
         <div className="max-w-5xl mx-auto space-y-8">
-          {/* Profile Header */}
-          <DoctorProfileHeader
-            doctor={doctor}
-            isRegistered={doctor.source === "approved_doctor"}
-            onBookClick={() => setBookOpen(true)}
-          />
+          {/* Hero: Profile + Inline booking widget */}
+          {(() => {
+            const clinics = getClinics();
+            const primary = clinics[0];
+            return (
+              <>
+                <DoctorHeroCard
+                  doctor={doctor}
+                  isRegistered={doctor.source === "approved_doctor"}
+                  primaryLocation={primary?.location || doctor.city}
+                  primaryMapQuery={primary?.mapQuery}
+                />
 
-          {doctor.source === "approved_doctor" && (
-            <BookAppointmentDialog
-              open={bookOpen}
-              onOpenChange={setBookOpen}
-              doctorId={doctor.id}
-              doctorName={doctor.full_name}
-            />
-          )}
+                {/* Map Section */}
+                <DoctorLocationMap
+                  locationName={primary?.location || doctor.clinic_location}
+                  city={doctor.city}
+                  mapQuery={primary?.mapQuery}
+                />
 
-          {/* Practice Address and Timings Section */}
-          <section>
-            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
-              Practice Address and Timings
-            </h2>
-            <DoctorClinicTabs clinics={getClinics()} />
-          </section>
+                {/* Practice Address and Timings Section */}
+                <section>
+                  <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
+                    Practice Address and Timings
+                  </h2>
+                  <DoctorClinicTabs clinics={clinics} />
+                </section>
+              </>
+            );
+          })()}
 
           {/* FAQs Section */}
           {(() => {
