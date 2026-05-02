@@ -9,11 +9,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DoctorProfileHeader from "@/components/public/DoctorProfileHeader";
 import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTabs";
 import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
-import BookAppointmentDialog from "@/components/public/BookAppointmentDialog";
+import DoctorHeroCard from "@/components/public/DoctorHeroCard";
+import DoctorLocationMap from "@/components/public/DoctorLocationMap";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
