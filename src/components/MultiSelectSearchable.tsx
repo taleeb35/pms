@@ -71,7 +71,7 @@ export const MultiSelectSearchable = ({
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between bg-background font-normal min-h-[40px] h-auto data-[state=open]:bg-background data-[state=open]:text-foreground"
+            className="w-full justify-between bg-background text-foreground font-normal min-h-[40px] h-auto border-input hover:bg-background hover:text-foreground hover:border-input focus-visible:bg-background focus-visible:text-foreground data-[state=open]:bg-background data-[state=open]:text-foreground data-[state=open]:border-input"
             disabled={disabled}
           >
             <div className="flex flex-wrap gap-1 flex-1">
@@ -96,7 +96,7 @@ export const MultiSelectSearchable = ({
                 <span className="text-muted-foreground">{placeholder}</span>
               )}
             </div>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-muted-foreground opacity-70" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[--radix-popover-trigger-width] p-0 bg-background z-50" align="start">
