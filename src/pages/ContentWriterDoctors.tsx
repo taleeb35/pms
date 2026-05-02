@@ -551,7 +551,8 @@ const ContentWriterDoctors = () => {
       const { data, error } = await supabase
         .from("seo_doctor_listings")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(10000);
 
       if (error) throw error;
       setSeoDoctors(data || []);
