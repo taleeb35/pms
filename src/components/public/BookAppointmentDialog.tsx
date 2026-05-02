@@ -148,7 +148,7 @@ const BookAppointmentDialog = ({
         _appointment_date: date,
         _appointment_time: time,
         _reason: reason || null,
-        _gender: "other",
+        _gender: gender,
       });
 
       if (error) throw error;
