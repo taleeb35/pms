@@ -134,7 +134,8 @@ const DoctorsBySpecialty = () => {
       let seoQuery = supabase
         .from("seo_doctor_listings")
         .select("*")
-        .eq("is_published", true);
+        .eq("is_published", true)
+        .limit(10000);
 
       if (specialty) {
         const searchTerm = specialtyInfo?.name || specialty.replace(/-/g, " ");
