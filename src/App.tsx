@@ -220,6 +220,7 @@ const App = () => (
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/service-status" element={<ServiceStatus />} />
           <Route path="/install" element={<InstallApp />} />
           <Route path="/install-app" element={<InstallApp />} />
           <Route path="/video-call" element={<PatientVideoCall />} />
