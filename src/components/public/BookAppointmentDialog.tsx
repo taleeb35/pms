@@ -38,6 +38,7 @@ const BookAppointmentDialog = ({
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState<"male" | "female" | "other">("male");
   const [date, setDate] = useState(today);
   const [time, setTime] = useState("");
   const [reason, setReason] = useState("");
