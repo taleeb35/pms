@@ -596,12 +596,6 @@ const PublicDoctorProfile = () => {
                   primaryMapQuery={primary?.mapQuery}
                 />
 
-                {/* Map Section */}
-                <DoctorLocationMap
-                  locationName={primary?.location || doctor.clinic_location}
-                  city={doctor.city}
-                  mapQuery={primary?.mapQuery}
-                />
 
                 {/* Practice Address and Timings Section */}
                 <section>
