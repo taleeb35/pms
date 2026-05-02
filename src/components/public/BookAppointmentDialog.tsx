@@ -167,6 +167,7 @@ const BookAppointmentDialog = ({
   const resetAndClose = () => {
     setFullName("");
     setPhone("");
+    setGender("male");
     setDate(today);
     setTime("");
     setReason("");
