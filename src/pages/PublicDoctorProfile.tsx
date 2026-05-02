@@ -193,12 +193,11 @@ const PublicDoctorProfile = () => {
             source: 'approved_doctor'
           });
 
-          // Fetch weekly schedule for approved doctor
-          const { data: scheduleRows, error: scheduleError } = await supabase
-            .from("doctor_schedules")
-            .select("day_of_week, is_available, start_time, end_time")
-            .eq("doctor_id", matchedDoctor.id)
-            .order("day_of_week", { ascending: true });
+          // Fetch weekly schedule for approved doctor using public-safe backend function
+          const { data: scheduleRows, error: scheduleError } = await supabase.rpc(
+            "get_public_doctor_weekly_schedule",
+            { _doctor_id: matchedDoctor.id }
+          );
 
           if (!scheduleError) {
             const DAYS: Array<{ day: string; short: string }> = [
@@ -213,13 +212,13 @@ const PublicDoctorProfile = () => {
 
             const fullSchedule: ScheduleDay[] = DAYS.map((meta, i) => {
               const row = scheduleRows?.find((r) => r.day_of_week === i);
-              const isAvailable = row ? !!row.is_available : i !== 0; // Sunday off by default
+              const isAvailable = row ? !!row.is_available : false;
               return {
                 day: meta.day,
                 dayShort: meta.short,
                 isAvailable,
-                startTime: isAvailable ? formatTimeToDisplay(row?.start_time ?? "09:00") : undefined,
-                endTime: isAvailable ? formatTimeToDisplay(row?.end_time ?? "17:00") : undefined,
+                startTime: isAvailable ? formatTimeToDisplay(row?.start_time) : undefined,
+                endTime: isAvailable ? formatTimeToDisplay(row?.end_time) : undefined,
               };
             });
 
