@@ -589,6 +589,7 @@ const DoctorHeroCard = ({
               )}
             </div>
           </div>
+          )}
         </div>
 
         {/* Trust strip */}
