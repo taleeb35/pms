@@ -1,8 +1,8 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
-import { slugToDisplayName, generateDoctorSlug, generateCitySlug, generateSpecialtySlug } from "@/lib/slugUtils";
+import { slugToDisplayName, generateDoctorSlug, generateCitySlug, generateSpecialtySlug, generateDoctorProfileUrl } from "@/lib/slugUtils";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,6 +50,7 @@ interface RelatedDoctor {
 }
 
 const PublicDoctorProfile = () => {
+  const navigate = useNavigate();
   const { city, specialty, doctorSlug } = useParams<{
     city: string;
     specialty: string;
@@ -82,7 +83,7 @@ const PublicDoctorProfile = () => {
 
   useEffect(() => {
     const fetchDoctor = async () => {
-      if (!city || !specialty || !doctorSlug) return;
+      if (!specialty || !doctorSlug) return;
 
       setLoading(true);
       setSeoClinics([]);
@@ -90,22 +91,35 @@ const PublicDoctorProfile = () => {
       setFaqs([]);
 
       // First try SEO listings - filter by city server-side to avoid the 1000-row default limit
-      const { data: seoData, error: seoError } = await supabase
+      const seoQuery = supabase
         .from("seo_doctor_listings")
         .select("*")
         .eq("is_published", true)
-        .ilike("city", cityDisplay)
         .limit(2000);
+
+      const { data: seoData, error: seoError } = cityDisplay
+        ? await seoQuery.ilike("city", cityDisplay)
+        : await seoQuery;
 
       if (!seoError && seoData) {
         const matchedSeo = seoData.find(doc => {
           const docCitySlug = generateCitySlug(doc.city || "");
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(doc.full_name || "");
-          return docCitySlug === city && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          const cityMatches = city ? docCitySlug === city || !docCitySlug : true;
+          return cityMatches && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
         });
 
         if (matchedSeo) {
+          const matchedSeoCitySlug = generateCitySlug(matchedSeo.city || "");
+          if (matchedSeoCitySlug && city !== matchedSeoCitySlug) {
+            navigate(
+              generateDoctorProfileUrl(matchedSeo.city || "", matchedSeo.specialization, matchedSeo.full_name),
+              { replace: true }
+            );
+            return;
+          }
+
           setDoctor({
             id: matchedSeo.id,
             full_name: matchedSeo.full_name,
@@ -171,11 +185,21 @@ const PublicDoctorProfile = () => {
           const docCitySlug = generateCitySlug(doc.city || "");
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(profile?.full_name || "");
-          return docCitySlug === city && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          const cityMatches = city ? docCitySlug === city || !docCitySlug : true;
+          return cityMatches && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
         });
 
         if (matchedDoctor) {
           const profile = matchedDoctor.profiles as any;
+
+          if ((matchedDoctor.city || "") && city !== generateCitySlug(matchedDoctor.city || "")) {
+            navigate(
+              generateDoctorProfileUrl(matchedDoctor.city || "", matchedDoctor.specialization, profile?.full_name || ""),
+              { replace: true }
+            );
+            return;
+          }
+
           setDoctor({
             id: matchedDoctor.id,
             full_name: profile?.full_name || "",
@@ -367,7 +391,7 @@ const PublicDoctorProfile = () => {
     };
 
     fetchDoctor();
-  }, [city, specialty, doctorSlug]);
+  }, [city, specialty, doctorSlug, cityDisplay, navigate]);
 
   // SEO Configuration
   const pageTitle = doctor 

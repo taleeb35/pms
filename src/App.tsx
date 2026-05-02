@@ -213,6 +213,7 @@ const App = () => (
           <Route path="/referral-program" element={<ReferralProgram />} />
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
+          <Route path="/doctors/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/doctors/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />

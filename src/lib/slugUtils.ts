@@ -60,8 +60,13 @@ export const generateDoctorProfileUrl = (
   specialty: string,
   fullName: string
 ): string => {
-  const citySlug = generateCitySlug(city);
   const specialtySlug = generateSpecialtySlug(specialty);
   const doctorSlug = generateDoctorSlug(fullName);
+  const citySlug = generateCitySlug(city);
+
+  if (!citySlug) {
+    return `/doctors/${specialtySlug}/${doctorSlug}`;
+  }
+
   return `/doctors/${citySlug}/${specialtySlug}/${doctorSlug}`;
 };

@@ -21,7 +21,7 @@ import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
-import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug } from "@/lib/slugUtils";
+import { generateDoctorProfileUrl } from "@/lib/slugUtils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import VerifiedBadge from "@/components/public/VerifiedBadge";
 
@@ -575,10 +575,9 @@ const FindDoctors = () => {
   };
 
   const handleDoctorClick = (doctor: DoctorResult) => {
-    const citySlug = generateCitySlug(doctor.city);
-    const specialtySlug = generateSpecialtySlug(doctor.specialization);
-    const doctorSlug = generateDoctorSlug(doctor.full_name);
-    navigate(`/doctors/${citySlug}/${specialtySlug}/${doctorSlug}`);
+    navigate(
+      generateDoctorProfileUrl(doctor.city, doctor.specialization, doctor.full_name)
+    );
   };
 
   const handleSearch = () => {
