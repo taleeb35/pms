@@ -821,10 +821,26 @@ const FindDoctors = () => {
 
                   {/* Loading state */}
                   {isSearching && doctorResults.length === 0 && (
-                    <div className="px-4 py-3 text-sm text-muted-foreground">
-                      Searching doctors...
+                    <div className="px-4 py-3 text-sm text-muted-foreground flex items-center gap-2">
+                      <span className="inline-block h-3 w-3 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                      Searching doctors…
                     </div>
                   )}
+
+                  {/* Empty state */}
+                  {!isSearching &&
+                    doctorResults.length === 0 &&
+                    filteredSpecialties.length === 0 &&
+                    searchTerm.trim().length >= 1 && (
+                      <div className="px-4 py-6 text-center">
+                        <p className="text-sm font-medium text-foreground">
+                          No doctors found for "{searchTerm}"
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Try a different name, specialty, or city.
+                        </p>
+                      </div>
+                    )}
                 </div>
               )}
             </div>
