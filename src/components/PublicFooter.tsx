@@ -14,6 +14,7 @@ const PublicFooter = () => {
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
     { name: "Contact", href: "/contact" },
+    { name: "Service Status", href: "/service-status" },
     {
       name: "What is Zonoir?",
       href: "https://zonoir.com/blog/what-is-zonoir",
