@@ -940,6 +940,9 @@ const DoctorPatients = () => {
   };
 
   const handleAddPatient = async () => {
+    // Prevent duplicate submissions from rapid clicks
+    if (isAddingPatient) return;
+
     console.log("Add Patient - Form data:", addForm);
     
     // Comprehensive validation
@@ -972,98 +975,116 @@ const DoctorPatients = () => {
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    // Generate patient ID
-    const patientId = `PAT${Date.now().toString().slice(-8)}`;
-
-    console.log("Inserting patient with data:", {
-      full_name: addForm.full_name,
-      phone: addForm.phone,
-      date_of_birth: addForm.date_of_birth,
-      gender: addForm.gender,
-    });
-
-    const { data, error } = await supabase
-      .from("patients")
-      .insert([
-        {
-          full_name: addForm.full_name,
-          father_name: addForm.father_name || null,
-          email: addForm.email || null,
-          phone: addForm.phone,
-          cnic: addForm.cnic || null,
-          date_of_birth: addForm.date_of_birth,
-          gender: addForm.gender,
-          blood_group: addForm.blood_group || null,
-          address: addForm.address || null,
-          allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
-          marital_status: addForm.marital_status || null,
-          city: addForm.city || null,
-          major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
-          patient_id: patientId,
-          created_by: user.id,
-          pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
-            ? format(pregnancyStartDate, "yyyy-MM-dd") 
-            : null,
-          created_at: addForm.added_date || new Date().toISOString(),
-        },
-      ])
-      .select();
-
-    if (error) {
-      console.error("Error adding patient:", error);
-      toast({
-        title: "Error",
-        description: `Failed to add patient: ${error.message}`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    console.log("Patient added successfully:", data);
-
-    // Log activity
-    if (data && data[0]) {
-      await logActivity({
-        action: "patient_created",
-        entityType: "patient",
-        entityId: data[0].id,
-        details: {
-          doctorId: user.id,
-          patient_name: addForm.full_name,
-          patient_id: patientId,
-        },
-      });
-    }
-
+    setIsAddingPatient(true);
+    // Immediate on-screen feedback
     toast({
-      title: "Success",
-      description: "Patient added successfully",
+      title: "Adding patient…",
+      description: "Please wait while we save the patient.",
     });
 
-    setAddForm({
-      full_name: "",
-      father_name: "",
-      email: "",
-      phone: "",
-      cnic: "",
-      date_of_birth: "",
-      gender: "male",
-      blood_group: "",
-      address: "",
-      allergies: "",
-      marital_status: "",
-      city: "",
-      major_diseases: "",
-      added_date: "",
-    });
-    setAddedDate(undefined);
-    setDobDate(undefined);
-    setPregnancyStartDate(undefined);
-    setIsAddDialogOpen(false);
-    fetchPatients();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Not signed in",
+          description: "Please sign in again and retry.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Generate patient ID
+      const patientId = `PAT${Date.now().toString().slice(-8)}`;
+
+      console.log("Inserting patient with data:", {
+        full_name: addForm.full_name,
+        phone: addForm.phone,
+        date_of_birth: addForm.date_of_birth,
+        gender: addForm.gender,
+      });
+
+      const { data, error } = await supabase
+        .from("patients")
+        .insert([
+          {
+            full_name: addForm.full_name,
+            father_name: addForm.father_name || null,
+            email: addForm.email || null,
+            phone: addForm.phone,
+            cnic: addForm.cnic || null,
+            date_of_birth: addForm.date_of_birth,
+            gender: addForm.gender,
+            blood_group: addForm.blood_group || null,
+            address: addForm.address || null,
+            allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
+            marital_status: addForm.marital_status || null,
+            city: addForm.city || null,
+            major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
+            patient_id: patientId,
+            created_by: user.id,
+            pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
+              ? format(pregnancyStartDate, "yyyy-MM-dd") 
+              : null,
+            created_at: addForm.added_date || new Date().toISOString(),
+          },
+        ])
+        .select();
+
+      if (error) {
+        console.error("Error adding patient:", error);
+        toast({
+          title: "Error",
+          description: `Failed to add patient: ${error.message}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Patient added successfully:", data);
+
+      // Log activity
+      if (data && data[0]) {
+        await logActivity({
+          action: "patient_created",
+          entityType: "patient",
+          entityId: data[0].id,
+          details: {
+            doctorId: user.id,
+            patient_name: addForm.full_name,
+            patient_id: patientId,
+          },
+        });
+      }
+
+      toast({
+        title: "Success",
+        description: "Patient added successfully",
+      });
+
+      setAddForm({
+        full_name: "",
+        father_name: "",
+        email: "",
+        phone: "",
+        cnic: "",
+        date_of_birth: "",
+        gender: "male",
+        blood_group: "",
+        address: "",
+        allergies: "",
+        marital_status: "",
+        city: "",
+        major_diseases: "",
+        added_date: "",
+      });
+      setAddedDate(undefined);
+      setDobDate(undefined);
+      setPregnancyStartDate(undefined);
+      setIsAddDialogOpen(false);
+      fetchPatients();
+    } finally {
+      setIsAddingPatient(false);
+    }
   };
 
   const handleRowClick = (patient: Patient, event: React.MouseEvent) => {
