@@ -2181,6 +2181,21 @@ export type Database = {
         Args: { _user_id: string }
         Returns: string
       }
+      get_public_doctor_booking_availability: {
+        Args: { _appointment_date: string; _doctor_id: string }
+        Returns: Json
+      }
+      get_public_doctor_weekly_schedule: {
+        Args: { _doctor_id: string }
+        Returns: {
+          break_end: string
+          break_start: string
+          day_of_week: number
+          end_time: string
+          is_available: boolean
+          start_time: string
+        }[]
+      }
       get_receptionist_clinic_id: {
         Args: { _user_id: string }
         Returns: string

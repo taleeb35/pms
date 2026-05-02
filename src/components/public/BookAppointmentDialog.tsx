@@ -11,17 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { getAvailableTimeSlots, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { handleNameInput, handlePhoneInput, validateName, validatePhone } from "@/lib/validations";
 
 interface BookAppointmentDialogProps {
@@ -73,7 +65,21 @@ const BookAppointmentDialog = ({
       setTime("");
       setUnavailableReason(null);
       try {
-        const availability = await checkDoctorAvailability(doctorId, date);
+        const { data, error } = await supabase.rpc("get_public_doctor_booking_availability", {
+          _doctor_id: doctorId,
+          _appointment_date: date,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        const availability = (data ?? {}) as {
+          available?: boolean;
+          reason?: string | null;
+          slots?: Array<{ value?: string; label?: string }>;
+        };
+
         if (!availability.available) {
           if (!cancelled) {
             setSlots([]);
@@ -82,20 +88,9 @@ const BookAppointmentDialog = ({
           return;
         }
 
-        const allSlots = await getAvailableTimeSlots(doctorId, date);
-
-        // Strip already-booked slots
-        const { data: booked } = await supabase
-          .from("appointments")
-          .select("appointment_time, status")
-          .eq("doctor_id", doctorId)
-          .eq("appointment_date", date);
-
-        const takenSet = new Set(
-          (booked || [])
-            .filter((b: any) => b.status !== "cancelled" && b.status !== "completed")
-            .map((b: any) => (b.appointment_time as string).slice(0, 5))
-        );
+        const allSlots = (availability.slots ?? [])
+          .filter((slot): slot is { value: string; label: string } => !!slot.value && !!slot.label)
+          .map((slot) => ({ value: slot.value, label: slot.label }));
 
         // If today, hide past times
         const now = new Date();
@@ -105,7 +100,6 @@ const BookAppointmentDialog = ({
         ).padStart(2, "0")}`;
 
         const free = allSlots.filter((s) => {
-          if (takenSet.has(s.value)) return false;
           if (isToday && s.value <= currentHM) return false;
           return true;
         });
@@ -251,20 +245,22 @@ const BookAppointmentDialog = ({
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="b-time">Time *</Label>
-                  <Select value={time} onValueChange={setTime} disabled={loadingSlots || slots.length === 0}>
-                    <SelectTrigger id="b-time">
-                      <SelectValue
-                        placeholder={loadingSlots ? "Loading…" : slots.length === 0 ? "Unavailable" : "Pick a slot"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {slots.map((s) => (
-                        <SelectItem key={s.value} value={s.value}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="b-time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    disabled={loadingSlots || slots.length === 0}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">
+                      {loadingSlots ? "Loading…" : slots.length === 0 ? "Unavailable" : "Pick a slot"}
+                    </option>
+                    {slots.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
