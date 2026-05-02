@@ -213,9 +213,9 @@ const DoctorHeroCard = ({
   return (
     <Card className="overflow-hidden border-2 border-primary/10 shadow-lg">
       <CardContent className="p-6 md:p-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
-          {/* LEFT: Profile info (3 cols) */}
-          <div className="lg:col-span-3">
+        <div className={isRegistered ? "grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8" : "grid grid-cols-1 gap-6"}>
+          {/* LEFT: Profile info */}
+          <div className={isRegistered ? "lg:col-span-3" : ""}>
             <div className="flex flex-col sm:flex-row gap-5">
               {/* Avatar with online dot */}
               <div className="flex flex-col items-center sm:items-start flex-shrink-0">
