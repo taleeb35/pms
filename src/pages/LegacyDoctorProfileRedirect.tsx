@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
+import NotFound from "./NotFound";
 
 const LegacyDoctorProfileRedirect = () => {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ const LegacyDoctorProfileRedirect = () => {
   }, [doctorSlug, navigate, specialty]);
 
   if (failed) {
-    navigate("/not-found", { replace: true });
+    return <NotFound />;
   }
 
   return null;
