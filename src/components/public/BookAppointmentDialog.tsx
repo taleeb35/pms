@@ -21,7 +21,6 @@ import {
 import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { getAvailableTimeSlots, checkDoctorAvailability } from "@/lib/appointmentUtils";
 import { handleNameInput, handlePhoneInput, validateName, validatePhone } from "@/lib/validations";
 
 interface BookAppointmentDialogProps {
@@ -73,7 +72,21 @@ const BookAppointmentDialog = ({
       setTime("");
       setUnavailableReason(null);
       try {
-        const availability = await checkDoctorAvailability(doctorId, date);
+        const { data, error } = await supabase.rpc("get_public_doctor_booking_availability", {
+          _doctor_id: doctorId,
+          _appointment_date: date,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        const availability = (data ?? {}) as {
+          available?: boolean;
+          reason?: string | null;
+          slots?: Array<{ value?: string; label?: string }>;
+        };
+
         if (!availability.available) {
           if (!cancelled) {
             setSlots([]);
@@ -82,20 +95,9 @@ const BookAppointmentDialog = ({
           return;
         }
 
-        const allSlots = await getAvailableTimeSlots(doctorId, date);
-
-        // Strip already-booked slots
-        const { data: booked } = await supabase
-          .from("appointments")
-          .select("appointment_time, status")
-          .eq("doctor_id", doctorId)
-          .eq("appointment_date", date);
-
-        const takenSet = new Set(
-          (booked || [])
-            .filter((b: any) => b.status !== "cancelled" && b.status !== "completed")
-            .map((b: any) => (b.appointment_time as string).slice(0, 5))
-        );
+        const allSlots = (availability.slots ?? [])
+          .filter((slot): slot is { value: string; label: string } => !!slot.value && !!slot.label)
+          .map((slot) => ({ value: slot.value, label: slot.label }));
 
         // If today, hide past times
         const now = new Date();
@@ -105,7 +107,6 @@ const BookAppointmentDialog = ({
         ).padStart(2, "0")}`;
 
         const free = allSlots.filter((s) => {
-          if (takenSet.has(s.value)) return false;
           if (isToday && s.value <= currentHM) return false;
           return true;
         });
