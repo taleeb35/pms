@@ -417,18 +417,8 @@ const FindDoctors = () => {
   // Debounced doctor name search
   useEffect(() => {
     const searchDoctors = async () => {
-      if (searchTerm.length < 2) {
-        setDoctorResults([]);
-        return;
-      }
-
-      // Check if searching for doctor name (not just specialty)
-      const isSpecialtySearch = specialties.some(
-        s => s.name.toLowerCase().includes(searchTerm.toLowerCase()) || s.urdu.includes(searchTerm)
-      );
-      
-      // Only search doctors if it's not a clear specialty match or if term is 3+ chars
-      if (searchTerm.length < 3 && isSpecialtySearch) {
+      const term = searchTerm.trim();
+      if (term.length < 1) {
         setDoctorResults([]);
         return;
       }
@@ -437,17 +427,20 @@ const FindDoctors = () => {
       try {
         const results: DoctorResult[] = [];
         const seenIds = new Set<string>();
+        const lowerTerm = term.toLowerCase();
 
-        // Search SEO listings
+        // 1) Search SEO listings by name OR specialization OR city
         const { data: seoData } = await supabase
           .from("seo_doctor_listings")
           .select("id, full_name, specialization, city, avatar_url")
           .eq("is_published", true)
-          .ilike("full_name", `%${searchTerm}%`)
-          .limit(5);
+          .or(
+            `full_name.ilike.%${term}%,specialization.ilike.%${term}%,city.ilike.%${term}%`
+          )
+          .limit(15);
 
         if (seoData) {
-          seoData.forEach(doc => {
+          seoData.forEach((doc) => {
             if (!seenIds.has(doc.id)) {
               seenIds.add(doc.id);
               results.push({
@@ -456,23 +449,37 @@ const FindDoctors = () => {
                 specialization: doc.specialization,
                 city: doc.city || "",
                 avatar_url: doc.avatar_url,
-                source: 'seo'
+                source: "seo",
               });
             }
           });
         }
 
-        // Search approved doctors
-        const { data: approvedData } = await supabase
-          .from("doctors")
-          .select("id, specialization, city, profiles!inner(full_name, avatar_url)")
-          .eq("approved", true)
-          .limit(5);
+        // 2) Search registered/approved doctors by NAME via profiles (server-side)
+        const { data: nameMatchProfiles } = await supabase
+          .from("profiles")
+          .select("id, full_name, avatar_url")
+          .ilike("full_name", `%${term}%`)
+          .limit(20);
 
-        if (approvedData) {
-          approvedData.forEach(doc => {
-            const profile = doc.profiles as any;
-            if (profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) && !seenIds.has(doc.id)) {
+        const nameMatchIds = (nameMatchProfiles ?? [])
+          .map((p) => p.id)
+          .filter((id) => !seenIds.has(id));
+
+        if (nameMatchIds.length > 0) {
+          const { data: docsByName } = await supabase
+            .from("doctors")
+            .select("id, specialization, city")
+            .eq("approved", true)
+            .in("id", nameMatchIds);
+
+          if (docsByName) {
+            docsByName.forEach((doc) => {
+              if (seenIds.has(doc.id)) return;
+              const profile = (nameMatchProfiles ?? []).find(
+                (p) => p.id === doc.id
+              );
+              if (!profile) return;
               seenIds.add(doc.id);
               results.push({
                 id: doc.id,
@@ -480,13 +487,61 @@ const FindDoctors = () => {
                 specialization: doc.specialization,
                 city: doc.city || "",
                 avatar_url: profile.avatar_url,
-                source: 'registered'
+                source: "registered",
               });
-            }
+            });
+          }
+        }
+
+        // 3) Search registered doctors by specialization or city
+        const { data: docsByMeta } = await supabase
+          .from("doctors")
+          .select("id, specialization, city, profiles!inner(full_name, avatar_url)")
+          .eq("approved", true)
+          .or(`specialization.ilike.%${term}%,city.ilike.%${term}%`)
+          .limit(15);
+
+        if (docsByMeta) {
+          docsByMeta.forEach((doc) => {
+            if (seenIds.has(doc.id)) return;
+            const profile = doc.profiles as any;
+            if (!profile?.full_name) return;
+            seenIds.add(doc.id);
+            results.push({
+              id: doc.id,
+              full_name: profile.full_name,
+              specialization: doc.specialization,
+              city: doc.city || "",
+              avatar_url: profile.avatar_url,
+              source: "registered",
+            });
           });
         }
 
-        setDoctorResults(results.slice(0, 5));
+        // Rank: name prefix > name contains > specialization > city
+        results.sort((a, b) => {
+          const an = a.full_name.toLowerCase();
+          const bn = b.full_name.toLowerCase();
+          const aScore = an.startsWith(lowerTerm)
+            ? 0
+            : an.includes(lowerTerm)
+            ? 1
+            : a.specialization.toLowerCase().includes(lowerTerm)
+            ? 2
+            : 3;
+          const bScore = bn.startsWith(lowerTerm)
+            ? 0
+            : bn.includes(lowerTerm)
+            ? 1
+            : b.specialization.toLowerCase().includes(lowerTerm)
+            ? 2
+            : 3;
+          if (aScore !== bScore) return aScore - bScore;
+          if (a.source !== b.source) return a.source === "registered" ? -1 : 1;
+          return an.localeCompare(bn);
+        });
+
+        setDoctorResults(results.slice(0, 8));
       } catch (error) {
         console.error("Error searching doctors:", error);
       } finally {
@@ -494,7 +549,7 @@ const FindDoctors = () => {
       }
     };
 
-    const debounce = setTimeout(searchDoctors, 300);
+    const debounce = setTimeout(searchDoctors, 250);
     return () => clearTimeout(debounce);
   }, [searchTerm]);
 
