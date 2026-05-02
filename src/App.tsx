@@ -120,6 +120,7 @@ import Blogs from "./pages/Blogs";
 import BlogPost from "./pages/BlogPost";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import ServiceStatus from "./pages/ServiceStatus";
 import InstallApp from "./pages/InstallApp";
 import PatientVideoCall from "./pages/PatientVideoCall";
 import MobileHome from "./pages/app/MobileHome";
