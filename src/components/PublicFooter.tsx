@@ -9,11 +9,16 @@ const PublicFooter = () => {
 
   const isUSA = country === "US";
 
-  const quickLinks = [
+  const quickLinks: { name: string; href: string; external?: boolean }[] = [
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
     { name: "Contact", href: "/contact" },
+    {
+      name: "What is Zonoir?",
+      href: "https://zonoir.com/blog/what-is-zonoir",
+      external: true,
+    },
   ];
 
   const legalLinks = [
