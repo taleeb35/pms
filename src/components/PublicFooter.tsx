@@ -9,11 +9,16 @@ const PublicFooter = () => {
 
   const isUSA = country === "US";
 
-  const quickLinks = [
+  const quickLinks: { name: string; href: string; external?: boolean }[] = [
     { name: "Features", href: "/features" },
     { name: "Pricing", href: "/pricing" },
     { name: "Reviews", href: "/reviews" },
     { name: "Contact", href: "/contact" },
+    {
+      name: "What is Zonoir?",
+      href: "https://zonoir.com/blog/what-is-zonoir",
+      external: true,
+    },
   ];
 
   const legalLinks = [
@@ -80,13 +85,25 @@ const PublicFooter = () => {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <Link
-                    to={link.href}
-                    className="text-slate-400 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2 group"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                    {link.name}
-                  </Link>
+                  {link.external ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2 group"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      {link.name}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-slate-400 hover:text-white transition-colors duration-200 text-sm flex items-center gap-2 group"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      {link.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
