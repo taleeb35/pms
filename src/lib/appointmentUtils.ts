@@ -227,13 +227,18 @@ export const getAvailableTimeSlots = async (
       return [];
     }
 
+    // Normalize HH:MM:SS -> HH:MM for safe string comparison
+    const normalize = (t?: string) => (t ? t.slice(0, 5) : t);
+    const startHM = normalize(schedule.startTime);
+    const endHM = normalize(schedule.endTime);
+
     // Filter slots based on schedule
     const filteredSlots = allSlots.filter(slot => {
-      const slotTime = slot.value;
+      const slotTime = slot.value; // already HH:MM
 
       // Check if within working hours
-      if (schedule.startTime && schedule.endTime) {
-        if (slotTime < schedule.startTime || slotTime >= schedule.endTime) {
+      if (startHM && endHM) {
+        if (slotTime < startHM || slotTime >= endHM) {
           return false;
         }
       }
