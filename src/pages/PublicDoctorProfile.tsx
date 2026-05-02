@@ -60,7 +60,7 @@ const PublicDoctorProfile = () => {
   const [doctor, setDoctor] = useState<DoctorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [relatedDoctors, setRelatedDoctors] = useState<RelatedDoctor[]>([]);
-  const [bookOpen, setBookOpen] = useState(false);
+  
 
   const cityDisplay = city ? slugToDisplayName(city) : "";
   const specialtyDisplay = specialty ? slugToDisplayName(specialty) : "";
