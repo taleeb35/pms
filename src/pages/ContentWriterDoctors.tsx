@@ -548,14 +548,23 @@ const ContentWriterDoctors = () => {
   const fetchSeoDoctors = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("seo_doctor_listings")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(10000);
-
-      if (error) throw error;
-      setSeoDoctors(data || []);
+      // Paginate to bypass PostgREST default 1000-row cap
+      const pageSize = 1000;
+      const maxRows = 5000;
+      let allRows: any[] = [];
+      for (let from = 0; from < maxRows; from += pageSize) {
+        const to = Math.min(from + pageSize - 1, maxRows - 1);
+        const { data, error } = await supabase
+          .from("seo_doctor_listings")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .range(from, to);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allRows = allRows.concat(data);
+        if (data.length < pageSize) break;
+      }
+      setSeoDoctors(allRows);
     } catch (error: any) {
       toast({
         title: "Error",
