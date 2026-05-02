@@ -11,13 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Calendar, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -252,20 +245,22 @@ const BookAppointmentDialog = ({
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor="b-time">Time *</Label>
-                  <Select value={time} onValueChange={setTime} disabled={loadingSlots || slots.length === 0}>
-                    <SelectTrigger id="b-time">
-                      <SelectValue
-                        placeholder={loadingSlots ? "Loading…" : slots.length === 0 ? "Unavailable" : "Pick a slot"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {slots.map((s) => (
-                        <SelectItem key={s.value} value={s.value}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="b-time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    disabled={loadingSlots || slots.length === 0}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">
+                      {loadingSlots ? "Loading…" : slots.length === 0 ? "Unavailable" : "Pick a slot"}
+                    </option>
+                    {slots.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
