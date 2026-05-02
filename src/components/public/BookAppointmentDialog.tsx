@@ -38,6 +38,7 @@ const BookAppointmentDialog = ({
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [gender, setGender] = useState<"male" | "female" | "other">("male");
   const [date, setDate] = useState(today);
   const [time, setTime] = useState("");
   const [reason, setReason] = useState("");
@@ -147,7 +148,7 @@ const BookAppointmentDialog = ({
         _appointment_date: date,
         _appointment_time: time,
         _reason: reason || null,
-        _gender: "other",
+        _gender: gender,
       });
 
       if (error) throw error;
@@ -166,6 +167,7 @@ const BookAppointmentDialog = ({
   const resetAndClose = () => {
     setFullName("");
     setPhone("");
+    setGender("male");
     setDate(today);
     setTime("");
     setReason("");
@@ -218,16 +220,32 @@ const BookAppointmentDialog = ({
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="b-phone">Phone number *</Label>
-                <Input
-                  id="b-phone"
-                  value={phone}
-                  onChange={(e) => setPhone(handlePhoneInput(e))}
-                  placeholder="03001234567"
-                  inputMode="tel"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="b-phone">Phone number *</Label>
+                  <Input
+                    id="b-phone"
+                    value={phone}
+                    onChange={(e) => setPhone(handlePhoneInput(e))}
+                    placeholder="03001234567"
+                    inputMode="tel"
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="b-gender">Gender *</Label>
+                  <select
+                    id="b-gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value as "male" | "female" | "other")}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    required
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
