@@ -384,7 +384,8 @@ const DoctorHeroCard = ({
             </div>
           </div>
 
-          {/* RIGHT: Booking widget (2 cols) */}
+          {/* RIGHT: Booking widget (2 cols) - only for registered doctors */}
+          {isRegistered && (
           <div className="lg:col-span-2">
             <div className="bg-gradient-to-br from-primary/5 via-primary/[0.03] to-transparent border-2 border-primary/15 rounded-2xl p-5 h-full">
               {!isRegistered ? (
