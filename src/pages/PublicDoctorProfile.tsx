@@ -89,11 +89,13 @@ const PublicDoctorProfile = () => {
       setApprovedSchedule(null);
       setFaqs([]);
 
-      // First try SEO listings
+      // First try SEO listings - filter by city server-side to avoid the 1000-row default limit
       const { data: seoData, error: seoError } = await supabase
         .from("seo_doctor_listings")
         .select("*")
-        .eq("is_published", true);
+        .eq("is_published", true)
+        .ilike("city", cityDisplay)
+        .limit(2000);
 
       if (!seoError && seoData) {
         const matchedSeo = seoData.find(doc => {
