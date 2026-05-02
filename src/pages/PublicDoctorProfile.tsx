@@ -583,29 +583,36 @@ const PublicDoctorProfile = () => {
         </nav>
 
         <div className="max-w-5xl mx-auto space-y-8">
-          {/* Profile Header */}
-          <DoctorProfileHeader
-            doctor={doctor}
-            isRegistered={doctor.source === "approved_doctor"}
-            onBookClick={() => setBookOpen(true)}
-          />
+          {/* Hero: Profile + Inline booking widget */}
+          {(() => {
+            const clinics = getClinics();
+            const primary = clinics[0];
+            return (
+              <>
+                <DoctorHeroCard
+                  doctor={doctor}
+                  isRegistered={doctor.source === "approved_doctor"}
+                  primaryLocation={primary?.location || doctor.city}
+                  primaryMapQuery={primary?.mapQuery}
+                />
 
-          {doctor.source === "approved_doctor" && (
-            <BookAppointmentDialog
-              open={bookOpen}
-              onOpenChange={setBookOpen}
-              doctorId={doctor.id}
-              doctorName={doctor.full_name}
-            />
-          )}
+                {/* Map Section */}
+                <DoctorLocationMap
+                  locationName={primary?.location || doctor.clinic_location}
+                  city={doctor.city}
+                  mapQuery={primary?.mapQuery}
+                />
 
-          {/* Practice Address and Timings Section */}
-          <section>
-            <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
-              Practice Address and Timings
-            </h2>
-            <DoctorClinicTabs clinics={getClinics()} />
-          </section>
+                {/* Practice Address and Timings Section */}
+                <section>
+                  <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">
+                    Practice Address and Timings
+                  </h2>
+                  <DoctorClinicTabs clinics={clinics} />
+                </section>
+              </>
+            );
+          })()}
 
           {/* FAQs Section */}
           {(() => {
