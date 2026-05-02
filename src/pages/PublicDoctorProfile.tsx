@@ -106,11 +106,13 @@ const PublicDoctorProfile = () => {
           const docCitySlug = generateCitySlug(doc.city || "");
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(doc.full_name || "");
-          return docCitySlug === city && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          const cityMatches = city ? docCitySlug === city || !docCitySlug : true;
+          return cityMatches && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
         });
 
         if (matchedSeo) {
-          if (city !== generateCitySlug(matchedSeo.city || "")) {
+          const matchedSeoCitySlug = generateCitySlug(matchedSeo.city || "");
+          if (matchedSeoCitySlug && city !== matchedSeoCitySlug) {
             navigate(
               generateDoctorProfileUrl(matchedSeo.city || "", matchedSeo.specialization, matchedSeo.full_name),
               { replace: true }
@@ -183,7 +185,8 @@ const PublicDoctorProfile = () => {
           const docCitySlug = generateCitySlug(doc.city || "");
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(profile?.full_name || "");
-          return docCitySlug === city && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          const cityMatches = city ? docCitySlug === city || !docCitySlug : true;
+          return cityMatches && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
         });
 
         if (matchedDoctor) {
