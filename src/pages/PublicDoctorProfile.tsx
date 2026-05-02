@@ -13,7 +13,6 @@ import DoctorClinicTabs, { ClinicInfo } from "@/components/public/DoctorClinicTa
 import type { ScheduleDay } from "@/components/public/DoctorWeeklySchedule";
 import RelatedDoctorCard from "@/components/public/RelatedDoctorCard";
 import DoctorHeroCard from "@/components/public/DoctorHeroCard";
-import DoctorLocationMap from "@/components/public/DoctorLocationMap";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
