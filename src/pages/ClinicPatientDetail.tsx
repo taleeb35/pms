@@ -105,9 +105,11 @@ const ClinicPatientDetail = () => {
                   <p className="text-muted-foreground">ID: {patient.patient_id}</p>
                 </div>
               </div>
-              <Badge variant="outline" className="text-base px-4 py-2">
-                {calculateAge(patient.date_of_birth)} years old
-              </Badge>
+              {patient.date_of_birth && (
+                <Badge variant="outline" className="text-base px-4 py-2">
+                  {calculateAge(patient.date_of_birth)} years old
+                </Badge>
+              )}
             </div>
           </CardHeader>
           <CardContent>

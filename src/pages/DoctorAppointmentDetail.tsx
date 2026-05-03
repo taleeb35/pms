@@ -1082,7 +1082,9 @@ const DoctorAppointmentDetail = () => {
                   <p className="text-sm text-muted-foreground">{appointment.patients.patient_id}</p>
                 </div>
                 <div className="text-sm space-y-1">
-                  <p><span className="text-muted-foreground">Age:</span> {calculateAge(appointment.patients.date_of_birth)} years</p>
+                  {appointment.patients.date_of_birth && (
+                    <p><span className="text-muted-foreground">Age:</span> {calculateAge(appointment.patients.date_of_birth)} years</p>
+                  )}
                   <p><span className="text-muted-foreground">Gender:</span> {appointment.patients.gender}</p>
                   {appointment.patients.blood_group && (
                     <p><span className="text-muted-foreground">Blood:</span> {appointment.patients.blood_group}</p>

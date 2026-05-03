@@ -1028,7 +1028,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Age</p>
-                  <p className="font-semibold">{calculateAge(appointment.patients.date_of_birth)} years</p>
+                  <p className="font-semibold">{appointment.patients.date_of_birth ? `${calculateAge(appointment.patients.date_of_birth)} years` : "—"}</p>
                 </div>
               </div>
               {isGynecologist && pregnancyStartDate && (
