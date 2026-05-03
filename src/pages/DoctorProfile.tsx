@@ -72,6 +72,9 @@ const DoctorProfile = () => {
     console.log("Doctor data fetched:", doctorData);
     if (doctorError) console.error("Doctor fetch error:", doctorError);
 
+    setUserId(user.id);
+    setAvatarUrl(doctorData?.avatar_url || null);
+
     if (profileData && doctorData) {
       const newProfile = {
         full_name: profileData.full_name || "",
