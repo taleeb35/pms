@@ -9,12 +9,16 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
-import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2 } from "lucide-react";
+import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2, Camera, Loader2, Trash2 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
@@ -67,6 +71,9 @@ const DoctorProfile = () => {
 
     console.log("Doctor data fetched:", doctorData);
     if (doctorError) console.error("Doctor fetch error:", doctorError);
+
+    setUserId(user.id);
+    setAvatarUrl(profileData?.avatar_url || null);
 
     if (profileData && doctorData) {
       const newProfile = {
@@ -209,6 +216,68 @@ const DoctorProfile = () => {
     setPasswordData({ newPassword: "", confirmPassword: "" });
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !userId) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image must be smaller than 5MB", variant: "destructive" });
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `${userId}/avatar-${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("doctor-avatars")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (uploadError) throw uploadError;
+
+      const { data: pub } = supabase.storage.from("doctor-avatars").getPublicUrl(path);
+      const newUrl = pub.publicUrl;
+
+      const { error: updErr } = await supabase
+        .from("profiles")
+        .update({ avatar_url: newUrl })
+        .eq("id", userId);
+      if (updErr) throw updErr;
+
+      setAvatarUrl(newUrl);
+      toast({ title: "Profile picture updated" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleAvatarRemove = async () => {
+    if (!userId || !avatarUrl) return;
+    if (!confirm("Remove your profile picture?")) return;
+    setUploadingAvatar(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: null })
+        .eq("id", userId);
+      if (error) throw error;
+      setAvatarUrl(null);
+      toast({ title: "Profile picture removed" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const getInitials = (name: string) =>
+    name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "DR";
 
   return (
     <div className="space-y-6">
@@ -233,6 +302,44 @@ const DoctorProfile = () => {
           </CardHeader>
           <CardContent className="pt-6">
             <form onSubmit={handleUpdateProfile} className="space-y-4">
+              {/* Avatar upload */}
+              <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/30 border border-border">
+                <Avatar className="h-20 w-20 border-2 border-primary/30 shadow-md">
+                  <AvatarImage src={avatarUrl || undefined} alt={profile.full_name} />
+                  <AvatarFallback className="bg-primary/10 text-primary font-semibold text-lg">
+                    {getInitials(profile.full_name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-2">
+                  <Label className="text-sm font-medium">Profile Picture</Label>
+                  <p className="text-xs text-muted-foreground">JPG or PNG, max 5MB. Visible on your public profile.</p>
+                  <div className="flex flex-wrap gap-2">
+                    <label className="inline-flex items-center gap-2 cursor-pointer rounded-md border border-primary/40 bg-primary/10 hover:bg-primary/20 text-primary text-sm font-medium px-3 py-1.5 transition-colors">
+                      {uploadingAvatar ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+                      <span>{avatarUrl ? "Change Photo" : "Upload Photo"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingAvatar}
+                        onChange={handleAvatarUpload}
+                      />
+                    </label>
+                    {avatarUrl && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingAvatar}
+                        onClick={handleAvatarRemove}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
