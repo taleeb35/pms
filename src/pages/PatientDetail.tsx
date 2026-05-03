@@ -485,11 +485,11 @@ const PatientDetail = () => {
               )}
               <div>
                 <Label className="text-muted-foreground">Date of Birth</Label>
-                <p className="font-medium">{format(new Date(patient.date_of_birth), "PPP")}</p>
+                <p className="font-medium">{patient.date_of_birth ? format(new Date(patient.date_of_birth), "PPP") : "—"}</p>
               </div>
               <div>
                 <Label className="text-muted-foreground">Age</Label>
-                <p className="font-medium">{age} years</p>
+                <p className="font-medium">{patient.date_of_birth ? `${age} years` : "—"}</p>
               </div>
               <div>
                 <Label className="text-muted-foreground">Gender</Label>
