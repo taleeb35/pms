@@ -62,7 +62,7 @@ const PublicFooter = () => {
               <img src={clinicLogo} alt="Zonoir" className="" />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
-              The complete solution for modern clinic management. {contactDetails.trustText}.
+              The complete solution for modern clinic management. From appointment scheduling to digital prescriptions, we provide the tools you need to run a high-performance practice. Trusted by 48+ doctors across Pakistan.
             </p>
             {/* Social Icons */}
             <div className="flex gap-3 pt-2">
