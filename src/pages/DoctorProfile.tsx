@@ -159,6 +159,8 @@ const DoctorProfile = () => {
           instagram_url: profile.instagram_url?.trim() || null,
           youtube_url: profile.youtube_url?.trim() || null,
           tiktok_url: profile.tiktok_url?.trim() || null,
+          clinic_address: profile.clinic_address?.trim() || null,
+          clinic_map_location: profile.clinic_map_location?.trim() || null,
         })
         .eq("id", user.id);
 
