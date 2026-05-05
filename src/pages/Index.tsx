@@ -135,8 +135,8 @@ const Index = () => {
 
           <div className="flex flex-wrap justify-center gap-4 text-sm animate-fade-in">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
-              <UserPlus className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">Unlimited Doctors</span>
+              <Calendar className="h-4 w-4 text-blue-600" />
+              <span className="font-medium">Smart Appointments</span>
             </div>
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
               <Eye className="h-4 w-4 text-purple-600" />
