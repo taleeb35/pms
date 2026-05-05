@@ -280,7 +280,7 @@ const ClinicSignupArticle = () => {
               </div>
 
               <p className="mb-6">
-                Once approved, log in to access your clinic dashboard where you can:
+                Log in right after signup to access your clinic dashboard where you can:
               </p>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
