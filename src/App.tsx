@@ -415,6 +415,14 @@ const App = () => (
               }
             />
             <Route
+              path="/doctor/calendar"
+              element={
+                <Layout>
+                  <DoctorCalendar />
+                </Layout>
+              }
+            />
+            <Route
               path="/doctor/subscription"
               element={
                 <Layout>
