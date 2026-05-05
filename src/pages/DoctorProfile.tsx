@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
-import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2, Camera, Loader2, Trash2 } from "lucide-react";
+import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2, Camera, Loader2, Trash2, ExternalLink, Copy, Globe } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { generateDoctorProfileUrl } from "@/lib/slugUtils";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
