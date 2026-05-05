@@ -82,7 +82,24 @@ const DoctorReports = () => {
       setPatients(patientRes.data || []);
       setAllAppointments(allApptRes.data || []);
       setMedicalRecords(medRecRes.data || []);
-      setIcdCodes(icdRes.data || []);
+      // Merge ICD codes from clinic + doctor's own list, plus fetch any missing ones referenced by appointments
+      const baseIcds = icdRes.data || [];
+      const referencedIds = Array.from(
+        new Set(((apptRes.data || []) as any[]).map((a) => a.icd_code_id).filter(Boolean))
+      );
+      const knownIds = new Set(baseIcds.map((c: any) => c.id));
+      const missingIds = referencedIds.filter((id) => !knownIds.has(id));
+      let extra: any[] = [];
+      if (missingIds.length > 0) {
+        const [docExtra, clinicExtra] = await Promise.all([
+          supabase.from("doctor_icd_codes").select("id, code, description").in("id", missingIds),
+          supabase.from("clinic_icd_codes").select("id, code, description").in("id", missingIds),
+        ]);
+        extra = [...(docExtra.data || []), ...(clinicExtra.data || [])];
+      }
+      const mergedById = new Map<string, any>();
+      [...baseIcds, ...extra].forEach((c: any) => mergedById.set(c.id, c));
+      setIcdCodes(Array.from(mergedById.values()));
       const spec = doctorRes.data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecol") || spec.includes("obstetr") || spec.includes("gynae"));
     } catch (err) {
