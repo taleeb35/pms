@@ -182,19 +182,18 @@ const DoctorAppointmentDetail = () => {
       if (error) throw error;
       setAppointment(data);
 
-      // Compute 4-digit appointment number (Shopify-style: #1001, #1002, ...)
-      const { count, error: countError } = await supabase
-        .from("appointments")
-        .select("id", { count: "exact", head: true })
-        .eq("doctor_id", data.doctor_id)
-        .lte("created_at", data.created_at);
-      
-      if (!countError && count !== null) {
-        setAppointmentNumber(1000 + count);
-      }
-
-      // Fetch prev/next appointment ids (ordered by created_at) for navigation arrows
-      const [{ data: prevRow }, { data: nextRow }] = await Promise.all([
+      // Fire all secondary queries in parallel — none depend on each other
+      const [
+        countRes,
+        prevRes,
+        nextRes,
+        existingRecordResult,
+      ] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("id", { count: "exact", head: true })
+          .eq("doctor_id", data.doctor_id)
+          .lte("created_at", data.created_at),
         supabase
           .from("appointments")
           .select("id")
@@ -211,14 +210,16 @@ const DoctorAppointmentDetail = () => {
           .order("created_at", { ascending: true })
           .limit(1)
           .maybeSingle(),
+        fetchExistingRecord(data.id),
       ]);
-      setPrevId(prevRow?.id ?? null);
-      setNextId(nextRow?.id ?? null);
-      
-      // First check for existing record to know if we should set default consultation fee
-      const existingRecordResult = await fetchExistingRecord(data.id);
-      
-      // Fetch related data
+
+      if (!countRes.error && countRes.count !== null) {
+        setAppointmentNumber(1000 + countRes.count);
+      }
+      setPrevId(prevRes.data?.id ?? null);
+      setNextId(nextRes.data?.id ?? null);
+
+      // Fetch related data in parallel (independent of above)
       await Promise.all([
         checkDoctorSpecialization(data.doctor_id, !!existingRecordResult),
         fetchPatientPregnancyDate(data.patient_id),
