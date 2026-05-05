@@ -95,7 +95,7 @@ const ClinicSignupArticle = () => {
                   "Create your clinic account",
                   "Complete clinic profile setup",
                   "Add your first doctors",
-                  "Understand the approval process"
+                  "Get started instantly — no approval needed"
                 ].map((item, idx) => (
                   <li key={idx} className="flex items-center gap-2 text-sm">
                     <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
