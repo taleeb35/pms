@@ -657,16 +657,26 @@ const DoctorAppointmentDetail = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 relative cursor-progress">
+        {/* Top indeterminate progress bar */}
+        <div className="fixed top-0 left-0 right-0 h-1 bg-primary/10 z-50 overflow-hidden">
+          <div className="h-full w-1/3 bg-primary animate-[progress_1.2s_ease-in-out_infinite]" />
+        </div>
+        <style>{`@keyframes progress {0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}`}</style>
+
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          <span>Loading appointment details…</span>
+        </div>
         <Skeleton className="h-8 w-64" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-64" />
+            <Skeleton className="h-48 animate-pulse" />
+            <Skeleton className="h-64 animate-pulse" />
           </div>
           <div className="space-y-4">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-32" />
+            <Skeleton className="h-48 animate-pulse" />
+            <Skeleton className="h-32 animate-pulse" />
           </div>
         </div>
       </div>
