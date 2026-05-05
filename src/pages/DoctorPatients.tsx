@@ -994,6 +994,23 @@ const DoctorPatients = () => {
         return;
       }
 
+      // Duplicate detection (Contact Number / CNIC)
+      const dup = await findDuplicatePatients(addForm.phone, addForm.cnic);
+      if (dup.all.length > 0) {
+        const reason = dup.byPhone.length && dup.byCnic.length
+          ? "the same Contact Number and CNIC"
+          : dup.byPhone.length
+          ? "the same Contact Number"
+          : "the same CNIC";
+        const proceed = window.confirm(
+          `A patient with ${reason} already exists:\n\n${describeDuplicates(dup.all)}\n\nDo you still want to create a new record?`
+        );
+        if (!proceed) {
+          toast({ title: "Add patient cancelled", description: "Existing record kept to avoid duplicates." });
+          return;
+        }
+      }
+
       // Generate patient ID
       const patientId = `PAT${Date.now().toString().slice(-8)}`;
 
