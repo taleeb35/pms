@@ -63,7 +63,7 @@ const DoctorSummary = () => {
       s.total = a.length;
       for (const r of a) {
         if (r.status === "scheduled") s.scheduled++;
-        else if (r.status === "in_progress") s.inProgress++;
+        else if (r.status === "start") s.inProgress++;
         else if (r.status === "completed") s.completed++;
         else if (r.status === "cancelled") s.cancelled++;
         if (r.status !== "cancelled") {
