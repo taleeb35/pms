@@ -352,6 +352,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/clinic/profile", icon: UserCog, label: "Profile" },
         { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
+        { path: "/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
       ],
     },
   ];
