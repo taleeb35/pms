@@ -399,6 +399,28 @@ const DoctorReports = () => {
       .slice(0, 10);
   }, [appointments, icdCodes, medicalRecords]);
 
+  // ======= 3b. TOP ICD CODES (patients per ICD code) =======
+  const topIcdData = useMemo(() => {
+    const counts: Record<string, { code: string; description: string; patients: Set<string>; appts: number }> = {};
+    appointments.forEach(a => {
+      if (!a.icd_code_id) return;
+      const icd = icdCodes.find(c => c.id === a.icd_code_id);
+      if (!icd) return;
+      if (!counts[icd.id]) counts[icd.id] = { code: icd.code, description: icd.description, patients: new Set(), appts: 0 };
+      counts[icd.id].patients.add(a.patient_id);
+      counts[icd.id].appts += 1;
+    });
+    return Object.values(counts)
+      .map(c => ({
+        name: c.code,
+        fullName: `${c.code} - ${c.description}`,
+        patients: c.patients.size,
+        appointments: c.appts,
+      }))
+      .sort((a, b) => b.patients - a.patients)
+      .slice(0, 10);
+  }, [appointments, icdCodes]);
+
   // ======= 4. ALLERGY DISTRIBUTION =======
   const allergyData = useMemo(() => {
     const allergyCounts: Record<string, number> = {};
