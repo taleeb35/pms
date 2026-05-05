@@ -36,6 +36,7 @@ import {
   BarChart3,
   PenLine,
   MessageSquareText,
+  BookOpen,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
