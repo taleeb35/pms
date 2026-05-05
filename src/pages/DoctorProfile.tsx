@@ -36,6 +36,8 @@ const DoctorProfile = () => {
     instagram_url: "",
     youtube_url: "",
     tiktok_url: "",
+    clinic_address: "",
+    clinic_map_location: "",
   });
   const [passwordData, setPasswordData] = useState({
     newPassword: "",
@@ -93,6 +95,8 @@ const DoctorProfile = () => {
         instagram_url: doctorData.instagram_url || "",
         youtube_url: doctorData.youtube_url || "",
         tiktok_url: doctorData.tiktok_url || "",
+        clinic_address: (doctorData as any).clinic_address || "",
+        clinic_map_location: (doctorData as any).clinic_map_location || "",
       };
       
       console.log("Setting profile state to:", newProfile);
@@ -155,6 +159,8 @@ const DoctorProfile = () => {
           instagram_url: profile.instagram_url?.trim() || null,
           youtube_url: profile.youtube_url?.trim() || null,
           tiktok_url: profile.tiktok_url?.trim() || null,
+          clinic_address: profile.clinic_address?.trim() || null,
+          clinic_map_location: profile.clinic_map_location?.trim() || null,
         })
         .eq("id", user.id);
 
@@ -541,6 +547,46 @@ const DoctorProfile = () => {
                   placeholder="Brief introduction about yourself"
                   className="border-primary/20 focus:border-primary"
                 />
+              </div>
+
+              <div className="space-y-4 pt-2 border-t border-border/50">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Clinic Address & Location</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Shown to patients on your public profile. Paste a Google Maps link/URL to display an embedded map.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    Clinic Address
+                  </Label>
+                  <Textarea
+                    value={profile.clinic_address}
+                    onChange={(e) => setProfile({ ...profile, clinic_address: e.target.value })}
+                    rows={2}
+                    placeholder="e.g., 123 Main Street, Block A, Lahore"
+                    className="border-primary/20 focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Globe className="h-4 w-4 text-primary" />
+                    Google Maps Location
+                  </Label>
+                  <Input
+                    type="url"
+                    value={profile.clinic_map_location}
+                    onChange={(e) => setProfile({ ...profile, clinic_map_location: e.target.value })}
+                    placeholder="https://maps.google.com/?q=... or https://maps.app.goo.gl/..."
+                    className="border-primary/20 focus:border-primary"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Open Google Maps, find your clinic, click Share → Copy Link, and paste it here.
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4 pt-2">

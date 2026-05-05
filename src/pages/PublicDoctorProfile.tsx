@@ -175,6 +175,8 @@ const PublicDoctorProfile = () => {
           instagram_url,
           youtube_url,
           tiktok_url,
+          clinic_address,
+          clinic_map_location,
           profiles!inner(full_name, avatar_url)
         `)
         .eq("approved", true);
@@ -215,8 +217,12 @@ const PublicDoctorProfile = () => {
             instagram_url: (matchedDoctor as any).instagram_url,
             youtube_url: (matchedDoctor as any).youtube_url,
             tiktok_url: (matchedDoctor as any).tiktok_url,
-            source: 'approved_doctor'
-          });
+            clinic_name: (matchedDoctor as any).clinic_address ? "Clinic" : null,
+            clinic_location: (matchedDoctor as any).clinic_address || null,
+            source: 'approved_doctor',
+            // @ts-ignore - extra runtime field
+            clinic_map_location: (matchedDoctor as any).clinic_map_location || null,
+          } as any);
 
           // Fetch weekly schedule for approved doctor using public-safe backend function
           const { data: scheduleRows, error: scheduleError } = await supabase.rpc(
@@ -510,6 +516,7 @@ const PublicDoctorProfile = () => {
     const clinics: ClinicInfo[] = [];
     
     if (doctor.clinic_name || doctor.clinic_location) {
+      const mapLoc = (doctor as any).clinic_map_location as string | null | undefined;
       clinics.push({
         id: "clinic-1",
         name: doctor.clinic_name || "Main Clinic",
@@ -517,7 +524,7 @@ const PublicDoctorProfile = () => {
         fee: doctor.consultation_fee,
         timing: doctor.timing,
         scheduleData: doctor.source === "approved_doctor" ? approvedSchedule ?? undefined : undefined,
-        mapQuery: `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`
+        mapQuery: mapLoc || `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`
       });
     } else {
       // Default clinic if no specific data

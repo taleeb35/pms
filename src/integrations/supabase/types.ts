@@ -1054,7 +1054,9 @@ export type Database = {
           available_days: string[] | null
           available_hours: string | null
           city: string | null
+          clinic_address: string | null
           clinic_id: string | null
+          clinic_map_location: string | null
           clinic_percentage: number | null
           consultation_fee: number | null
           contact_number: string | null
@@ -1080,7 +1082,9 @@ export type Database = {
           available_days?: string[] | null
           available_hours?: string | null
           city?: string | null
+          clinic_address?: string | null
           clinic_id?: string | null
+          clinic_map_location?: string | null
           clinic_percentage?: number | null
           consultation_fee?: number | null
           contact_number?: string | null
@@ -1106,7 +1110,9 @@ export type Database = {
           available_days?: string[] | null
           available_hours?: string | null
           city?: string | null
+          clinic_address?: string | null
           clinic_id?: string | null
+          clinic_map_location?: string | null
           clinic_percentage?: number | null
           consultation_fee?: number | null
           contact_number?: string | null
