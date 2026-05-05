@@ -588,6 +588,9 @@ const DoctorProfile = () => {
                   </p>
                 </div>
               </div>
+
+              <div className="space-y-4 pt-2">
+                <h3 className="text-sm font-semibold text-foreground">Social Media Links (optional)</h3>
                 <p className="text-xs text-muted-foreground -mt-2">
                   These will be displayed on your public doctor profile.
                 </p>
