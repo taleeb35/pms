@@ -2065,3 +2065,318 @@ const ManageReceptionistsArticle = () => {
 };
 
 export default KnowledgeBaseArticle;
+
+const AddPatientsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient Management</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Adding New Patients</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20">
+                <Users className="w-3 h-3 mr-1" />
+                Patient Management
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Adding New Patients
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A complete guide to registering new patients, capturing their details, and getting them
+              ready for appointments and visit records.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where to find the Add Patient option",
+                  "Required vs optional patient fields",
+                  "Adding allergies, diseases & medical history",
+                  "Linking patients to appointments instantly",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Before you begin */}
+          <Card className="mb-10 border-amber-500/20 bg-amber-500/5">
+            <CardContent className="py-6">
+              <div className="flex items-start gap-3">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold mb-2">Before You Begin</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• You must be logged in as a Clinic, Doctor, or Receptionist</li>
+                    <li>• Have the patient's basic details ready (name & contact number)</li>
+                    <li>• Optionally collect medical history, allergies and CNIC for completeness</li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Patients Section</h2>
+                  <p className="text-muted-foreground m-0">Navigate from the sidebar</p>
+                </div>
+              </div>
+              <p>
+                From your dashboard, click <strong>"Patients"</strong> in the left sidebar under the
+                <em> Patient Care</em> group. Then click the <strong>"Add Patient"</strong> button at the
+                top right of the page to open the registration form.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mt-4">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Patients Menu</h4>
+                        <p className="text-xs text-muted-foreground">View & search all patients</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <UserPlus className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Add Patient Button</h4>
+                        <p className="text-xs text-muted-foreground">Top-right corner of the list</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Fill in Required Details</h2>
+                  <p className="text-muted-foreground m-0">Only two fields are mandatory</p>
+                </div>
+              </div>
+              <p>
+                To keep registration fast at the front desk, only two fields are required. You can
+                always edit and complete the rest later from the patient's detail page.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 my-6">
+                {[
+                  { icon: User, label: "Full Name", desc: "Patient's complete name" },
+                  { icon: Smartphone, label: "Contact Number", desc: "Used for reminders & search" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-primary/30 bg-primary/5">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label} <Badge variant="outline" className="ml-1 text-[10px]">Required</Badge></h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Add Optional Information</h2>
+                  <p className="text-muted-foreground m-0">Build a richer patient profile</p>
+                </div>
+              </div>
+              <p>The form also lets you capture additional information that improves clinical care:</p>
+              <ul className="space-y-2 mt-4">
+                <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-primary mt-1" /><span><strong>Date of Birth & Gender</strong> — used for age-aware records and Gynaecology workflows</span></li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-primary mt-1" /><span><strong>CNIC / ID Number</strong> — useful for verification and avoiding duplicates</span></li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-primary mt-1" /><span><strong>Address & City</strong> — for follow-ups and demographics</span></li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-primary mt-1" /><span><strong>Emergency Contact</strong> — name & number of next of kin</span></li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-primary mt-1" /><span><strong>Allergies & Existing Diseases</strong> — selected from your clinic's master list</span></li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-primary mt-1" /><span><strong>Notes</strong> — any free-text remarks for the doctor</span></li>
+              </ul>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 mt-6">
+                <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Email and Blood Group are intentionally not used as filters in
+                  patient listings — focus on Name, Contact and CNIC for fast lookup.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Save & Next Steps</h2>
+                  <p className="text-muted-foreground m-0">What happens after you click Save</p>
+                </div>
+              </div>
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                {[
+                  { title: "Patient Created Instantly", desc: "Record is saved to your clinic and appears in the Patients list" },
+                  { title: "Searchable Everywhere", desc: "Patient can be selected when booking appointments or walk-ins" },
+                  { title: "Open Patient Profile", desc: "Add documents, prescriptions, visit records and pregnancy details" },
+                  { title: "Book First Appointment", desc: "Click 'Book Appointment' from the patient page to schedule a 15-min slot" },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 - Bulk import */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Importing Patients in Bulk</h2>
+                  <p className="text-muted-foreground m-0">Migrating from another system?</p>
+                </div>
+              </div>
+              <p>
+                If you already have a patient database, use the <strong>Import</strong> button on the
+                Patients page to upload a CSV file. Download the sample template first to make sure
+                your columns match — at minimum you need <em>Name</em> and <em>Contact Number</em>.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Heads up:</strong> Duplicate contact numbers will be flagged during import so
+                  you don't end up with multiple records for the same patient.
+                </p>
+              </div>
+            </div>
+
+            {/* Was this helpful */}
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 mt-12">
+              <CardContent className="py-6">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <ThumbsUp className="w-5 h-5 text-primary" />
+                  Was this article helpful?
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Let us know so we can keep improving the knowledge base.
+                </p>
+                <div className="flex gap-3">
+                  <Button variant="outline" size="sm" className="gap-2"><ThumbsUp className="w-4 h-4" /> Yes</Button>
+                  <Button variant="outline" size="sm" className="gap-2"><ThumbsDown className="w-4 h-4" /> No</Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Related */}
+            <div className="mt-12">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-primary" />
+                Related Articles
+              </h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { title: "Managing Medical Records", slug: "medical-records" },
+                  { title: "Patient History & Documents", slug: "patient-history" },
+                  { title: "Booking Appointments", slug: "book-appointments" },
+                  { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
+                ].map((article, idx) => (
+                  <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="py-4 flex items-center justify-between">
+                        <span className="text-sm font-medium">{article.title}</span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
