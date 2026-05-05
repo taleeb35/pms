@@ -1203,7 +1203,7 @@ const AddDoctorsArticle = () => {
             <ChevronRight className="w-4 h-4" />
             <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-foreground">Adding Doctors to Your Clinic</span>
+            <span className="text-foreground">How to Add Doctors in Your Clinic</span>
           </div>
         </div>
       </section>
@@ -1231,7 +1231,7 @@ const AddDoctorsArticle = () => {
               </Badge>
             </div>
             <h1 className="text-3xl lg:text-4xl font-bold mb-4">
-              Adding Doctors to Your Clinic
+              How to Add Doctors in Your Clinic
             </h1>
             <p className="text-xl text-muted-foreground">
               Learn how to add and manage doctors in your clinic, assign permissions, 
@@ -2039,7 +2039,7 @@ const ManageReceptionistsArticle = () => {
             <div className="grid md:grid-cols-2 gap-4">
               {[
                 { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
-                { title: "Adding Doctors to Your Clinic", slug: "add-doctors" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
