@@ -344,8 +344,7 @@ const ClinicSignupArticle = () => {
             </h3>
             <div className="grid md:grid-cols-2 gap-4">
               {[
-                { title: "How to Sign Up as a Single Doctor", slug: "doctor-signup" },
-                { title: "Adding Doctors to Your Clinic", slug: "add-doctors" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
@@ -1167,7 +1166,7 @@ const DashboardOverviewArticle = () => {
             <div className="grid md:grid-cols-2 gap-4">
               {[
                 { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
-                { title: "How to Sign Up as a Single Doctor", slug: "doctor-signup" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Understanding Your Subscription", slug: "subscription" },
               ].map((article, idx) => (
@@ -1630,7 +1629,7 @@ const KnowledgeBaseArticle = () => {
   }
 
   if (slug === "doctor-signup") {
-    return <DoctorSignupArticle />;
+    return <AddDoctorsArticle />;
   }
 
   if (slug === "dashboard-overview") {
