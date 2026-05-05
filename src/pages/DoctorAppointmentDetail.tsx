@@ -183,14 +183,116 @@ const DoctorAppointmentDetail = () => {
     confidential_notes: "",
   });
 
+  // Track latest state for cache snapshots without re-running effects
+  const stateRef = useRef<any>({});
+  stateRef.current = {
+    appointment, appointmentNumber, prevId, nextId, formData, existingRecord,
+    selectedProcedure, procedureFee, selectedICDCode,
+    pregnancyStartDate, nextVisitDate,
+    isGynecologist, isOphthalmologist,
+    procedures, icdCodes, diseaseTemplates, testTemplates,
+  };
+
+  // Hydrate from cache synchronously when id changes — instant tab switching
+  const hydrateFromCache = (snap: CachedSnapshot) => {
+    setAppointment(snap.appointment);
+    setAppointmentNumber(snap.appointmentNumber);
+    setPrevId(snap.prevId);
+    setNextId(snap.nextId);
+    setFormData(snap.formData);
+    setExistingRecord(snap.existingRecord);
+    setSelectedProcedure(snap.selectedProcedure);
+    setProcedureFee(snap.procedureFee);
+    setSelectedICDCode(snap.selectedICDCode);
+    setPregnancyStartDate(snap.pregnancyStartDate ? new Date(snap.pregnancyStartDate) : undefined);
+    setNextVisitDate(snap.nextVisitDate ? new Date(snap.nextVisitDate) : undefined);
+    setIsGynecologist(snap.isGynecologist);
+    setIsOphthalmologist(snap.isOphthalmologist);
+    setProcedures(snap.procedures);
+    setIcdCodes(snap.icdCodes);
+    setDiseaseTemplates(snap.diseaseTemplates);
+    setTestTemplates(snap.testTemplates);
+  };
+
+  const writeCache = (aptId: string) => {
+    const s = stateRef.current;
+    if (!s.appointment) return;
+    appointmentCache.set(aptId, {
+      appointment: s.appointment,
+      appointmentNumber: s.appointmentNumber,
+      prevId: s.prevId,
+      nextId: s.nextId,
+      formData: s.formData,
+      existingRecord: s.existingRecord,
+      selectedProcedure: s.selectedProcedure,
+      procedureFee: s.procedureFee,
+      selectedICDCode: s.selectedICDCode,
+      pregnancyStartDate: s.pregnancyStartDate ? s.pregnancyStartDate.toISOString() : null,
+      nextVisitDate: s.nextVisitDate ? s.nextVisitDate.toISOString() : null,
+      isGynecologist: s.isGynecologist,
+      isOphthalmologist: s.isOphthalmologist,
+      procedures: s.procedures,
+      icdCodes: s.icdCodes,
+      diseaseTemplates: s.diseaseTemplates,
+      testTemplates: s.testTemplates,
+      cachedAt: Date.now(),
+    });
+  };
+
   useEffect(() => {
-    if (id) {
-      fetchAppointmentDetails();
+    if (!id) return;
+    const cached = appointmentCache.get(id);
+    if (cached) {
+      hydrateFromCache(cached);
+      setLoading(false);
+      // Stale-while-revalidate: refresh in background only if cache is older than 30s
+      if (Date.now() - cached.cachedAt > 30 * 1000) {
+        fetchAppointmentDetails(true);
+      } else {
+        // Still prefetch neighbors
+        prefetchNeighbors(cached.prevId, cached.nextId);
+      }
+    } else {
+      fetchAppointmentDetails(false);
     }
   }, [id]);
 
-  const fetchAppointmentDetails = async () => {
-    setLoading(true);
+  const prefetchNeighbors = async (pId: string | null, nId: string | null) => {
+    [pId, nId].forEach((nid) => {
+      if (nid && !appointmentCache.has(nid)) {
+        // Fire-and-forget warm fetch (just the appointment row) so the cache
+        // entry exists with at least core data; full snapshot fills on visit.
+        supabase
+          .from("appointments")
+          .select(`*, patients(id, full_name, patient_id, date_of_birth, phone, email, gender, address, city, blood_group, pregnancy_start_date, allergies, major_diseases)`)
+          .eq("id", nid)
+          .single()
+          .then(({ data }) => {
+            if (data && !appointmentCache.has(nid)) {
+              // Store a minimal placeholder; full snapshot will overwrite on actual visit.
+              // We DON'T set cachedAt so it's always considered stale and refetched.
+              appointmentCache.set(nid, {
+                appointment: data,
+                appointmentNumber: 0,
+                prevId: null, nextId: null,
+                formData: stateRef.current.formData,
+                existingRecord: null,
+                selectedProcedure: "", procedureFee: "",
+                selectedICDCode: "",
+                pregnancyStartDate: null, nextVisitDate: null,
+                isGynecologist: false, isOphthalmologist: false,
+                procedures: [], icdCodes: [],
+                diseaseTemplates: [], testTemplates: [],
+                cachedAt: 0,
+              });
+            }
+          });
+      }
+    });
+  };
+
+  const fetchAppointmentDetails = async (background = false) => {
+    if (!background) setLoading(true);
     try {
       const { data, error } = await supabase
         .from("appointments")
@@ -241,8 +343,10 @@ const DoctorAppointmentDetail = () => {
       if (!countRes.error && countRes.count !== null) {
         setAppointmentNumber(1000 + countRes.count);
       }
-      setPrevId(prevRes.data?.id ?? null);
-      setNextId(nextRes.data?.id ?? null);
+      const newPrev = prevRes.data?.id ?? null;
+      const newNext = nextRes.data?.id ?? null;
+      setPrevId(newPrev);
+      setNextId(newNext);
 
       // Fetch related data in parallel (independent of above)
       await Promise.all([
@@ -251,12 +355,21 @@ const DoctorAppointmentDetail = () => {
         fetchDiseaseTemplates(data.doctor_id),
         fetchTestTemplates(data.doctor_id),
       ]);
+
+      // Persist snapshot for instant re-entry & prefetch neighbors
+      // Defer slightly so React state has flushed
+      setTimeout(() => {
+        if (id) writeCache(id);
+        prefetchNeighbors(newPrev, newNext);
+      }, 0);
     } catch (error: any) {
       console.error("Error fetching appointment:", error);
-      toast({ title: "Error", description: "Failed to load appointment details", variant: "destructive" });
-      navigate("/doctor/appointments");
+      if (!background) {
+        toast({ title: "Error", description: "Failed to load appointment details", variant: "destructive" });
+        navigate("/doctor/appointments");
+      }
     } finally {
-      setLoading(false);
+      if (!background) setLoading(false);
     }
   };
 
