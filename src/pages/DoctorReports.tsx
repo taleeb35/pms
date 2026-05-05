@@ -1533,7 +1533,60 @@ const DoctorReports = () => {
         </CardContent>
       </Card>
 
-      {/* ======= ALLERGY DISTRIBUTION ======= */}
+      {/* ======= TOP ICD CODES ======= */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" /> Top ICD Codes by Patients
+          </CardTitle>
+          <CardDescription>Which ICD codes have the most patients (from appointments)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {topIcdData.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={topIcdData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                    <Tooltip formatter={(val: number, key: string, props: any) => [val, key === "patients" ? `Patients (${props.payload.fullName})` : "Appointments"]} />
+                    <Legend />
+                    <Bar dataKey="patients" name="Patients" radius={[4, 4, 0, 0]}>
+                      {topIcdData.map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div>
+                <p className="text-sm font-medium mb-2">Breakdown</p>
+                <div className="space-y-2 max-h-56 overflow-y-auto">
+                  {topIcdData.map((d, i) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-muted/50 gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="h-3 w-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                        <span className="text-sm truncate" title={d.fullName}>{d.fullName}</span>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-sm font-bold">{d.patients} pts</div>
+                        <div className="text-xs text-muted-foreground">{d.appointments} appts</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Activity className="h-10 w-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">No ICD code data available yet</p>
+              <p className="text-xs mt-1">Assign ICD codes to appointments to see patient distribution</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
