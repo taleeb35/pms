@@ -107,6 +107,8 @@ const DoctorAppointmentDetail = () => {
   
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
   const [appointmentNumber, setAppointmentNumber] = useState<number>(0);
+  const [prevId, setPrevId] = useState<string | null>(null);
+  const [nextId, setNextId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
@@ -190,6 +192,28 @@ const DoctorAppointmentDetail = () => {
       if (!countError && count !== null) {
         setAppointmentNumber(1000 + count);
       }
+
+      // Fetch prev/next appointment ids (ordered by created_at) for navigation arrows
+      const [{ data: prevRow }, { data: nextRow }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("id")
+          .eq("doctor_id", data.doctor_id)
+          .lt("created_at", data.created_at)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("appointments")
+          .select("id")
+          .eq("doctor_id", data.doctor_id)
+          .gt("created_at", data.created_at)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+      setPrevId(prevRow?.id ?? null);
+      setNextId(nextRow?.id ?? null);
       
       // First check for existing record to know if we should set default consultation fee
       const existingRecordResult = await fetchExistingRecord(data.id);
@@ -744,10 +768,24 @@ const DoctorAppointmentDetail = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           <div className="flex">
-            <Button variant="outline" size="icon" className="rounded-r-none border-r-0">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-r-none border-r-0"
+              disabled={!prevId}
+              onClick={() => prevId && navigate(`/doctor/appointments/${prevId}`)}
+              title="Previous appointment"
+            >
               <ChevronUp className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="rounded-l-none">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-l-none"
+              disabled={!nextId}
+              onClick={() => nextId && navigate(`/doctor/appointments/${nextId}`)}
+              title="Next appointment"
+            >
               <ChevronDown className="h-4 w-4" />
             </Button>
           </div>
