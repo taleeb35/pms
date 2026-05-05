@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CitySelect } from "@/components/CitySelect";
-import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2, Camera, Loader2, Trash2 } from "lucide-react";
+import { Mail, Phone, MapPin, User, Lock, Stethoscope, Briefcase, FileText, Facebook, Instagram, Youtube, Music2, Camera, Loader2, Trash2, ExternalLink, Copy, Globe } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { generateDoctorProfileUrl } from "@/lib/slugUtils";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -279,6 +280,23 @@ const DoctorProfile = () => {
   const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "DR";
 
+  const publicProfilePath = profile.full_name && profile.specialization
+    ? generateDoctorProfileUrl(profile.city || "", profile.specialization, profile.full_name)
+    : "";
+  const publicProfileUrl = publicProfilePath
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}${publicProfilePath}`
+    : "";
+
+  const handleCopyPublicUrl = async () => {
+    if (!publicProfileUrl) return;
+    try {
+      await navigator.clipboard.writeText(publicProfileUrl);
+      toast({ title: "Link copied", description: "Public profile link copied to clipboard." });
+    } catch {
+      toast({ title: "Copy failed", description: "Please copy the link manually.", variant: "destructive" });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
@@ -290,6 +308,46 @@ const DoctorProfile = () => {
           <p className="text-muted-foreground">Manage your professional information</p>
         </div>
       </div>
+
+      {publicProfilePath && (
+        <Card className="border-primary/20 shadow-md overflow-hidden">
+          <CardContent className="p-4 sm:p-5 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex items-start gap-3 flex-1 min-w-0">
+                <div className="p-2 bg-primary/15 rounded-lg shrink-0">
+                  <Globe className="h-5 w-5 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground">Your Public Profile</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    This is the page patients see when they find you online.
+                  </p>
+                  <a
+                    href={publicProfilePath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline break-all"
+                  >
+                    {publicProfileUrl}
+                  </a>
+                </div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Button type="button" variant="outline" size="sm" onClick={handleCopyPublicUrl}>
+                  <Copy className="h-4 w-4 mr-1" /> Copy
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => window.open(publicProfilePath, "_blank", "noopener,noreferrer")}
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" /> View
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Profile Information Card */}
