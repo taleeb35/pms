@@ -69,9 +69,8 @@ const DoctorReports = () => {
           .eq("doctor_id", user.id)
           .order("visit_date", { ascending: false }),
         supabase
-          .from("doctor_icd_codes")
-          .select("id, code, description")
-          .eq("doctor_id", user.id),
+          .from("clinic_icd_codes")
+          .select("id, code, description"),
         supabase
           .from("doctors")
           .select("specialization")
