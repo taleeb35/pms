@@ -26,7 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CalendarIcon, Printer, ChevronUp, ChevronDown, MoreHorizontal, Phone, Mail, MapPin, User, FileText, Clock, CheckCircle, XCircle, Play, Pencil } from "lucide-react";
+import { CalendarIcon, Printer, ChevronUp, ChevronDown, MoreHorizontal, Phone, Mail, MapPin, User, FileText, Clock, CheckCircle, XCircle, Play, Pencil, Loader2 } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -182,19 +182,18 @@ const DoctorAppointmentDetail = () => {
       if (error) throw error;
       setAppointment(data);
 
-      // Compute 4-digit appointment number (Shopify-style: #1001, #1002, ...)
-      const { count, error: countError } = await supabase
-        .from("appointments")
-        .select("id", { count: "exact", head: true })
-        .eq("doctor_id", data.doctor_id)
-        .lte("created_at", data.created_at);
-      
-      if (!countError && count !== null) {
-        setAppointmentNumber(1000 + count);
-      }
-
-      // Fetch prev/next appointment ids (ordered by created_at) for navigation arrows
-      const [{ data: prevRow }, { data: nextRow }] = await Promise.all([
+      // Fire all secondary queries in parallel — none depend on each other
+      const [
+        countRes,
+        prevRes,
+        nextRes,
+        existingRecordResult,
+      ] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("id", { count: "exact", head: true })
+          .eq("doctor_id", data.doctor_id)
+          .lte("created_at", data.created_at),
         supabase
           .from("appointments")
           .select("id")
@@ -211,14 +210,16 @@ const DoctorAppointmentDetail = () => {
           .order("created_at", { ascending: true })
           .limit(1)
           .maybeSingle(),
+        fetchExistingRecord(data.id),
       ]);
-      setPrevId(prevRow?.id ?? null);
-      setNextId(nextRow?.id ?? null);
-      
-      // First check for existing record to know if we should set default consultation fee
-      const existingRecordResult = await fetchExistingRecord(data.id);
-      
-      // Fetch related data
+
+      if (!countRes.error && countRes.count !== null) {
+        setAppointmentNumber(1000 + countRes.count);
+      }
+      setPrevId(prevRes.data?.id ?? null);
+      setNextId(nextRes.data?.id ?? null);
+
+      // Fetch related data in parallel (independent of above)
       await Promise.all([
         checkDoctorSpecialization(data.doctor_id, !!existingRecordResult),
         fetchPatientPregnancyDate(data.patient_id),
@@ -657,16 +658,26 @@ const DoctorAppointmentDetail = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 relative cursor-progress">
+        {/* Top indeterminate progress bar */}
+        <div className="fixed top-0 left-0 right-0 h-1 bg-primary/10 z-50 overflow-hidden">
+          <div className="h-full w-1/3 bg-primary animate-[progress_1.2s_ease-in-out_infinite]" />
+        </div>
+        <style>{`@keyframes progress {0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}`}</style>
+
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          <span>Loading appointment details…</span>
+        </div>
         <Skeleton className="h-8 w-64" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-4">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-64" />
+            <Skeleton className="h-48 animate-pulse" />
+            <Skeleton className="h-64 animate-pulse" />
           </div>
           <div className="space-y-4">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-32" />
+            <Skeleton className="h-48 animate-pulse" />
+            <Skeleton className="h-32 animate-pulse" />
           </div>
         </div>
       </div>
