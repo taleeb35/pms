@@ -686,7 +686,7 @@ const FindDoctors = () => {
                         variant="ghost"
                         role="combobox"
                         aria-expanded={specialtyOpen}
-                        className="w-full justify-between p-0 h-auto font-normal hover:bg-transparent"
+                        className="w-full justify-between p-0 h-auto font-normal hover:bg-transparent hover:text-foreground"
                       >
                         {selectedSpecialtyLabel}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
