@@ -265,13 +265,13 @@ const Index = () => {
             <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 border-2 border-purple-200 hover:shadow-xl transition-all duration-300 animate-fade-in">
               <div className="flex items-start gap-4">
                 <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl shadow-lg">
-                  <UserPlus className="h-8 w-8 text-white" />
+                  <Calendar className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold mb-2 text-foreground">Add Unlimited Doctors</h4>
+                  <h4 className="text-xl font-bold mb-2 text-foreground">Smart Appointment Scheduling</h4>
                   <p className="text-muted-foreground leading-relaxed">
-                    No restrictions on the number of doctors. Scale your clinic as you grow. Manage credentials,
-                    schedules, and permissions for each doctor effortlessly.
+                    Book, reschedule, and manage appointments in seconds. Automatic conflict detection, 15-minute
+                    slots, and instant patient notifications keep your clinic running smoothly.
                   </p>
                 </div>
               </div>
