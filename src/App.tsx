@@ -87,6 +87,7 @@ import ClinicDoctorSchedules from "./pages/ClinicDoctorSchedules";
 import ReceptionistDashboard from "./pages/ReceptionistDashboard";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeBaseArticle from "./pages/KnowledgeBaseArticle";
+import { KBEmbeddedProvider } from "./contexts/KnowledgeBaseContext";
 import ReferralProgram from "./pages/ReferralProgram";
 import ReferralPartnerAuth from "./pages/ReferralPartnerAuth";
 import ReferralPartnerDashboard from "./pages/ReferralPartnerDashboard";
