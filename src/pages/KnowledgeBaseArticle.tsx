@@ -227,18 +227,18 @@ const ClinicSignupArticle = () => {
                   3
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold m-0">Submit & Await Approval</h2>
-                  <p className="text-muted-foreground m-0">Our team will review your application</p>
+                  <h2 className="text-2xl font-bold m-0">Submit & Get Started Instantly</h2>
+                  <p className="text-muted-foreground m-0">No review process — you can start using your account right away</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 mb-6">
-                <Shield className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20 mb-6">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm m-0 font-medium">Security & Verification</p>
+                  <p className="text-sm m-0 font-medium">Instant Access</p>
                   <p className="text-sm m-0 text-muted-foreground">
-                    All clinic registrations are reviewed by our team to ensure authenticity 
-                    and protect the integrity of our healthcare network.
+                    There is no manual review or approval process for clinic signups.
+                    As soon as you complete registration, your clinic account is active and ready to use.
                   </p>
                 </div>
               </div>
@@ -251,10 +251,10 @@ const ClinicSignupArticle = () => {
                 <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
                 
                 {[
-                  { title: "Application Received", desc: "You'll receive a confirmation email" },
-                  { title: "Review Process", desc: "Our team verifies your clinic details (24-48 hours)" },
-                  { title: "Approval Notification", desc: "Email sent with login credentials" },
-                  { title: "Access Dashboard", desc: "Start managing your clinic!" },
+                  { title: "Account Created", desc: "Your clinic account is created instantly" },
+                  { title: "Confirmation Email", desc: "You'll receive a welcome email with login details" },
+                  { title: "Login to Dashboard", desc: "Sign in immediately — no waiting required" },
+                  { title: "Start Adding Doctors", desc: "Begin adding doctors and managing your clinic right away" },
                 ].map((step, idx) => (
                   <div key={idx} className="relative">
                     <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
