@@ -516,6 +516,7 @@ const PublicDoctorProfile = () => {
     const clinics: ClinicInfo[] = [];
     
     if (doctor.clinic_name || doctor.clinic_location) {
+      const mapLoc = (doctor as any).clinic_map_location as string | null | undefined;
       clinics.push({
         id: "clinic-1",
         name: doctor.clinic_name || "Main Clinic",
@@ -523,7 +524,7 @@ const PublicDoctorProfile = () => {
         fee: doctor.consultation_fee,
         timing: doctor.timing,
         scheduleData: doctor.source === "approved_doctor" ? approvedSchedule ?? undefined : undefined,
-        mapQuery: `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`
+        mapQuery: mapLoc || `${doctor.clinic_location || ""} ${doctor.city}, Pakistan`
       });
     } else {
       // Default clinic if no specific data
