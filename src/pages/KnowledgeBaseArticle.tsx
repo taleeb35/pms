@@ -309,8 +309,8 @@ const ClinicSignupArticle = () => {
                     <h4 className="font-semibold mb-2">Important Notes</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Monthly fees apply based on the number of doctors in your clinic</li>
-                      <li>• Ensure all information provided is accurate to avoid delays</li>
-                      <li>• Contact support if you don't receive approval within 48 hours</li>
+                      <li>• Ensure all information provided is accurate for your records and invoicing</li>
+                      <li>• Your account is active immediately — start adding doctors right after signup</li>
                     </ul>
                   </div>
                 </div>
