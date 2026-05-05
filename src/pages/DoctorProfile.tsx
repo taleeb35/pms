@@ -95,6 +95,8 @@ const DoctorProfile = () => {
         instagram_url: doctorData.instagram_url || "",
         youtube_url: doctorData.youtube_url || "",
         tiktok_url: doctorData.tiktok_url || "",
+        clinic_address: (doctorData as any).clinic_address || "",
+        clinic_map_location: (doctorData as any).clinic_map_location || "",
       };
       
       console.log("Setting profile state to:", newProfile);
