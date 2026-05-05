@@ -1622,6 +1622,7 @@ const AddDoctorsArticle = () => {
 };
 
 const KnowledgeBaseArticle = () => {
+  const kbBase = useKBBase();
   const { slug } = useParams();
 
   if (slug === "clinic-signup") {

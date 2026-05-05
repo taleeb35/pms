@@ -97,6 +97,7 @@ const categories = [
 ];
 
 const KnowledgeBase = () => {
+  const kbBase = useKBBase();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredCategories = categories.map(category => ({
