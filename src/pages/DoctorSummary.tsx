@@ -94,7 +94,7 @@ const DoctorSummary = () => {
     { label: "Cancelled", value: stats.cancelled, icon: XCircle, tint: "from-rose-500/10 to-rose-500/5 text-rose-600" },
     { label: "Revenue Collected", value: fmtPKR(stats.revenue), icon: Wallet, tint: "from-violet-500/10 to-violet-500/5 text-violet-600" },
     { label: "Refunded", value: fmtPKR(stats.refunds), icon: RotateCcw, tint: "from-orange-500/10 to-orange-500/5 text-orange-600" },
-    { label: "Net Revenue", value: fmtPKR(stats.net), icon: Wallet, tint: "from-primary/10 to-primary/5 text-primary" },
+    { label: "Net Revenue", value: fmtPKR(stats.net), icon: TrendingUp, tint: "from-primary/10 to-primary/5 text-primary" },
   ];
 
   return (
