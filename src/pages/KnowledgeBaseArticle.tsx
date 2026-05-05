@@ -31,10 +31,11 @@ import {
   HeadphonesIcon,
   Stethoscope
 } from "lucide-react";
-import { KBHeader as PublicHeader, KBFooter as PublicFooter } from "@/contexts/KnowledgeBaseContext";
+import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 
 
 const ClinicSignupArticle = () => {
+  const kbBase = useKBBase();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
       <PublicHeader />
@@ -366,6 +367,7 @@ const ClinicSignupArticle = () => {
 };
 
 const DoctorSignupArticle = () => {
+  const kbBase = useKBBase();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
       <PublicHeader />
@@ -730,6 +732,7 @@ const DoctorSignupArticle = () => {
 };
 
 const DashboardOverviewArticle = () => {
+  const kbBase = useKBBase();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
       <PublicHeader />
@@ -1188,6 +1191,7 @@ const DashboardOverviewArticle = () => {
 };
 
 const AddDoctorsArticle = () => {
+  const kbBase = useKBBase();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
       <PublicHeader />
@@ -1657,6 +1661,7 @@ const KnowledgeBaseArticle = () => {
 };
 
 const ManageReceptionistsArticle = () => {
+  const kbBase = useKBBase();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
       <PublicHeader />
