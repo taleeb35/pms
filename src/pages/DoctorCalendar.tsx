@@ -93,7 +93,7 @@ const emptyForm = (date?: Date) => ({
 });
 
 const DoctorCalendar = () => {
-  useSEO({ title: "My Calendar | Doctor Portal", description: "Personal tasks and events calendar" });
+  useSEO({ title: "Calendar | Doctor Portal", description: "Personal tasks and events calendar" });
   const { toast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
@@ -278,7 +278,7 @@ const DoctorCalendar = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-            <CalendarIcon className="h-6 w-6 text-primary" /> My Calendar
+            <CalendarIcon className="h-6 w-6 text-primary" /> Calendar
           </h1>
           <p className="text-sm text-muted-foreground">Your private tasks and events. Only you can see this.</p>
         </div>
