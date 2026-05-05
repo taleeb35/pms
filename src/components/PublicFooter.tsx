@@ -27,6 +27,7 @@ const PublicFooter = () => {
     { name: "Terms of Service", href: "/terms-of-service" },
     { name: "Blog", href: "/blog" },
     { name: "Help Center", href: "/knowledge-base" },
+    { name: "Knowledge Base", href: "/knowledge-base" },
     { name: "Find Doctors", href: "/find-doctors" },
   ];
 
