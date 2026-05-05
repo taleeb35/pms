@@ -567,6 +567,51 @@ export type Database = {
           },
         ]
       }
+      doctor_calendar_tasks: {
+        Row: {
+          color: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          doctor_id: string
+          due_date: string
+          due_time: string | null
+          id: string
+          priority: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          color?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          doctor_id: string
+          due_date: string
+          due_time?: string | null
+          id?: string
+          priority?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          color?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          doctor_id?: string
+          due_date?: string
+          due_time?: string | null
+          id?: string
+          priority?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       doctor_disease_templates: {
         Row: {
           clinic_id: string | null

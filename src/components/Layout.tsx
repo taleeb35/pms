@@ -37,6 +37,7 @@ import {
   PenLine,
   MessageSquareText,
   BookOpen,
+  CalendarDays,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -288,6 +289,13 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
         { path: "/doctor/templates", icon: Layers, label: "Templates" },
+      ],
+    },
+    {
+      label: "My Calendar",
+      icon: CalendarDays,
+      items: [
+        { path: "/doctor/calendar", icon: CalendarDays, label: "My Calendar" },
       ],
     },
     {
