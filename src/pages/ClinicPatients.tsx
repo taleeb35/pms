@@ -49,6 +49,7 @@ import { VisitHistory } from "@/components/VisitHistory";
 import { TablePagination } from "@/components/TablePagination";
 import DeletingOverlay from "@/components/DeletingOverlay";
 import { logActivity } from "@/lib/activityLogger";
+import { findDuplicatePatients, describeDuplicates } from "@/lib/patientDuplicates";
 
 interface Patient {
   id: string;

@@ -30,6 +30,7 @@ import { MultiSelectSearchable } from "@/components/MultiSelectSearchable";
 import { validateName, validatePhone, validateEmail, validateCNIC, handleNameInput, handlePhoneInput, handleCNICInput } from "@/lib/validations";
 import { TablePagination } from "@/components/TablePagination";
 import { logActivity } from "@/lib/activityLogger";
+import { findDuplicatePatients, describeDuplicates } from "@/lib/patientDuplicates";
 
 interface Patient {
   id: string;
