@@ -218,9 +218,11 @@ const PublicDoctorProfile = () => {
             youtube_url: (matchedDoctor as any).youtube_url,
             tiktok_url: (matchedDoctor as any).tiktok_url,
             clinic_name: (matchedDoctor as any).clinic_address ? "Clinic" : null,
-            clinic_location: (matchedDoctor as any).clinic_map_location || (matchedDoctor as any).clinic_address || null,
-            source: 'approved_doctor'
-          });
+            clinic_location: (matchedDoctor as any).clinic_address || null,
+            source: 'approved_doctor',
+            // @ts-ignore - extra runtime field
+            clinic_map_location: (matchedDoctor as any).clinic_map_location || null,
+          } as any);
 
           // Fetch weekly schedule for approved doctor using public-safe backend function
           const { data: scheduleRows, error: scheduleError } = await supabase.rpc(
