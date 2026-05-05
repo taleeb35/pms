@@ -87,6 +87,7 @@ import ClinicDoctorSchedules from "./pages/ClinicDoctorSchedules";
 import ReceptionistDashboard from "./pages/ReceptionistDashboard";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import KnowledgeBaseArticle from "./pages/KnowledgeBaseArticle";
+import { KBEmbeddedProvider } from "./contexts/KnowledgeBaseContext";
 import ReferralProgram from "./pages/ReferralProgram";
 import ReferralPartnerAuth from "./pages/ReferralPartnerAuth";
 import ReferralPartnerDashboard from "./pages/ReferralPartnerDashboard";
@@ -210,6 +211,10 @@ const App = () => (
           <Route path="/emr-software-for-doctors-in-abbottabad" element={<CityAbbottabad />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
+          <Route path="/doctor/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />
+          <Route path="/doctor/knowledge-base/:slug" element={<Layout><KBEmbeddedProvider><KnowledgeBaseArticle /></KBEmbeddedProvider></Layout>} />
+          <Route path="/clinic/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />
+          <Route path="/clinic/knowledge-base/:slug" element={<Layout><KBEmbeddedProvider><KnowledgeBaseArticle /></KBEmbeddedProvider></Layout>} />
           <Route path="/referral-program" element={<ReferralProgram />} />
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
