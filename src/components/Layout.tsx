@@ -292,6 +292,13 @@ const Layout = ({ children }: LayoutProps) => {
       ],
     },
     {
+      label: "My Calendar",
+      icon: CalendarDays,
+      items: [
+        { path: "/doctor/calendar", icon: CalendarDays, label: "My Calendar" },
+      ],
+    },
+    {
       label: "My Reports",
       icon: BarChart3,
       items: [
