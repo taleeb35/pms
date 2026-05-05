@@ -36,6 +36,7 @@ import {
   BarChart3,
   PenLine,
   MessageSquareText,
+  BookOpen,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -264,6 +265,7 @@ const Layout = ({ children }: LayoutProps) => {
     ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
     { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
+    { path: "/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
   ];
 
   const doctorMenuGroups: MenuGroup[] = [
@@ -350,6 +352,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
         { path: "/clinic/profile", icon: UserCog, label: "Profile" },
         { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
+        { path: "/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
       ],
     },
   ];
