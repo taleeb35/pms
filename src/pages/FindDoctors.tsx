@@ -740,7 +740,7 @@ const FindDoctors = () => {
                 </div>
 
                 {/* Search Input */}
-                <div className="flex-[2] flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
+                <div className="flex-1 flex items-center gap-2 border rounded-lg px-3 py-2 bg-background">
                   <Search className="h-5 w-5 text-muted-foreground" />
                   <Input
                     type="text"
