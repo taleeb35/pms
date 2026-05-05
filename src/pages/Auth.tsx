@@ -26,9 +26,9 @@ import {
   handleNumberInput
 } from "@/lib/validations";
 
-const ORIGINAL_PRICE = 80;
+const ORIGINAL_PRICE = 23999;
 const DISCOUNT_PERCENT = 75;
-const MONTHLY_PRICE_PER_DOCTOR = 19.99;
+const MONTHLY_PRICE_PER_DOCTOR = 5999;
 const YEARLY_DISCOUNT = 0.17; // 17% discount
 
 const Auth = () => {
@@ -51,18 +51,13 @@ const Auth = () => {
 
   // Calculate pricing
   const doctorCount = parseInt(noOfDoctors) || 1;
-  const yearlyMonthlyRate = Math.round((MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT)) * 100) / 100;
+  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
   const monthlyTotal = doctorCount * MONTHLY_PRICE_PER_DOCTOR;
   const yearlyTotal = doctorCount * yearlyMonthlyRate;
   const yearlySavings = (monthlyTotal - yearlyTotal) * 12;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(price);
+    return `Rs. ${Math.round(price).toLocaleString("en-PK")}`;
   };
 
   // Debounced referral code validation
