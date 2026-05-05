@@ -134,6 +134,7 @@ const DoctorAppointments = () => {
   const [sortColumn, setSortColumn] = useState<string>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [numberMap, setNumberMap] = useState<Map<string, number>>(new Map());
   const { toast } = useToast();
 
   useEffect(() => {
