@@ -217,6 +217,8 @@ const PublicDoctorProfile = () => {
             instagram_url: (matchedDoctor as any).instagram_url,
             youtube_url: (matchedDoctor as any).youtube_url,
             tiktok_url: (matchedDoctor as any).tiktok_url,
+            clinic_name: (matchedDoctor as any).clinic_address ? "Clinic" : null,
+            clinic_location: (matchedDoctor as any).clinic_map_location || (matchedDoctor as any).clinic_address || null,
             source: 'approved_doctor'
           });
 
