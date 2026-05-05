@@ -609,6 +609,7 @@ const DoctorAppointmentDetail = () => {
 
   const handleStatusChange = async (newStatus: "scheduled" | "start" | "completed" | "cancelled") => {
     if (!appointment) return;
+    if (id) appointmentCache.delete(id);
     
     try {
       const updateData: any = { status: newStatus };
