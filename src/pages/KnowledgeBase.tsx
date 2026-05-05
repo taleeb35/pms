@@ -169,7 +169,7 @@ const KnowledgeBase = () => {
                 A complete step-by-step guide to registering your clinic and getting started 
                 with our platform in just 5 minutes.
               </p>
-              <Link to="/knowledge-base/clinic-signup">
+              <Link to={`${kbBase}/clinic-signup`}>
                 <Button size="lg" className="gap-2">
                   Read Full Guide
                   <ArrowRight className="h-4 w-4" />
@@ -211,7 +211,7 @@ const KnowledgeBase = () => {
                   {category.articles.map((article, idx) => (
                     <li key={idx}>
                       <Link 
-                        to={`/knowledge-base/${article.slug}`}
+                        to={`${kbBase}/${article.slug}`}
                         className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors group/item"
                       >
                         <span className="text-sm flex items-center gap-2">

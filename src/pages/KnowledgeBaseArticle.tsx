@@ -43,9 +43,9 @@ const ClinicSignupArticle = () => {
       <section className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
             <ChevronRight className="w-4 h-4" />
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Getting Started</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground">How to Sign Up Your Clinic</span>
           </div>
@@ -55,7 +55,7 @@ const ClinicSignupArticle = () => {
       <div className="container mx-auto px-4 py-8 lg:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Link to="/knowledge-base">
+          <Link to={kbBase}>
             <Button variant="ghost" className="mb-6 gap-2 -ml-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Knowledge Base
@@ -346,7 +346,7 @@ const ClinicSignupArticle = () => {
                 { title: "How to Sign Up as a Single Doctor", slug: "doctor-signup" },
                 { title: "Adding Doctors to Your Clinic", slug: "add-doctors" },
               ].map((article, idx) => (
-                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="py-4 flex items-center justify-between">
                       <span className="text-sm font-medium">{article.title}</span>
@@ -374,9 +374,9 @@ const DoctorSignupArticle = () => {
       <section className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
             <ChevronRight className="w-4 h-4" />
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Getting Started</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground">How to Sign Up as a Single Doctor</span>
           </div>
@@ -386,7 +386,7 @@ const DoctorSignupArticle = () => {
       <div className="container mx-auto px-4 py-8 lg:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Link to="/knowledge-base">
+          <Link to={kbBase}>
             <Button variant="ghost" className="mb-6 gap-2 -ml-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Knowledge Base
@@ -710,7 +710,7 @@ const DoctorSignupArticle = () => {
                 { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
                 { title: "Setting Up Your Schedule", slug: "schedule-setup" },
               ].map((article, idx) => (
-                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="py-4 flex items-center justify-between">
                       <span className="text-sm font-medium">{article.title}</span>
@@ -738,9 +738,9 @@ const DashboardOverviewArticle = () => {
       <section className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
             <ChevronRight className="w-4 h-4" />
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Getting Started</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground">Understanding Your Dashboard</span>
           </div>
@@ -750,7 +750,7 @@ const DashboardOverviewArticle = () => {
       <div className="container mx-auto px-4 py-8 lg:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Link to="/knowledge-base">
+          <Link to={kbBase}>
             <Button variant="ghost" className="mb-6 gap-2 -ml-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Knowledge Base
@@ -1168,7 +1168,7 @@ const DashboardOverviewArticle = () => {
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Understanding Your Subscription", slug: "subscription" },
               ].map((article, idx) => (
-                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="py-4 flex items-center justify-between">
                       <span className="text-sm font-medium">{article.title}</span>
@@ -1196,9 +1196,9 @@ const AddDoctorsArticle = () => {
       <section className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
             <ChevronRight className="w-4 h-4" />
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Getting Started</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground">Adding Doctors to Your Clinic</span>
           </div>
@@ -1208,7 +1208,7 @@ const AddDoctorsArticle = () => {
       <div className="container mx-auto px-4 py-8 lg:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Link to="/knowledge-base">
+          <Link to={kbBase}>
             <Button variant="ghost" className="mb-6 gap-2 -ml-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Knowledge Base
@@ -1598,7 +1598,7 @@ const AddDoctorsArticle = () => {
                 { title: "Managing Doctor Schedules", slug: "doctor-schedule" },
                 { title: "Managing Receptionists", slug: "manage-receptionists" },
               ].map((article, idx) => (
-                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="py-4 flex items-center justify-between">
                       <span className="text-sm font-medium">{article.title}</span>
@@ -1647,7 +1647,7 @@ const KnowledgeBaseArticle = () => {
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-2xl font-bold mb-4">Article Coming Soon</h1>
         <p className="text-muted-foreground mb-6">This article is currently being written. Check back soon!</p>
-        <Link to="/knowledge-base">
+        <Link to={kbBase}>
           <Button>Back to Knowledge Base</Button>
         </Link>
       </div>
@@ -1665,9 +1665,9 @@ const ManageReceptionistsArticle = () => {
       <section className="border-b bg-muted/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
             <ChevronRight className="w-4 h-4" />
-            <Link to="/knowledge-base" className="hover:text-foreground transition-colors">For Clinics</Link>
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Clinics</Link>
             <ChevronRight className="w-4 h-4" />
             <span className="text-foreground">Managing Receptionists</span>
           </div>
@@ -1677,7 +1677,7 @@ const ManageReceptionistsArticle = () => {
       <div className="container mx-auto px-4 py-8 lg:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Back Button */}
-          <Link to="/knowledge-base">
+          <Link to={kbBase}>
             <Button variant="ghost" className="mb-6 gap-2 -ml-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Knowledge Base
@@ -2036,7 +2036,7 @@ const ManageReceptionistsArticle = () => {
                 { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
                 { title: "Adding Doctors to Your Clinic", slug: "add-doctors" },
               ].map((article, idx) => (
-                <Link key={idx} to={`/knowledge-base/${article.slug}`}>
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="py-4 flex items-center justify-between">
                       <span className="text-sm font-medium">{article.title}</span>
