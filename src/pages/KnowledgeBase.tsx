@@ -18,8 +18,8 @@ import {
   ArrowRight
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import PublicHeader from "@/components/PublicHeader";
-import PublicFooter from "@/components/PublicFooter";
+import { KBHeader as PublicHeader, KBFooter as PublicFooter } from "@/contexts/KnowledgeBaseContext";
+
 
 const categories = [
   {

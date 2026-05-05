@@ -31,8 +31,8 @@ import {
   HeadphonesIcon,
   Stethoscope
 } from "lucide-react";
-import PublicHeader from "@/components/PublicHeader";
-import PublicFooter from "@/components/PublicFooter";
+import { KBHeader as PublicHeader, KBFooter as PublicFooter } from "@/contexts/KnowledgeBaseContext";
+
 
 const ClinicSignupArticle = () => {
   return (
