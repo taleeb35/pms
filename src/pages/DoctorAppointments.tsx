@@ -589,14 +589,8 @@ const DoctorAppointments = () => {
     return filtered;
   };
 
-  // Build a map of appointment id -> 4-digit sequential number (like Shopify orders: #1001, #1002, ...)
-  const appointmentNumberMap = new Map<string, number>();
-  const sortedByCreation = [...appointments].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  );
-  sortedByCreation.forEach((apt, index) => {
-    appointmentNumberMap.set(apt.id, 1001 + index);
-  });
+  // Use server-side numbering map (matches detail page: 1000 + count of created_at <= row)
+  const appointmentNumberMap = numberMap;
 
   const filteredAppointments = getFilteredAppointments();
 
