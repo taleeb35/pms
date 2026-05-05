@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { CalendarIcon, Users, Calendar as CalIcon, CheckCircle2, XCircle, DollarSign, RotateCcw, Clock, UserPlus, Activity } from "lucide-react";
+import { CalendarIcon, Users, Calendar as CalIcon, CheckCircle2, XCircle, Wallet, RotateCcw, Clock, UserPlus, Activity, Banknote, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
