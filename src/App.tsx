@@ -55,6 +55,7 @@ import DoctorAllergies from "./pages/DoctorAllergies";
 import DoctorDiseases from "./pages/DoctorDiseases";
 import DoctorTemplates from "./pages/DoctorTemplates";
 import DoctorSchedule from "./pages/DoctorSchedule";
+import DoctorCalendar from "./pages/DoctorCalendar";
 import SupportTickets from "./pages/SupportTickets";
 import AdminDoctorPatients from "./pages/AdminDoctorPatients";
 import AdminSettings from "./pages/AdminSettings";
