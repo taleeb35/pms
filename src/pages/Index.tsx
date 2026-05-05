@@ -44,10 +44,10 @@ const Index = () => {
 
   const features = [
     {
-      icon: UserPlus,
-      title: "Unlimited Doctor Management",
+      icon: Calendar,
+      title: "Smart Appointment Scheduling",
       description:
-        "Add and manage unlimited doctors in your clinic. Assign roles, track performance, and control access.",
+        "Book and manage appointments with conflict-free 15-minute slots, instant reminders, and online booking.",
       color: "from-blue-500 to-cyan-500",
     },
     {
