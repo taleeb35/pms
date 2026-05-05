@@ -100,6 +100,31 @@ interface AppointmentData {
   };
 }
 
+// Module-level in-memory cache so switching between appointments is instant.
+// Persists for the life of the SPA session (cleared on full reload).
+type CachedSnapshot = {
+  appointment: any;
+  appointmentNumber: number;
+  prevId: string | null;
+  nextId: string | null;
+  formData: any;
+  existingRecord: any;
+  selectedProcedure: string;
+  procedureFee: string;
+  selectedICDCode: string;
+  pregnancyStartDate: string | null; // ISO string
+  nextVisitDate: string | null; // ISO string
+  isGynecologist: boolean;
+  isOphthalmologist: boolean;
+  procedures: Procedure[];
+  icdCodes: ICDCode[];
+  diseaseTemplates: DiseaseTemplate[];
+  testTemplates: TestTemplate[];
+  cachedAt: number;
+};
+const appointmentCache = new Map<string, CachedSnapshot>();
+const CACHE_MAX_AGE = 5 * 60 * 1000; // 5 min — still revalidate in background
+
 const DoctorAppointmentDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
