@@ -768,10 +768,24 @@ const DoctorAppointmentDetail = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           <div className="flex">
-            <Button variant="outline" size="icon" className="rounded-r-none border-r-0">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-r-none border-r-0"
+              disabled={!prevId}
+              onClick={() => prevId && navigate(`/doctor/appointments/${prevId}`)}
+              title="Previous appointment"
+            >
               <ChevronUp className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="rounded-l-none">
+            <Button
+              variant="outline"
+              size="icon"
+              className="rounded-l-none"
+              disabled={!nextId}
+              onClick={() => nextId && navigate(`/doctor/appointments/${nextId}`)}
+              title="Next appointment"
+            >
               <ChevronDown className="h-4 w-4" />
             </Button>
           </div>
