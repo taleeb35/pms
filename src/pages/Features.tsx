@@ -41,9 +41,9 @@ const Features = () => {
       color: "from-blue-500 to-cyan-500",
     },
     {
-      icon: UserPlus,
-      title: "Unlimited Doctors",
-      description: "Add and manage unlimited doctors with performance tracking.",
+      icon: ClipboardList,
+      title: "Digital Prescriptions",
+      description: "Create, print, and share professional prescriptions in seconds.",
       color: "from-purple-500 to-pink-500",
     },
     {
