@@ -49,6 +49,7 @@ import { VisitHistory } from "@/components/VisitHistory";
 import { TablePagination } from "@/components/TablePagination";
 import DeletingOverlay from "@/components/DeletingOverlay";
 import { logActivity } from "@/lib/activityLogger";
+import { findDuplicatePatients, describeDuplicates } from "@/lib/patientDuplicates";
 
 interface Patient {
   id: string;
@@ -851,6 +852,23 @@ const ClinicPatients = () => {
         variant: "destructive" 
       });
       return;
+    }
+
+    // Duplicate detection (Contact Number / CNIC)
+    const dup = await findDuplicatePatients(addForm.phone, addForm.cnic);
+    if (dup.all.length > 0) {
+      const reason = dup.byPhone.length && dup.byCnic.length
+        ? "the same Contact Number and CNIC"
+        : dup.byPhone.length
+        ? "the same Contact Number"
+        : "the same CNIC";
+      const proceed = window.confirm(
+        `A patient with ${reason} already exists:\n\n${describeDuplicates(dup.all)}\n\nDo you still want to create a new record?`
+      );
+      if (!proceed) {
+        toast({ title: "Add patient cancelled", description: "Existing record kept to avoid duplicates." });
+        return;
+      }
     }
 
     // Generate patient ID
