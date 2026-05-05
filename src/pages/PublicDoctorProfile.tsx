@@ -175,6 +175,8 @@ const PublicDoctorProfile = () => {
           instagram_url,
           youtube_url,
           tiktok_url,
+          clinic_address,
+          clinic_map_location,
           profiles!inner(full_name, avatar_url)
         `)
         .eq("approved", true);
