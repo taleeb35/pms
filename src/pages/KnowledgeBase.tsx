@@ -30,7 +30,7 @@ const categories = [
     color: "from-blue-500 to-blue-600",
     articles: [
       { title: "How to Sign Up Your Clinic", slug: "clinic-signup", isNew: true },
-      { title: "How to Sign Up as a Single Doctor", slug: "doctor-signup" },
+      { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
       { title: "Understanding Your Dashboard", slug: "dashboard-overview" },
     ]
   },
@@ -41,7 +41,7 @@ const categories = [
     icon: Building2,
     color: "from-emerald-500 to-emerald-600",
     articles: [
-      { title: "Adding Doctors to Your Clinic", slug: "add-doctors" },
+      { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
       { title: "Managing Receptionists", slug: "manage-receptionists" },
       { title: "Setting Up Specializations", slug: "specializations" },
     ]
