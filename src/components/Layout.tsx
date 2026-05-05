@@ -635,7 +635,7 @@ const Layout = ({ children }: LayoutProps) => {
                     <Button
                       variant={isActive ? "default" : "ghost"}
                       className={`w-full transition-all ${
-                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start px-3'
                       } ${
                         isActive ? "shadow-md" : "hover:bg-primary hover:text-white hover:shadow-sm"
                       }`}
