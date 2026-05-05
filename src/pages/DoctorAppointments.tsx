@@ -200,6 +200,32 @@ const DoctorAppointments = () => {
 
       if (error) throw error;
 
+      // Build authoritative numbering map (Shopify-style #1001, #1002, ...) from ALL appointments
+      // ordered by created_at ascending. Paginate to bypass the 1000-row default cap so the
+      // numbers shown in the list match the detail page exactly.
+      const map = new Map<string, number>();
+      const PAGE = 1000;
+      let from = 0;
+      let counter = 1001;
+      // Loop until we get less than a full page
+      // Defensive cap to avoid runaway loops
+      for (let i = 0; i < 50; i++) {
+        const { data: pageData, error: pageErr } = await supabase
+          .from("appointments")
+          .select("id")
+          .eq("doctor_id", user.id)
+          .order("created_at", { ascending: true })
+          .range(from, from + PAGE - 1);
+        if (pageErr) break;
+        const rows = pageData || [];
+        rows.forEach((r: any) => {
+          map.set(r.id, counter++);
+        });
+        if (rows.length < PAGE) break;
+        from += PAGE;
+      }
+      setNumberMap(map);
+
       // Guard against missing/blocked patient joins (can crash the page otherwise)
       setAppointments((data || []).filter((apt: any) => apt.patients));
     } catch (error: any) {
