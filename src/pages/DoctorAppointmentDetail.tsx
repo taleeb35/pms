@@ -192,6 +192,28 @@ const DoctorAppointmentDetail = () => {
       if (!countError && count !== null) {
         setAppointmentNumber(1000 + count);
       }
+
+      // Fetch prev/next appointment ids (ordered by created_at) for navigation arrows
+      const [{ data: prevRow }, { data: nextRow }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("id")
+          .eq("doctor_id", data.doctor_id)
+          .lt("created_at", data.created_at)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("appointments")
+          .select("id")
+          .eq("doctor_id", data.doctor_id)
+          .gt("created_at", data.created_at)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle(),
+      ]);
+      setPrevId(prevRow?.id ?? null);
+      setNextId(nextRow?.id ?? null);
       
       // First check for existing record to know if we should set default consultation fee
       const existingRecordResult = await fetchExistingRecord(data.id);
