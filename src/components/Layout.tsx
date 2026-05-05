@@ -265,7 +265,7 @@ const Layout = ({ children }: LayoutProps) => {
     ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
     { path: "/doctor/profile", icon: UserCog, label: "Profile" },
     { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
-    { path: "/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
+    { path: "/doctor/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
   ];
 
   const doctorMenuGroups: MenuGroup[] = [
