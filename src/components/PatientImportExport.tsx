@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { findDuplicatePatients } from "@/lib/patientDuplicates";
 import { Download, Upload, FileSpreadsheet, Loader2 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { format } from "date-fns";
@@ -225,7 +226,54 @@ const PatientImportExport = ({ createdBy, onImportComplete }: PatientImportExpor
     setIsImporting(true);
 
     try {
-      const patientsToInsert = importData.map((patient) => ({
+      // Duplicate detection — skip rows whose phone/CNIC already exist
+      const skipped: { name: string; reason: string }[] = [];
+      const rowsToImport: typeof importData = [];
+      const seenInBatch = new Map<string, string>(); // key -> name
+
+      for (const patient of importData) {
+        const phoneKey = patient.phone ? `p:${patient.phone.replace(/\s|-/g, "")}` : "";
+        const cnicKey = patient.cnic ? `c:${patient.cnic.replace(/\s|-/g, "")}` : "";
+
+        // Within-file duplicates
+        if (phoneKey && seenInBatch.has(phoneKey)) {
+          skipped.push({ name: patient.full_name, reason: `Duplicate of "${seenInBatch.get(phoneKey)}" in this file (same Contact Number)` });
+          continue;
+        }
+        if (cnicKey && seenInBatch.has(cnicKey)) {
+          skipped.push({ name: patient.full_name, reason: `Duplicate of "${seenInBatch.get(cnicKey)}" in this file (same CNIC)` });
+          continue;
+        }
+
+        // Existing-DB duplicates
+        const dup = await findDuplicatePatients(patient.phone, patient.cnic);
+        if (dup.all.length > 0) {
+          const existing = dup.all[0];
+          const matched = dup.byPhone.length ? "Contact Number" : "CNIC";
+          skipped.push({
+            name: patient.full_name,
+            reason: `Already exists as "${existing.full_name}" (${existing.patient_id}) — same ${matched}`,
+          });
+          continue;
+        }
+
+        if (phoneKey) seenInBatch.set(phoneKey, patient.full_name);
+        if (cnicKey) seenInBatch.set(cnicKey, patient.full_name);
+        rowsToImport.push(patient);
+      }
+
+      if (rowsToImport.length === 0) {
+        toast({
+          title: "Nothing to import",
+          description: `All ${importData.length} rows were duplicates and were skipped.`,
+          variant: "destructive",
+        });
+        setImportErrors(skipped.map((s) => `${s.name}: ${s.reason}`));
+        setIsImporting(false);
+        return;
+      }
+
+      const patientsToInsert = rowsToImport.map((patient) => ({
         patient_id: generatePatientId(),
         full_name: patient.full_name,
         father_name: patient.father_name || null,
@@ -253,12 +301,15 @@ const PatientImportExport = ({ createdBy, onImportComplete }: PatientImportExpor
 
       toast({
         title: "Import Successful",
-        description: `Successfully imported ${importData.length} patients.`,
+        description: `Imported ${patientsToInsert.length} patients${skipped.length ? `, skipped ${skipped.length} duplicate${skipped.length > 1 ? "s" : ""}.` : "."}`,
       });
 
-      setImportDialogOpen(false);
-      setImportData([]);
-      setImportErrors([]);
+      if (skipped.length > 0) {
+        setImportErrors(skipped.map((s) => `${s.name}: ${s.reason}`));
+      } else {
+        setImportDialogOpen(false);
+        setImportErrors([]);
+      }
       onImportComplete();
     } catch (error: any) {
       console.error("Error importing patients:", error);
