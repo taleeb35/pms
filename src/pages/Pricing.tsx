@@ -13,13 +13,13 @@ const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [doctorCount, setDoctorCount] = useState(1);
 
-  const ORIGINAL_PRICE = 80;
+  const ORIGINAL_PRICE = 23999;
   const DISCOUNT_PERCENT = 75;
-  const MONTHLY_PRICE_PER_DOCTOR = 19.99;
+  const MONTHLY_PRICE_PER_DOCTOR = 5999;
   const YEARLY_DISCOUNT = 0.17; // 17% discount
 
   const monthlyTotal = doctorCount * MONTHLY_PRICE_PER_DOCTOR;
-  const yearlyMonthlyRate = Math.round((MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT)) * 100) / 100;
+  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
   const yearlyTotal = doctorCount * yearlyMonthlyRate;
   const yearlySavings = (monthlyTotal - yearlyTotal) * 12;
 
@@ -41,7 +41,7 @@ const Pricing = () => {
     {
       question: "How does the pricing work?",
       answer:
-        "Our standard rate is $80 per doctor per month, but with our 75% launch discount, you only pay $19.99. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
+        "Our standard rate is PKR 23,999 per doctor per month, but with our 75% launch discount, you only pay PKR 5,999. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
     },
     {
       question: "Is there a free trial?",
@@ -50,7 +50,7 @@ const Pricing = () => {
     {
       question: "What's the yearly discount?",
       answer:
-        "When you choose annual billing, you get an additional 17% off - that's $16.59 per doctor per month instead of $19.99.",
+        "When you choose annual billing, you get an additional 17% off — that's PKR 4,979 per doctor per month instead of PKR 5,999.",
     },
     {
       question: "Can I switch between monthly and yearly?",
@@ -70,12 +70,7 @@ const Pricing = () => {
   ];
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(price);
+    return `Rs. ${Math.round(price).toLocaleString("en-PK")}`;
   };
 
   return (
@@ -96,8 +91,8 @@ const Pricing = () => {
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            <span className="line-through text-muted-foreground/60">${ORIGINAL_PRICE}</span>{" "}
-            <span className="font-bold text-foreground">${MONTHLY_PRICE_PER_DOCTOR}</span> per doctor per month.{" "}
+            <span className="line-through text-muted-foreground/60">{formatPrice(ORIGINAL_PRICE)}</span>{" "}
+            <span className="font-bold text-foreground">{formatPrice(MONTHLY_PRICE_PER_DOCTOR)}</span> per doctor per month.{" "}
             <Badge className="bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20 text-sm">{DISCOUNT_PERCENT}% OFF</Badge>
           </p>
 
