@@ -29,7 +29,8 @@ const UnifiedLogin = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [bioAvailable, setBioAvailable] = useState(false);
+
   // Dialogs for various states
   const [showInactiveDialog, setShowInactiveDialog] = useState(false);
   const [showTrialExpiredDialog, setShowTrialExpiredDialog] = useState(false);
@@ -37,10 +38,54 @@ const UnifiedLogin = () => {
   const [showAccountNotFoundDialog, setShowAccountNotFoundDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  useEffect(() => {
+    isBiometricAvailable().then(setBioAvailable);
+  }, []);
 
-    const emailValidation = validateEmail(email);
+  const performLogin = async (loginEmail: string, loginPassword: string) => {
+    setLoading(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+      if (authError) throw authError;
+      const userId = authData.user.id;
+      // Save creds to keychain on native after successful login
+      if (isNative()) {
+        try { await saveBiometricCredentials(loginEmail, loginPassword); } catch {}
+        registerNativePush(userId);
+      }
+      return { userId };
+    } catch (error: any) {
+      toast({ title: "Login Error", description: error.message, variant: "destructive" });
+      setLoading(false);
+      return null;
+    }
+  };
+
+  const handleBiometricLogin = async () => {
+    const creds = await loadBiometricCredentials();
+    if (!creds) return;
+    setEmail(creds.email);
+    setPassword(creds.password);
+    // reuse the form submit path
+    const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+    await handleLoginWith(creds.email, creds.password);
+  };
+
+  const handleLoginWith = async (loginEmail: string, loginPassword: string) => {
+    const emailValidation = validateEmail(loginEmail);
+    if (!emailValidation.isValid) {
+      toast({
+        title: "Validation Error",
+        description: emailValidation.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
     if (!emailValidation.isValid) {
       toast({
         title: "Validation Error",
