@@ -2384,3 +2384,277 @@ const AddPatientsArticle = () => {
   );
 };
 
+
+const MedicalRecordsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient Management</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Medical Records</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20">
+                <Users className="w-3 h-3 mr-1" />
+                Patient Management
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Medical Records
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A complete guide to creating, updating, and organizing patient medical records
+              securely on the platform — from visit notes and prescriptions to allergies, diseases,
+              and uploaded documents.
+            </p>
+          </div>
+
+          {/* Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Open a patient's medical record",
+                  "Record visits with diagnosis & prescriptions",
+                  "Track allergies, diseases & ICD codes",
+                  "Upload lab reports and documents",
+                  "View complete patient timeline & history",
+                  "Export and print medical records",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open a Patient Record</h2>
+                  <p className="text-muted-foreground m-0">Find any patient and access their full chart</p>
+                </div>
+              </div>
+              <p>
+                Go to the <strong>Patients</strong> section from the sidebar. Use the search bar to find
+                a patient by name, phone number, or MRN. Click the patient row to open their full
+                medical record — this is the central place where all clinical data lives.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> If the patient doesn't exist yet, create them first using
+                  "Add New Patient". Every visit and document must be linked to a patient profile.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Record a Visit</h2>
+                  <p className="text-muted-foreground m-0">Capture diagnosis, prescription & follow-up</p>
+                </div>
+              </div>
+              <p>
+                Inside the patient profile, click <strong>"New Visit"</strong> (or open an existing
+                appointment to record its visit). The visit form lets you capture everything that
+                happened during the consultation:
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 my-6">
+                {[
+                  { icon: Stethoscope, label: "Chief Complaint", desc: "Reason for the visit" },
+                  { icon: Activity, label: "Vitals", desc: "BP, pulse, weight, temperature" },
+                  { icon: ClipboardList, label: "Diagnosis", desc: "Use ICD codes or free text" },
+                  { icon: FileText, label: "Prescription", desc: "Medicines, dosage & duration" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <p>
+                Save the visit to add it to the patient's permanent history. You can also schedule a
+                follow-up appointment directly from the visit form.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Track Allergies & Chronic Diseases</h2>
+                  <p className="text-muted-foreground m-0">Critical safety information visible on every visit</p>
+                </div>
+              </div>
+              <p>
+                In the patient record, use the <strong>Allergies</strong> and <strong>Diseases</strong>
+                tabs to maintain an up-to-date list. These appear as visible alerts on every future
+                visit so doctors never miss critical safety information.
+              </p>
+              <ul className="space-y-2 mt-4">
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-primary" /> Add drug, food, or environmental allergies with severity</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-primary" /> Track chronic conditions (diabetes, hypertension, etc.)</li>
+                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-primary" /> Link diagnoses to standard ICD codes for reporting</li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Upload Documents & Reports</h2>
+                  <p className="text-muted-foreground m-0">Lab results, scans, referral letters and more</p>
+                </div>
+              </div>
+              <p>
+                Open the <strong>Documents</strong> tab inside the patient record and click
+                <strong> Upload</strong>. You can attach PDFs and images such as lab reports,
+                X-rays, MRIs, prescriptions from other clinics, or insurance documents. Each file is
+                stored securely and tagged to the patient for instant retrieval.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20 mt-4">
+                <Shield className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Secure by design:</strong> All medical records and documents are
+                  encrypted and only accessible to authorized clinic staff.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">View Patient Timeline & History</h2>
+                  <p className="text-muted-foreground m-0">A chronological view of every interaction</p>
+                </div>
+              </div>
+              <p>
+                The <strong>Timeline</strong> tab shows every visit, prescription, document upload,
+                and appointment in chronological order. Use it to quickly review the patient's
+                journey before a consultation, or to share a complete summary with another doctor.
+              </p>
+              <p>
+                You can <strong>print or export</strong> any visit, prescription, or the full record
+                as a PDF directly from the patient profile.
+              </p>
+            </div>
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="py-6">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best Practices
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Update allergies and chronic diseases on every first visit</li>
+                  <li>• Use ICD codes consistently for accurate analytics & reporting</li>
+                  <li>• Upload lab reports immediately so they appear in the timeline</li>
+                  <li>• Use prescription templates to save time on common diagnoses</li>
+                  <li>• Always save the visit before closing — drafts are not part of the official record</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Adding New Patients", slug: "add-patients" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
