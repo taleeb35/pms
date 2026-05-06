@@ -501,6 +501,19 @@ const UnifiedLogin = () => {
                 )}
               </Button>
 
+              {bioAvailable && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBiometricLogin}
+                  disabled={loading}
+                  className="w-full gap-2 border-primary/30"
+                >
+                  <Fingerprint className="h-5 w-5 text-primary" />
+                  Sign in with Fingerprint / Face ID
+                </Button>
+              )}
+
               <div className="text-center">
                 <button
                   type="button"
