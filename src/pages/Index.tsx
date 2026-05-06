@@ -397,7 +397,7 @@ const Index = () => {
           <div className="relative z-10">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-8 py-3 rounded-full border-2 border-white/30 mb-8 shadow-lg animate-fade-in">
               <Sparkles className="h-5 w-5 text-white animate-pulse" />
-              <span className="text-sm font-bold text-white">Join 50+ Successful Clinics</span>
+              <span className="text-sm font-bold text-white">Join Leading Clinics</span>
             </div>
 
             <h3 className="text-5xl md:text-6xl font-extrabold text-white mb-8 leading-tight">
