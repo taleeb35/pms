@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Home, Loader2, LogIn, Shield, Sparkles } from "lucide-react";
+import { Fingerprint, Home, Loader2, LogIn, Shield, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,12 @@ import {
 } from "@/components/ui/dialog";
 import clinicLogo from "@/assets/main-logo.webp";
 import { validateEmail } from "@/lib/validations";
+import { registerNativePush, isNative } from "@/lib/nativePush";
+import {
+  isBiometricAvailable,
+  loadBiometricCredentials,
+  saveBiometricCredentials,
+} from "@/lib/nativeBiometric";
 
 const UnifiedLogin = () => {
   const navigate = useNavigate();
@@ -23,7 +29,8 @@ const UnifiedLogin = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [bioAvailable, setBioAvailable] = useState(false);
+
   // Dialogs for various states
   const [showInactiveDialog, setShowInactiveDialog] = useState(false);
   const [showTrialExpiredDialog, setShowTrialExpiredDialog] = useState(false);
@@ -31,10 +38,25 @@ const UnifiedLogin = () => {
   const [showAccountNotFoundDialog, setShowAccountNotFoundDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
 
+  useEffect(() => {
+    isBiometricAvailable().then(setBioAvailable);
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    const creds = await loadBiometricCredentials();
+    if (!creds) return;
+    setEmail(creds.email);
+    setPassword(creds.password);
+    await handleLoginWith(creds.email, creds.password);
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    await handleLoginWith(email, password);
+  };
 
-    const emailValidation = validateEmail(email);
+  const handleLoginWith = async (loginEmail: string, loginPassword: string) => {
+    const emailValidation = validateEmail(loginEmail);
     if (!emailValidation.isValid) {
       toast({
         title: "Validation Error",
@@ -48,13 +70,19 @@ const UnifiedLogin = () => {
 
     try {
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: loginEmail,
+        password: loginPassword,
       });
 
       if (authError) throw authError;
 
       const userId = authData.user.id;
+
+      // Native: save creds to keychain & register for push
+      if (isNative()) {
+        try { await saveBiometricCredentials(loginEmail, loginPassword); } catch {}
+        registerNativePush(userId);
+      }
 
       // Check user roles to determine account type
       const { data: rolesData, error: rolesError } = await supabase
@@ -472,6 +500,19 @@ const UnifiedLogin = () => {
                   </>
                 )}
               </Button>
+
+              {bioAvailable && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleBiometricLogin}
+                  disabled={loading}
+                  className="w-full gap-2 border-primary/30"
+                >
+                  <Fingerprint className="h-5 w-5 text-primary" />
+                  Sign in with Fingerprint / Face ID
+                </Button>
+              )}
 
               <div className="text-center">
                 <button
