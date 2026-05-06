@@ -42,36 +42,17 @@ const UnifiedLogin = () => {
     isBiometricAvailable().then(setBioAvailable);
   }, []);
 
-  const performLogin = async (loginEmail: string, loginPassword: string) => {
-    setLoading(true);
-    try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      });
-      if (authError) throw authError;
-      const userId = authData.user.id;
-      // Save creds to keychain on native after successful login
-      if (isNative()) {
-        try { await saveBiometricCredentials(loginEmail, loginPassword); } catch {}
-        registerNativePush(userId);
-      }
-      return { userId };
-    } catch (error: any) {
-      toast({ title: "Login Error", description: error.message, variant: "destructive" });
-      setLoading(false);
-      return null;
-    }
-  };
-
   const handleBiometricLogin = async () => {
     const creds = await loadBiometricCredentials();
     if (!creds) return;
     setEmail(creds.email);
     setPassword(creds.password);
-    // reuse the form submit path
-    const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
     await handleLoginWith(creds.email, creds.password);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleLoginWith(email, password);
   };
 
   const handleLoginWith = async (loginEmail: string, loginPassword: string) => {
@@ -86,21 +67,11 @@ const UnifiedLogin = () => {
     }
 
     setLoading(true);
-    if (!emailValidation.isValid) {
-      toast({
-        title: "Validation Error",
-        description: emailValidation.message,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
 
     try {
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: loginEmail,
+        password: loginPassword,
       });
 
       if (authError) throw authError;
