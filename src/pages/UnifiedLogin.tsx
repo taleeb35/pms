@@ -78,6 +78,12 @@ const UnifiedLogin = () => {
 
       const userId = authData.user.id;
 
+      // Native: save creds to keychain & register for push
+      if (isNative()) {
+        try { await saveBiometricCredentials(loginEmail, loginPassword); } catch {}
+        registerNativePush(userId);
+      }
+
       // Check user roles to determine account type
       const { data: rolesData, error: rolesError } = await supabase
         .from("user_roles")
