@@ -4,13 +4,12 @@ const config: CapacitorConfig = {
   appId: 'com.zonoir.app',
   appName: 'Zonoir',
   webDir: 'dist',
-  server: {
-    // Hot-reload from Lovable sandbox while developing.
-    // Comment this `url` out (or remove it) before doing a production
-    // Play Store / App Store build so the app loads the bundled `dist/` instead.
-    url: 'https://3c386893-9ed0-471a-baec-b67fe3c59e96.lovableproject.com?forceHideBadge=true',
-    cleartext: true,
-  },
+  // For DEVELOPMENT hot-reload from Lovable sandbox, uncomment the block below.
+  // For PRODUCTION (Play Store / App Store), keep it commented so the app loads bundled dist/.
+  // server: {
+  //   url: 'https://3c386893-9ed0-471a-baec-b67fe3c59e96.lovableproject.com?forceHideBadge=true',
+  //   cleartext: true,
+  // },
   android: {
     allowMixedContent: true,
   },
