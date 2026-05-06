@@ -240,10 +240,6 @@ const Index = () => {
               </h4>
 
               <p className="text-muted-foreground leading-relaxed relative z-10 text-base">{feature.description}</p>
-
-              <div className="mt-4 pt-4 border-t border-purple-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-sm font-semibold text-purple-600">Learn more →</span>
-              </div>
             </div>
           ))}
         </div>
