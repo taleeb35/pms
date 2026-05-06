@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Home, Loader2, LogIn, Shield, Sparkles } from "lucide-react";
+import { Fingerprint, Home, Loader2, LogIn, Shield, Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,12 @@ import {
 } from "@/components/ui/dialog";
 import clinicLogo from "@/assets/main-logo.webp";
 import { validateEmail } from "@/lib/validations";
+import { registerNativePush, isNative } from "@/lib/nativePush";
+import {
+  isBiometricAvailable,
+  loadBiometricCredentials,
+  saveBiometricCredentials,
+} from "@/lib/nativeBiometric";
 
 const UnifiedLogin = () => {
   const navigate = useNavigate();
