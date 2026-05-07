@@ -129,7 +129,7 @@ const Index = () => {
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-fade-in">
             Complete solution for clinic owners:{" "}
-            <span className="font-semibold text-purple-600">Add unlimited doctors</span>, track every patient visit,
+            <span className="font-semibold text-purple-600">Add your doctors</span>, track every patient visit,
             monitor all activities, and manage finances—all in one powerful platform.
           </p>
 
