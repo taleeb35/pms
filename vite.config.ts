@@ -75,6 +75,6 @@ export default defineConfig(({ mode }) => ({
     host: "0.0.0.0",
     port: 3035,
     strictPort: true,
-    allowedHosts: ["zonoir.com", "www.zonoir.com"],
+    allowedHosts: ["zonoir.com", "www.zonoir.com", "localhost", "127.0.0.1"],
   },
 }));
