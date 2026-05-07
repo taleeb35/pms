@@ -2970,3 +2970,328 @@ const PatientHistoryArticle = () => {
     </div>
   );
 };
+
+
+const BookAppointmentsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Appointments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Booking Appointments</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-rose-500/10 text-rose-600 hover:bg-rose-500/20">
+                <Calendar className="w-3 h-3 mr-1" />
+                Appointments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Booking Appointments
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A step-by-step guide to booking, rescheduling and managing patient
+              appointments — using the doctor's live schedule, 15-minute slots, and the
+              full 4-status workflow built into the platform.
+            </p>
+          </div>
+
+          {/* Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Book appointments from any role",
+                  "Pick the right doctor & 15-min slot",
+                  "Handle returning vs new patients",
+                  "Confirm, complete, cancel or no-show",
+                  "Reschedule without losing history",
+                  "Send reminders & view the calendar",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Appointments Screen</h2>
+                  <p className="text-muted-foreground m-0">Same flow for clinic owners, receptionists & doctors</p>
+                </div>
+              </div>
+              <p>
+                From the sidebar click <strong>Appointments</strong> and then
+                <strong> + New Appointment</strong>. Every role — Clinic Owner, Receptionist
+                and Doctor — uses the same booking dialog. The list shows you a snapshot of
+                today's appointments with quick filters for status, doctor and date range.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Need to register a walk-in instead? Use the
+                  <strong> Walk-in</strong> screen — it skips slot selection and books
+                  the patient into the next available time.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Select the Patient</h2>
+                  <p className="text-muted-foreground m-0">Returning patient or instant new registration</p>
+                </div>
+              </div>
+              <p>
+                Start typing the patient's name or phone in the <strong>patient search</strong>.
+                Matching records appear instantly so you can pick a returning patient with one
+                click — their full history follows them into the appointment automatically.
+              </p>
+              <p>
+                If the patient isn't in your system yet, click <strong>+ Add New Patient</strong>
+                inline. Capture name, phone, gender and date of birth — that's enough to book.
+                You can fill in the rest of the profile later from their patient page.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Pick Doctor, Date & 15-Minute Slot</h2>
+                  <p className="text-muted-foreground m-0">Live availability — never double-book</p>
+                </div>
+              </div>
+              <p>
+                Choose the doctor and date. The platform reads the doctor's
+                <strong> weekly schedule, break times and leaves</strong> and only shows
+                <strong> available 15-minute slots</strong> for that day. Slots already taken
+                are hidden, and the system blocks bookings that would clash with existing
+                appointments.
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 my-6">
+                {[
+                  { icon: Stethoscope, label: "Doctor", desc: "Pre-filtered by specialty" },
+                  { icon: Calendar, label: "Date", desc: "Days off are disabled" },
+                  { icon: Clock, label: "15-min Slot", desc: "Live, conflict-free" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <p>
+                Add the <strong>reason for visit</strong> and (optionally) the consultation
+                <strong> fee</strong> — the fee defaults to the doctor's standard charge but
+                you can override it for follow-ups or discounts.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Confirm & Save</h2>
+                  <p className="text-muted-foreground m-0">Status: Scheduled</p>
+                </div>
+              </div>
+              <p>
+                Click <strong>Book Appointment</strong>. The new entry appears immediately on
+                the appointments list, the doctor's calendar, and the patient's timeline with
+                status <strong>Scheduled</strong>. Receptionists assigned to that doctor see
+                it the moment they refresh.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The 4-Status Workflow</h2>
+                  <p className="text-muted-foreground m-0">From booked all the way to completed</p>
+                </div>
+              </div>
+              <p>
+                Every appointment moves through one of four statuses. Each transition is
+                timestamped so you get accurate analytics later.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 my-6">
+                {[
+                  { label: "Scheduled", desc: "Newly booked & waiting", color: "bg-blue-500/10 text-blue-600" },
+                  { label: "Completed", desc: "Visit recorded & saved", color: "bg-emerald-500/10 text-emerald-600" },
+                  { label: "Cancelled", desc: "Called off before visit", color: "bg-rose-500/10 text-rose-600" },
+                  { label: "No-show", desc: "Patient didn't arrive", color: "bg-amber-500/10 text-amber-600" },
+                ].map((s, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4 flex items-center gap-3">
+                      <Badge className={s.color}>{s.label}</Badge>
+                      <span className="text-sm text-muted-foreground">{s.desc}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <p>
+                When the patient arrives, open the appointment and click
+                <strong> Record Visit</strong> — saving the visit automatically marks the
+                appointment as <strong>Completed</strong>.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reschedule or Cancel</h2>
+                  <p className="text-muted-foreground m-0">Without losing the original record</p>
+                </div>
+              </div>
+              <p>
+                Open any scheduled appointment and click <strong>Reschedule</strong> to pick a
+                new doctor/date/slot — the original entry is updated rather than duplicated, so
+                the patient's history stays clean. To cancel, use <strong>Cancel</strong> and
+                add a reason — the slot becomes available for re-booking immediately.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">7</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Calendar View & Reminders</h2>
+                  <p className="text-muted-foreground m-0">See the day at a glance</p>
+                </div>
+              </div>
+              <p>
+                Switch to the <strong>Calendar</strong> tab for a day, week or month view of
+                every appointment colour-coded by status. Patients automatically receive
+                appointment confirmations and reminders by email (and push notifications
+                inside the mobile app), reducing no-shows.
+              </p>
+            </div>
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="py-6">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best Practices
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Always search before adding — avoids duplicate patient records</li>
+                  <li>• Keep doctor schedules & leaves up to date so slots stay accurate</li>
+                  <li>• Mark no-shows the same day to keep analytics meaningful</li>
+                  <li>• Reschedule instead of cancel + re-book — keeps the timeline clean</li>
+                  <li>• Use the calendar view every morning to spot gaps and over-booked hours</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Managing Walk-ins", slug: "walk-ins" },
+                { title: "Appointment Calendar", slug: "appointment-calendar" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
