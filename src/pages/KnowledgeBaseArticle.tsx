@@ -1656,6 +1656,10 @@ const KnowledgeBaseArticle = () => {
     return <PatientHistoryArticle />;
   }
 
+  if (slug === "book-appointments") {
+    return <BookAppointmentsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
