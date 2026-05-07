@@ -3,7 +3,8 @@ module.exports = {
     {
       name: "zonoir",
       cwd: "/home/zonoir/htdocs/zonoir.com",
-      script: "./pm2-start.sh",
+      script: "npm",
+      args: "run preview -- --host 0.0.0.0 --port 3035",
       env: {
         NODE_ENV: "production",
         PORT: "3035",
