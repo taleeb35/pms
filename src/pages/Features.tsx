@@ -504,44 +504,6 @@ const Features = () => {
         </div>
       </section>
 
-      {/* Role-Based Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Built for Every Role in Your Clinic
-            </span>
-          </h2>
-          <p className="text-muted-foreground text-lg">Tailored dashboards. Granular permissions. Zero confusion.</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {roleFeatures.map((role, idx) => (
-            <Card
-              key={idx}
-              className="group border-2 border-white/60 hover:border-purple-200 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white/80 backdrop-blur"
-            >
-              <CardContent className="p-8 text-center">
-                <div
-                  className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${role.color} mb-5 shadow-lg group-hover:scale-110 transition-transform`}
-                >
-                  <role.icon className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4">{role.role}</h3>
-                <ul className="space-y-2 text-left">
-                  {role.features.map((f, i) => (
-                    <li key={i} className="flex items-center gap-2 text-muted-foreground">
-                      <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      <span className="text-sm">{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
       {/* Security & Trust */}
       <section className="py-16 container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
