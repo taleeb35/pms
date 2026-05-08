@@ -19,6 +19,14 @@ import {
   Clock,
   LogIn,
   MapPin,
+  Search,
+  Map,
+  Instagram,
+  Facebook,
+  Globe,
+  MessageCircle,
+  Star,
+  CheckCircle2,
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
