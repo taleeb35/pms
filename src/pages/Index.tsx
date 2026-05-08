@@ -348,7 +348,99 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Find Doctors Everywhere - Dark Section */}
+      <section className="relative py-24 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+        {/* Glow effects */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(56,189,248,0.15),transparent_60%)]"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            {/* Doctor card */}
+            <div className="flex justify-center mb-10 animate-fade-in">
+              <div className="bg-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-5 shadow-[0_0_40px_rgba(56,189,248,0.15)] flex items-center gap-4 max-w-md w-full">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                  SK
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-white font-semibold">Dr. Sarah Khan</span>
+                    <CheckCircle2 className="h-4 w-4 text-cyan-400 fill-cyan-400/20" />
+                  </div>
+                  <div className="text-purple-400 text-sm font-medium">Cardiologist</div>
+                  <div className="flex items-center gap-1 text-xs text-slate-400 mt-0.5">
+                    <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                    <span>4.9 (320 reviews)</span>
+                  </div>
+                </div>
+                <button className="px-3 py-2 rounded-lg border border-purple-500/40 text-purple-300 text-xs font-medium hover:bg-purple-500/10 transition-colors flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  Book now
+                </button>
+              </div>
+            </div>
+
+            {/* Central logo node */}
+            <div className="flex justify-center mb-2 animate-fade-in">
+              <div className="relative">
+                <div className="absolute inset-0 bg-cyan-400/30 blur-2xl rounded-3xl"></div>
+                <div className="relative w-24 h-24 bg-gradient-to-br from-slate-800 to-slate-900 border border-cyan-500/30 rounded-3xl flex flex-col items-center justify-center shadow-[0_0_50px_rgba(56,189,248,0.3)]">
+                  <Stethoscope className="h-10 w-10 text-white" strokeWidth={2.5} />
+                  <span className="text-[10px] text-slate-300 mt-0.5 font-medium">Clinic</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Connecting lines + platform icons */}
+            <div className="relative mb-16">
+              <svg className="w-full h-16 hidden md:block" viewBox="0 0 600 60" preserveAspectRatio="none">
+                <path d="M 300 0 L 300 20 L 80 20 L 80 60 M 300 20 L 180 20 L 180 60 M 300 20 L 280 20 L 280 60 M 300 20 L 380 20 L 380 60 M 300 20 L 480 20 L 480 60 M 300 20 L 580 20 L 580 60"
+                  fill="none" stroke="rgba(56,189,248,0.4)" strokeWidth="1" />
+              </svg>
+
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-4 md:gap-6 max-w-4xl mx-auto mt-4">
+                {[
+                  { icon: Search, label: "Google Search", color: "from-blue-500 to-red-500" },
+                  { icon: Map, label: "Google Maps", color: "from-green-500 to-blue-500" },
+                  { icon: Instagram, label: "Instagram", color: "from-pink-500 via-purple-500 to-orange-500" },
+                  { icon: Facebook, label: "Facebook", color: "from-blue-600 to-blue-400" },
+                  { icon: Globe, label: "Clinic Website", color: "from-cyan-500 to-teal-500" },
+                  { icon: MessageCircle, label: "WhatsApp", color: "from-green-500 to-emerald-500" },
+                ].map((item, i) => (
+                  <div
+                    key={item.label}
+                    className="group flex flex-col items-center gap-2 animate-fade-in"
+                    style={{ animationDelay: `${i * 80}ms` }}
+                  >
+                    <div className="relative w-16 h-16 md:w-20 md:h-20 bg-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl flex items-center justify-center shadow-lg group-hover:border-cyan-400/50 group-hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] transition-all duration-300 hover:-translate-y-1">
+                      <div className={`p-2 rounded-xl bg-gradient-to-br ${item.color}`}>
+                        <item.icon className="h-6 w-6 md:h-7 md:w-7 text-white" strokeWidth={2.5} />
+                      </div>
+                    </div>
+                    <span className="text-xs md:text-sm text-slate-300 font-medium text-center leading-tight">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Heading + description */}
+            <div className="max-w-3xl animate-fade-in">
+              <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+                Help patients find <br />
+                doctors <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">everywhere</span>
+              </h3>
+              <p className="text-lg md:text-xl text-slate-400 leading-relaxed">
+                Show doctor profiles across search, maps, social, and your website — so patients can discover clinics and book appointments faster with{" "}
+                <span className="text-purple-400 font-semibold">Care Compass</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Cities We Serve Section - Only show for Pakistan visitors */}
+
       {!isUSA && (
         <section className="container mx-auto px-4 py-12">
           <div className="max-w-6xl mx-auto">
