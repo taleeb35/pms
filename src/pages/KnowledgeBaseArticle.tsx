@@ -32,7 +32,11 @@ import {
   Stethoscope,
   Briefcase,
   AlertTriangle,
-  Search
+  Search,
+  CalendarDays,
+  Coffee,
+  Plane,
+  Save
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 
