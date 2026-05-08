@@ -243,6 +243,16 @@ const Index = () => {
             </div>
           ))}
         </div>
+
+        <div className="flex justify-center mt-14">
+          <Button
+            size="lg"
+            onClick={() => navigate("/features")}
+            className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+          >
+            See All Features
+          </Button>
+        </div>
       </section>
 
       {/* Why Choose Us Section */}
