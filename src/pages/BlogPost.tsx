@@ -45,17 +45,36 @@ const BlogPost = () => {
     ogUrl: `https://zonoir.com/blog/${slug}`,
     ogType: "article",
     ogImage: blog?.featured_image || "https://zonoir.com/og-image.png",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Blog", url: "https://zonoir.com/blog" },
+      ...(blog ? [{ name: blog.title, url: `https://zonoir.com/blog/${slug}` }] : []),
+    ],
     jsonLd: blog ? {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": blog.title,
       "description": seoDescription,
-      "image": blog.featured_image || undefined,
+      "image": blog.featured_image || "https://zonoir.com/og-image.png",
       "datePublished": blog.published_at || blog.created_at,
-      "publisher": {
+      "dateModified": (blog as any).updated_at || blog.published_at || blog.created_at,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://zonoir.com/blog/${slug}`
+      },
+      "author": {
         "@type": "Organization",
         "name": "Zonoir",
         "url": "https://zonoir.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Zonoir",
+        "url": "https://zonoir.com",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://zonoir.com/favicon.png"
+        }
       }
     } : undefined,
   });
