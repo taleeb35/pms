@@ -2,6 +2,7 @@ import { Star, Quote } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { useSEO } from "@/hooks/useSEO";
 
 import drAzkaZahra from "@/assets/dr-azka-zahra.jpeg";
 import drSarmadAli from "@/assets/dr-sarmad-ali.jpg";
@@ -40,6 +41,17 @@ const reviews = [
 ];
 
 const Reviews = () => {
+  useSEO({
+    title: "Reviews — What Doctors Say About Zonoir",
+    description:
+      "Read what real doctors and clinics across Pakistan say about using Zonoir for clinic management, EMR, and patient appointments.",
+    canonicalUrl: "https://zonoir.com/reviews",
+    ogUrl: "https://zonoir.com/reviews",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Reviews", url: "https://zonoir.com/reviews" },
+    ],
+  });
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <PublicHeader />

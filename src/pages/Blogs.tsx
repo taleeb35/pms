@@ -8,6 +8,7 @@ import { Calendar, User, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { useSEO } from "@/hooks/useSEO";
 
 interface Blog {
   id: string;
@@ -25,6 +26,18 @@ interface Blog {
 const Blogs = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useSEO({
+    title: "Healthcare Blog — Insights for Doctors & Clinics | Zonoir",
+    description:
+      "Read the latest articles on clinic management, EMR adoption, healthcare technology, and patient experience from the Zonoir team.",
+    canonicalUrl: "https://zonoir.com/blog",
+    ogUrl: "https://zonoir.com/blog",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Blog", url: "https://zonoir.com/blog" },
+    ],
+  });
 
   useEffect(() => {
     fetchBlogs();

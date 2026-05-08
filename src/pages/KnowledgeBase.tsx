@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
+import { useSEO } from "@/hooks/useSEO";
 
 
 const categories = [
@@ -99,6 +100,18 @@ const categories = [
 const KnowledgeBase = () => {
   const kbBase = useKBBase();
   const [searchQuery, setSearchQuery] = useState("");
+
+  useSEO({
+    title: "Knowledge Base — Help, Guides & Tutorials | Zonoir",
+    description:
+      "Find step-by-step guides for clinics, doctors, and receptionists on using Zonoir — from sign-up and adding doctors to billing and patient records.",
+    canonicalUrl: "https://zonoir.com/knowledge-base",
+    ogUrl: "https://zonoir.com/knowledge-base",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Knowledge Base", url: "https://zonoir.com/knowledge-base" },
+    ],
+  });
 
   const filteredCategories = categories.map(category => ({
     ...category,

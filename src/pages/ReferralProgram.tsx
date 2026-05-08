@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { useSEO } from "@/hooks/useSEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +29,18 @@ interface SuccessData {
 
 const ReferralProgram = () => {
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Referral Program — Earn 20% Commission | Zonoir",
+    description:
+      "Join the Zonoir Referral Program. Earn 20% lifetime commission for every clinic or doctor that signs up through your unique link.",
+    canonicalUrl: "https://zonoir.com/referral-program",
+    ogUrl: "https://zonoir.com/referral-program",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Referral Program", url: "https://zonoir.com/referral-program" },
+    ],
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
 

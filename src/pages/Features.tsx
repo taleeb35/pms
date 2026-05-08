@@ -29,9 +29,22 @@ import featureVisitRecord from "@/assets/feature-visit-record.png";
 import featureSchedule from "@/assets/feature-schedule.png";
 import featureFinance from "@/assets/feature-finance.png";
 import featureActivityLogs from "@/assets/feature-activity-logs.png";
+import { useSEO } from "@/hooks/useSEO";
 
 const Features = () => {
   const navigate = useNavigate();
+
+  useSEO({
+    title: "Features — Complete Clinic & EMR Software | Zonoir",
+    description:
+      "Explore Zonoir's full feature set: patient records, appointments, prescriptions, finance, doctor schedules, activity logs, and AI-powered insights.",
+    canonicalUrl: "https://zonoir.com/features",
+    ogUrl: "https://zonoir.com/features",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Features", url: "https://zonoir.com/features" },
+    ],
+  });
 
   const coreFeatures = [
     {
