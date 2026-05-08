@@ -3299,3 +3299,315 @@ const BookAppointmentsArticle = () => {
     </div>
   );
 };
+
+const SetupSpecializationsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Setting Up Specializations</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-violet-500/10 text-violet-600 hover:bg-violet-500/20">
+                <Briefcase className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Setting Up Specializations
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Specializations power your entire doctor catalogue — they decide which
+              specialties patients can browse, how doctors are filtered when booking
+              appointments, and which doctors appear on your public clinic page.
+              Here's how to set them up the right way.
+            </p>
+          </div>
+
+          {/* Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Why specializations matter",
+                  "Add your first specialization",
+                  "Edit, rename or delete entries",
+                  "Bulk-search & paginate the list",
+                  "How doctors get linked to specialties",
+                  "Best practices & common mistakes",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Why */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Why specializations matter</h2>
+              <p>
+                A <strong>specialization</strong> (Cardiologist, Dermatologist, Gynaecologist,
+                ENT Specialist, etc.) is the single most important attribute on a doctor's
+                profile. The platform uses it in three critical places:
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 my-6">
+                {[
+                  { icon: Stethoscope, label: "Doctor Profiles", desc: "Shown on every doctor's card and public profile" },
+                  { icon: Calendar, label: "Appointment Booking", desc: "Filters the doctor list when booking by specialty" },
+                  { icon: Search, label: "Public Discovery", desc: "Patients find doctors via specialty pages & search" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Already set up:</strong> Every clinic starts with
+                  <strong> "Dentist"</strong> automatically added so dental clinics can
+                  begin onboarding doctors immediately. You can keep, rename or delete it.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Specializations Screen</h2>
+                  <p className="text-muted-foreground m-0">Sidebar → Specializations</p>
+                </div>
+              </div>
+              <p>
+                From the clinic sidebar click <strong>Specializations</strong>. You'll see
+                the full list of every specialty currently available inside your clinic,
+                a count badge, a live search box and the <strong>+ Add Specialization</strong>
+                button at the top right.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Who can edit?</strong> Only the Clinic Owner manages
+                  specializations. Receptionists and Doctors see them while booking but
+                  cannot create or delete entries.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Add a Specialization</h2>
+                  <p className="text-muted-foreground m-0">One name per entry — keep it precise</p>
+                </div>
+              </div>
+              <p>
+                Click <strong>+ Add Specialization</strong>. A small dialog appears with a
+                single field — the specialization <strong>name</strong>. Type the specialty
+                exactly as you want it shown to patients and doctors (for example:
+                <em> Cardiologist</em>, <em>Pediatric Dentist</em>, <em>ENT Specialist</em>),
+                then press <strong>Add</strong> or hit <kbd>Enter</kbd>.
+              </p>
+              <p>
+                The system enforces uniqueness — if the name already exists in your clinic
+                you'll see a friendly error so you don't end up with duplicates like
+                "Cardiologist" and "Cardiology".
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Edit or Rename Existing Entries</h2>
+                  <p className="text-muted-foreground m-0">Changes flow everywhere instantly</p>
+                </div>
+              </div>
+              <p>
+                Click the <strong>pencil</strong> icon next to any specialization to edit
+                its name. The new name immediately reflects on every doctor profile,
+                booking dropdown and public listing — no migrations or refreshes needed.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Delete Carefully</h2>
+                  <p className="text-muted-foreground m-0">Removed entries can't be auto-restored</p>
+                </div>
+              </div>
+              <p>
+                Click the red <strong>trash</strong> icon to delete a specialization. A
+                confirmation dialog appears so you don't lose anything by accident. If a
+                doctor is currently assigned to that specialty, you should reassign them
+                <strong> first</strong> from the doctor's profile, otherwise their
+                specialty field will appear blank.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-rose-500/10 rounded-lg border border-rose-500/20 mt-4">
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Heads up:</strong> Deletion is permanent. Renaming is almost
+                  always safer than deleting & re-creating.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Search & Pagination</h2>
+                  <p className="text-muted-foreground m-0">Built for clinics with 50+ specialties</p>
+                </div>
+              </div>
+              <p>
+                Use the <strong>search box</strong> in the card header to instantly filter
+                the list — handy as your catalogue grows. The table paginates at
+                <strong> 25 / 50 / 75 / 100</strong> rows per page so you can scan or
+                jump quickly without lag.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Linking Doctors to Specializations</h2>
+                  <p className="text-muted-foreground m-0">Done while adding or editing a doctor</p>
+                </div>
+              </div>
+              <p>
+                When you go to <strong>Doctors → + Add Doctor</strong>, the
+                <strong> Specialization</strong> dropdown is populated from this exact
+                list. Each doctor is linked to one primary specialization. If you can't
+                find a specialty while adding a doctor, just come back to this screen and
+                add it — the dropdown updates instantly.
+              </p>
+            </div>
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="py-6">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best Practices
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Use the <strong>singular form</strong> ("Cardiologist", not "Cardiology") — that's how patients search</li>
+                  <li>• Keep names <strong>patient-friendly</strong> — avoid internal abbreviations</li>
+                  <li>• Add only the specialties your clinic actually offers — fewer, sharper options convert better on the public profile</li>
+                  <li>• Reassign doctors <strong>before</strong> deleting a specialty</li>
+                  <li>• Rename instead of delete when fixing typos — it preserves all doctor links</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Adding Doctors", slug: "add-doctors" },
+                { title: "Booking Appointments", slug: "book-appointments" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
