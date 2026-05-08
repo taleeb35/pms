@@ -1660,6 +1660,10 @@ const KnowledgeBaseArticle = () => {
     return <BookAppointmentsArticle />;
   }
 
+  if (slug === "setup-specializations" || slug === "specializations") {
+    return <SetupSpecializationsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
