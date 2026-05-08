@@ -59,6 +59,10 @@ import featureVisitRecord from "@/assets/feature-visit-record.png";
 import featureSchedule from "@/assets/feature-schedule.png";
 import featureFinance from "@/assets/feature-finance.png";
 import featureActivityLogs from "@/assets/feature-activity-logs.png";
+import featureReportsAnalytics from "@/assets/feature-reports-analytics.png";
+import featureDailySummary from "@/assets/feature-daily-summary.png";
+import featureAIInsights from "@/assets/feature-ai-insights.png";
+import featurePeakHours from "@/assets/feature-peak-hours.png";
 import { useSEO } from "@/hooks/useSEO";
 
 const Features = () => {
