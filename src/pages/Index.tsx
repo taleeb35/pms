@@ -133,13 +133,12 @@ const Index = () => {
               </span>
             </div>
 
-            {/* Headline — serif with italic accent */}
-            <h1 className="font-serif text-5xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.05] text-white animate-fade-in tracking-tight">
+            {/* Headline */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-white animate-fade-in tracking-tight">
               Run your clinic{" "}
-              <span className="italic font-semibold bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
                 smarter,
-              </span>
-              <br />
+              </span>{" "}
               not harder
             </h1>
 
