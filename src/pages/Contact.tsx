@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { supabase } from "@/integrations/supabase/client";
+import { useSEO } from "@/hooks/useSEO";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
