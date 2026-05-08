@@ -29,7 +29,10 @@ import {
   UserPlus,
   ClipboardList,
   HeadphonesIcon,
-  Stethoscope
+  Stethoscope,
+  Briefcase,
+  AlertTriangle,
+  Search
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 
