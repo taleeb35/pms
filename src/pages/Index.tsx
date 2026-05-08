@@ -208,7 +208,7 @@ const Index = () => {
                 ))}
               </div>
               <div className="text-slate-300 text-sm md:text-base">
-                Trusted by <span className="font-bold text-white">500+ doctors</span> across Pakistan
+                Trusted by <span className="font-bold text-white">48+ doctors</span> across Pakistan
               </div>
             </div>
           </div>
