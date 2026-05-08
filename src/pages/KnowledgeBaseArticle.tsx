@@ -32,7 +32,11 @@ import {
   Stethoscope,
   Briefcase,
   AlertTriangle,
-  Search
+  Search,
+  CalendarDays,
+  Coffee,
+  Plane,
+  Save
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 
@@ -1665,6 +1669,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "setup-specializations" || slug === "specializations") {
     return <SetupSpecializationsArticle />;
+  }
+
+  if (slug === "doctor-schedule" || slug === "manage-schedule" || slug === "schedule") {
+    return <DoctorScheduleArticle />;
   }
 
   // Placeholder for other articles
@@ -3595,6 +3603,315 @@ const SetupSpecializationsArticle = () => {
               {[
                 { title: "Adding Doctors", slug: "add-doctors" },
                 { title: "Booking Appointments", slug: "book-appointments" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const DoctorScheduleArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Your Schedule</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-sky-500/10 text-sky-600 hover:bg-sky-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Your Schedule
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Your schedule is the heart of your practice on the platform — it controls
+              which days and hours you're available, your daily break time, and any
+              upcoming leaves. Everything you set here directly drives the appointment
+              slots patients (and your receptionist) can book.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Set your weekly working hours",
+                  "Mark days off and break time",
+                  "Add full-day & half-day leaves",
+                  "How 15-minute slots are generated",
+                  "Edit on web or the mobile app",
+                  "Best practices to avoid conflicts",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Why your schedule matters</h2>
+              <p>
+                Your weekly availability and leaves are the <strong>single source of truth</strong>
+                used everywhere on the platform — your public profile, the booking
+                dialog, the clinic dashboard and the receptionist's walk-in screen all
+                read from the same schedule. If a slot isn't on your schedule, no one
+                can book it. If it is, it auto-appears in <strong>15-minute intervals</strong>.
+              </p>
+              <div className="grid md:grid-cols-3 gap-4 my-6">
+                {[
+                  { icon: CalendarDays, label: "Weekly Hours", desc: "Per-day start / end times" },
+                  { icon: Coffee, label: "Break Time", desc: "Daily lunch / prayer break" },
+                  { icon: Plane, label: "Leaves", desc: "Full-day & half-day off" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Schedule Screen</h2>
+                  <p className="text-muted-foreground m-0">Sidebar → My Schedule</p>
+                </div>
+              </div>
+              <p>
+                From the doctor sidebar click <strong>My Schedule</strong>. You'll see two
+                tabs: <strong>Weekly Hours</strong> (Sunday → Saturday) and
+                <strong> Leaves</strong>. Clinic Owners can also reach this screen for
+                any of their doctors via <em>Doctors → Schedules</em>.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>On mobile?</strong> The same controls live under
+                  <strong> More → Schedule & Leaves</strong> in the Zonoir app.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Set Weekly Working Hours</h2>
+                  <p className="text-muted-foreground m-0">One row per day, toggle + start/end time</p>
+                </div>
+              </div>
+              <p>
+                Each day of the week has its own row with an <strong>Available</strong>
+                toggle. Switch it on for working days and pick your <strong>start</strong>
+                and <strong>end</strong> times. Switch it off to mark the day as a
+                weekly off — that day will stop showing in the booking dropdown
+                immediately.
+              </p>
+              <p>
+                Click <strong>Save schedule</strong> at the bottom to commit. Existing
+                future appointments are <em>not</em> deleted — only new bookings are
+                affected.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Add a Daily Break</h2>
+                  <p className="text-muted-foreground m-0">Lunch, prayer or any midday gap</p>
+                </div>
+              </div>
+              <p>
+                Inside each day's card you can also set an optional <strong>break
+                start</strong> and <strong>break end</strong>. Slots that fall inside
+                the break window are automatically removed from the booking grid, so
+                patients can't book over your lunch or prayer time.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Add Leaves (Full or Half Day)</h2>
+                  <p className="text-muted-foreground m-0">For travel, conferences or sick days</p>
+                </div>
+              </div>
+              <p>
+                Switch to the <strong>Leaves</strong> tab and click <strong>+ Add leave</strong>.
+                Pick a date, choose the type and optionally add a reason:
+              </p>
+              <ul>
+                <li><strong>Full day</strong> — entire day blocked, no slots offered.</li>
+                <li><strong>Morning (Half day)</strong> — morning slots blocked, afternoon stays open.</li>
+                <li><strong>Evening (Half day)</strong> — afternoon/evening slots blocked, mornings stay open.</li>
+              </ul>
+              <p>
+                Leaves immediately reflect on your public profile's weekly schedule
+                (greyed-out days), the booking dialog and the clinic calendar. Remove
+                a leave anytime with the trash icon — slots reopen instantly.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-rose-500/10 rounded-lg border border-rose-500/20 mt-4">
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Already-booked appointments are not auto-cancelled</strong>
+                  when you mark a leave. Open the appointment list and reschedule or
+                  cancel them manually so patients are notified properly.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How 15-Minute Slots Are Generated</h2>
+                  <p className="text-muted-foreground m-0">It all happens automatically</p>
+                </div>
+              </div>
+              <p>
+                Once your weekly hours, breaks and leaves are saved, the platform
+                generates bookable slots in <strong>15-minute intervals</strong> between
+                your start and end times — skipping breaks, leaves and any slot already
+                booked. There's nothing else to configure: edit the schedule, save,
+                and the booking experience updates everywhere within seconds.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Edit on the Go (Mobile App)</h2>
+                  <p className="text-muted-foreground m-0">Same controls, native experience</p>
+                </div>
+              </div>
+              <p>
+                The Zonoir mobile app mirrors the web schedule screen 1:1. Open
+                <strong> More → Schedule & Leaves</strong>, flip the day toggles, set
+                your hours, tap <strong>Save schedule</strong>, and add leaves from the
+                bottom sheet. Useful when you're between consultations and need to
+                block off a sudden afternoon.
+              </p>
+            </div>
+
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="py-6">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best Practices
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Keep weekly hours <strong>realistic</strong> — overcommitting leads to overbooked days</li>
+                  <li>• Always set a <strong>break window</strong> so patients don't book your lunch slot</li>
+                  <li>• Add planned leaves <strong>well in advance</strong> — patients can't book leave dates the moment you save</li>
+                  <li>• <strong>Reschedule existing appointments</strong> after marking a leave — the leave only blocks future bookings</li>
+                  <li>• Use <strong>half-day leaves</strong> for short personal commitments instead of blocking the whole day</li>
+                  <li>• Review your schedule once a week to keep your public profile accurate</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </article>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Adding Doctors", slug: "add-doctors" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
