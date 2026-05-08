@@ -2,6 +2,7 @@ import { Star, Quote } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { useSEO } from "@/hooks/useSEO";
 
 import drAzkaZahra from "@/assets/dr-azka-zahra.jpeg";
 import drSarmadAli from "@/assets/dr-sarmad-ali.jpg";
