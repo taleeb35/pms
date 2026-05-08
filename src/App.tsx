@@ -8,6 +8,7 @@ import { GeoLocationProvider } from "@/contexts/GeoLocationContext";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { PublicDoctorFinderChat } from "@/components/PublicDoctorFinderChat";
 import Index from "./pages/Index";
+import DemoLanding from "./pages/DemoLanding";
 import Features from "./pages/Features";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
@@ -169,6 +170,7 @@ const App = () => (
           <PublicDoctorFinderChat />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/demo-landing" element={<DemoLanding />} />
           <Route path="/app" element={<MobileHome />} />
           <Route path="/app/appointments" element={<MobileAppointments />} />
           <Route path="/app/patients" element={<MobilePatients />} />
