@@ -179,7 +179,45 @@ const Index = () => {
             </Button>
           </div>
 
-          {/* Trust rating hidden for now */}
+          {/* Trusted by doctors */}
+          <div className="flex justify-center pt-8 animate-fade-in">
+            <div className="group inline-flex items-center gap-4 bg-white/70 backdrop-blur-xl pl-3 pr-6 py-3 rounded-full border-2 border-purple-200/60 shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
+              <div className="flex -space-x-3">
+                {[
+                  { letter: "S", gradient: "from-blue-500 to-blue-600" },
+                  { letter: "A", gradient: "from-purple-500 to-purple-600" },
+                  { letter: "R", gradient: "from-orange-500 to-pink-500" },
+                  { letter: "M", gradient: "from-green-500 to-emerald-500" },
+                ].map((avatar, i) => (
+                  <div
+                    key={i}
+                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatar.gradient} ring-4 ring-white flex items-center justify-center text-white font-bold text-sm shadow-lg transition-transform duration-300 group-hover:translate-x-0`}
+                    style={{ zIndex: 4 - i }}
+                  >
+                    {avatar.letter}
+                  </div>
+                ))}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 ring-4 ring-white flex items-center justify-center text-white font-bold text-xs shadow-lg">
+                  +
+                </div>
+              </div>
+              <div className="text-left">
+                <div className="text-sm md:text-base text-foreground">
+                  Trusted by{" "}
+                  <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    500+ doctors
+                  </span>{" "}
+                  across Pakistan
+                </div>
+                <div className="flex items-center gap-1 mt-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  ))}
+                  <span className="text-xs text-muted-foreground ml-1">4.9/5 rating</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
