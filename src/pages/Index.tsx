@@ -114,111 +114,109 @@ const Index = () => {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-400/20 via-purple-400/20 to-pink-400/20 blur-3xl -z-10 animate-pulse"></div>
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-[float_6s_ease-in-out_infinite]"></div>
-        <div className="absolute bottom-20 right-10 w-72 h-72 bg-purple-400/10 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite]"></div>
+      <section className="relative overflow-hidden bg-[#0a1628]">
+        {/* Decorative glow background */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(16,185,129,0.18),transparent_55%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(99,102,241,0.18),transparent_55%)]"></div>
+        <div className="absolute top-32 left-20 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-[float_8s_ease-in-out_infinite]"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-[float_10s_ease-in-out_infinite]"></div>
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(rgba(255,255,255,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.5)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
 
-        <div className="max-w-5xl mx-auto space-y-8 relative">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 px-6 py-3 rounded-full border-2 border-purple-200 shadow-lg animate-fade-in hover-scale">
-            <Sparkles className="h-5 w-5 text-purple-600 animate-pulse" />
-            <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              #1 Complete Clinic Management Solution
-            </span>
-          </div>
-
-          <h2 className="text-6xl md:text-7xl font-extrabold leading-tight animate-fade-in">
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-sm">
-              Manage Your Entire Clinic
-            </span>
-            <br />
-            <span className="text-foreground">From One Dashboard</span>
-          </h2>
-
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed animate-fade-in">
-            Complete solution for clinic owners:{" "}
-            <span className="font-semibold text-purple-600">Add your doctors</span>, track every patient visit,
-            monitor all activities, and manage finances—all in one powerful platform.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4 text-sm animate-fade-in">
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
-              <Calendar className="h-4 w-4 text-blue-600" />
-              <span className="font-medium">Smart Appointments</span>
+        <div className="container mx-auto px-4 py-24 md:py-28 relative">
+          <div className="max-w-5xl mx-auto space-y-8">
+            {/* Green pill badge */}
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-emerald-400/40 bg-emerald-500/10 backdrop-blur animate-fade-in">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)] animate-pulse"></span>
+              <span className="text-sm font-semibold text-emerald-300 tracking-wide">
+                Pakistan's #1 Clinic Management Software
+              </span>
             </div>
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
-              <Eye className="h-4 w-4 text-purple-600" />
-              <span className="font-medium">Activity Monitoring</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
-              <TrendingUp className="h-4 w-4 text-green-600" />
-              <span className="font-medium">Profit Analytics</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-md">
-              <Bot className="h-4 w-4 text-pink-600" />
-              <span className="font-medium">AI Clinic Catalyst</span>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-4 justify-center pt-6">
-            <Button
-              onClick={() => navigate("/auth")}
-              size="lg"
-              className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-110"
-            >
-              Get Started Free
-              <Sparkles className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              onClick={() => window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank")}
-              size="lg"
-              variant="outline"
-              className="text-lg px-10 py-6 border-2 border-white bg-white/20 backdrop-blur text-purple-700 hover:bg-white hover:text-purple-600 shadow-2xl transition-all duration-300 hover:scale-110"
-            >
-              <Calendar className="mr-2 h-5 w-5" />
-              Request A Demo
-            </Button>
-          </div>
 
-          {/* Trusted by doctors */}
-          <div className="flex justify-center pt-8 animate-fade-in">
-            <div className="group inline-flex items-center gap-4 bg-white/70 backdrop-blur-xl pl-3 pr-6 py-3 rounded-full border-2 border-purple-200/60 shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
-              <div className="flex -space-x-3">
+            {/* Headline — serif with italic accent */}
+            <h1 className="font-serif text-5xl md:text-7xl lg:text-[5.5rem] font-bold leading-[1.05] text-white animate-fade-in tracking-tight">
+              Run your clinic{" "}
+              <span className="italic font-semibold bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                smarter,
+              </span>
+              <br />
+              not harder
+            </h1>
+
+            {/* Description */}
+            <p className="text-lg md:text-xl text-slate-300/90 max-w-2xl leading-relaxed animate-fade-in">
+              Zonoir gives doctors a complete EMR, patient management, AI prescriptions,
+              and revenue analytics — all in one beautifully simple platform.
+            </p>
+
+            {/* Feature pills */}
+            <div className="flex flex-wrap gap-3 text-sm animate-fade-in pt-2">
+              <div className="flex items-center gap-2 bg-white/5 backdrop-blur border border-white/10 px-4 py-2 rounded-full">
+                <Calendar className="h-4 w-4 text-blue-400" />
+                <span className="font-medium text-slate-200">Smart Appointments</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/5 backdrop-blur border border-white/10 px-4 py-2 rounded-full">
+                <Eye className="h-4 w-4 text-purple-400" />
+                <span className="font-medium text-slate-200">Activity Monitoring</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/5 backdrop-blur border border-white/10 px-4 py-2 rounded-full">
+                <TrendingUp className="h-4 w-4 text-emerald-400" />
+                <span className="font-medium text-slate-200">Profit Analytics</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/5 backdrop-blur border border-white/10 px-4 py-2 rounded-full">
+                <Bot className="h-4 w-4 text-pink-400" />
+                <span className="font-medium text-slate-200">AI Clinic Catalyst</span>
+              </div>
+            </div>
+
+            {/* CTAs — kept as in second image */}
+            <div className="flex flex-wrap gap-4 pt-4">
+              <Button
+                onClick={() => navigate("/auth")}
+                size="lg"
+                className="text-lg px-10 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105"
+              >
+                Get Started Free
+                <Sparkles className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                onClick={() => window.open("https://calendar.app.google/vkzUUndGFT4Afq1D9", "_blank")}
+                size="lg"
+                variant="outline"
+                className="text-lg px-10 py-6 border-2 border-white/80 bg-white/95 backdrop-blur text-purple-700 hover:bg-white hover:text-purple-600 shadow-2xl transition-all duration-300 hover:scale-105"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Request A Demo
+              </Button>
+            </div>
+
+            {/* Trusted by doctors */}
+            <div className="flex items-center gap-4 pt-8 animate-fade-in">
+              <div className="flex -space-x-2">
                 {[
                   { letter: "S", gradient: "from-blue-500 to-blue-600" },
                   { letter: "A", gradient: "from-purple-500 to-purple-600" },
                   { letter: "R", gradient: "from-orange-500 to-pink-500" },
-                  { letter: "M", gradient: "from-green-500 to-emerald-500" },
-                ].map((avatar, i) => (
+                  { letter: "M", gradient: "from-emerald-500 to-teal-500" },
+                ].map((a, i) => (
                   <div
                     key={i}
-                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatar.gradient} ring-4 ring-white flex items-center justify-center text-white font-bold text-sm shadow-lg transition-transform duration-300 group-hover:translate-x-0`}
+                    className={`w-9 h-9 rounded-full bg-gradient-to-br ${a.gradient} ring-2 ring-[#0a1628] flex items-center justify-center text-white font-bold text-xs shadow-lg`}
                     style={{ zIndex: 4 - i }}
                   >
-                    {avatar.letter}
+                    {a.letter}
                   </div>
                 ))}
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 ring-4 ring-white flex items-center justify-center text-white font-bold text-xs shadow-lg">
-                  +
-                </div>
               </div>
-              <div className="text-left">
-                <div className="text-sm md:text-base text-foreground">
-                  Trusted by{" "}
-                  <span className="font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    500+ doctors
-                  </span>{" "}
-                  across Pakistan
-                </div>
-                <div className="flex items-center gap-1 mt-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                  ))}
-                  <span className="text-xs text-muted-foreground ml-1">4.9/5 rating</span>
-                </div>
+              <div className="text-slate-300 text-sm md:text-base">
+                Trusted by <span className="font-bold text-white">500+ doctors</span> across Pakistan
               </div>
             </div>
           </div>
         </div>
+
+        {/* Bottom fade into next section */}
+        <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-b from-transparent to-blue-50 pointer-events-none"></div>
       </section>
 
       {/* Stats Section */}
