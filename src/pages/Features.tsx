@@ -258,6 +258,38 @@ const Features = () => {
       image: featureActivityLogs,
       highlights: ["Real-time tracking", "Action filtering", "User history", "Full audit trail"],
     },
+    {
+      title: "Reports & Analytics",
+      subtitle: "Data-Driven Decision Making",
+      description:
+        "Visualize your clinic's performance with rich, interactive Recharts dashboards. Monthly revenue bars, patient visit trends, demographics by gender/age/city, and per-doctor contribution charts — all filterable by custom date ranges and exportable as PDF.",
+      image: featureReportsAnalytics,
+      highlights: ["Interactive charts", "Demographic breakdowns", "Date-range filters", "Per-doctor insights"],
+    },
+    {
+      title: "Daily Summary Report",
+      subtitle: "Your Clinic at a Glance",
+      description:
+        "Start every morning with a complete pulse on your clinic. The Daily Summary card surfaces today's appointments, completed visits, walk-ins, new patient registrations, and revenue earned — beautifully laid out so you never miss a beat.",
+      image: featureDailySummary,
+      highlights: ["Today's appointments", "Live revenue counter", "Walk-in tracking", "New patient stats"],
+    },
+    {
+      title: "AI-Powered Insights",
+      subtitle: "Intelligence Built In",
+      description:
+        "Let AI do the heavy lifting. Get auto-generated revenue forecasts for next month, patient retention analysis, smart recommendations to recover drop-offs, and natural-language summaries of your data — powered by Gemini AI inside your dashboard.",
+      image: featureAIInsights,
+      highlights: ["Revenue forecasting", "Retention insights", "Drop-off analysis", "Smart recommendations"],
+    },
+    {
+      title: "Peak Hour Heatmap",
+      subtitle: "Optimize Staffing & Bookings",
+      description:
+        "Spot your busiest hours instantly with a colorful weekly heatmap. Understand when patients book the most, identify quiet windows for promotions, and plan staff shifts around real demand — all visualized at the bottom of your reports view.",
+      image: featurePeakHours,
+      highlights: ["Day × hour heatmap", "Demand patterns", "Staffing insights", "Promo-window discovery"],
+    },
   ];
 
   const roleFeatures = [
