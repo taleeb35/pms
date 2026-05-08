@@ -1628,9 +1628,65 @@ const AddDoctorsArticle = () => {
   );
 };
 
+const slugTitleMap: Record<string, string> = {
+  "clinic-signup": "How to Sign Up Your Clinic",
+  "doctor-signup": "How to Sign Up as a Doctor",
+  "dashboard-overview": "Understanding Your Dashboard",
+  "add-doctors": "How to Add Doctors in Your Clinic",
+  "manage-receptionists": "Managing Receptionists",
+  "add-patients": "Adding New Patients",
+  "medical-records": "Managing Medical Records",
+  "patient-history": "Patient History & Documents",
+  "book-appointments": "Booking Appointments",
+  "setup-specializations": "Setting Up Specializations",
+  "specializations": "Setting Up Specializations",
+  "doctor-schedule": "Managing Your Schedule",
+  "manage-schedule": "Managing Your Schedule",
+};
+
 const KnowledgeBaseArticle = () => {
   const kbBase = useKBBase();
   const { slug } = useParams();
+
+  const articleTitle = slug ? slugTitleMap[slug] : undefined;
+  useSEO({
+    title: articleTitle
+      ? `${articleTitle} — Knowledge Base | Zonoir`
+      : "Knowledge Base Article | Zonoir",
+    description: articleTitle
+      ? `${articleTitle} — step-by-step guide on the Zonoir help center for clinics, doctors, and receptionists.`
+      : "Step-by-step guides and tutorials for using Zonoir clinic management software.",
+    canonicalUrl: `https://zonoir.com/knowledge-base/${slug ?? ""}`,
+    ogUrl: `https://zonoir.com/knowledge-base/${slug ?? ""}`,
+    ogType: "article",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Knowledge Base", url: "https://zonoir.com/knowledge-base" },
+      ...(articleTitle
+        ? [{ name: articleTitle, url: `https://zonoir.com/knowledge-base/${slug}` }]
+        : []),
+    ],
+    jsonLd: articleTitle
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: articleTitle,
+          author: { "@type": "Organization", name: "Zonoir" },
+          publisher: {
+            "@type": "Organization",
+            name: "Zonoir",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://zonoir.com/favicon.png",
+            },
+          },
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://zonoir.com/knowledge-base/${slug}`,
+          },
+        }
+      : undefined,
+  });
 
   if (slug === "clinic-signup") {
     return <ClinicSignupArticle />;
