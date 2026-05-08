@@ -1667,6 +1667,10 @@ const KnowledgeBaseArticle = () => {
     return <SetupSpecializationsArticle />;
   }
 
+  if (slug === "doctor-schedule" || slug === "manage-schedule" || slug === "schedule") {
+    return <DoctorScheduleArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
