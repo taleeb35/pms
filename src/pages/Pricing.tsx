@@ -7,11 +7,40 @@ import { Switch } from "@/components/ui/switch";
 import { Check, Sparkles, Users, Zap, Shield, HeadphonesIcon, ArrowRight, Star, Calculator } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
+import { useSEO } from "@/hooks/useSEO";
 
 const Pricing = () => {
   const navigate = useNavigate();
   const [isAnnual, setIsAnnual] = useState(false);
   const [doctorCount, setDoctorCount] = useState(1);
+
+  useSEO({
+    title: "Pricing Plans for Clinics & Doctors | Zonoir",
+    description:
+      "Transparent monthly & yearly pricing for Zonoir clinic management & EMR software in Pakistan. Start your 14-day free trial — no credit card required.",
+    canonicalUrl: "https://zonoir.com/pricing",
+    ogUrl: "https://zonoir.com/pricing",
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Pricing", url: "https://zonoir.com/pricing" },
+    ],
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: "Zonoir Clinic Management Software",
+      description:
+        "Cloud-based EMR and clinic management software for doctors and clinics in Pakistan.",
+      brand: { "@type": "Brand", name: "Zonoir" },
+      offers: {
+        "@type": "AggregateOffer",
+        priceCurrency: "PKR",
+        lowPrice: "5999",
+        highPrice: "59988",
+        offerCount: "4",
+        availability: "https://schema.org/InStock",
+      },
+    },
+  });
 
   const ORIGINAL_PRICE = 23999;
   const DISCOUNT_PERCENT = 75;
