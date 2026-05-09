@@ -1738,6 +1738,10 @@ const KnowledgeBaseArticle = () => {
     return <PrescriptionTemplatesArticle />;
   }
 
+  if (slug === "visit-records" || slug === "recording-visits") {
+    return <VisitRecordsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
