@@ -1643,6 +1643,7 @@ const slugTitleMap: Record<string, string> = {
   "doctor-schedule": "Managing Your Schedule",
   "manage-schedule": "Managing Your Schedule",
   "prescription-templates": "Creating Prescription Templates",
+  "visit-records": "Recording Patient Visits",
 };
 
 const KnowledgeBaseArticle = () => {
