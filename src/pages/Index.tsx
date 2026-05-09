@@ -419,7 +419,7 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Doctor Profile Page Showcase */}
       <section className="relative py-24 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950">
