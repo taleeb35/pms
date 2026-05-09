@@ -1642,6 +1642,7 @@ const slugTitleMap: Record<string, string> = {
   "specializations": "Setting Up Specializations",
   "doctor-schedule": "Managing Your Schedule",
   "manage-schedule": "Managing Your Schedule",
+  "prescription-templates": "Creating Prescription Templates",
 };
 
 const KnowledgeBaseArticle = () => {
@@ -1730,6 +1731,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "doctor-schedule" || slug === "manage-schedule" || slug === "schedule") {
     return <DoctorScheduleArticle />;
+  }
+
+  if (slug === "prescription-templates") {
+    return <PrescriptionTemplatesArticle />;
   }
 
   // Placeholder for other articles
@@ -3969,6 +3974,450 @@ const DoctorScheduleArticle = () => {
               {[
                 { title: "Booking Appointments", slug: "book-appointments" },
                 { title: "Adding Doctors", slug: "add-doctors" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const PrescriptionTemplatesArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Creating Prescription Templates</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-purple-500/10 text-purple-600 hover:bg-purple-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Creating Prescription Templates
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Save hours every week by building reusable prescription, test, report, and leave
+              templates — then apply them to any patient visit with a single click.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Why templates matter for busy clinics",
+                  "Five template types you can create",
+                  "Step-by-step: create your first template",
+                  "How to apply templates during a visit",
+                  "Editing, duplicating, and deleting templates",
+                  "Best practices for safer prescribing",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            {/* Intro */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Why use prescription templates?</h2>
+              <p>
+                Every doctor sees the same conditions over and over — hypertension, viral fever,
+                URTI, gastritis, diabetes follow-ups. Typing the same prescription dozens of times
+                a day is slow and error-prone. Templates let you write the prescription{" "}
+                <strong>once</strong> and reuse it instantly, while still allowing patient-specific
+                tweaks before printing.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Zap, title: "Faster Visits", desc: "Apply a full prescription in one click" },
+                  { icon: Shield, title: "Fewer Errors", desc: "Standardised dosing and instructions" },
+                  { icon: ClipboardList, title: "Consistent Care", desc: "Every patient gets the same quality" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Template Types */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">The five template types</h2>
+              <p className="mb-6">
+                Inside <strong>Templates</strong> in your sidebar, you'll find five tabs.
+                Each one targets a specific part of the visit workflow.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  {
+                    icon: Stethoscope,
+                    color: "from-purple-500 to-purple-600",
+                    title: "Disease / Prescription",
+                    desc: "Full prescriptions tied to a diagnosis (e.g. Hypertension, Type 2 Diabetes). The most-used template type.",
+                  },
+                  {
+                    icon: Activity,
+                    color: "from-rose-500 to-rose-600",
+                    title: "Test / Investigation",
+                    desc: "Pre-built lab and imaging panels — CBC, LFTs, lipid profile, ultrasound, etc.",
+                  },
+                  {
+                    icon: FileText,
+                    color: "from-blue-500 to-blue-600",
+                    title: "Report Templates",
+                    desc: "Structured report forms with custom fields (vitals, findings, impression).",
+                  },
+                  {
+                    icon: Clock,
+                    color: "from-amber-500 to-amber-600",
+                    title: "Sick Leave",
+                    desc: "Standard sick-leave certificates with editable duration and reason.",
+                  },
+                  {
+                    icon: Briefcase,
+                    color: "from-emerald-500 to-emerald-600",
+                    title: "Work / Fitness Leave",
+                    desc: "Fitness-to-work and return-to-duty letters with your signature block.",
+                  },
+                ].map((t, i) => (
+                  <Card key={i} className="border-border/50 hover:shadow-md transition-shadow">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${t.color} flex items-center justify-center shrink-0 shadow`}>
+                          <t.icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-sm mb-1">{t.title}</h4>
+                          <p className="text-xs text-muted-foreground m-0">{t.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Templates page</h2>
+                  <p className="text-muted-foreground m-0">From your doctor or clinic sidebar</p>
+                </div>
+              </div>
+              <p>
+                Sign in and click <strong>Templates</strong> in the left sidebar. Clinic owners
+                can manage templates that are shared across all their doctors; individual doctors
+                manage their own private library.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> On mobile, tap <strong>More → Templates</strong>. The
+                  Disease tab supports full create/edit/delete directly inside the app.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Pick a template type and click "New"</h2>
+                  <p className="text-muted-foreground m-0">Start with Disease / Prescription — it's the highest-impact one</p>
+                </div>
+              </div>
+              <p>
+                Choose the tab that matches what you want to build. Click the <strong>+ New
+                Template</strong> button in the top right.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Fill in the template content</h2>
+                  <p className="text-muted-foreground m-0">Be specific — this becomes your default text</p>
+                </div>
+              </div>
+
+              <p className="mb-4">For a <strong>Disease / Prescription</strong> template you'll enter:</p>
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Activity, label: "Disease Name", desc: "e.g. Hypertension Stage 1" },
+                  { icon: FileText, label: "Prescription Text", desc: "Drug name, dose, frequency, duration, instructions" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <Card className="bg-muted/40 border-dashed">
+                <CardContent className="py-5">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                    Example prescription template
+                  </p>
+                  <pre className="text-sm whitespace-pre-wrap font-mono m-0 text-foreground">{`Tab. Amlodipine 5mg — once daily, morning, for 30 days
+Tab. Losartan 50mg — once daily, morning, for 30 days
+Cap. Aspirin 75mg — once daily, after dinner, for 30 days
+
+Advice:
+- Low salt diet, avoid pickles and processed food
+- 30 minutes brisk walk daily
+- Monitor BP twice weekly, log readings
+
+Follow up after 4 weeks with BP chart.`}</pre>
+                </CardContent>
+              </Card>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 mt-6">
+                <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>For Report Templates:</strong> add custom fields (Title + default Value)
+                  for things like Vitals, Findings, Impression. You can add as many fields as you
+                  need.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Save the template</h2>
+                  <p className="text-muted-foreground m-0">It's instantly available across all your visits</p>
+                </div>
+              </div>
+              <p>
+                Click <strong>Save</strong>. The template appears in your list immediately and is
+                ready to use during the next patient visit. There's no limit on how many templates
+                you can create.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 - applying */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Apply a template to a visit</h2>
+                  <p className="text-muted-foreground m-0">One click — fully editable before printing</p>
+                </div>
+              </div>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                {[
+                  { title: "Open the patient visit", desc: "From Appointments or Walk-in, open the visit record." },
+                  { title: "Pick a diagnosis", desc: "Select the disease — matching templates appear automatically." },
+                  { title: "Click Apply Template", desc: "The prescription text fills in instantly." },
+                  { title: "Tweak for the patient", desc: "Adjust dosage, duration, or add patient-specific notes." },
+                  { title: "Save & print", desc: "Print the prescription pad or share via WhatsApp." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Editing */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Editing & deleting templates</h2>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Edit:</strong> Click any template row to reopen the editor. Changes apply only to future visits — past prescriptions remain unchanged.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Duplicate:</strong> Open an existing template, change the disease name, save — instant variant (e.g. "Hypertension + Diabetes combo").</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Delete:</strong> Use the trash icon. Deleted templates can't be recovered, so review carefully.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5 mb-8">
+              <CardContent className="py-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best practices
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Name templates clearly — include severity or patient type ("URTI — Adult", "URTI — Paediatric").</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Always include drug, strength, frequency, duration, and route on every line.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Add a short Advice / lifestyle section — patients value it.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Specify a follow-up window so patients know when to return.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Review your templates every 6 months — guidelines and brand availability change.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Warning */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Always double-check before printing</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Templates are a starting point — not a substitute for clinical judgement.
+                      Always verify dose, allergies, drug interactions, pregnancy status, and
+                      renal/hepatic function for each individual patient before saving the
+                      prescription.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Booking Appointments", slug: "book-appointments" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
