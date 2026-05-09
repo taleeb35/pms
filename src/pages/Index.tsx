@@ -528,7 +528,7 @@ const Index = () => {
                   <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100">
                     <Shield className="h-4 w-4 text-indigo-500" />
                     <div className="text-center">
-                      <div className="text-[11px] font-semibold text-slate-900">Secure • Private • HIPAA Compliant</div>
+                      <div className="text-[11px] font-semibold text-slate-900">Secure • Private</div>
                       <div className="text-[10px] text-slate-500">Your health information is safe with us.</div>
                     </div>
                   </div>
