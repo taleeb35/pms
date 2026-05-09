@@ -1733,6 +1733,10 @@ const KnowledgeBaseArticle = () => {
     return <DoctorScheduleArticle />;
   }
 
+  if (slug === "prescription-templates") {
+    return <PrescriptionTemplatesArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
