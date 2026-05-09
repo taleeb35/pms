@@ -1642,6 +1642,7 @@ const slugTitleMap: Record<string, string> = {
   "specializations": "Setting Up Specializations",
   "doctor-schedule": "Managing Your Schedule",
   "manage-schedule": "Managing Your Schedule",
+  "prescription-templates": "Creating Prescription Templates",
 };
 
 const KnowledgeBaseArticle = () => {
