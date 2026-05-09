@@ -421,6 +421,159 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Doctor Profile Page Showcase */}
+      <section className="relative py-24 overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.12),transparent_60%)]"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left: Mockup card */}
+            <div className="animate-fade-in order-2 lg:order-1">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 blur-3xl rounded-3xl"></div>
+                <div className="relative bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/10">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm">Z</div>
+                      <span className="font-bold text-slate-900 text-lg">Zonoir</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                      <Shield className="h-3.5 w-3.5 text-indigo-500" />
+                      <span>Trusted by 10,000+ patients</span>
+                    </div>
+                  </div>
+
+                  {/* Doctor info */}
+                  <div className="flex gap-5 mb-6">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-2xl font-bold shadow-lg">SK</div>
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-full px-2 py-0.5 flex items-center gap-1 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                        <span className="text-[10px] font-medium text-slate-700">Online</span>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <h4 className="text-xl md:text-2xl font-bold text-slate-900">Dr. Sarah Khan</h4>
+                        <CheckCircle2 className="h-5 w-5 text-[#1d9bf0] fill-[#1d9bf0]" strokeWidth={2.5} />
+                      </div>
+                      <div className="text-indigo-600 font-semibold text-sm mb-1">Cardiologist</div>
+                      <div className="text-xs text-slate-500 mb-2">MBBS, MD (Cardiology) • 8+ Years Experience</div>
+                      <div className="flex items-center gap-3 text-xs text-slate-600">
+                        <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />4.9 (320 reviews)</span>
+                        <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5 text-slate-400" />10,000+ patients</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info rows */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-indigo-300 transition-colors">
+                        <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                          <Clock className="h-4 w-4 text-indigo-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-slate-900">Clinic Times</div>
+                          <div className="text-[11px] text-slate-500">Mon – Sat • 9:00 AM – 6:00 PM</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200">
+                        <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                          <MapPin className="h-4 w-4 text-indigo-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-semibold text-slate-900">Location</div>
+                          <div className="text-[11px] text-slate-500 truncate">HealthPlus Clinic, Karachi</div>
+                        </div>
+                      </div>
+                      <div className="p-3 rounded-xl border border-slate-200">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Calendar className="h-4 w-4 text-indigo-600" />
+                          <span className="text-xs font-semibold text-slate-900">Available Today</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {["10:00 AM", "12:00 PM", "3:00 PM", "5:00 PM"].map((t, i) => (
+                            <span key={t} className={`text-[10px] px-2 py-1 rounded-md font-medium ${i === 0 ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700"}`}>{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Booking widget */}
+                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+                      <div className="text-sm font-bold text-slate-900 mb-1">Book an Appointment</div>
+                      <div className="text-[11px] text-slate-500 mb-3">Choose a date and time</div>
+                      <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 flex items-center gap-2 mb-3">
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                        <span className="text-xs text-slate-700 flex-1">May 20, 2026</span>
+                      </div>
+                      <div className="space-y-1.5 mb-3">
+                        {["10:00 AM", "12:00 PM", "3:00 PM", "5:00 PM"].map((t, i) => (
+                          <label key={t} className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                            <span className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${i === 0 ? "border-indigo-600" : "border-slate-300"}`}>
+                              {i === 0 && <span className="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>}
+                            </span>
+                            {t}
+                          </label>
+                        ))}
+                      </div>
+                      <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2.5 rounded-lg transition-colors">
+                        Book Appointment
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Trust strip */}
+                  <div className="flex items-center justify-center gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <Shield className="h-4 w-4 text-indigo-500" />
+                    <div className="text-center">
+                      <div className="text-[11px] font-semibold text-slate-900">Secure • Private • HIPAA Compliant</div>
+                      <div className="text-[10px] text-slate-500">Your health information is safe with us.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Copy */}
+            <div className="text-center lg:text-left order-1 lg:order-2 animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold mb-5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Doctor Profile Pages
+              </div>
+              <h3 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-5">
+                Give every doctor their{" "}
+                <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">own profile page</span>
+              </h3>
+              <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-8">
+                Show doctor info, clinic times, location, and let visitors book appointments online — all in one beautiful, shareable page powered by{" "}
+                <span className="text-emerald-300 font-semibold">Zonoir</span>.
+              </p>
+              <ul className="space-y-3 mb-8 text-left max-w-md mx-auto lg:mx-0">
+                {[
+                  "Branded profile with photo, qualifications & reviews",
+                  "Live clinic schedule & instant online booking",
+                  "Shareable link for WhatsApp, social & search",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-slate-300">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base">{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button
+                size="lg"
+                onClick={() => navigate("/auth")}
+                className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white shadow-lg shadow-emerald-500/30"
+              >
+                Create Your Profile
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Why Choose Us Section */}
       <section className="container mx-auto px-4 py-20 bg-white/50">
         <div className="max-w-6xl mx-auto">
