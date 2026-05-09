@@ -104,7 +104,7 @@ const Index = () => {
     {
       icon: Shield,
       title: "Secure & Compliant",
-      description: "AES-256 encryption, daily encrypted backups, and HIPAA & GDPR-aligned privacy keep your patient data fully secure.",
+      description: "AES-256 encryption, daily encrypted backups, and strong privacy controls keep your patient data fully secure.",
       color: "from-blue-600 to-indigo-600",
     },
   ];
