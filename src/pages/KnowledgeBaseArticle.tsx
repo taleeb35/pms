@@ -1643,6 +1643,7 @@ const slugTitleMap: Record<string, string> = {
   "doctor-schedule": "Managing Your Schedule",
   "manage-schedule": "Managing Your Schedule",
   "prescription-templates": "Creating Prescription Templates",
+  "visit-records": "Recording Patient Visits",
 };
 
 const KnowledgeBaseArticle = () => {
@@ -1735,6 +1736,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "prescription-templates") {
     return <PrescriptionTemplatesArticle />;
+  }
+
+  if (slug === "visit-records" || slug === "recording-visits") {
+    return <VisitRecordsArticle />;
   }
 
   // Placeholder for other articles
@@ -4418,6 +4423,441 @@ Follow up after 4 weeks with BP chart.`}</pre>
               {[
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Booking Appointments", slug: "book-appointments" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const VisitRecordsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Recording Patient Visits</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-purple-500/10 text-purple-600 hover:bg-purple-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Recording Patient Visits
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A complete walkthrough of capturing a clinical encounter — from vitals and chief
+              complaint to diagnosis, prescription, and follow-up — so every visit is documented,
+              searchable, and ready to print.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Open a visit from an appointment or walk-in",
+                  "Record vitals, complaints, and exam findings",
+                  "Add a diagnosis using ICD codes",
+                  "Apply prescription, test, and report templates",
+                  "Save, print, and share via WhatsApp",
+                  "Review the full visit history later",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            {/* Intro */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Why visit records matter</h2>
+              <p>
+                Every patient encounter — whether a 5-minute follow-up or a detailed first
+                consultation — should leave behind a clear, structured record. Good visit notes
+                protect you medico-legally, help you spot patterns over time, and make life easier
+                for the next doctor (or yourself in 6 months) reading the chart.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Shield, title: "Medico-Legal Safety", desc: "A timestamped record of what you did and why" },
+                  { icon: Activity, title: "Better Continuity", desc: "Trends in BP, sugar, weight visible at a glance" },
+                  { icon: Zap, title: "Faster Follow-ups", desc: "Pull up last visit instantly — no re-asking" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the visit</h2>
+                  <p className="text-muted-foreground m-0">Three ways to start a new visit record</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>From Appointments:</strong> open today's calendar, click the patient's appointment card, then <strong>Start Visit</strong>.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>From Walk-in:</strong> use the Walk-in screen to register the patient on the spot and jump straight into the visit.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>From the patient profile:</strong> open any patient and click <strong>+ New Visit</strong> on the timeline.</span>
+                </li>
+              </ul>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Starting from the appointment automatically marks it as
+                  <em> In Progress</em> and links the visit to that booking — no extra clicks.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Record vitals</h2>
+                  <p className="text-muted-foreground m-0">Quick numbers that drive your decisions</p>
+                </div>
+              </div>
+              <p className="mb-4">Enter the vitals your receptionist captured at triage, or fill them in yourself:</p>
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { icon: Activity, label: "Blood Pressure", desc: "Systolic / Diastolic in mmHg" },
+                  { icon: Activity, label: "Pulse & SpO₂", desc: "Heart rate and oxygen saturation" },
+                  { icon: Activity, label: "Temperature", desc: "°F or °C" },
+                  { icon: Activity, label: "Weight & Height", desc: "BMI is calculated automatically" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Chief complaint & history</h2>
+                  <p className="text-muted-foreground m-0">Capture the story in the patient's own words</p>
+                </div>
+              </div>
+              <p>
+                Write a concise <strong>chief complaint</strong> (e.g. "Fever × 3 days, dry cough,
+                body ache") and add any relevant <strong>history of present illness</strong>.
+                The system also surfaces previously recorded <strong>allergies</strong> and{" "}
+                <strong>chronic diseases</strong> from the patient profile so you can't miss them.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Examination & diagnosis</h2>
+                  <p className="text-muted-foreground m-0">Findings, ICD codes, and clinical impression</p>
+                </div>
+              </div>
+              <p className="mb-4">
+                Add your <strong>examination findings</strong> in free text. Then attach a
+                diagnosis — either typed in plain language or selected from your{" "}
+                <strong>ICD code</strong> library. Tagging an ICD code makes the visit searchable
+                later (e.g. "show me all dengue cases this month").
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Smart suggestion:</strong> as soon as you pick a diagnosis, matching{" "}
+                  <strong>prescription templates</strong> appear in the next section — one click
+                  to apply.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Prescription, tests & reports</h2>
+                  <p className="text-muted-foreground m-0">Use templates to save time, edit per patient</p>
+                </div>
+              </div>
+              <p className="mb-4">In one visit screen you can attach:</p>
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { icon: ClipboardList, title: "Prescription", desc: "Apply a disease template, then tweak dose & duration." },
+                  { icon: Activity, title: "Test / Investigation", desc: "Pre-built panels (CBC, LFTs, ultrasound) added in one click." },
+                  { icon: FileText, title: "Report", desc: "Structured forms with fields like Findings & Impression." },
+                ].map((c, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <c.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{c.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{c.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Don't have templates yet? See{" "}
+                <Link to={`${kbBase}/prescription-templates`} className="text-primary underline">
+                  Creating Prescription Templates
+                </Link>{" "}
+                to build your first one in under a minute.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Follow-up, fee & save</h2>
+                  <p className="text-muted-foreground m-0">Close the loop in seconds</p>
+                </div>
+              </div>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Follow-up date:</strong> set the next visit so it appears on the patient's reminder list.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Consultation fee:</strong> defaults to your standard fee — override if needed for free follow-ups or special cases.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Procedures:</strong> add any in-clinic procedures with their fees — they roll into the day's revenue automatically.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Save Visit:</strong> the appointment is moved to <em>Completed</em> and revenue is logged for analytics.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Print & share</h2>
+                  <p className="text-muted-foreground m-0">Hand the patient a clean prescription pad</p>
+                </div>
+              </div>
+              <p>
+                After saving, click <strong>Print</strong> to generate a branded prescription pad
+                with your letterhead, the patient's details, diagnosis, prescription, and
+                follow-up date. Use <strong>Share via WhatsApp</strong> to send a PDF directly to
+                the patient's number on file — useful for tele-consults or when patients forget
+                the printout.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* History */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Reviewing past visits</h2>
+              <p>
+                Open any patient's profile to see the full <strong>visit timeline</strong> —
+                every encounter with date, diagnosis, prescription, and any uploaded documents.
+                Click a visit to expand the full record, or use the search bar at the top of the
+                patient list to find anyone in seconds.
+              </p>
+            </div>
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5 mb-8">
+              <CardContent className="py-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best practices
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Record vitals on every visit, even short follow-ups — trends are what matter.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Always tag a diagnosis (ICD code if possible) — it powers your analytics later.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Set a follow-up date for chronic conditions — patients return more reliably.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Save the visit before printing — once saved, the record is permanent.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Keep notes concise — focus on what would help the next clinician understand the case.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Warning */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Saved visits are permanent</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      For medico-legal compliance, a saved visit cannot be silently edited or
+                      deleted from history. If you need to correct a record, add an addendum
+                      visit with the corrected information rather than altering the original.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Creating Prescription Templates", slug: "prescription-templates" },
+                { title: "Patient History & Documents", slug: "patient-history" },
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Adding New Patients", slug: "add-patients" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
