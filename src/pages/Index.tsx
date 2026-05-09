@@ -755,10 +755,6 @@ const Index = () => {
                 <span>Secure & Compliant</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                <span>Unlimited Doctors</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
                 <span>24/7 Support</span>
               </div>
