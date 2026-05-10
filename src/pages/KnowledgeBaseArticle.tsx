@@ -1748,6 +1748,10 @@ const KnowledgeBaseArticle = () => {
     return <WalkInsArticle />;
   }
 
+  if (slug === "appointment-calendar" || slug === "calendar") {
+    return <AppointmentCalendarArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
