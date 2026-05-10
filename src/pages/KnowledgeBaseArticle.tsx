@@ -4882,3 +4882,370 @@ const VisitRecordsArticle = () => {
     </div>
   );
 };
+
+const WalkInsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Appointments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Walk-ins</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-rose-500/10 text-rose-600 hover:bg-rose-500/20">
+                <Calendar className="w-3 h-3 mr-1" />
+                Appointments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Walk-ins
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Register an unscheduled patient, drop them into the queue, and start their visit
+              in under a minute — without disturbing the day's booked appointments.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Open the Walk-in screen as doctor or receptionist",
+                  "Register a brand-new patient on the spot",
+                  "Pick an existing patient with smart search",
+                  "Set reason for visit and consultation fee",
+                  "Slot the walk-in into today's queue",
+                  "Convert the walk-in into a full visit record",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            {/* Intro */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">What is a walk-in?</h2>
+              <p>
+                A <strong>walk-in</strong> is any patient who arrives at your clinic without a
+                pre-booked appointment. In a busy practice they can be 30–50% of the day's
+                volume, and how you handle them decides whether the front desk feels calm or
+                chaotic. The Walk-in screen is purpose-built so a receptionist (or the doctor)
+                can register the patient, capture a fee, and queue them up without wading
+                through the full appointment booking flow.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Zap, title: "Under 60 seconds", desc: "From front desk to ready-to-see in one short form" },
+                  { icon: Users, title: "New or existing", desc: "Search the database or create a fresh patient inline" },
+                  { icon: Activity, title: "Auto-queued", desc: "Today's date & current time set automatically" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Walk-in screen</h2>
+                  <p className="text-muted-foreground m-0">Available from every relevant role</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Doctor:</strong> sidebar → <em>Walk-in</em>. Patients you create here are linked to your practice.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Doctor's receptionist:</strong> sidebar → <em>Walk-in</em>. The patient is automatically tied to the doctor you work for.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Clinic / clinic receptionist:</strong> sidebar → <em>Walk-in</em>, then pick which doctor the patient is here to see.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">New patient or existing?</h2>
+                  <p className="text-muted-foreground m-0">Toggle at the top of the form</p>
+                </div>
+              </div>
+              <p className="mb-4">
+                The form opens with two big buttons — <strong>New Patient</strong> and{" "}
+                <strong>Existing Patient</strong>. Pick the right one before filling anything in:
+              </p>
+              <div className="grid md:grid-cols-2 gap-4">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <UserPlus className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">New Patient</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Captures full name, phone, gender, and date of birth. A unique patient ID
+                      (e.g. <code>P-XXXXX</code>) is generated automatically — no manual numbering.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Users className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Existing Patient</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground m-0">
+                      A searchable dropdown lets you find anyone by name, phone, or patient ID.
+                      Their full history is instantly linked to the new visit.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Avoid duplicates:</strong> always search first. If you see the patient
+                  in the dropdown, pick them — never re-create someone who already exists.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Capture the basics</h2>
+                  <p className="text-muted-foreground m-0">Reason for visit and fee</p>
+                </div>
+              </div>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Reason for visit:</strong> a short note like "Fever" or "Follow-up — BP". Helps the doctor triage at a glance.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Consultation fee (Rs.):</strong> defaults to blank — type the fee being charged today. It flows into your daily revenue and finance reports.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>The visit's <strong>date and time</strong> are set to <em>now</em> automatically — no need to pick a slot.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Register & queue</h2>
+                  <p className="text-muted-foreground m-0">One click puts them in the day's list</p>
+                </div>
+              </div>
+              <p>
+                Hit <strong>Register Walk-in</strong>. The system creates an appointment with
+                status <em>Start</em> and type <em>walk-in</em>, links it to the chosen doctor,
+                and shows a success toast. Open the <strong>Appointments</strong> screen and
+                you'll see the new entry at the bottom of today's list, clearly tagged so the
+                doctor knows it's not a pre-booking.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Start the visit</h2>
+                  <p className="text-muted-foreground m-0">Hand off cleanly from front desk to doctor</p>
+                </div>
+              </div>
+              <p>
+                When the doctor is ready, they open the walk-in from <em>Appointments</em> and
+                click <strong>Start Visit</strong> — the same flow as a booked patient. From
+                there, vitals, complaints, diagnosis, prescription, and follow-up are all
+                captured exactly like any other encounter.
+              </p>
+              <p className="text-sm text-muted-foreground mt-4">
+                Need a refresher on the visit screen?{" "}
+                <Link to={`${kbBase}/visit-records`} className="text-primary underline">
+                  Recording Patient Visits
+                </Link>{" "}
+                walks through every field.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5 mb-8">
+              <CardContent className="py-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best practices
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Always search before creating — duplicate patients fragment the medical history.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Capture phone numbers correctly — they're used for WhatsApp prescriptions and follow-up reminders.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Enter the consultation fee at registration so daily revenue stays accurate without back-filling.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Use a clear, short reason for visit so the doctor can triage urgent cases first.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>For repeat walk-ins, switch to <em>Existing Patient</em> — never re-enter their demographics.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Warning */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Walk-ins still need a visit record</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Registering a walk-in only creates the appointment. If the patient is seen
+                      and treated, the doctor must also <strong>Start Visit</strong> and save the
+                      clinical record — otherwise the encounter has no diagnosis, prescription,
+                      or follow-up on file.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Adding New Patients", slug: "add-patients" },
+                { title: "Creating Prescription Templates", slug: "prescription-templates" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
