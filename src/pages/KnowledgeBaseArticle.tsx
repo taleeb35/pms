@@ -1743,6 +1743,10 @@ const KnowledgeBaseArticle = () => {
     return <VisitRecordsArticle />;
   }
 
+  if (slug === "walk-ins" || slug === "managing-walk-ins") {
+    return <WalkInsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
