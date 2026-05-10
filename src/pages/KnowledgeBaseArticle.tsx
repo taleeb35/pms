@@ -1645,6 +1645,7 @@ const slugTitleMap: Record<string, string> = {
   "prescription-templates": "Creating Prescription Templates",
   "visit-records": "Recording Patient Visits",
   "walk-ins": "Managing Walk-ins",
+  "appointment-calendar": "Appointment Calendar",
 };
 
 const KnowledgeBaseArticle = () => {
@@ -1745,6 +1746,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "walk-ins" || slug === "managing-walk-ins") {
     return <WalkInsArticle />;
+  }
+
+  if (slug === "appointment-calendar" || slug === "calendar") {
+    return <AppointmentCalendarArticle />;
   }
 
   // Placeholder for other articles
@@ -5230,6 +5235,429 @@ const WalkInsArticle = () => {
                 { title: "Recording Patient Visits", slug: "visit-records" },
                 { title: "Adding New Patients", slug: "add-patients" },
                 { title: "Creating Prescription Templates", slug: "prescription-templates" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const AppointmentCalendarArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Appointments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Appointment Calendar</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-rose-500/10 text-rose-600 hover:bg-rose-500/20">
+                <Calendar className="w-3 h-3 mr-1" />
+                Appointments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Appointment Calendar
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              See your entire day, week, or month at a glance — spot free slots, drag bookings
+              around, and manage every status from a single visual workspace.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Switch between Day, Week, and Month views",
+                  "Read color-coded statuses at a glance",
+                  "Find free 15-minute slots quickly",
+                  "Book, reschedule, and cancel from the calendar",
+                  "Filter by doctor in multi-doctor clinics",
+                  "Print or export the day's schedule",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            {/* Intro */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Why the calendar matters</h2>
+              <p>
+                A list of appointments is fine for a slow day, but the moment your clinic gets
+                busy you need to <em>see</em> the day — gaps, back-to-backs, lunch breaks, and
+                all. The Appointment Calendar gives you that bird's-eye view, with every slot
+                color-coded by status so you can triage at a glance and never accidentally
+                double-book a 15-minute window.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: CalendarDays, title: "Three views", desc: "Day, Week, Month — pick what suits the moment" },
+                  { icon: Zap, title: "Instant gaps", desc: "Free slots stand out so the front desk fills them fast" },
+                  { icon: Activity, title: "Live statuses", desc: "Booked, in-progress, completed, cancelled — all visible" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the calendar</h2>
+                  <p className="text-muted-foreground m-0">One click from any role's sidebar</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Doctors</strong> open <em>Calendar</em> to see only their own bookings.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Receptionists</strong> see the schedule of the doctor(s) they support.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Clinics</strong> can switch between doctors using the filter at the top.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Pick the right view</h2>
+                  <p className="text-muted-foreground m-0">Day, Week, or Month — each has a job</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { title: "Day", desc: "Hour-by-hour grid in 15-minute slots — perfect for the front desk's working view." },
+                  { title: "Week", desc: "Seven columns side-by-side — best for spotting busy vs quiet days and planning leaves." },
+                  { title: "Month", desc: "High-level dot count per day — useful for forecasting and capacity planning." },
+                ].map((c, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <CalendarDays className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{c.title} view</h4>
+                      <p className="text-xs text-muted-foreground m-0">{c.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <p className="mt-4">
+                Use the <strong>‹ Today ›</strong> controls in the toolbar to jump back to today
+                or step forward and backward in time.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Read the colors</h2>
+                  <p className="text-muted-foreground m-0">Status at a glance, no clicking required</p>
+                </div>
+              </div>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="inline-block w-3 h-3 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                  <span><strong>Booked / Start:</strong> upcoming appointment, ready when the patient arrives.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="inline-block w-3 h-3 rounded-full bg-amber-500 mt-1.5 shrink-0" />
+                  <span><strong>In Progress:</strong> patient checked in and the visit is open.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="inline-block w-3 h-3 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                  <span><strong>Completed:</strong> visit saved, fee logged, done for the day.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="inline-block w-3 h-3 rounded-full bg-rose-500 mt-1.5 shrink-0" />
+                  <span><strong>Cancelled / No-show:</strong> stays visible so the slot history is honest.</span>
+                </li>
+              </ul>
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Walk-ins</strong> appear with a small badge so the doctor instantly
+                  knows it isn't a pre-booked patient.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Book from an empty slot</h2>
+                  <p className="text-muted-foreground m-0">Skip the long form when the time is obvious</p>
+                </div>
+              </div>
+              <p>
+                Click any free 15-minute cell to open the booking dialog with that date and
+                time pre-filled. Search the patient (or create a new one), set the reason, and
+                save. The new card appears in the slot immediately — no page reload.
+              </p>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-4">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Slot collisions are blocked</strong> — the system won't let two
+                  patients share the same 15-minute window for the same doctor.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Manage an existing appointment</h2>
+                  <p className="text-muted-foreground m-0">Open the card for the full toolset</p>
+                </div>
+              </div>
+              <p className="mb-4">Click any booked card to open its detail panel, where you can:</p>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Reschedule</strong> to another date or time — patient and history move with it.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Cancel</strong> with an optional reason logged for analytics.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Start Visit</strong> to jump straight into the clinical record.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Open patient profile</strong> for full history, allergies, and past visits.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Filter, search & print</h2>
+                  <p className="text-muted-foreground m-0">Tame busy clinics fast</p>
+                </div>
+              </div>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Doctor filter</strong> (clinic view): focus on one doctor at a time when running multiple practitioners.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Status filter:</strong> hide completed cards to declutter the active queue.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Search:</strong> type a patient's name or phone to highlight their card.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Print today:</strong> generate a clean, printable list for the front desk or the doctor's room.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Schedule respect */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">The calendar respects your schedule</h2>
+              <p>
+                Off-days, half-day leaves, lunch breaks, and weekly availability set in{" "}
+                <strong>Doctor Schedule</strong> are reflected automatically — those windows are
+                visually blocked so you can't book a patient into them. Update the schedule
+                once and every future calendar view obeys it.
+              </p>
+              <p className="text-sm text-muted-foreground mt-3">
+                See{" "}
+                <Link to={`${kbBase}/doctor-schedule`} className="text-primary underline">
+                  Managing Your Schedule
+                </Link>{" "}
+                to set weekly hours, breaks, and leaves.
+              </p>
+            </div>
+
+            {/* Best Practices */}
+            <Card className="border-primary/20 bg-primary/5 mb-8">
+              <CardContent className="py-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best practices
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Start the day in <strong>Day view</strong> — it's the truest picture of what's coming.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Check <strong>Week view</strong> on Mondays to balance load across the week.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Don't delete cancellations — leaving them visible keeps the no-show analytics honest.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Reschedule rather than cancel + re-book — patient history stays attached cleanly.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Print the morning list so the front desk has a paper backup if Wi-Fi drops.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Warning */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Time zones & 15-minute slots</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      All times use your clinic's local time. Slots are fixed at 15-minute
+                      intervals — for longer procedures, book the patient and clearly mark the
+                      reason so the front desk knows not to slot another appointment immediately
+                      after.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Managing Walk-ins", slug: "walk-ins" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
