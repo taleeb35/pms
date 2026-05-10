@@ -1644,6 +1644,7 @@ const slugTitleMap: Record<string, string> = {
   "manage-schedule": "Managing Your Schedule",
   "prescription-templates": "Creating Prescription Templates",
   "visit-records": "Recording Patient Visits",
+  "walk-ins": "Managing Walk-ins",
 };
 
 const KnowledgeBaseArticle = () => {
