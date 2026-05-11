@@ -6179,3 +6179,378 @@ const SubscriptionArticle = () => {
     </div>
   );
 };
+
+const PaymentTrackingArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Billing & Payments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Payment Tracking</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-cyan-500/10 text-cyan-600 hover:bg-cyan-500/20">
+                <Receipt className="w-3 h-3 mr-1" />
+                Billing & Payments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Payment Tracking
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Track every rupee that moves through your clinic — consultation fees, procedure
+              charges, doctor splits, and date-range totals — all from the Finance page.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where payments are recorded automatically",
+                  "Reading the Finance dashboard",
+                  "Filtering by date range and doctor",
+                  "How clinic vs. doctor share is calculated",
+                  "Logging walk-in and cash payments",
+                  "Exporting and printing payment reports",
+                  "Reconciling daily totals at end of shift",
+                  "Common pitfalls to avoid",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Why payment tracking matters</h2>
+              <p>
+                A clinic that doesn't track payments cleanly bleeds money in three places —
+                missed fees on walk-ins, miscalculated doctor splits, and end-of-month reports
+                that don't match the cash drawer. Zonoir tracks every payment automatically as
+                you record visits, so the Finance page is always a live, accurate picture of what
+                your clinic earned.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Receipt, title: "Auto-captured", desc: "Every visit fee feeds Finance instantly" },
+                  { icon: PieChart, title: "Split-aware", desc: "Clinic and doctor shares calculated for you" },
+                  { icon: Download, title: "Audit-ready", desc: "Export totals to PDF or CSV in one click" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How payments are recorded</h2>
+                  <p className="text-muted-foreground m-0">No double entry — record once, see everywhere</p>
+                </div>
+              </div>
+              <p>
+                Payments are not entered separately in Zonoir. Instead, every appointment or
+                walk-in lets you enter three fee fields when the visit is completed:
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Consultation fee</strong> — the doctor's standard charge for the visit.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Procedure fee</strong> — anything done in-clinic (injection, dressing, ECG, ultrasound).</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Other fee</strong> — registration, file charges, or any miscellaneous amount.</span>
+                </li>
+              </ul>
+              <p className="mt-4">
+                The system adds the three into a <strong>Total Fee</strong> for that visit and
+                immediately rolls it into the day's revenue on the Finance page.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reading the Finance page</h2>
+                  <p className="text-muted-foreground m-0">Clinic Finance / Doctor Finance — same idea, different scope</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { icon: Wallet, title: "Total Revenue", desc: "Sum of every Total Fee for the selected date range." },
+                  { icon: Percent, title: "Clinic Share", desc: "Total Fee × clinic_percentage for each visit, summed up." },
+                  { icon: Stethoscope, title: "Doctor Share", desc: "Total Fee minus Clinic Share — what the doctor takes home." },
+                  { icon: TrendingUp, title: "Visit Count", desc: "Number of completed visits in the range — handy for averages." },
+                  { icon: BarChart3, title: "Daily / Doctor breakdown", desc: "Charts showing which days and which doctors drive revenue." },
+                ].map((card, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <card.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{card.title}</h4>
+                        <p className="text-sm text-muted-foreground m-0 mt-1">{card.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Filter the right way</h2>
+                  <p className="text-muted-foreground m-0">Date range first, doctor second</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <Filter className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Date range</strong> — pick Today, This Week, This Month, or a custom span. Defaults to this month.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Filter className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Doctor filter</strong> (clinics only) — narrow to one practitioner to see their share alone.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Filter className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Status</strong> — only <em>Completed</em> visits are counted. Cancelled and pending visits are excluded automatically.</span>
+                </li>
+              </ul>
+              <Card className="not-prose mt-4 border-cyan-500/20 bg-cyan-500/5">
+                <CardContent className="py-5">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-cyan-600 shrink-0 mt-0.5" />
+                    <p className="text-sm m-0">
+                      Tip: when reconciling at end of day, set the date to <em>Today</em> and
+                      compare the Total Revenue on screen to the cash + card slips in the drawer.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Clinic vs. doctor share</h2>
+                  <p className="text-muted-foreground m-0">A simple percentage on every visit</p>
+                </div>
+              </div>
+              <p>
+                Each doctor on a clinic has a <strong>clinic percentage</strong> set on their
+                profile (e.g. 30% to clinic, 70% to doctor). When a visit is recorded, Zonoir
+                computes:
+              </p>
+              <div className="not-prose mt-4 rounded-lg border bg-card font-mono text-sm">
+                <div className="px-5 py-3 border-b">
+                  <span className="text-muted-foreground">Clinic Share = </span>
+                  <span>Total Fee × clinic_percentage / 100</span>
+                </div>
+                <div className="px-5 py-3">
+                  <span className="text-muted-foreground">Doctor Share = </span>
+                  <span>Total Fee − Clinic Share</span>
+                </div>
+              </div>
+              <p className="mt-4">
+                If you change a doctor's percentage later, only <em>future</em> visits use the new
+                rate — historical totals stay locked at the rate that was in effect when each
+                visit was recorded.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Walk-ins and cash visits</h2>
+                  <p className="text-muted-foreground m-0">Same flow, no appointment needed</p>
+                </div>
+              </div>
+              <p>
+                Walk-ins follow the exact same payment flow. Open the Walk-in screen, pick or
+                create the patient, fill in the visit details and the three fee fields, save —
+                the revenue lands in Finance the moment you hit save. There is no separate
+                "payment" button to remember.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Export and print</h2>
+                  <p className="text-muted-foreground m-0">Reports for owners, accountants, and tax</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <FileSpreadsheet className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>CSV export</strong> — full visit-level breakdown with patient, doctor, fees, and shares. Open in Excel for your own pivots.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Printer className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Print report</strong> — formatted PDF with date range, totals, and per-doctor breakdown. Hand to the owner or auditor.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Download className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Per-doctor summary</strong> — switch the doctor filter and re-export to give each doctor their own statement.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Card className="not-prose mb-8 border-success/20 bg-success/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Pro tips</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Reconcile daily, not weekly — small mismatches are cheap to fix on the same day.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Use the <em>Other</em> fee for registration or file charges so consultation totals stay clean.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Pair Payment Tracking with the <Link to={`${kbBase}/expenses`} className="underline">Managing Expenses</Link> page for a true profit picture.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-destructive/20 bg-destructive/5 not-prose">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Common pitfalls</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Forgetting to mark a visit as <em>Completed</em> — pending visits don't count toward revenue.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Editing fees days later — always edit on the same day so daily totals stay reliable.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>All amounts are in <strong>PKR</strong>. Don't enter dollars or any other currency.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Understanding Your Subscription", slug: "subscription" },
+                { title: "Managing Expenses", slug: "expenses" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Managing Walk-ins", slug: "walk-ins" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
