@@ -2260,6 +2260,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_password_reset_eligibility: {
+        Args: { _email: string }
+        Returns: Json
+      }
       get_doctor_clinic_id: { Args: { _doctor_id: string }; Returns: string }
       get_doctor_receptionist_doctor_id: {
         Args: { _user_id: string }
