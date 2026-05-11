@@ -43,7 +43,14 @@ import {
   RefreshCw,
   Gift,
   Wallet,
-  TrendingDown
+  TrendingDown,
+  TrendingUp,
+  Filter,
+  Download,
+  Printer,
+  Percent,
+  PieChart,
+  FileSpreadsheet
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
