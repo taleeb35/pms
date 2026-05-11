@@ -1753,6 +1753,10 @@ const KnowledgeBaseArticle = () => {
     return <AppointmentCalendarArticle />;
   }
 
+  if (slug === "subscription" || slug === "understanding-your-subscription") {
+    return <SubscriptionArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
