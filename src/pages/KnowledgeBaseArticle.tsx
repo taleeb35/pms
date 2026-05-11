@@ -36,7 +36,14 @@ import {
   CalendarDays,
   Coffee,
   Plane,
-  Save
+  Save,
+  CreditCard,
+  Receipt,
+  Sparkles,
+  RefreshCw,
+  Gift,
+  Wallet,
+  TrendingDown
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
