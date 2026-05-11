@@ -36,7 +36,14 @@ import {
   CalendarDays,
   Coffee,
   Plane,
-  Save
+  Save,
+  CreditCard,
+  Receipt,
+  Sparkles,
+  RefreshCw,
+  Gift,
+  Wallet,
+  TrendingDown
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -1646,6 +1653,7 @@ const slugTitleMap: Record<string, string> = {
   "visit-records": "Recording Patient Visits",
   "walk-ins": "Managing Walk-ins",
   "appointment-calendar": "Appointment Calendar",
+  "subscription": "Understanding Your Subscription",
 };
 
 const KnowledgeBaseArticle = () => {
@@ -1750,6 +1758,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "appointment-calendar" || slug === "calendar") {
     return <AppointmentCalendarArticle />;
+  }
+
+  if (slug === "subscription" || slug === "understanding-your-subscription") {
+    return <SubscriptionArticle />;
   }
 
   // Placeholder for other articles
@@ -5658,6 +5670,484 @@ const AppointmentCalendarArticle = () => {
                 { title: "Managing Walk-ins", slug: "walk-ins" },
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Recording Patient Visits", slug: "visit-records" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const SubscriptionArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Billing & Payments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Understanding Your Subscription</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-cyan-500/10 text-cyan-600 hover:bg-cyan-500/20">
+                <CreditCard className="w-3 h-3 mr-1" />
+                Billing & Payments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Understanding Your Subscription
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Everything you need to know about your Zonoir plan — the free trial, monthly vs.
+              yearly billing, the launch discount, renewal dates, and what happens when a payment
+              is missed.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How the 14-day free trial works",
+                  "Difference between Monthly and Yearly plans",
+                  "Reading the launch discount (75% OFF)",
+                  "Where to see your next renewal date",
+                  "Payment status: Paid, Unpaid, Action Required",
+                  "What happens if a payment fails",
+                  "How clinic-managed doctors are billed",
+                  "How to upgrade, downgrade, or cancel",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            {/* Intro */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Your subscription, in plain English</h2>
+              <p>
+                Zonoir is a subscription product — you pay a fixed fee every month or year and
+                get unlimited access to appointments, patient records, prescriptions, billing,
+                analytics, and the mobile app. There are no per-patient or per-appointment
+                charges, and nothing you build inside the platform is ever locked behind a paywall.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Gift, title: "14-day free trial", desc: "Full access — no card required to start" },
+                  { icon: Sparkles, title: "75% launch discount", desc: "PKR 23,999 → PKR 5,999 / month" },
+                  { icon: TrendingDown, title: "17% off yearly", desc: "Save two months when you pay annually" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1: Trial */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The 14-day free trial</h2>
+                  <p className="text-muted-foreground m-0">Test-drive every feature before you pay</p>
+                </div>
+              </div>
+              <p>
+                Every new clinic and every new doctor account starts with a <strong>14-day free
+                trial</strong>. During the trial you get the same access as a paying subscriber —
+                unlimited patients, appointments, doctors (within plan limits), prescriptions,
+                analytics, and the mobile app. We do not ask for a card up front.
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>The <em>Trial Status</em> card on your Subscription page shows the days remaining.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>You'll see a <em>Trial Banner</em> at the top of the dashboard reminding you when it expires.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Once the trial ends, you must complete payment to keep using the platform — your data is preserved.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2: Plans */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Monthly vs. Yearly plans</h2>
+                  <p className="text-muted-foreground m-0">Pick the cycle that fits your cash flow</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 not-prose">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Monthly</h4>
+                    </div>
+                    <p className="text-2xl font-bold m-0">PKR 5,999<span className="text-sm font-normal text-muted-foreground"> / month</span></p>
+                    <p className="text-xs text-muted-foreground mt-1 line-through">PKR 23,999 / month</p>
+                    <p className="text-sm text-muted-foreground mt-3 m-0">Billed every 30 days. Cancel anytime — you keep access until the end of the paid period.</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-primary/40 bg-primary/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CalendarDays className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Yearly</h4>
+                      <Badge className="ml-auto">Save 17%</Badge>
+                    </div>
+                    <p className="text-2xl font-bold m-0">PKR 59,710<span className="text-sm font-normal text-muted-foreground"> / year</span></p>
+                    <p className="text-xs text-muted-foreground mt-1">≈ PKR 4,976 / month — two months free</p>
+                    <p className="text-sm text-muted-foreground mt-3 m-0">Billed once a year. Best for established clinics with predictable budgets.</p>
+                  </CardContent>
+                </Card>
+              </div>
+              <p className="mt-6">
+                You can switch between Monthly and Yearly at any time from the Subscription page.
+                Yearly invoices show the <strong>full annual amount</strong> — never a per-month
+                rate — so what you see is exactly what is charged.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3: Launch discount */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The 75% launch discount</h2>
+                  <p className="text-muted-foreground m-0">Locked in for as long as you stay subscribed</p>
+                </div>
+              </div>
+              <p>
+                Our standard rate is <strong>PKR 23,999 / month</strong>. As part of our launch in
+                Pakistan, every clinic and doctor that signs up today gets a <strong>75% discount</strong>,
+                bringing the price down to <strong>PKR 5,999 / month</strong>. This rate is locked
+                to your account — as long as you don't cancel and re-subscribe later, you keep
+                paying the discounted price even after the launch period ends.
+              </p>
+              <Card className="not-prose mt-4 border-cyan-500/20 bg-cyan-500/5">
+                <CardContent className="py-5">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-cyan-600 shrink-0 mt-0.5" />
+                    <p className="text-sm m-0">
+                      The Subscription page shows the original price <span className="line-through">PKR 23,999</span> next
+                      to the discounted rate so you can always see the value you're getting.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4: Reading subscription page */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reading your Subscription page</h2>
+                  <p className="text-muted-foreground m-0">Five cards that tell you everything</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { icon: CreditCard, title: "Current Plan", desc: "Shows Monthly or Yearly, the discounted price, and the original PKR 23,999 rate struck through." },
+                  { icon: Calendar, title: "Billing Cycle", desc: "Confirms whether you're billed monthly or annually, and the savings on yearly." },
+                  { icon: Clock, title: "Trial Status", desc: "Days remaining in your free trial, or 'Expired' once it ends." },
+                  { icon: Wallet, title: "Payment Status", desc: "Paid (green) means you're good. Unpaid means action is required to keep access." },
+                  { icon: RefreshCw, title: "Next Renewal", desc: "The exact date your card will be charged next — or when billing begins after the trial." },
+                ].map((card, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <card.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{card.title}</h4>
+                        <p className="text-sm text-muted-foreground m-0 mt-1">{card.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5: Billing summary */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The Billing Summary breakdown</h2>
+                  <p className="text-muted-foreground m-0">Every rupee accounted for</p>
+                </div>
+              </div>
+              <p>
+                Below the cards you'll find a clear, line-by-line breakdown so there are no
+                surprises:
+              </p>
+              <div className="not-prose mt-4 rounded-lg border bg-card">
+                <div className="px-5 py-3 flex justify-between text-sm border-b">
+                  <span className="text-muted-foreground">Original rate</span>
+                  <span className="line-through text-muted-foreground">PKR 23,999 / month</span>
+                </div>
+                <div className="px-5 py-3 flex justify-between text-sm border-b text-red-600">
+                  <span>Launch discount (75% OFF)</span>
+                  <span>− PKR 18,000</span>
+                </div>
+                <div className="px-5 py-3 flex justify-between text-sm border-b">
+                  <span className="text-muted-foreground">Discounted rate</span>
+                  <span>PKR 5,999 / month</span>
+                </div>
+                <div className="px-5 py-3 flex justify-between text-sm border-b text-green-600">
+                  <span>Yearly discount (17%) — yearly plan only</span>
+                  <span>− PKR 12,238</span>
+                </div>
+                <div className="px-5 py-4 flex justify-between font-bold">
+                  <span>Total (Yearly)</span>
+                  <span>PKR 59,710</span>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6: Failed payments */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">If a payment fails</h2>
+                  <p className="text-muted-foreground m-0">What happens, and how to recover</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-warning mt-1 shrink-0" />
+                  <span>The Payment Status card flips to <strong>Action Required</strong> and you'll see a banner on the dashboard.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-warning mt-1 shrink-0" />
+                  <span>You get a <strong>3-day grace window</strong> — full access continues so patient care isn't interrupted.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-warning mt-1 shrink-0" />
+                  <span>After the grace period, the account is <em>paused</em> — you can still log in and see your data, but new appointments and visits are blocked until payment clears.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-warning mt-1 shrink-0" />
+                  <span>Your data is <strong>never deleted</strong> for unpaid invoices. Resume the plan and everything is exactly where you left it.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 7: Doctors under clinics */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Doctors under a clinic</h2>
+                  <p className="text-muted-foreground m-0">One subscription, many practitioners</p>
+                </div>
+              </div>
+              <p>
+                If a doctor was added by a clinic owner, the <strong>clinic pays a single
+                subscription</strong> that covers every doctor on the team. Those doctors will see
+                a <em>"Managed by Clinic"</em> notice on their Subscription page instead of a
+                billing breakdown — they don't need to enter card details or worry about
+                renewals. Independent doctors who signed up directly manage their own
+                subscription.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 8: Upgrades & cancellation */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  8
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Upgrades, downgrades & cancellation</h2>
+                  <p className="text-muted-foreground m-0">You're always in control</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Switch Monthly → Yearly</strong>: takes effect immediately and applies the 17% discount to the next charge.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Switch Yearly → Monthly</strong>: stays on Yearly until the current term ends, then bills monthly from renewal.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Cancel</strong>: you keep full access until the end of the period you've already paid for. No partial refunds.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Re-subscribe</strong>: your data is restored instantly — but the launch discount may no longer apply.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Pro Tips */}
+            <Card className="not-prose mb-8 border-success/20 bg-success/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Pro tips</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Pay yearly if you can — two months free over twelve covers the cost of a small piece of equipment.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Use the trial to import a sample of patients and run real appointments — you'll know on day 10 if it fits your workflow.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Keep one card on file with auto-renewal on — paused accounts are the #1 reason clinics lose a day of bookings.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Warning */}
+            <Card className="border-destructive/20 bg-destructive/5 not-prose">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Pricing & currency</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      All prices are in <strong>Pakistani Rupees (PKR)</strong>. We do not bill in
+                      USD or any other currency. The launch discount is time-limited — once it
+                      ends, new sign-ups will pay the standard PKR 23,999 / month rate.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Payment Tracking", slug: "payment-tracking" },
+                { title: "Managing Expenses", slug: "expenses" },
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "Understanding Your Dashboard", slug: "dashboard-overview" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
