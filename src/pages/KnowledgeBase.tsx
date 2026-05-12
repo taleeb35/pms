@@ -15,7 +15,12 @@ import {
   BookOpen,
   HelpCircle,
   FileText,
-  ArrowRight
+  ArrowRight,
+  Sparkles,
+  Smartphone,
+  ShieldCheck,
+  BarChart3,
+  Video,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
