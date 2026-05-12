@@ -330,7 +330,7 @@ const ClinicSignupArticle = () => {
                   <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold mb-2">Important Notes</h4>
-                    <ul className="text-sm text-muted-foreground space-y-1">
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
                       <li>• Monthly fees apply based on the number of doctors in your clinic</li>
                       <li>• Ensure all information provided is accurate for your records and invoicing</li>
                       <li>• Your account is active immediately — start adding doctors right after signup</li>

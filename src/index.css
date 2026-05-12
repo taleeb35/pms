@@ -236,18 +236,18 @@ a.back_home:hover {
   fill: hsl(var(--primary));
 }
 
-/* Blog prose list styles - ensure bullets and numbers show */
-.prose ul {
+/* Blog prose list styles - applied via class to avoid affecting Knowledge Base articles which use manual bullets */
+.blog-prose ul {
   list-style-type: disc !important;
   padding-left: 1.5em !important;
 }
 
-.prose ol {
+.blog-prose ol {
   list-style-type: decimal !important;
   padding-left: 1.5em !important;
 }
 
-.prose ul li,
-.prose ol li {
+.blog-prose ul li,
+.blog-prose ol li {
   padding-left: 0.25em;
 }
