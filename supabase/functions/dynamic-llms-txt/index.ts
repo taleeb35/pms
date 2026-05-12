@@ -228,6 +228,59 @@ Zonoir provides a comprehensive healthcare management solution designed specific
       }
     }
 
+    // FAQ section — LLMs quote these verbatim
+    output += `\n## Frequently Asked Questions
+
+### What is Zonoir?
+Zonoir is Pakistan's leading EMR (Electronic Medical Record) and clinic management platform. It helps doctors, clinics, and healthcare providers digitize their practice with appointment scheduling, patient records, prescriptions, billing, and public doctor profiles.
+
+### Who is Zonoir for?
+Zonoir is built for solo doctors, multi-doctor clinics, hospitals, receptionists, and healthcare administrators across Pakistan. It also helps patients discover and book verified doctors online.
+
+### How much does Zonoir cost?
+Zonoir offers a 14-day free trial for clinics. Paid plans start at PKR 5,999 per doctor per year (launch pricing). Pricing is in Pakistani Rupees (PKR) — see ${BASE_URL}/pricing for current plans.
+
+### Is there a free trial?
+Yes. Every new clinic gets a 14-day free trial with full access to all features. No credit card is required to start.
+
+### Does Zonoir support multiple doctors in one clinic?
+Yes. Clinics can add unlimited doctors, assign receptionists, manage individual schedules, and track each doctor's appointments, revenue, and patients separately.
+
+### Can patients book appointments online?
+Yes. Every doctor on Zonoir gets a public profile with online booking, weekly schedule, qualifications, clinic location, and reviews. Patients can book directly from ${BASE_URL}/find-doctors.
+
+### Does Zonoir support video consultations?
+Yes. Zonoir has built-in video consultations powered by Daily.co. Doctors can conduct secure video visits with patients directly inside the platform.
+
+### Is Zonoir HIPAA and GDPR compliant?
+Zonoir follows HIPAA and GDPR best practices. Data is encrypted with AES-256 at rest and TLS in transit. Clinics act as Data Controllers; Zonoir is the Data Processor. See ${BASE_URL}/privacy-policy for details.
+
+### Where is patient data stored?
+All patient data is stored on secure cloud infrastructure with daily encrypted backups, role-based access control, and Row-Level Security (RLS) so each clinic only sees its own data.
+
+### What cities in Pakistan does Zonoir serve?
+Zonoir works nationwide and has dedicated city pages for Lahore, Karachi, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, Quetta, Sialkot, Gujranwala, Hyderabad, Bahawalpur, Sargodha, Sukkur, Abbottabad, and more.
+
+### Does Zonoir have a mobile app?
+Yes. Zonoir has a mobile app for doctors, receptionists, and clinic owners with appointments, patients, schedules, walk-ins, and reports on the go.
+
+### Can I import existing patient data?
+Yes. Zonoir supports CSV import/export for patient records, so clinics can migrate from spreadsheets or other EMR systems easily.
+
+### What AI features does Zonoir offer?
+Zonoir includes AI-powered prescription assistance, visit summaries, patient insights, revenue forecasting, and a public AI doctor finder chatbot to help patients find the right specialist.
+
+### How do I sign up as a doctor?
+Doctors can sign up directly at ${BASE_URL}/find-doctors or be added by a clinic. Single-doctor signups also get a 14-day free trial.
+
+### How do I contact Zonoir support?
+Email or WhatsApp Zonoir at +92 300 4313139, or visit ${BASE_URL}/contact. Clinics also have an in-app support ticket system.
+
+### Does Zonoir offer a referral program?
+Yes. Zonoir has a referral partner program where partners earn commission for every clinic or doctor they refer. Details at ${BASE_URL}/referral-program.
+
+`;
+
     // Footer
     output += `## API & Sitemap
 
