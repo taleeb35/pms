@@ -85,12 +85,41 @@ serve(async (req) => {
 
     // ============ KNOWLEDGE BASE ARTICLES ============
     const knowledgeBaseArticles = [
-      "clinic-signup", "doctor-signup", "dashboard-overview",
-      "add-doctors", "manage-receptionists", "specializations",
+      // Getting Started
+      "clinic-signup", "add-doctors", "dashboard-overview",
+      "reset-password", "login-portals", "free-trial",
+      // For Clinics
+      "manage-receptionists", "specializations", "clinic-profile",
+      "activity-logs", "doctor-limits", "clinic-reports", "clinical-catalogs",
+      // For Doctors
       "doctor-schedule", "prescription-templates", "visit-records",
+      "weekly-availability", "manage-leaves", "public-doctor-profile",
+      "doctor-faqs", "doctor-reports",
+      // Patient Management
       "add-patients", "medical-records", "patient-history",
+      "import-export-patients", "visit-timeline", "pregnancy-tracking",
+      "duplicate-patients",
+      // Appointments
       "book-appointments", "walk-ins", "appointment-calendar",
-      "subscription", "payment-tracking", "expenses"
+      "appointment-slots", "appointment-statuses", "online-booking",
+      // Billing & Payments
+      "subscription", "payment-tracking", "expenses",
+      "net-profit", "monthly-vs-yearly", "financial-reports",
+      // AI Features
+      "ai-prescription", "ai-visit-summary", "ai-revenue-forecast",
+      "ai-patient-insights", "ai-doctor-finder",
+      // Video Consultations
+      "video-setup", "video-doctor", "video-patient", "video-best-practices",
+      // Mobile App
+      "install-pwa", "mobile-overview", "mobile-doctor-tips",
+      // Reports & Analytics
+      "analytics-dashboard", "peak-hour-heatmaps", "profit-loss-trend",
+      "doctor-performance-scorecard", "revenue-trend", "expense-categories",
+      "patient-demographics", "new-vs-returning", "appointment-status-breakdown",
+      "new-vs-followup", "patient-dropoff", "top-cities", "quick-stats",
+      "ai-forecast-reports", "report-date-filters", "print-export-reports",
+      // Security & Compliance
+      "data-protection", "roles-permissions", "backups-recovery", "hipaa-gdpr",
     ];
 
     for (const article of knowledgeBaseArticles) {
