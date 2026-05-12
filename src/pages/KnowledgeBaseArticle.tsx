@@ -1662,6 +1662,8 @@ const slugTitleMap: Record<string, string> = {
   "appointment-calendar": "Appointment Calendar",
   "subscription": "Understanding Your Subscription",
   "payment-tracking": "Payment Tracking",
+  "expenses": "Managing Expenses",
+  "managing-expenses": "Managing Expenses",
 };
 
 const KnowledgeBaseArticle = () => {
@@ -1774,6 +1776,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "payment-tracking" || slug === "track-payments") {
     return <PaymentTrackingArticle />;
+  }
+
+  if (slug === "expenses" || slug === "managing-expenses") {
+    return <ManagingExpensesArticle />;
   }
 
   // Placeholder for other articles
@@ -6535,6 +6541,397 @@ const PaymentTrackingArticle = () => {
                 { title: "Managing Expenses", slug: "expenses" },
                 { title: "Recording Patient Visits", slug: "visit-records" },
                 { title: "Managing Walk-ins", slug: "walk-ins" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const ManagingExpensesArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Billing & Payments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Expenses</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-rose-500/10 text-rose-600 hover:bg-rose-500/20">
+                <Receipt className="w-3 h-3 mr-1" />
+                Billing & Payments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Expenses
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Log every rupee that leaves your clinic — rent, salaries, utilities, supplies — so
+              your real profit shows up next to your revenue, not just on paper.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where to find the Expenses page",
+                  "Adding a new expense in seconds",
+                  "Choosing the right category",
+                  "Filtering by date range and category",
+                  "Editing and deleting past expenses",
+                  "Tying expenses to revenue for true profit",
+                  "Best practices for monthly bookkeeping",
+                  "Common mistakes to avoid",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">Why expense tracking matters</h2>
+              <p>
+                Revenue alone never tells the full story. A clinic doing Rs 800,000 a month in
+                consultations can still close the year in the red if rent, salaries, and supplies
+                aren't being watched. Zonoir's Expenses module gives clinic owners a single place
+                to log every payout — so the moment you open Finance, you see real profit, not
+                just gross income.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Receipt, title: "One place", desc: "Every clinic cost in a single ledger" },
+                  { icon: Filter, title: "Filterable", desc: "Slice by date or category in one click" },
+                  { icon: TrendingDown, title: "Profit-aware", desc: "Pairs with revenue for true margin" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where to find Expenses</h2>
+                  <p className="text-muted-foreground m-0">A clinic-only page in your sidebar</p>
+                </div>
+              </div>
+              <p>
+                Expenses is available to <strong>clinic owners only</strong>. Doctors and
+                receptionists do not see the page — this keeps payroll and rent data private to the
+                owner.
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Web:</strong> Clinic sidebar &rarr; <em>Expenses</em>.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Mobile app:</strong> <em>More</em> tab &rarr; <em>Expenses</em>.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Add a new expense</h2>
+                  <p className="text-muted-foreground m-0">Four fields, ten seconds</p>
+                </div>
+              </div>
+              <p>
+                Click <strong>Add Expense</strong> (or the floating + button on mobile) and fill
+                in:
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CalendarDays className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Date</strong> — defaults to today. Backdate it if you're catching up on last week's bills.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Filter className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Category</strong> — pick from the preset list (see step 3).</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Wallet className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Amount (PKR)</strong> — whole or decimal rupees. No currency symbols.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <FileText className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Description</strong> (optional) — vendor name, invoice number, or a short note like "Nov electricity bill".</span>
+                </li>
+              </ul>
+              <p className="mt-4">
+                Hit <strong>Save</strong> and the expense lands in the ledger immediately.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Pick the right category</h2>
+                  <p className="text-muted-foreground m-0">Nine presets cover almost every clinic cost</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { icon: Building2, title: "Rent", desc: "Monthly clinic premises rent or lease." },
+                  { icon: Zap, title: "Utilities", desc: "Electricity, gas, water, internet, phone." },
+                  { icon: Users, title: "Salaries", desc: "Staff wages — receptionists, cleaners, helpers, in-house nurses." },
+                  { icon: Activity, title: "Equipment", desc: "Dental chairs, ECG machines, ultrasound, BP monitors, computers." },
+                  { icon: Briefcase, title: "Supplies", desc: "Disposables, gloves, syringes, gauze, printer paper, stationery." },
+                  { icon: RefreshCw, title: "Maintenance", desc: "Equipment servicing, AC repair, generator fuel, plumbing." },
+                  { icon: Shield, title: "Insurance", desc: "Premises insurance, malpractice, equipment cover." },
+                  { icon: Sparkles, title: "Marketing", desc: "Boards, leaflets, paid social posts, SEO, photography." },
+                  { icon: Receipt, title: "Miscellaneous", desc: "Anything that doesn't fit the categories above." },
+                ].map((c, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <c.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{c.title}</h4>
+                        <p className="text-sm text-muted-foreground m-0 mt-1">{c.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <Card className="not-prose mt-4 border-cyan-500/20 bg-cyan-500/5">
+                <CardContent className="py-5">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 text-cyan-600 shrink-0 mt-0.5" />
+                    <p className="text-sm m-0">
+                      Tip: be consistent. If you log this month's electricity bill under
+                      <em> Utilities</em>, log every electricity bill there. Switching categories
+                      makes month-over-month comparisons unreliable.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Filter and review</h2>
+                  <p className="text-muted-foreground m-0">Find any expense in seconds</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <Filter className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Date range</strong> — pick a start and end date to see only that window's expenses.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Filter className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Category filter</strong> — narrow to a single category (e.g. only <em>Salaries</em>) to spot trends.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Total card</strong> — the top-of-page total updates with your filters, so you instantly know what you spent in any window.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Edit or delete</h2>
+                  <p className="text-muted-foreground m-0">Mistakes happen — fix them in place</p>
+                </div>
+              </div>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Tap any row (mobile) or click the <strong>Edit</strong> icon (web) to change date, category, amount, or note.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Use the <strong>Delete</strong> icon to remove a duplicate or wrong entry. Deletions are permanent — there is no trash bin.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">From expenses to true profit</h2>
+                  <p className="text-muted-foreground m-0">The simple equation every owner should run weekly</p>
+                </div>
+              </div>
+              <div className="not-prose mt-4 rounded-lg border bg-card font-mono text-sm">
+                <div className="px-5 py-3 border-b">
+                  <span className="text-muted-foreground">Net Profit = </span>
+                  <span>Revenue (Finance) &minus; Expenses (this page)</span>
+                </div>
+                <div className="px-5 py-3">
+                  <span className="text-muted-foreground">Margin % = </span>
+                  <span>Net Profit &divide; Revenue &times; 100</span>
+                </div>
+              </div>
+              <p className="mt-4">
+                Open <Link to={`${kbBase}/payment-tracking`} className="underline">Payment Tracking</Link> for
+                the same date range, subtract the Expenses total, and you have your real take-home
+                for the period — not the fluffy gross figure that hides costs.
+              </p>
+            </div>
+
+            <Card className="not-prose mb-8 border-success/20 bg-success/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Pro tips</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Log expenses on the same day the payment is made — paper bills get lost in a week.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Put the invoice or receipt number in the description — makes auditing trivial.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Block 10 minutes every Friday to enter the week's small cash expenses (cleaning, tea, sundries).</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>For salaries, log each staff payment as a separate row with the staff name in the description — easier to verify later.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-destructive/20 bg-destructive/5 not-prose">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Common pitfalls</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Logging personal spending under <em>Miscellaneous</em> — keep household and clinic costs strictly separate.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Lumping a year's rent into one entry — log each month so date-range filters work properly.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Switching the same recurring bill between categories — pick one and stick with it forever.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>All amounts are in <strong>PKR</strong>. Don't enter dollars or any other currency.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Payment Tracking", slug: "payment-tracking" },
+                { title: "Understanding Your Subscription", slug: "subscription" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Understanding Your Dashboard", slug: "dashboard-overview" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
