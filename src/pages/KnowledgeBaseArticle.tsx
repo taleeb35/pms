@@ -1778,6 +1778,10 @@ const KnowledgeBaseArticle = () => {
     return <PaymentTrackingArticle />;
   }
 
+  if (slug === "expenses" || slug === "managing-expenses") {
+    return <ManagingExpensesArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
