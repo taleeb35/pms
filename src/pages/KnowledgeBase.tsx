@@ -35,12 +35,12 @@ const categories = [
     icon: BookOpen,
     color: "from-blue-500 to-blue-600",
     articles: [
-      { title: "How to Sign Up Your Clinic", slug: "clinic-signup", isNew: true },
+      { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
       { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
       { title: "Understanding Your Dashboard", slug: "dashboard-overview" },
-      { title: "Resetting Your Password", slug: "reset-password", isNew: true },
-      { title: "Logging In: Clinic vs Doctor vs Receptionist Portals", slug: "login-portals", isNew: true },
-      { title: "Your 14-Day Free Trial Explained", slug: "free-trial", isNew: true },
+      { title: "Resetting Your Password", slug: "reset-password" },
+      { title: "Logging In: Clinic vs Doctor vs Receptionist Portals", slug: "login-portals" },
+      { title: "Your 14-Day Free Trial Explained", slug: "free-trial" },
     ]
   },
   {
@@ -53,11 +53,11 @@ const categories = [
       { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
       { title: "Managing Receptionists", slug: "manage-receptionists" },
       { title: "Setting Up Specializations", slug: "specializations" },
-      { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile", isNew: true },
-      { title: "Activity Logs — Tracking Who Did What", slug: "activity-logs", isNew: true },
-      { title: "Managing Doctor Limits & Capacity Increase", slug: "doctor-limits", isNew: true },
-      { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports", isNew: true },
-      { title: "Managing Allergies, Diseases, ICD Codes & Procedures", slug: "clinical-catalogs", isNew: true },
+      { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile" },
+      { title: "Activity Logs — Tracking Who Did What", slug: "activity-logs" },
+      { title: "Managing Doctor Limits & Capacity Increase", slug: "doctor-limits" },
+      { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+      { title: "Managing Allergies, Diseases, ICD Codes & Procedures", slug: "clinical-catalogs" },
     ]
   },
   {
@@ -70,11 +70,11 @@ const categories = [
       { title: "Managing Your Schedule", slug: "doctor-schedule" },
       { title: "Creating Prescription Templates", slug: "prescription-templates" },
       { title: "Recording Patient Visits", slug: "visit-records" },
-      { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability", isNew: true },
-      { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves", isNew: true },
-      { title: "Your Public Doctor Profile — How Patients Find You", slug: "public-doctor-profile", isNew: true },
-      { title: "Adding Custom FAQs to Your Profile", slug: "doctor-faqs", isNew: true },
-      { title: "Doctor Reports & Patient Analytics", slug: "doctor-reports", isNew: true },
+      { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
+      { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves" },
+      { title: "Your Public Doctor Profile — How Patients Find You", slug: "public-doctor-profile" },
+      { title: "Adding Custom FAQs to Your Profile", slug: "doctor-faqs" },
+      { title: "Doctor Reports & Patient Analytics", slug: "doctor-reports" },
     ]
   },
   {
@@ -87,10 +87,10 @@ const categories = [
       { title: "Adding New Patients", slug: "add-patients" },
       { title: "Managing Medical Records", slug: "medical-records" },
       { title: "Patient History & Documents", slug: "patient-history" },
-      { title: "Importing & Exporting Patients (CSV)", slug: "import-export-patients", isNew: true },
-      { title: "Patient Visit Timeline — Reading the History", slug: "visit-timeline", isNew: true },
-      { title: "Gynaecology & Pregnancy Tracking", slug: "pregnancy-tracking", isNew: true },
-      { title: "Avoiding Duplicate Patient Records", slug: "duplicate-patients", isNew: true },
+      { title: "Importing & Exporting Patients (CSV)", slug: "import-export-patients" },
+      { title: "Patient Visit Timeline — Reading the History", slug: "visit-timeline" },
+      { title: "Gynaecology & Pregnancy Tracking", slug: "pregnancy-tracking" },
+      { title: "Avoiding Duplicate Patient Records", slug: "duplicate-patients" },
     ]
   },
   {
@@ -103,9 +103,9 @@ const categories = [
       { title: "Booking Appointments", slug: "book-appointments" },
       { title: "Managing Walk-ins", slug: "walk-ins" },
       { title: "Appointment Calendar", slug: "appointment-calendar" },
-      { title: "Understanding 15-Minute Appointment Slots", slug: "appointment-slots", isNew: true },
-      { title: "The 4 Appointment Statuses Explained", slug: "appointment-statuses", isNew: true },
-      { title: "Online Booking from Your Public Profile", slug: "online-booking", isNew: true },
+      { title: "Understanding 15-Minute Appointment Slots", slug: "appointment-slots" },
+      { title: "The 4 Appointment Statuses Explained", slug: "appointment-statuses" },
+      { title: "Online Booking from Your Public Profile", slug: "online-booking" },
     ]
   },
   {
@@ -118,9 +118,9 @@ const categories = [
       { title: "Understanding Your Subscription", slug: "subscription" },
       { title: "Payment Tracking", slug: "payment-tracking" },
       { title: "Managing Expenses", slug: "expenses" },
-      { title: "Calculating Net Profit & Margin %", slug: "net-profit", isNew: true },
-      { title: "Monthly vs Yearly Plans — Which to Choose", slug: "monthly-vs-yearly", isNew: true },
-      { title: "Monthly Financial Reports & Exports", slug: "financial-reports", isNew: true },
+      { title: "Calculating Net Profit & Margin %", slug: "net-profit" },
+      { title: "Monthly vs Yearly Plans — Which to Choose", slug: "monthly-vs-yearly" },
+      { title: "Monthly Financial Reports & Exports", slug: "financial-reports" },
     ]
   },
   {
@@ -130,11 +130,11 @@ const categories = [
     icon: Sparkles,
     color: "from-fuchsia-500 to-pink-600",
     articles: [
-      { title: "Using the AI Prescription Assistant", slug: "ai-prescription", isNew: true },
-      { title: "AI Visit Summaries Explained", slug: "ai-visit-summary", isNew: true },
-      { title: "Reading AI Revenue Forecasts", slug: "ai-revenue-forecast", isNew: true },
-      { title: "AI Patient Insights", slug: "ai-patient-insights", isNew: true },
-      { title: "Public AI Doctor Finder Chatbot", slug: "ai-doctor-finder", isNew: true },
+      { title: "Using the AI Prescription Assistant", slug: "ai-prescription" },
+      { title: "AI Visit Summaries Explained", slug: "ai-visit-summary" },
+      { title: "Reading AI Revenue Forecasts", slug: "ai-revenue-forecast" },
+      { title: "AI Patient Insights", slug: "ai-patient-insights" },
+      { title: "Public AI Doctor Finder Chatbot", slug: "ai-doctor-finder" },
     ]
   },
   {
@@ -144,10 +144,10 @@ const categories = [
     icon: Video,
     color: "from-indigo-500 to-indigo-600",
     articles: [
-      { title: "Setting Up Video Consultations", slug: "video-setup", isNew: true },
-      { title: "Joining a Video Call as a Doctor", slug: "video-doctor", isNew: true },
-      { title: "Joining a Video Call as a Patient", slug: "video-patient", isNew: true },
-      { title: "Video Call Best Practices", slug: "video-best-practices", isNew: true },
+      { title: "Setting Up Video Consultations", slug: "video-setup" },
+      { title: "Joining a Video Call as a Doctor", slug: "video-doctor" },
+      { title: "Joining a Video Call as a Patient", slug: "video-patient" },
+      { title: "Video Call Best Practices", slug: "video-best-practices" },
     ]
   },
   {
@@ -157,9 +157,9 @@ const categories = [
     icon: Smartphone,
     color: "from-teal-500 to-teal-600",
     articles: [
-      { title: "Installing Zonoir on Your Phone (PWA)", slug: "install-pwa", isNew: true },
-      { title: "Mobile Features Overview", slug: "mobile-overview", isNew: true },
-      { title: "Mobile Tips for Doctors on the Go", slug: "mobile-doctor-tips", isNew: true },
+      { title: "Installing Zonoir on Your Phone (PWA)", slug: "install-pwa" },
+      { title: "Mobile Features Overview", slug: "mobile-overview" },
+      { title: "Mobile Tips for Doctors on the Go", slug: "mobile-doctor-tips" },
     ]
   },
   {
@@ -169,10 +169,10 @@ const categories = [
     icon: BarChart3,
     color: "from-orange-500 to-orange-600",
     articles: [
-      { title: "Reading Your Analytics Dashboard", slug: "analytics-dashboard", isNew: true },
-      { title: "Peak-Hour Heatmaps Explained", slug: "peak-hour-heatmaps", isNew: true },
-      { title: "Patient Drop-Off Reports", slug: "patient-dropoff", isNew: true },
-      { title: "Printing & Exporting Reports", slug: "print-export-reports", isNew: true },
+      { title: "Reading Your Analytics Dashboard", slug: "analytics-dashboard" },
+      { title: "Peak-Hour Heatmaps Explained", slug: "peak-hour-heatmaps" },
+      { title: "Patient Drop-Off Reports", slug: "patient-dropoff" },
+      { title: "Printing & Exporting Reports", slug: "print-export-reports" },
     ]
   },
   {
@@ -182,10 +182,10 @@ const categories = [
     icon: ShieldCheck,
     color: "from-slate-600 to-slate-700",
     articles: [
-      { title: "How Zonoir Protects Patient Data", slug: "data-protection", isNew: true },
-      { title: "User Roles & Permissions Explained", slug: "roles-permissions", isNew: true },
-      { title: "Data Backups & Recovery", slug: "backups-recovery", isNew: true },
-      { title: "HIPAA & GDPR Awareness for Clinics", slug: "hipaa-gdpr", isNew: true },
+      { title: "How Zonoir Protects Patient Data", slug: "data-protection" },
+      { title: "User Roles & Permissions Explained", slug: "roles-permissions" },
+      { title: "Data Backups & Recovery", slug: "backups-recovery" },
+      { title: "HIPAA & GDPR Awareness for Clinics", slug: "hipaa-gdpr" },
     ]
   },
 ];
