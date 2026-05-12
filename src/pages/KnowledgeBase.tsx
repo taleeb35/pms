@@ -335,9 +335,6 @@ const KnowledgeBase = () => {
                       >
                         <span className="text-sm flex items-center gap-2">
                           {article.title}
-                          {article.isNew && (
-                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">New</Badge>
-                          )}
                         </span>
                         <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover/item:opacity-100 transition-opacity" />
                       </Link>
