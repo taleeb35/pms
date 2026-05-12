@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "tsx scripts/generate-sitemap.ts",
     "build": "vite build",
     "postbuild": "tsx scripts/generate-sitemap.ts",
     "build:dev": "vite build --mode development",
