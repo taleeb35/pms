@@ -96,6 +96,7 @@ const DoctorCalendar = () => {
   useSEO({ title: "Calendar | Doctor Portal", description: "Personal tasks and events calendar" });
   const { toast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [apptCounts, setApptCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"month" | "week" | "day" | "agenda">("month");
   const [cursor, setCursor] = useState(new Date());
@@ -114,6 +115,19 @@ const DoctorCalendar = () => {
       .order("due_time", { ascending: true });
     if (error) toast({ title: "Failed to load", description: error.message, variant: "destructive" });
     setTasks((data ?? []) as Task[]);
+
+    // Load appointment counts per date for this doctor (exclude cancelled)
+    const { data: appts } = await supabase
+      .from("appointments")
+      .select("appointment_date")
+      .eq("doctor_id", user.id)
+      .neq("status", "cancelled");
+    const counts: Record<string, number> = {};
+    (appts ?? []).forEach((a: any) => {
+      counts[a.appointment_date] = (counts[a.appointment_date] ?? 0) + 1;
+    });
+    setApptCounts(counts);
+
     setLoading(false);
   };
 
@@ -379,6 +393,7 @@ const DoctorCalendar = () => {
                 {monthDays.map((d) => {
                   const key = format(d, "yyyy-MM-dd");
                   const list = tasksByDate.get(key) ?? [];
+                  const apptCount = apptCounts[key] ?? 0;
                   const inMonth = isSameMonth(d, cursor);
                   return (
                     <div
@@ -390,6 +405,15 @@ const DoctorCalendar = () => {
                         <span className={`text-xs font-semibold inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(d) ? "bg-primary text-primary-foreground" : ""}`}>
                           {format(d, "d")}
                         </span>
+                        {apptCount > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="h-5 px-1.5 text-[10px] bg-blue-500/10 text-blue-600 border border-blue-500/30"
+                            title={`${apptCount} appointment${apptCount === 1 ? "" : "s"}`}
+                          >
+                            {apptCount} appt{apptCount === 1 ? "" : "s"}
+                          </Badge>
+                        )}
                       </div>
                       <div className="space-y-0.5">
                         {list.slice(0, 3).map((t) => <TaskItem key={t.id} t={t} compact />)}
@@ -409,11 +433,19 @@ const DoctorCalendar = () => {
             {weekDays.map((d) => {
               const key = format(d, "yyyy-MM-dd");
               const list = tasksByDate.get(key) ?? [];
+              const apptCount = apptCounts[key] ?? 0;
               return (
                 <Card key={key} className={isToday(d) ? "border-primary" : ""}>
                   <CardHeader className="p-3 pb-2">
-                    <CardTitle className="text-sm flex items-center justify-between">
-                      <span>{format(d, "EEE d")}</span>
+                    <CardTitle className="text-sm flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5">
+                        {format(d, "EEE d")}
+                        {apptCount > 0 && (
+                          <Badge variant="secondary" className="h-5 px-1.5 text-[10px] bg-blue-500/10 text-blue-600 border border-blue-500/30">
+                            {apptCount} appt{apptCount === 1 ? "" : "s"}
+                          </Badge>
+                        )}
+                      </span>
                       <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => openNew(d)}>
                         <Plus className="h-3.5 w-3.5" />
                       </Button>
