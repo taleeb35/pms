@@ -80,6 +80,15 @@ const DoctorProfile = () => {
     setUserId(user.id);
     setAvatarUrl(profileData?.avatar_url || null);
 
+    if (doctorData?.clinic_id) {
+      const { data: specs } = await supabase
+        .from("specializations")
+        .select("name")
+        .eq("clinic_id", doctorData.clinic_id)
+        .order("name");
+      setSpecializations(specs?.map((s: any) => s.name) || []);
+    }
+
     if (profileData && doctorData) {
       const newProfile = {
         full_name: profileData.full_name || "",
