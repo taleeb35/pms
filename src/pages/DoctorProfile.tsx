@@ -21,6 +21,7 @@ const DoctorProfile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [specializations, setSpecializations] = useState<string[]>([]);
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
