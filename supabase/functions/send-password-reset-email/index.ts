@@ -30,12 +30,20 @@ const handler = async (req: Request): Promise<Response> => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
+    // Always use the production domain so users never receive Lovable preview links.
+    // Only allow overrides that point to zonoir.com.
+    const SITE_URL = "https://zonoir.com";
+    const safeRedirect =
+      redirectTo && redirectTo.startsWith(SITE_URL)
+        ? redirectTo
+        : `${SITE_URL}/reset-password`;
+
     // Generate the recovery link without triggering Supabase's default email
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
       type: "recovery",
       email,
       options: {
-        redirectTo: redirectTo || `${new URL(req.url).origin}/reset-password`,
+        redirectTo: safeRedirect,
       },
     });
 
