@@ -84,6 +84,12 @@ const DoctorHeroCard = ({
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [captcha, setCaptcha] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  const [openedAt, setOpenedAt] = useState<number>(0);
+
+  const regenCaptcha = () =>
+    setCaptcha({ a: Math.floor(Math.random() * 9) + 1, b: Math.floor(Math.random() * 9) + 1 });
 
   const getInitials = (name: string) =>
     name
@@ -158,6 +164,9 @@ const DoctorHeroCard = ({
 
   const proceedToForm = () => {
     if (!time) return toast.error("Please select a time slot");
+    regenCaptcha();
+    setCaptchaAnswer("");
+    setOpenedAt(Date.now());
     setShowForm(true);
   };
 
@@ -169,6 +178,14 @@ const DoctorHeroCard = ({
     const ph = validatePhone(phone);
     if (!ph.isValid) return toast.error(ph.message);
     if (!time || !date) return toast.error("Please select date and time");
+    if (Date.now() - openedAt < 2500) {
+      return toast.error("Please take a moment to complete the form");
+    }
+    if (parseInt(captchaAnswer.trim(), 10) !== captcha.a + captcha.b) {
+      regenCaptcha();
+      setCaptchaAnswer("");
+      return toast.error("Incorrect captcha answer. Please try again.");
+    }
 
     setSubmitting(true);
     try {
@@ -204,6 +221,8 @@ const DoctorHeroCard = ({
     setGender("male");
     setReason("");
     setTime("");
+    setCaptchaAnswer("");
+    setOpenedAt(0);
   };
 
   const hasSocials =
@@ -588,6 +607,34 @@ const DoctorHeroCard = ({
                       maxLength={500}
                       className="bg-background resize-none"
                     />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="hero-captcha" className="text-xs">
+                      Verify you're human: what is {captcha.a} + {captcha.b}? *
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="hero-captcha"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={captchaAnswer}
+                        onChange={(e) => setCaptchaAnswer(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                        placeholder="Answer"
+                        required
+                        className="bg-background"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          regenCaptcha();
+                          setCaptchaAnswer("");
+                        }}
+                      >
+                        ↻
+                      </Button>
+                    </div>
                   </div>
 
                   <Button
