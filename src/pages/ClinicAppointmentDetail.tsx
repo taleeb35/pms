@@ -520,6 +520,50 @@ const ClinicAppointmentDetail = () => {
     };
   };
 
+  const handlePrintInvoice = () => {
+    if (!appointment) return;
+    const procName = procedures.find((p) => p.id === selectedProcedure)?.name || null;
+    const docName = (appointment as any)?.doctors?.profiles?.full_name;
+    const docSpec = (appointment as any)?.doctors?.specialization;
+    printAppointmentInvoice({
+      appointment: {
+        id: appointment.id,
+        appointment_date: appointment.appointment_date,
+        appointment_time: appointment.appointment_time,
+        appointment_type: appointment.appointment_type,
+        doctor_id: appointment.doctor_id,
+      },
+      patient: {
+        full_name: appointment.patients.full_name,
+        patient_id: appointment.patients.patient_id,
+        date_of_birth: appointment.patients.date_of_birth,
+        gender: appointment.patients.gender,
+        phone: appointment.patients.phone,
+        address: appointment.patients.address,
+        city: appointment.patients.city,
+      },
+      vitals: {
+        blood_pressure: formData.blood_pressure,
+        temperature: formData.temperature,
+        pulse: formData.pulse,
+        weight: formData.weight,
+        height: formData.height,
+        pain_scale: formData.pain_scale,
+        right_eye_vision: formData.right_eye_vision,
+        left_eye_vision: formData.left_eye_vision,
+      },
+      fees: {
+        consultation_fee: formData.consultation_fee,
+        procedure_fee: procedureFee,
+        procedure_name: procName,
+        other_fee: formData.other_fee,
+        refund: formData.refund,
+      },
+      doctorName: docName,
+      doctorSpecialization: docSpec,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appointment) return;
