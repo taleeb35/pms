@@ -57,7 +57,7 @@ const ForgotPassword = () => {
         {
           body: {
             email,
-            redirectTo: `${window.location.origin}/reset-password`,
+            redirectTo: "https://zonoir.com/reset-password",
           },
         }
       );
