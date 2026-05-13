@@ -678,6 +678,23 @@ const DoctorHeroCard = ({
           </span>
         </div>
       </CardContent>
+
+      <Dialog open={showAbout} onOpenChange={setShowAbout}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              About {doctor.full_name}
+              {isRegistered && <VerifiedBadge size="sm" />}
+            </DialogTitle>
+            <DialogDescription className="text-primary font-semibold">
+              {doctor.specialization}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-foreground/90 leading-relaxed whitespace-pre-line">
+            {doctor.introduction}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
