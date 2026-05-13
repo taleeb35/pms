@@ -465,26 +465,16 @@ const DoctorProfile = () => {
                   <Stethoscope className="h-4 w-4 text-muted-foreground" />
                   Specialization
                 </Label>
-                <Select
+                <SearchableSelect
                   value={profile.specialization}
                   onValueChange={(value) => setProfile({ ...profile, specialization: value })}
-                >
-                  <SelectTrigger className="border-primary/20 focus:border-primary">
-                    <SelectValue placeholder="Select specialization" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Gynecologist">Gynecologist</SelectItem>
-                    <SelectItem value="Cardiologist">Cardiologist</SelectItem>
-                    <SelectItem value="Dermatologist">Dermatologist</SelectItem>
-                    <SelectItem value="Neurologist">Neurologist</SelectItem>
-                    <SelectItem value="Pediatrician">Pediatrician</SelectItem>
-                    <SelectItem value="General">General</SelectItem>
-                    <SelectItem value="Orthopedic">Orthopedic</SelectItem>
-                    <SelectItem value="ENT Specialist">ENT Specialist</SelectItem>
-                    <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                  options={specializations.map(spec => ({ value: spec, label: spec }))}
+                  placeholder={specializations.length === 0 ? "No specializations available" : "Select specialization"}
+                  searchPlaceholder="Search specialization..."
+                  emptyMessage="No specialization found."
+                  disabled={specializations.length === 0}
+                  triggerClassName="border-primary/20 focus:border-primary"
+                />
               </div>
 
               <div className="space-y-2">
