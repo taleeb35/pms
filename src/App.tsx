@@ -109,6 +109,16 @@ import DoctorReceptionistICDCodes from "./pages/DoctorReceptionistICDCodes";
 import DoctorReceptionistProcedures from "./pages/DoctorReceptionistProcedures";
 import DoctorReceptionistPatientDetail from "./pages/DoctorReceptionistPatientDetail";
 import ClinicActivityLogs from "./pages/ClinicActivityLogs";
+import InventoryDashboard from "./pages/inventory/InventoryDashboard";
+import InventorySuppliers from "./pages/inventory/InventorySuppliers";
+import InventoryProducts from "./pages/inventory/InventoryProducts";
+import InventoryPurchaseOrders from "./pages/inventory/InventoryPurchaseOrders";
+import InventoryPurchaseOrderDetail from "./pages/inventory/InventoryPurchaseOrderDetail";
+import InventoryInvoices from "./pages/inventory/InventoryInvoices";
+import InventoryInvoiceDetail from "./pages/inventory/InventoryInvoiceDetail";
+import InventoryStock from "./pages/inventory/InventoryStock";
+import InventoryAdjustments from "./pages/inventory/InventoryAdjustments";
+import InventoryLedger from "./pages/inventory/InventoryLedger";
 import DoctorActivityLogs from "./pages/DoctorActivityLogs";
 import ReceptionistActivityLogs from "./pages/ReceptionistActivityLogs";
 import DoctorReceptionistActivityLogs from "./pages/DoctorReceptionistActivityLogs";
@@ -746,6 +756,17 @@ const App = () => (
                 </Layout>
               }
             />
+            {/* Inventory routes (clinic owner + receptionist share) */}
+            <Route path="/clinic/inventory" element={<Layout><InventoryDashboard /></Layout>} />
+            <Route path="/clinic/inventory/suppliers" element={<Layout><InventorySuppliers /></Layout>} />
+            <Route path="/clinic/inventory/products" element={<Layout><InventoryProducts /></Layout>} />
+            <Route path="/clinic/inventory/purchase-orders" element={<Layout><InventoryPurchaseOrders /></Layout>} />
+            <Route path="/clinic/inventory/purchase-orders/:id" element={<Layout><InventoryPurchaseOrderDetail /></Layout>} />
+            <Route path="/clinic/inventory/invoices" element={<Layout><InventoryInvoices /></Layout>} />
+            <Route path="/clinic/inventory/invoices/:id" element={<Layout><InventoryInvoiceDetail /></Layout>} />
+            <Route path="/clinic/inventory/stock" element={<Layout><InventoryStock /></Layout>} />
+            <Route path="/clinic/inventory/adjustments" element={<Layout><InventoryAdjustments /></Layout>} />
+            <Route path="/clinic/inventory/ledger" element={<Layout><InventoryLedger /></Layout>} />
             {/* Receptionist Routes */}
             <Route
               path="/receptionist/dashboard"
