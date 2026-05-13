@@ -52,23 +52,18 @@ const PublicHeader = () => {
 
             <Button
               asChild
+              variant="ghost"
               size="sm"
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="h-9 px-3 text-sm font-medium text-foreground/80 hover:text-foreground bg-transparent hover:bg-transparent"
             >
-              <Link to="/auth">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Get Zonoir Free
-              </Link>
+              <Link to="/login">Login</Link>
             </Button>
             <Button
               asChild
               size="sm"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="h-9 px-4 rounded-md bg-foreground text-background hover:bg-foreground/90 text-sm font-medium"
             >
-              <Link to="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Login
-              </Link>
+              <Link to="/auth">Get Zonoir Free</Link>
             </Button>
           </div>
 
