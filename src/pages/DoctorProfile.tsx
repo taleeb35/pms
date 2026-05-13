@@ -473,7 +473,6 @@ const DoctorProfile = () => {
                   searchPlaceholder="Search specialization..."
                   emptyMessage="No specialization found."
                   disabled={specializations.length === 0}
-                  triggerClassName="border-primary/20 focus:border-primary"
                 />
               </div>
 
