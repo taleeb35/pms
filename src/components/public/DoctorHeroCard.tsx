@@ -289,9 +289,18 @@ const DoctorHeroCard = ({
                 </p>
 
                 {doctor.introduction && (
-                  <p className="text-sm text-muted-foreground mt-3 leading-relaxed line-clamp-3">
-                    {doctor.introduction}
-                  </p>
+                  <div className="mt-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                      {doctor.introduction}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowAbout(true)}
+                      className="text-sm font-semibold text-primary hover:underline mt-1"
+                    >
+                      Read More
+                    </button>
+                  </div>
                 )}
 
                 {/* Trust badges */}
