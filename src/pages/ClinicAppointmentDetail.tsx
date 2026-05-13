@@ -41,6 +41,7 @@ import { AIPrescriptionAssistant } from "@/components/AIPrescriptionAssistant";
 import { AIVisitSummary } from "@/components/AIVisitSummary";
 import { useClinicId } from "@/hooks/useClinicId";
 import StartVideoConsultation from "@/components/StartVideoConsultation";
+import { printAppointmentInvoice } from "@/lib/printAppointmentInvoice";
 
 interface Procedure {
   id: string;
