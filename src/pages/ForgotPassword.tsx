@@ -50,22 +50,19 @@ const ForgotPassword = () => {
         return;
       }
 
-      // Use Supabase's built-in password reset
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
+      // Send branded reset email (edge function generates the recovery link
+      // via admin API so Supabase's default email is NOT triggered)
+      const { error: fnError } = await supabase.functions.invoke(
+        "send-password-reset-email",
+        {
+          body: {
+            email,
+            redirectTo: `${window.location.origin}/reset-password`,
+          },
+        }
+      );
 
-      if (error) throw error;
-
-      // Also send a custom email via our edge function
-      try {
-        await supabase.functions.invoke("send-password-reset-email", {
-          body: { email },
-        });
-      } catch (emailError) {
-        console.error("Custom email error:", emailError);
-        // Don't fail if custom email fails - Supabase sends its own
-      }
+      if (fnError) throw fnError;
 
       setEmailSent(true);
       toast({
