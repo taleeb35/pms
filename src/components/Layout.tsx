@@ -417,6 +417,20 @@ const Layout = ({ children }: LayoutProps) => {
       ],
     },
     {
+      label: "Inventory",
+      icon: Boxes,
+      items: [
+        { path: "/clinic/inventory", icon: LayoutDashboard, label: "Overview" },
+        { path: "/clinic/inventory/products", icon: Package, label: "Products" },
+        { path: "/clinic/inventory/suppliers", icon: Truck, label: "Suppliers" },
+        { path: "/clinic/inventory/purchase-orders", icon: ShoppingCart, label: "Purchase Orders" },
+        { path: "/clinic/inventory/invoices", icon: Receipt, label: "Sales Invoices" },
+        { path: "/clinic/inventory/stock", icon: Boxes, label: "Stock & Batches" },
+        { path: "/clinic/inventory/adjustments", icon: AlertTriangle, label: "Adjustments" },
+        { path: "/clinic/inventory/ledger", icon: FileText, label: "Stock Ledger" },
+      ],
+    },
+    {
       label: "Finance",
       icon: Banknote,
       items: [
