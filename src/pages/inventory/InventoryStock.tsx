@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, Boxes } from "lucide-react";
 
 interface Product { id: string; name: string; sku: string | null; unit: string; reorder_level: number; }
-interface Batch { id: string; product_id: string; batch_number: string | null; expiry_date: string | null; quantity_on_hand: number; unit_cost: number; received_at: string; }
+interface Batch { id: string; product_id: string; batch_number: string | null; expiry_date: string | null; quantity_on_hand: number; quantity_received: number; unit_cost: number; received_at: string; }
 
 export default function InventoryStock() {
   const { clinicId, loading: cLoading } = useClinicId();
