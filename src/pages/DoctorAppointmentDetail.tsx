@@ -731,6 +731,8 @@ const DoctorAppointmentDetail = () => {
       },
     });
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appointment) return;
     // Invalidate cache so subsequent visits re-fetch fresh data
