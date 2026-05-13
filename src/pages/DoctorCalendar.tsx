@@ -393,6 +393,7 @@ const DoctorCalendar = () => {
                 {monthDays.map((d) => {
                   const key = format(d, "yyyy-MM-dd");
                   const list = tasksByDate.get(key) ?? [];
+                  const apptCount = apptCounts[key] ?? 0;
                   const inMonth = isSameMonth(d, cursor);
                   return (
                     <div
@@ -404,6 +405,15 @@ const DoctorCalendar = () => {
                         <span className={`text-xs font-semibold inline-flex items-center justify-center w-6 h-6 rounded-full ${isToday(d) ? "bg-primary text-primary-foreground" : ""}`}>
                           {format(d, "d")}
                         </span>
+                        {apptCount > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="h-5 px-1.5 text-[10px] bg-blue-500/10 text-blue-600 border border-blue-500/30"
+                            title={`${apptCount} appointment${apptCount === 1 ? "" : "s"}`}
+                          >
+                            {apptCount} appt{apptCount === 1 ? "" : "s"}
+                          </Badge>
+                        )}
                       </div>
                       <div className="space-y-0.5">
                         {list.slice(0, 3).map((t) => <TaskItem key={t.id} t={t} compact />)}
