@@ -115,6 +115,8 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#0a1628]">
+        {/* Top fade — blends header into hero so there's no visible seam */}
+        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-white to-transparent pointer-events-none z-[1]"></div>
         {/* Decorative glow background */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_rgba(16,185,129,0.18),transparent_55%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(99,102,241,0.18),transparent_55%)]"></div>
