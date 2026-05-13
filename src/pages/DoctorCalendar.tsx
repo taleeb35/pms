@@ -115,6 +115,19 @@ const DoctorCalendar = () => {
       .order("due_time", { ascending: true });
     if (error) toast({ title: "Failed to load", description: error.message, variant: "destructive" });
     setTasks((data ?? []) as Task[]);
+
+    // Load appointment counts per date for this doctor (exclude cancelled)
+    const { data: appts } = await supabase
+      .from("appointments")
+      .select("appointment_date")
+      .eq("doctor_id", user.id)
+      .neq("status", "cancelled");
+    const counts: Record<string, number> = {};
+    (appts ?? []).forEach((a: any) => {
+      counts[a.appointment_date] = (counts[a.appointment_date] ?? 0) + 1;
+    });
+    setApptCounts(counts);
+
     setLoading(false);
   };
 
