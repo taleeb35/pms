@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,18 +13,38 @@ const corsHeaders = {
 
 interface PasswordResetRequest {
   email: string;
+  redirectTo?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { email }: PasswordResetRequest = await req.json();
+    const { email, redirectTo }: PasswordResetRequest = await req.json();
 
-    console.log("Sending password reset notification to:", email);
+    console.log("Generating password reset link for:", email);
+
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+
+    // Generate the recovery link without triggering Supabase's default email
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: "recovery",
+      email,
+      options: {
+        redirectTo: redirectTo || `${new URL(req.url).origin}/reset-password`,
+      },
+    });
+
+    if (linkError || !linkData?.properties?.action_link) {
+      console.error("generateLink error:", linkError);
+      throw new Error(linkError?.message || "Failed to generate reset link");
+    }
+
+    const actionLink = linkData.properties.action_link;
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -49,10 +72,8 @@ const handler = async (req: Request): Promise<Response> => {
                 </div>
                 
                 <div style="background: white; padding: 40px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
-                  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                    Hello,
-                  </p>
-                  
+                  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">Hello,</p>
+
                   <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
                     We received a request to reset your password for your Zonoir account.
                   </p>
@@ -63,12 +84,27 @@ const handler = async (req: Request): Promise<Response> => {
                     </p>
                   </div>
 
-                  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 24px;">
+                    Click the button below to choose a new password:
+                  </p>
+
+                  <div style="text-align: center; margin: 32px 0;">
+                    <a href="${actionLink}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 14px 36px; border-radius: 10px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);">
+                      Reset Password
+                    </a>
+                  </div>
+
+                  <p style="color: #666; font-size: 13px; line-height: 1.6; margin-bottom: 20px; word-break: break-all;">
+                    Or copy and paste this link into your browser:<br>
+                    <a href="${actionLink}" style="color: #667eea;">${actionLink}</a>
+                  </p>
+
+                  <p style="color: #333; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                     If you did not request this password reset, please ignore this email. Your password will remain unchanged.
                   </p>
 
-                  <p style="color: #333; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                    For security reasons, this reset link will expire in 24 hours.
+                  <p style="color: #333; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                    For security reasons, this reset link will expire in 1 hour.
                   </p>
 
                   <div style="background: #fef3cd; border-radius: 8px; padding: 16px; margin: 24px 0; border-left: 4px solid #ffc107;">
@@ -107,20 +143,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders,
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error: any) {
     console.error("Error in send-password-reset-email function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
