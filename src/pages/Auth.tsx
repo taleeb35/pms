@@ -167,7 +167,7 @@ const Auth = () => {
           data: {
             full_name: clinicName,
           },
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: "https://zonoir.com/login",
         },
       });
 
