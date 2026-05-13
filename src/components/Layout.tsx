@@ -38,6 +38,11 @@ import {
   MessageSquareText,
   BookOpen,
   CalendarDays,
+  Boxes,
+  Package,
+  Truck,
+  ShoppingCart,
+  Receipt,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -353,6 +358,20 @@ const Layout = ({ children }: LayoutProps) => {
       ],
     },
     {
+      label: "Inventory",
+      icon: Boxes,
+      items: [
+        { path: "/clinic/inventory", icon: LayoutDashboard, label: "Overview" },
+        { path: "/clinic/inventory/products", icon: Package, label: "Products" },
+        { path: "/clinic/inventory/suppliers", icon: Truck, label: "Suppliers" },
+        { path: "/clinic/inventory/purchase-orders", icon: ShoppingCart, label: "Purchase Orders" },
+        { path: "/clinic/inventory/invoices", icon: Receipt, label: "Sales Invoices" },
+        { path: "/clinic/inventory/stock", icon: Boxes, label: "Stock & Batches" },
+        { path: "/clinic/inventory/adjustments", icon: AlertTriangle, label: "Adjustments" },
+        { path: "/clinic/inventory/ledger", icon: FileText, label: "Stock Ledger" },
+      ],
+    },
+    {
       label: "Finance & Settings",
       icon: Banknote,
       items: [
@@ -395,6 +414,20 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/receptionist/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/receptionist/procedures", icon: Settings, label: "Procedures" },
         { path: "/receptionist/templates", icon: Layers, label: "Templates" },
+      ],
+    },
+    {
+      label: "Inventory",
+      icon: Boxes,
+      items: [
+        { path: "/clinic/inventory", icon: LayoutDashboard, label: "Overview" },
+        { path: "/clinic/inventory/products", icon: Package, label: "Products" },
+        { path: "/clinic/inventory/suppliers", icon: Truck, label: "Suppliers" },
+        { path: "/clinic/inventory/purchase-orders", icon: ShoppingCart, label: "Purchase Orders" },
+        { path: "/clinic/inventory/invoices", icon: Receipt, label: "Sales Invoices" },
+        { path: "/clinic/inventory/stock", icon: Boxes, label: "Stock & Batches" },
+        { path: "/clinic/inventory/adjustments", icon: AlertTriangle, label: "Adjustments" },
+        { path: "/clinic/inventory/ledger", icon: FileText, label: "Stock Ledger" },
       ],
     },
     {

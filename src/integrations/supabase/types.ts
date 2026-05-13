@@ -1183,6 +1183,535 @@ export type Database = {
           },
         ]
       }
+      inventory_adjustments: {
+        Row: {
+          batch_id: string | null
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          product_id: string
+          quantity_delta: number
+          reason: string
+        }
+        Insert: {
+          batch_id?: string | null
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          product_id: string
+          quantity_delta: number
+          reason: string
+        }
+        Update: {
+          batch_id?: string | null
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          product_id?: string
+          quantity_delta?: number
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_adjustments_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_adjustments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_adjustments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_batches: {
+        Row: {
+          batch_number: string | null
+          clinic_id: string
+          created_at: string
+          expiry_date: string | null
+          id: string
+          po_id: string | null
+          product_id: string
+          quantity_on_hand: number
+          quantity_received: number
+          received_at: string
+          unit_cost: number
+        }
+        Insert: {
+          batch_number?: string | null
+          clinic_id: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          po_id?: string | null
+          product_id: string
+          quantity_on_hand?: number
+          quantity_received?: number
+          received_at?: string
+          unit_cost?: number
+        }
+        Update: {
+          batch_number?: string | null
+          clinic_id?: string
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          po_id?: string | null
+          product_id?: string
+          quantity_on_hand?: number
+          quantity_received?: number
+          received_at?: string
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_batches_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_batches_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_batches_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_invoice_items: {
+        Row: {
+          batch_id: string | null
+          created_at: string
+          id: string
+          invoice_id: string
+          line_total: number
+          product_id: string
+          quantity: number
+          unit_price: number
+        }
+        Insert: {
+          batch_id?: string | null
+          created_at?: string
+          id?: string
+          invoice_id: string
+          line_total?: number
+          product_id: string
+          quantity: number
+          unit_price?: number
+        }
+        Update: {
+          batch_id?: string | null
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          line_total?: number
+          product_id?: string
+          quantity?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_invoice_items_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_invoice_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_invoices: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          discount: number
+          id: string
+          invoice_number: string
+          notes: string | null
+          sale_date: string
+          status: Database["public"]["Enums"]["inv_invoice_status"]
+          subtotal: number
+          tax: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          discount?: number
+          id?: string
+          invoice_number: string
+          notes?: string | null
+          sale_date?: string
+          status?: Database["public"]["Enums"]["inv_invoice_status"]
+          subtotal?: number
+          tax?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          discount?: number
+          id?: string
+          invoice_number?: string
+          notes?: string | null
+          sale_date?: string
+          status?: Database["public"]["Enums"]["inv_invoice_status"]
+          subtotal?: number
+          tax?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_invoices_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_products: {
+        Row: {
+          category: string | null
+          clinic_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          reorder_level: number
+          sale_price: number
+          sku: string | null
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          reorder_level?: number
+          sale_price?: number
+          sku?: string | null
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          reorder_level?: number
+          sale_price?: number
+          sku?: string | null
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_products_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_purchase_order_items: {
+        Row: {
+          batch_number: string | null
+          created_at: string
+          expiry_date: string | null
+          id: string
+          line_total: number
+          po_id: string
+          product_id: string
+          quantity: number
+          unit_cost: number
+        }
+        Insert: {
+          batch_number?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          line_total?: number
+          po_id: string
+          product_id: string
+          quantity: number
+          unit_cost?: number
+        }
+        Update: {
+          batch_number?: string | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          line_total?: number
+          po_id?: string
+          product_id?: string
+          quantity?: number
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_purchase_order_items_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_purchase_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_purchase_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_purchase_orders: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          discount: number
+          expected_date: string | null
+          id: string
+          notes: string | null
+          order_date: string
+          po_number: string
+          received_date: string | null
+          status: Database["public"]["Enums"]["po_status"]
+          subtotal: number
+          supplier_id: string | null
+          tax: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          discount?: number
+          expected_date?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string
+          po_number: string
+          received_date?: string | null
+          status?: Database["public"]["Enums"]["po_status"]
+          subtotal?: number
+          supplier_id?: string | null
+          tax?: number
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          discount?: number
+          expected_date?: string | null
+          id?: string
+          notes?: string | null
+          order_date?: string
+          po_number?: string
+          received_date?: string | null
+          status?: Database["public"]["Enums"]["po_status"]
+          subtotal?: number
+          supplier_id?: string | null
+          tax?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_purchase_orders_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_purchase_orders_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_stock_ledger: {
+        Row: {
+          batch_id: string | null
+          change_qty: number
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          product_id: string
+          reason: string
+          reference_id: string | null
+          reference_type: string | null
+        }
+        Insert: {
+          batch_id?: string | null
+          change_qty: number
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          product_id: string
+          reason: string
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Update: {
+          batch_id?: string | null
+          change_qty?: number
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          product_id?: string
+          reason?: string
+          reference_id?: string | null
+          reference_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_stock_ledger_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_stock_ledger_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_stock_ledger_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_suppliers: {
+        Row: {
+          address: string | null
+          clinic_id: string
+          contact_person: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          clinic_id: string
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          clinic_id?: string
+          contact_person?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_suppliers_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           amount: number
@@ -2260,9 +2789,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_inventory_adjustment: {
+        Args: {
+          _batch_id: string
+          _clinic_id: string
+          _delta: number
+          _notes: string
+          _product_id: string
+          _reason: string
+        }
+        Returns: string
+      }
+      can_manage_clinic_inventory: {
+        Args: { _clinic_id: string }
+        Returns: boolean
+      }
       check_password_reset_eligibility: {
         Args: { _email: string }
         Returns: Json
+      }
+      generate_inventory_invoice_number: {
+        Args: { _clinic_id: string }
+        Returns: string
+      }
+      generate_inventory_po_number: {
+        Args: { _clinic_id: string }
+        Returns: string
       }
       get_doctor_clinic_id: { Args: { _doctor_id: string }; Returns: string }
       get_doctor_receptionist_doctor_id: {
@@ -2304,6 +2856,7 @@ export type Database = {
         Args: { _clinic_id: string; _user_id: string }
         Returns: boolean
       }
+      issue_sales_invoice: { Args: { _invoice_id: string }; Returns: undefined }
       public_book_appointment: {
         Args: {
           _appointment_date: string
@@ -2316,6 +2869,7 @@ export type Database = {
         }
         Returns: string
       }
+      receive_purchase_order: { Args: { _po_id: string }; Returns: undefined }
     }
     Enums: {
       app_role:
@@ -2328,7 +2882,9 @@ export type Database = {
         | "content_writer"
       appointment_status: "scheduled" | "start" | "cancelled" | "completed"
       gender: "male" | "female" | "other"
+      inv_invoice_status: "draft" | "issued" | "cancelled"
       payment_status: "pending" | "paid" | "partial" | "cancelled"
+      po_status: "draft" | "ordered" | "received" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2467,7 +3023,9 @@ export const Constants = {
       ],
       appointment_status: ["scheduled", "start", "cancelled", "completed"],
       gender: ["male", "female", "other"],
+      inv_invoice_status: ["draft", "issued", "cancelled"],
       payment_status: ["pending", "paid", "partial", "cancelled"],
+      po_status: ["draft", "ordered", "received", "cancelled"],
     },
   },
 } as const
