@@ -761,6 +761,12 @@ const ClinicAppointmentDetail = () => {
             <Printer className="h-4 w-4 mr-2" />
             Print
           </Button>
+          {appointment.status === "completed" && (
+            <Button size="sm" onClick={handlePrintInvoice} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Receipt className="h-4 w-4 mr-2" />
+              Print Invoice
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
