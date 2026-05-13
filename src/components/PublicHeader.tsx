@@ -10,10 +10,10 @@ const PublicHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const desktopNavButtonClass =
-    "public-header-nav-link rounded-full px-4 text-muted-foreground transition-all duration-200 focus-visible:ring-primary [&_svg]:text-current";
+    "h-9 px-3 text-sm font-medium text-foreground/80 hover:text-foreground bg-transparent hover:bg-transparent transition-colors focus-visible:ring-0 [&_svg]:text-current";
 
   const mobileNavButtonClass =
-    "public-header-nav-link w-full justify-start rounded-xl text-lg font-medium text-muted-foreground transition-all duration-200 focus-visible:ring-primary [&_svg]:text-current";
+    "w-full justify-start rounded-xl text-lg font-medium text-muted-foreground transition-all duration-200 focus-visible:ring-primary [&_svg]:text-current";
 
   const navItems: { label: string; path: string; icon?: typeof Gift }[] = [
     { label: "Features", path: "/features" },
@@ -23,15 +23,15 @@ const PublicHeader = () => {
 
   return (
     <>
-      {/* Header/Navbar */}
-      <header className="border-b bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Logo */}
+      {/* Header/Navbar - ClickUp style: no border, clean white, compact logo */}
+      <header className="bg-white sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+          {/* Logo - small */}
           <div
-            className="flex items-center gap-2 sm:gap-3 animate-fade-in cursor-pointer"
+            className="flex items-center animate-fade-in cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <img src={clinicLogo} alt="Clinic Logo" className="main_logo new_logo hover-scale" />
+            <img src={clinicLogo} alt="Zonoir" className="clickup_logo h-7 sm:h-8 w-auto" />
           </div>
 
           {/* Desktop Navigation */}
@@ -52,23 +52,18 @@ const PublicHeader = () => {
 
             <Button
               asChild
+              variant="ghost"
               size="sm"
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="h-9 px-3 text-sm font-medium text-foreground/80 hover:text-foreground bg-transparent hover:bg-transparent"
             >
-              <Link to="/auth">
-                <Sparkles className="mr-2 h-4 w-4" />
-                Get Zonoir Free
-              </Link>
+              <Link to="/login">Login</Link>
             </Button>
             <Button
               asChild
               size="sm"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="h-9 px-4 rounded-md bg-foreground text-background hover:bg-foreground/90 text-sm font-medium"
             >
-              <Link to="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Login
-              </Link>
+              <Link to="/auth">Get Zonoir Free</Link>
             </Button>
           </div>
 
