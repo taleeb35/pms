@@ -150,6 +150,16 @@ const BookAppointmentDialog = ({
     if (!date) return toast.error("Please select a date");
     if (!time) return toast.error("Please select a time slot");
 
+    // Anti-spam: minimum form interaction time (honeypot timing)
+    if (Date.now() - openedAt < 2500) {
+      return toast.error("Please take a moment to complete the form");
+    }
+    // Captcha check
+    if (parseInt(captchaAnswer.trim(), 10) !== captcha.a + captcha.b) {
+      regenCaptcha();
+      setCaptchaAnswer("");
+      return toast.error("Incorrect captcha answer. Please try again.");
+    }
     setSubmitting(true);
     try {
       const { data, error } = await supabase.rpc("public_book_appointment" as any, {
