@@ -321,6 +321,37 @@ const BookAppointmentDialog = ({
                 />
               </div>
 
+              <div className="space-y-1.5">
+                <Label htmlFor="b-captcha">
+                  Verify you're human: what is{" "}
+                  <span className="font-semibold text-foreground">
+                    {captcha.a} + {captcha.b}
+                  </span>
+                  ? *
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="b-captcha"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={captchaAnswer}
+                    onChange={(e) => setCaptchaAnswer(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                    placeholder="Answer"
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      regenCaptcha();
+                      setCaptchaAnswer("");
+                    }}
+                  >
+                    ↻
+                  </Button>
+                </div>
+              </div>
+
               <Button
                 type="submit"
                 className="w-full"
