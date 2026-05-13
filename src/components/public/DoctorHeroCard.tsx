@@ -87,6 +87,7 @@ const DoctorHeroCard = ({
   const [captcha, setCaptcha] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
   const [captchaAnswer, setCaptchaAnswer] = useState("");
   const [openedAt, setOpenedAt] = useState<number>(0);
+  const [showAbout, setShowAbout] = useState(false);
 
   const regenCaptcha = () =>
     setCaptcha({ a: Math.floor(Math.random() * 9) + 1, b: Math.floor(Math.random() * 9) + 1 });
