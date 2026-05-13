@@ -26,7 +26,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CalendarIcon, Printer, ChevronUp, ChevronDown, MoreHorizontal, Phone, Mail, MapPin, User, FileText, Clock, CheckCircle, XCircle, Play } from "lucide-react";
+import { CalendarIcon, Printer, ChevronUp, ChevronDown, MoreHorizontal, Phone, Mail, MapPin, User, FileText, Clock, CheckCircle, XCircle, Play, Receipt } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
