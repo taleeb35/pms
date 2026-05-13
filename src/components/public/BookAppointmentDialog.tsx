@@ -49,10 +49,21 @@ const BookAppointmentDialog = ({
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [unavailableReason, setUnavailableReason] = useState<string | null>(null);
 
+  // Simple math captcha (anti-spam)
+  const [captcha, setCaptcha] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  const [openedAt, setOpenedAt] = useState<number>(0);
+
+  const regenCaptcha = () =>
+    setCaptcha({ a: Math.floor(Math.random() * 9) + 1, b: Math.floor(Math.random() * 9) + 1 });
+
   // Reset state when dialog opens fresh
   useEffect(() => {
     if (open) {
       setSuccess(false);
+      regenCaptcha();
+      setCaptchaAnswer("");
+      setOpenedAt(Date.now());
     }
   }, [open]);
 
@@ -139,6 +150,16 @@ const BookAppointmentDialog = ({
     if (!date) return toast.error("Please select a date");
     if (!time) return toast.error("Please select a time slot");
 
+    // Anti-spam: minimum form interaction time (honeypot timing)
+    if (Date.now() - openedAt < 2500) {
+      return toast.error("Please take a moment to complete the form");
+    }
+    // Captcha check
+    if (parseInt(captchaAnswer.trim(), 10) !== captcha.a + captcha.b) {
+      regenCaptcha();
+      setCaptchaAnswer("");
+      return toast.error("Incorrect captcha answer. Please try again.");
+    }
     setSubmitting(true);
     try {
       const { data, error } = await supabase.rpc("public_book_appointment" as any, {
@@ -298,6 +319,37 @@ const BookAppointmentDialog = ({
                   rows={2}
                   maxLength={500}
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="b-captcha">
+                  Verify you're human: what is{" "}
+                  <span className="font-semibold text-foreground">
+                    {captcha.a} + {captcha.b}
+                  </span>
+                  ? *
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="b-captcha"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={captchaAnswer}
+                    onChange={(e) => setCaptchaAnswer(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                    placeholder="Answer"
+                    required
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      regenCaptcha();
+                      setCaptchaAnswer("");
+                    }}
+                  >
+                    ↻
+                  </Button>
+                </div>
               </div>
 
               <Button
