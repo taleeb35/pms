@@ -23,15 +23,15 @@ const PublicHeader = () => {
 
   return (
     <>
-      {/* Header/Navbar */}
-      <header className="border-b bg-white/90 backdrop-blur-xl sticky top-0 z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Logo */}
+      {/* Header/Navbar - ClickUp style: no border, clean white, compact logo */}
+      <header className="bg-white sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+          {/* Logo - small */}
           <div
-            className="flex items-center gap-2 sm:gap-3 animate-fade-in cursor-pointer"
+            className="flex items-center animate-fade-in cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <img src={clinicLogo} alt="Clinic Logo" className="main_logo new_logo hover-scale" />
+            <img src={clinicLogo} alt="Zonoir" className="clickup_logo h-7 sm:h-8 w-auto" />
           </div>
 
           {/* Desktop Navigation */}
