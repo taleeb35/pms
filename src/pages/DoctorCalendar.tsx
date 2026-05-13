@@ -96,6 +96,7 @@ const DoctorCalendar = () => {
   useSEO({ title: "Calendar | Doctor Portal", description: "Personal tasks and events calendar" });
   const { toast } = useToast();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [apptCounts, setApptCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"month" | "week" | "day" | "agenda">("month");
   const [cursor, setCursor] = useState(new Date());
