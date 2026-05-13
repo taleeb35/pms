@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
   CalendarDays,
   CheckCircle,
@@ -87,6 +88,7 @@ const DoctorHeroCard = ({
   const [captcha, setCaptcha] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
   const [captchaAnswer, setCaptchaAnswer] = useState("");
   const [openedAt, setOpenedAt] = useState<number>(0);
+  const [showAbout, setShowAbout] = useState(false);
 
   const regenCaptcha = () =>
     setCaptcha({ a: Math.floor(Math.random() * 9) + 1, b: Math.floor(Math.random() * 9) + 1 });
@@ -289,9 +291,18 @@ const DoctorHeroCard = ({
                 </p>
 
                 {doctor.introduction && (
-                  <p className="text-sm text-muted-foreground mt-3 leading-relaxed line-clamp-3">
-                    {doctor.introduction}
-                  </p>
+                  <div className="mt-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                      {doctor.introduction}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowAbout(true)}
+                      className="text-sm font-semibold text-primary hover:underline mt-1"
+                    >
+                      Read More
+                    </button>
+                  </div>
                 )}
 
                 {/* Trust badges */}
@@ -668,6 +679,23 @@ const DoctorHeroCard = ({
           </span>
         </div>
       </CardContent>
+
+      <Dialog open={showAbout} onOpenChange={setShowAbout}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              About {doctor.full_name}
+              {isRegistered && <VerifiedBadge size="sm" />}
+            </DialogTitle>
+            <DialogDescription className="text-primary font-semibold">
+              {doctor.specialization}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-foreground/90 leading-relaxed whitespace-pre-line">
+            {doctor.introduction}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };
