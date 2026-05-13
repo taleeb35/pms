@@ -49,10 +49,21 @@ const BookAppointmentDialog = ({
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [unavailableReason, setUnavailableReason] = useState<string | null>(null);
 
+  // Simple math captcha (anti-spam)
+  const [captcha, setCaptcha] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  const [openedAt, setOpenedAt] = useState<number>(0);
+
+  const regenCaptcha = () =>
+    setCaptcha({ a: Math.floor(Math.random() * 9) + 1, b: Math.floor(Math.random() * 9) + 1 });
+
   // Reset state when dialog opens fresh
   useEffect(() => {
     if (open) {
       setSuccess(false);
+      regenCaptcha();
+      setCaptchaAnswer("");
+      setOpenedAt(Date.now());
     }
   }, [open]);
 
