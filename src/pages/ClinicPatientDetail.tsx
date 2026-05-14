@@ -8,6 +8,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import AIPatientInsights from "@/components/AIPatientInsights";
+import { Sparkles, Printer } from "lucide-react";
+import { useActiveMembership } from "@/hooks/useActiveMembership";
+import { useClinicId } from "@/hooks/useClinicId";
+import EnrollMembershipDialog from "@/components/memberships/EnrollMembershipDialog";
+import MembershipCardPrint from "@/components/memberships/MembershipCardPrint";
+import { useState as useStateHook } from "react";
+import { format, differenceInDays } from "date-fns";
 
 interface Patient {
   id: string;
