@@ -293,6 +293,87 @@ export default function InventoryInvoiceDetail() {
           </div>
         </CardContent>
       </Card>
+
+      {returns.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-base">Refunds / Returns</CardTitle></CardHeader>
+          <CardContent>
+            <div className="border rounded-lg overflow-x-auto">
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Return #</TableHead><TableHead>Date</TableHead>
+                  <TableHead className="text-right">Refund (Rs)</TableHead><TableHead>Notes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {returns.map((r) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-mono">{r.return_number}</TableCell>
+                      <TableCell>{r.return_date}</TableCell>
+                      <TableCell className="text-right font-semibold text-amber-700">Rs {Number(r.total_refund).toLocaleString()}</TableCell>
+                      <TableCell className="text-muted-foreground">{r.notes ?? "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="text-right mt-3 text-sm">
+              Total refunded: <span className="font-bold text-amber-700">Rs {returns.reduce((s, r) => s + Number(r.total_refund), 0).toLocaleString()}</span>
+              {" · "}Net: <span className="font-bold">Rs {(Number(inv.total) - returns.reduce((s, r) => s + Number(r.total_refund), 0)).toLocaleString()}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Dialog open={returnOpen} onOpenChange={setReturnOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>Process Refund / Return</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="border rounded-lg overflow-x-auto">
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Product</TableHead>
+                  <TableHead className="w-20 text-right">Sold</TableHead>
+                  <TableHead className="w-24 text-right">Returned</TableHead>
+                  <TableHead className="w-24 text-right">Returnable</TableHead>
+                  <TableHead className="w-28">Return Qty</TableHead>
+                  <TableHead className="w-28 text-right">Refund</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {items.map((it) => {
+                    const max = Number(it.quantity) - Number(it._returned ?? 0);
+                    const q = it.id ? Number(returnQty[it.id] || 0) : 0;
+                    return (
+                      <TableRow key={it.id}>
+                        <TableCell>{it._productName}</TableCell>
+                        <TableCell className="text-right">{Number(it.quantity)}</TableCell>
+                        <TableCell className="text-right">{Number(it._returned ?? 0)}</TableCell>
+                        <TableCell className="text-right font-semibold">{max}</TableCell>
+                        <TableCell>
+                          <Input type="number" min={0} max={max} step="1" value={q}
+                            onChange={(e) => setReturnQty({ ...returnQty, [it.id!]: Math.max(0, Math.min(max, Number(e.target.value))) })}
+                            disabled={max <= 0} />
+                        </TableCell>
+                        <TableCell className="text-right">Rs {(q * Number(it.unit_price)).toLocaleString()}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+            <div><Label>Reason / Notes</Label><Textarea rows={2} value={returnNotes} onChange={(e) => setReturnNotes(e.target.value)} placeholder="e.g. customer returned damaged item" /></div>
+            <div className="flex justify-between items-center bg-muted/50 rounded-lg px-3 py-2">
+              <span className="font-semibold">Total Refund</span>
+              <span className="text-lg font-bold text-amber-700">Rs {returnTotal.toLocaleString()}</span>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReturnOpen(false)} disabled={busy}>Cancel</Button>
+            <Button onClick={submitReturn} disabled={busy || returnTotal <= 0} className="bg-amber-600 hover:bg-amber-700">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Undo2 className="h-4 w-4 mr-1" />Process Return</>}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
