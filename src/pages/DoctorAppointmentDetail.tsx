@@ -123,6 +123,7 @@ type CachedSnapshot = {
   icdCodes: ICDCode[];
   diseaseTemplates: DiseaseTemplate[];
   testTemplates: TestTemplate[];
+  ophthalmologyData: OphthalmologyData;
   cachedAt: number;
 };
 const appointmentCache = new Map<string, CachedSnapshot>();
