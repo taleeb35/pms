@@ -919,6 +919,11 @@ const ClinicAppointmentDetail = () => {
                   </div>
                 </div>
 
+                {/* Ophthalmology Examination - eye specialists only */}
+                {isOphthalmologist && (
+                  <OphthalmologyExamination value={ophthalmologyData} onChange={setOphthalmologyData} />
+                )}
+
                 {/* Chief Complaint */}
                 <div>
                   <Label className="text-xs">Chief Complaint</Label>
