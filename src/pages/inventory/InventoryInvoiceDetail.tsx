@@ -17,7 +17,7 @@ interface Inv {
   customer_name: string | null; customer_phone: string | null;
   sale_date: string; subtotal: number; tax: number; discount: number; total: number; notes: string | null;
 }
-interface Item { id?: string; product_id: string; quantity: number; unit_price: number; line_total: number; _stock?: number; }
+interface Item { id?: string; product_id: string; quantity: number; unit_price: number; line_total: number; _stock?: number; _returned?: number; _productName?: string; }
 interface Product { id: string; name: string; unit: string; sale_price: number; }
 
 export default function InventoryInvoiceDetail() {
