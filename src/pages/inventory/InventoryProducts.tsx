@@ -194,44 +194,85 @@ export default function InventoryProducts() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>{editing ? "Edit Product" : "New Product"}</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            <div><Label>Name *</Label><Input value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label>SKU</Label><Input value={form.sku ?? ""} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></div>
-              <div><Label>Category</Label><Input value={form.category ?? ""} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Antibiotic" /></div>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div><Label>Unit</Label><Input value={form.unit ?? "unit"} onChange={(e) => setForm({ ...form, unit: e.target.value })} placeholder="tablet, ml, bottle" /></div>
-              <div><Label>Sale Price (Rs)</Label><Input type="number" min={0} step="0.01" value={form.sale_price ?? 0} onChange={(e) => setForm({ ...form, sale_price: Number(e.target.value) })} /></div>
-              <div><Label>Reorder Level</Label><Input type="number" min={0} step="1" value={form.reorder_level ?? 0} onChange={(e) => setForm({ ...form, reorder_level: Number(e.target.value) })} /></div>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editing ? "Edit Product" : "New Product"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-5 py-2">
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Name *</Label>
+                <Input value={form.name ?? ""} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Product name" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>SKU</Label>
+                  <Input value={form.sku ?? ""} onChange={(e) => setForm({ ...form, sku: e.target.value })} placeholder="Optional code" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Input value={form.category ?? ""} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Antibiotic" />
+                </div>
+              </div>
             </div>
 
+            {/* Pricing & Unit */}
+            <div className="space-y-3 pt-2 border-t">
+              <h4 className="text-sm font-semibold text-muted-foreground">Pricing & Unit</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Unit</Label>
+                  <Input value={form.unit ?? "unit"} onChange={(e) => setForm({ ...form, unit: e.target.value })} placeholder="tablet, ml, bottle" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Sale Price (Rs)</Label>
+                  <Input type="number" min={0} step="0.01" value={form.sale_price ?? 0} onChange={(e) => setForm({ ...form, sale_price: Number(e.target.value) })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Reorder Level</Label>
+                  <Input type="number" min={0} step="1" value={form.reorder_level ?? 0} onChange={(e) => setForm({ ...form, reorder_level: Number(e.target.value) })} />
+                </div>
+              </div>
+            </div>
+
+            {/* Initial Stock */}
             {!editing && (
-              <div className="grid grid-cols-3 gap-3 p-3 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30">
+              <div className="space-y-3 pt-2 border-t">
                 <div>
-                  <Label className="flex items-center gap-1"><Calendar className="h-3 w-3" />Expiry Date</Label>
-                  <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
+                  <h4 className="text-sm font-semibold text-muted-foreground">Initial Stock (Optional)</h4>
+                  <p className="text-xs text-muted-foreground mt-1">Add starting inventory and expiry to enable batch tracking.</p>
                 </div>
-                <div>
-                  <Label>Initial Stock</Label>
-                  <Input type="number" min={0} step="1" value={initialStock} onChange={(e) => setInitialStock(Number(e.target.value))} />
-                </div>
-                <div>
-                  <Label>Unit Cost (Rs)</Label>
-                  <Input type="number" min={0} step="0.01" value={initialCost} onChange={(e) => setInitialCost(Number(e.target.value))} />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/20">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />Expiry Date</Label>
+                    <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Initial Stock</Label>
+                    <Input type="number" min={0} step="1" value={initialStock} onChange={(e) => setInitialStock(Number(e.target.value))} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Unit Cost (Rs)</Label>
+                    <Input type="number" min={0} step="0.01" value={initialCost} onChange={(e) => setInitialCost(Number(e.target.value))} />
+                  </div>
                 </div>
               </div>
             )}
 
-            <div><Label>Notes</Label><Textarea rows={2} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
-              Active
-            </label>
+            {/* Notes & Status */}
+            <div className="space-y-3 pt-2 border-t">
+              <div className="space-y-2">
+                <Label>Notes</Label>
+                <Textarea rows={3} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Additional details..." />
+              </div>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="h-4 w-4" />
+                Active
+              </label>
+            </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="border-t pt-4">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button onClick={save} disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}</Button>
           </DialogFooter>
