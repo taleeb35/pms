@@ -557,7 +557,7 @@ const DoctorAppointmentDetail = () => {
         confidential_notes: appointmentData?.confidential_notes || "",
       });
 
-      if (appointmentData?.procedure_id) {
+      setOphthalmologyData((data as any).ophthalmology_data || {});
         setSelectedProcedure(appointmentData.procedure_id);
         setProcedureFee(appointmentData.procedure_fee?.toString() || "");
       }
