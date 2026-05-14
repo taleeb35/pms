@@ -278,6 +278,27 @@ export default function InventoryInvoiceDetail() {
         </CardContent>
       </Card>
 
+      {membership && editable && (
+        <Card className="border-l-4" style={{ borderLeftColor: membership.color }}>
+          <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-9 w-9 rounded-lg flex items-center justify-center text-white" style={{ background: membership.color }}>
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div className="text-sm">
+                <div><span className="font-semibold">{membership.plan_name} Member</span> · <span className="font-mono text-xs">{membership.card_number}</span></div>
+                <div className="text-xs text-muted-foreground">Eligible for {membership.pharmacy_discount_pct}% pharmacy discount</div>
+              </div>
+            </div>
+            {memberDiscountApplied ? (
+              <Badge className="bg-emerald-500"><CheckCircle2 className="h-3 w-3 mr-1" />Discount Applied</Badge>
+            ) : (
+              <Button size="sm" onClick={applyMembershipDiscount}>Apply {membership.pharmacy_discount_pct}% Discount</Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="text-base">Items</CardTitle>
