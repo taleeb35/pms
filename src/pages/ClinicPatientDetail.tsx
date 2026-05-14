@@ -42,6 +42,18 @@ const ClinicPatientDetail = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { clinicId } = useClinicId();
+  const { membership, refetch: refetchMembership } = useActiveMembership(id ?? null);
+  const [enrollOpen, setEnrollOpen] = useStateHook(false);
+  const [cardOpen, setCardOpen] = useStateHook(false);
+  const [clinicName, setClinicName] = useStateHook("Clinic");
+
+  useEffect(() => {
+    if (clinicId) {
+      supabase.from("clinics").select("clinic_name").eq("id", clinicId).maybeSingle()
+        .then(({ data }) => data && setClinicName((data as any).clinic_name));
+    }
+  }, [clinicId]);
 
   useEffect(() => {
     if (id) {
@@ -98,6 +110,80 @@ const ClinicPatientDetail = () => {
       </Button>
 
       <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
+
+      {/* Membership status */}
+      {membership ? (
+        <Card className="border-l-4" style={{ borderLeftColor: membership.color }}>
+          <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg flex items-center justify-center text-white" style={{ background: membership.color }}>
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="font-semibold">{membership.plan_name} Member</div>
+                <div className="text-xs text-muted-foreground">
+                  Card <span className="font-mono">{membership.card_number}</span> · Expires {format(new Date(membership.end_date), "dd MMM yyyy")}
+                  {differenceInDays(new Date(membership.end_date), new Date()) <= 30 && (
+                    <span className="text-amber-600 font-medium"> · expires soon</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => setCardOpen(true)}>
+                <Printer className="h-4 w-4 mr-1" />View Card
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setEnrollOpen(true)}>Renew / Change Plan</Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : clinicId && (
+        <Card className="border-dashed">
+          <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center">
+                <Sparkles className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <div className="font-medium">No active membership</div>
+                <div className="text-xs text-muted-foreground">Enroll this patient to apply automatic discounts.</div>
+              </div>
+            </div>
+            <Button size="sm" onClick={() => setEnrollOpen(true)}>
+              <Sparkles className="h-4 w-4 mr-2" />Enroll in Membership
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {clinicId && (
+        <EnrollMembershipDialog
+          open={enrollOpen}
+          onOpenChange={setEnrollOpen}
+          clinicId={clinicId}
+          fixedPatient={{ id: patient.id, full_name: patient.full_name, phone: patient.phone, patient_id: patient.patient_id }}
+          onEnrolled={refetchMembership}
+        />
+      )}
+      {membership && (
+        <MembershipCardPrint
+          open={cardOpen}
+          onOpenChange={setCardOpen}
+          clinicName={clinicName}
+          patientName={patient.full_name}
+          cardNumber={membership.card_number}
+          planName={membership.plan_name}
+          color={membership.color}
+          startDate={membership.start_date}
+          endDate={membership.end_date}
+          status="active"
+          discounts={{
+            consultation: membership.consultation_discount_pct,
+            procedure: membership.procedure_discount_pct,
+            pharmacy: membership.pharmacy_discount_pct,
+          }}
+        />
+      )}
 
       <div className="grid gap-6">
         <Card>
