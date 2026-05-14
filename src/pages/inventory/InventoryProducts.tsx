@@ -207,6 +207,24 @@ export default function InventoryProducts() {
               <div><Label>Sale Price (Rs)</Label><Input type="number" min={0} step="0.01" value={form.sale_price ?? 0} onChange={(e) => setForm({ ...form, sale_price: Number(e.target.value) })} /></div>
               <div><Label>Reorder Level</Label><Input type="number" min={0} step="1" value={form.reorder_level ?? 0} onChange={(e) => setForm({ ...form, reorder_level: Number(e.target.value) })} /></div>
             </div>
+
+            {!editing && (
+              <div className="grid grid-cols-3 gap-3 p-3 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30">
+                <div>
+                  <Label className="flex items-center gap-1"><Calendar className="h-3 w-3" />Expiry Date</Label>
+                  <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Initial Stock</Label>
+                  <Input type="number" min={0} step="1" value={initialStock} onChange={(e) => setInitialStock(Number(e.target.value))} />
+                </div>
+                <div>
+                  <Label>Unit Cost (Rs)</Label>
+                  <Input type="number" min={0} step="0.01" value={initialCost} onChange={(e) => setInitialCost(Number(e.target.value))} />
+                </div>
+              </div>
+            )}
+
             <div><Label>Notes</Label><Textarea rows={2} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
