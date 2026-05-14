@@ -765,6 +765,7 @@ const DoctorAppointmentDetail = () => {
         test_reports: formData.test_reports,
         next_visit_notes: formData.next_visit_notes,
         next_visit_date: nextVisitDate ? format(nextVisitDate, "yyyy-MM-dd") : null,
+        ophthalmology_data: ophthalmologyData,
       };
 
       let error;
