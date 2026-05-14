@@ -372,6 +372,13 @@ const Layout = ({ children }: LayoutProps) => {
       ],
     },
     {
+      label: "Memberships",
+      icon: Sparkles,
+      items: [
+        { path: "/clinic/memberships", icon: Sparkles, label: "Membership Cards" },
+      ],
+    },
+    {
       label: "Finance & Settings",
       icon: Banknote,
       items: [
@@ -428,6 +435,13 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/inventory/stock", icon: Boxes, label: "Stock & Batches" },
         { path: "/clinic/inventory/adjustments", icon: AlertTriangle, label: "Adjustments" },
         { path: "/clinic/inventory/ledger", icon: FileText, label: "Stock Ledger" },
+      ],
+    },
+    {
+      label: "Memberships",
+      icon: Sparkles,
+      items: [
+        { path: "/clinic/memberships", icon: Sparkles, label: "Membership Cards" },
       ],
     },
     {
