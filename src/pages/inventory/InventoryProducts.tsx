@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { useClinicId } from "@/hooks/useClinicId";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Pencil, Trash2, Loader2, Package } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Loader2, Package, Calendar } from "lucide-react";
+import { format } from "date-fns";
 
 interface Product {
   id: string;
