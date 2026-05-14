@@ -241,6 +241,7 @@ const DoctorAppointmentDetail = () => {
       icdCodes: s.icdCodes,
       diseaseTemplates: s.diseaseTemplates,
       testTemplates: s.testTemplates,
+      ophthalmologyData: s.ophthalmologyData || {},
       cachedAt: Date.now(),
     });
   };
