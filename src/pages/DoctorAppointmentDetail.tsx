@@ -217,6 +217,7 @@ const DoctorAppointmentDetail = () => {
     setIcdCodes(snap.icdCodes);
     setDiseaseTemplates(snap.diseaseTemplates);
     setTestTemplates(snap.testTemplates);
+    setOphthalmologyData(snap.ophthalmologyData || {});
   };
 
   const writeCache = (aptId: string) => {
