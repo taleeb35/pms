@@ -68,8 +68,8 @@ export default function InventoryProducts() {
     return items.filter((i) => [i.name, i.sku, i.category].some((v) => (v ?? "").toLowerCase().includes(q)));
   }, [items, search]);
 
-  const openNew = () => { setEditing(null); setForm(empty); setOpen(true); };
-  const openEdit = (p: Product) => { setEditing(p); setForm(p); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm(empty); setExpiryDate(""); setInitialStock(0); setInitialCost(0); setOpen(true); };
+  const openEdit = (p: Product) => { setEditing(p); setForm(p); setExpiryDate(""); setInitialStock(0); setInitialCost(0); setOpen(true); };
 
   const save = async () => {
     if (!form.name?.trim()) { toast({ title: "Name required", variant: "destructive" }); return; }
