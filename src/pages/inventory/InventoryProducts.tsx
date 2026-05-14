@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { useClinicId } from "@/hooks/useClinicId";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Pencil, Trash2, Loader2, Package } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, Loader2, Package, Calendar } from "lucide-react";
+import { format } from "date-fns";
 
 interface Product {
   id: string;
@@ -37,6 +38,9 @@ export default function InventoryProducts() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<Partial<Product>>(empty);
+  const [expiryDate, setExpiryDate] = useState("");
+  const [initialStock, setInitialStock] = useState(0);
+  const [initialCost, setInitialCost] = useState(0);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -64,8 +68,8 @@ export default function InventoryProducts() {
     return items.filter((i) => [i.name, i.sku, i.category].some((v) => (v ?? "").toLowerCase().includes(q)));
   }, [items, search]);
 
-  const openNew = () => { setEditing(null); setForm(empty); setOpen(true); };
-  const openEdit = (p: Product) => { setEditing(p); setForm(p); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm(empty); setExpiryDate(""); setInitialStock(0); setInitialCost(0); setOpen(true); };
+  const openEdit = (p: Product) => { setEditing(p); setForm(p); setExpiryDate(""); setInitialStock(0); setInitialCost(0); setOpen(true); };
 
   const save = async () => {
     if (!form.name?.trim()) { toast({ title: "Name required", variant: "destructive" }); return; }
@@ -81,12 +85,38 @@ export default function InventoryProducts() {
       notes: form.notes?.trim() || null,
       is_active: form.is_active ?? true,
     };
-    const { error } = editing
-      ? await supabase.from("inventory_products").update(payload).eq("id", editing.id)
-      : await supabase.from("inventory_products").insert(payload);
-    setSaving(false);
-    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
-    toast({ title: editing ? "Updated" : "Created" });
+
+    if (editing) {
+      const { error } = await supabase.from("inventory_products").update(payload).eq("id", editing.id);
+      setSaving(false);
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+      toast({ title: "Updated" });
+    } else {
+      const { data: newProduct, error } = await supabase.from("inventory_products").insert(payload).select("id").single();
+      setSaving(false);
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+
+      // Create initial batch if stock or expiry provided
+      if (newProduct && (initialStock > 0 || expiryDate)) {
+        const batchPayload: any = {
+          clinic_id: clinicId,
+          product_id: newProduct.id,
+          batch_number: `INIT-${format(new Date(), "yyyyMMddHHmm")}`,
+          quantity_received: Number(initialStock) || 0,
+          quantity_on_hand: Number(initialStock) || 0,
+          unit_cost: Number(initialCost) || 0,
+          expiry_date: expiryDate || null,
+        };
+        const { error: bErr } = await supabase.from("inventory_batches").insert(batchPayload);
+        if (bErr) {
+          toast({ title: "Product created but batch failed", description: bErr.message, variant: "destructive" });
+        } else {
+          toast({ title: "Created with initial batch" });
+        }
+      } else {
+        toast({ title: "Created" });
+      }
+    }
     setOpen(false);
     void load();
   };
@@ -177,6 +207,24 @@ export default function InventoryProducts() {
               <div><Label>Sale Price (Rs)</Label><Input type="number" min={0} step="0.01" value={form.sale_price ?? 0} onChange={(e) => setForm({ ...form, sale_price: Number(e.target.value) })} /></div>
               <div><Label>Reorder Level</Label><Input type="number" min={0} step="1" value={form.reorder_level ?? 0} onChange={(e) => setForm({ ...form, reorder_level: Number(e.target.value) })} /></div>
             </div>
+
+            {!editing && (
+              <div className="grid grid-cols-3 gap-3 p-3 rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30">
+                <div>
+                  <Label className="flex items-center gap-1"><Calendar className="h-3 w-3" />Expiry Date</Label>
+                  <Input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
+                </div>
+                <div>
+                  <Label>Initial Stock</Label>
+                  <Input type="number" min={0} step="1" value={initialStock} onChange={(e) => setInitialStock(Number(e.target.value))} />
+                </div>
+                <div>
+                  <Label>Unit Cost (Rs)</Label>
+                  <Input type="number" min={0} step="0.01" value={initialCost} onChange={(e) => setInitialCost(Number(e.target.value))} />
+                </div>
+              </div>
+            )}
+
             <div><Label>Notes</Label><Textarea rows={2} value={form.notes ?? ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={form.is_active ?? true} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
