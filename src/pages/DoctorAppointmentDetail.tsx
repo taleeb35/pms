@@ -195,7 +195,7 @@ const DoctorAppointmentDetail = () => {
     selectedProcedure, procedureFee, selectedICDCode,
     pregnancyStartDate, nextVisitDate,
     isGynecologist, isOphthalmologist,
-    procedures, icdCodes, diseaseTemplates, testTemplates,
+    procedures, icdCodes, diseaseTemplates, testTemplates, ophthalmologyData,
   };
 
   // Hydrate from cache synchronously when id changes — instant tab switching
