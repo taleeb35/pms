@@ -85,12 +85,38 @@ export default function InventoryProducts() {
       notes: form.notes?.trim() || null,
       is_active: form.is_active ?? true,
     };
-    const { error } = editing
-      ? await supabase.from("inventory_products").update(payload).eq("id", editing.id)
-      : await supabase.from("inventory_products").insert(payload);
-    setSaving(false);
-    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
-    toast({ title: editing ? "Updated" : "Created" });
+
+    if (editing) {
+      const { error } = await supabase.from("inventory_products").update(payload).eq("id", editing.id);
+      setSaving(false);
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+      toast({ title: "Updated" });
+    } else {
+      const { data: newProduct, error } = await supabase.from("inventory_products").insert(payload).select("id").single();
+      setSaving(false);
+      if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+
+      // Create initial batch if stock or expiry provided
+      if (newProduct && (initialStock > 0 || expiryDate)) {
+        const batchPayload: any = {
+          clinic_id: clinicId,
+          product_id: newProduct.id,
+          batch_number: `INIT-${format(new Date(), "yyyyMMddHHmm")}`,
+          quantity_received: Number(initialStock) || 0,
+          quantity_on_hand: Number(initialStock) || 0,
+          unit_cost: Number(initialCost) || 0,
+          expiry_date: expiryDate || null,
+        };
+        const { error: bErr } = await supabase.from("inventory_batches").insert(batchPayload);
+        if (bErr) {
+          toast({ title: "Product created but batch failed", description: bErr.message, variant: "destructive" });
+        } else {
+          toast({ title: "Created with initial batch" });
+        }
+      } else {
+        toast({ title: "Created" });
+      }
+    }
     setOpen(false);
     void load();
   };
