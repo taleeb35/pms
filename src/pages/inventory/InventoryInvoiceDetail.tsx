@@ -9,14 +9,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Plus, Trash2, Save, CheckCircle2, XCircle, Printer } from "lucide-react";
+import { Loader2, ArrowLeft, Plus, Trash2, Save, CheckCircle2, XCircle, Printer, Undo2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface Inv {
   id: string; clinic_id: string; invoice_number: string; status: string;
   customer_name: string | null; customer_phone: string | null;
   sale_date: string; subtotal: number; tax: number; discount: number; total: number; notes: string | null;
 }
-interface Item { id?: string; product_id: string; quantity: number; unit_price: number; line_total: number; _stock?: number; }
+interface Item { id?: string; product_id: string; quantity: number; unit_price: number; line_total: number; _stock?: number; _returned?: number; _productName?: string; }
 interface Product { id: string; name: string; unit: string; sale_price: number; }
 
 export default function InventoryInvoiceDetail() {
@@ -30,6 +31,10 @@ export default function InventoryInvoiceDetail() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [returns, setReturns] = useState<any[]>([]);
+  const [returnOpen, setReturnOpen] = useState(false);
+  const [returnQty, setReturnQty] = useState<Record<string, number>>({});
+  const [returnNotes, setReturnNotes] = useState("");
 
   useEffect(() => { if (id) void load(); /* eslint-disable-next-line */ }, [id]);
 
@@ -40,23 +45,38 @@ export default function InventoryInvoiceDetail() {
     const invData = invRes.data as Inv;
     setInv(invData);
 
-    const [itemsRes, prodRes, batchRes] = await Promise.all([
+    const [itemsRes, prodRes, batchRes, retRes, retItemsRes] = await Promise.all([
       supabase.from("inventory_invoice_items").select("*").eq("invoice_id", id!).order("created_at"),
       supabase.from("inventory_products").select("id, name, unit, sale_price").eq("clinic_id", invData.clinic_id).eq("is_active", true).order("name"),
       supabase.from("inventory_batches").select("product_id, quantity_on_hand").eq("clinic_id", invData.clinic_id),
+      supabase.from("inventory_invoice_returns").select("*").eq("invoice_id", id!).order("created_at", { ascending: false }),
+      supabase.from("inventory_invoice_return_items").select("invoice_item_id, quantity").in("return_id",
+        ((await supabase.from("inventory_invoice_returns").select("id").eq("invoice_id", id!)).data ?? []).map((r: any) => r.id)
+      ),
     ]);
 
     const sm: Record<string, number> = {};
     (batchRes.data ?? []).forEach((b: any) => { sm[b.product_id] = (sm[b.product_id] ?? 0) + Number(b.quantity_on_hand); });
     setStockMap(sm);
-    setItems((itemsRes.data ?? []) as Item[]);
+
+    const returnedMap: Record<string, number> = {};
+    (retItemsRes.data ?? []).forEach((r: any) => {
+      if (r.invoice_item_id) returnedMap[r.invoice_item_id] = (returnedMap[r.invoice_item_id] ?? 0) + Number(r.quantity);
+    });
+    const prodMap = new Map((prodRes.data ?? []).map((p: any) => [p.id, p.name]));
+    const enriched = (itemsRes.data ?? []).map((it: any) => ({
+      ...it, _returned: returnedMap[it.id] ?? 0, _productName: prodMap.get(it.product_id) ?? "—",
+    }));
+    setItems(enriched as Item[]);
     setProducts((prodRes.data ?? []) as Product[]);
+    setReturns(retRes.data ?? []);
     setLoading(false);
   };
 
   const editable = inv?.status === "draft";
   const canIssue = inv?.status === "draft";
   const canCancel = inv?.status === "draft";
+  const canReturn = inv?.status === "issued";
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((s, i) => s + Number(i.quantity || 0) * Number(i.unit_price || 0), 0);
@@ -145,6 +165,41 @@ export default function InventoryInvoiceDetail() {
 
   const print = () => window.print();
 
+  const openReturn = () => {
+    const init: Record<string, number> = {};
+    items.forEach((it) => { if (it.id) init[it.id] = 0; });
+    setReturnQty(init); setReturnNotes(""); setReturnOpen(true);
+  };
+
+  const returnTotal = useMemo(() => {
+    return items.reduce((s, it) => {
+      const q = it.id ? Number(returnQty[it.id] || 0) : 0;
+      return s + q * Number(it.unit_price || 0);
+    }, 0);
+  }, [items, returnQty]);
+
+  const submitReturn = async () => {
+    const payload = items
+      .filter((it) => it.id && Number(returnQty[it.id!] || 0) > 0)
+      .map((it) => ({ invoice_item_id: it.id, quantity: Number(returnQty[it.id!]) }));
+    if (payload.length === 0) { toast({ title: "Enter at least one quantity to return", variant: "destructive" }); return; }
+    for (const it of items) {
+      if (!it.id) continue;
+      const q = Number(returnQty[it.id] || 0);
+      const max = Number(it.quantity) - Number(it._returned || 0);
+      if (q > max) { toast({ title: "Quantity exceeds returnable", description: `${it._productName}: max ${max}`, variant: "destructive" }); return; }
+    }
+    setBusy(true);
+    const { error } = await supabase.rpc("return_sales_invoice", {
+      _invoice_id: inv!.id, _items: payload as any, _notes: returnNotes || null, _return_date: null,
+    });
+    setBusy(false);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Return processed — stock restocked" });
+    setReturnOpen(false);
+    void load();
+  };
+
   if (loading || !inv) return <div className="py-20 text-center"><Loader2 className="h-6 w-6 animate-spin inline" /></div>;
 
   return (
@@ -162,6 +217,7 @@ export default function InventoryInvoiceDetail() {
           {canIssue && <Button onClick={issue} disabled={busy || saving} className="bg-emerald-600 hover:bg-emerald-700"><CheckCircle2 className="h-4 w-4 mr-1" />Issue & Deduct Stock</Button>}
           {canCancel && <Button variant="outline" onClick={cancel} disabled={busy} className="text-rose-600"><XCircle className="h-4 w-4 mr-1" />Cancel</Button>}
           {inv.status === "issued" && <Button variant="outline" onClick={print}><Printer className="h-4 w-4 mr-1" />Print</Button>}
+          {canReturn && <Button variant="outline" onClick={openReturn} className="text-amber-700 border-amber-300"><Undo2 className="h-4 w-4 mr-1" />Refund / Return</Button>}
         </div>
       </div>
 
@@ -237,6 +293,87 @@ export default function InventoryInvoiceDetail() {
           </div>
         </CardContent>
       </Card>
+
+      {returns.length > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-base">Refunds / Returns</CardTitle></CardHeader>
+          <CardContent>
+            <div className="border rounded-lg overflow-x-auto">
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Return #</TableHead><TableHead>Date</TableHead>
+                  <TableHead className="text-right">Refund (Rs)</TableHead><TableHead>Notes</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {returns.map((r) => (
+                    <TableRow key={r.id}>
+                      <TableCell className="font-mono">{r.return_number}</TableCell>
+                      <TableCell>{r.return_date}</TableCell>
+                      <TableCell className="text-right font-semibold text-amber-700">Rs {Number(r.total_refund).toLocaleString()}</TableCell>
+                      <TableCell className="text-muted-foreground">{r.notes ?? "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="text-right mt-3 text-sm">
+              Total refunded: <span className="font-bold text-amber-700">Rs {returns.reduce((s, r) => s + Number(r.total_refund), 0).toLocaleString()}</span>
+              {" · "}Net: <span className="font-bold">Rs {(Number(inv.total) - returns.reduce((s, r) => s + Number(r.total_refund), 0)).toLocaleString()}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Dialog open={returnOpen} onOpenChange={setReturnOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader><DialogTitle>Process Refund / Return</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="border rounded-lg overflow-x-auto">
+              <Table>
+                <TableHeader><TableRow>
+                  <TableHead>Product</TableHead>
+                  <TableHead className="w-20 text-right">Sold</TableHead>
+                  <TableHead className="w-24 text-right">Returned</TableHead>
+                  <TableHead className="w-24 text-right">Returnable</TableHead>
+                  <TableHead className="w-28">Return Qty</TableHead>
+                  <TableHead className="w-28 text-right">Refund</TableHead>
+                </TableRow></TableHeader>
+                <TableBody>
+                  {items.map((it) => {
+                    const max = Number(it.quantity) - Number(it._returned ?? 0);
+                    const q = it.id ? Number(returnQty[it.id] || 0) : 0;
+                    return (
+                      <TableRow key={it.id}>
+                        <TableCell>{it._productName}</TableCell>
+                        <TableCell className="text-right">{Number(it.quantity)}</TableCell>
+                        <TableCell className="text-right">{Number(it._returned ?? 0)}</TableCell>
+                        <TableCell className="text-right font-semibold">{max}</TableCell>
+                        <TableCell>
+                          <Input type="number" min={0} max={max} step="1" value={q}
+                            onChange={(e) => setReturnQty({ ...returnQty, [it.id!]: Math.max(0, Math.min(max, Number(e.target.value))) })}
+                            disabled={max <= 0} />
+                        </TableCell>
+                        <TableCell className="text-right">Rs {(q * Number(it.unit_price)).toLocaleString()}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+            <div><Label>Reason / Notes</Label><Textarea rows={2} value={returnNotes} onChange={(e) => setReturnNotes(e.target.value)} placeholder="e.g. customer returned damaged item" /></div>
+            <div className="flex justify-between items-center bg-muted/50 rounded-lg px-3 py-2">
+              <span className="font-semibold">Total Refund</span>
+              <span className="text-lg font-bold text-amber-700">Rs {returnTotal.toLocaleString()}</span>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReturnOpen(false)} disabled={busy}>Cancel</Button>
+            <Button onClick={submitReturn} disabled={busy || returnTotal <= 0} className="bg-amber-600 hover:bg-amber-700">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Undo2 className="h-4 w-4 mr-1" />Process Return</>}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
