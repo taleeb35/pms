@@ -394,6 +394,54 @@ export type Database = {
           },
         ]
       }
+      clinic_membership_plans: {
+        Row: {
+          clinic_id: string
+          color: string
+          consultation_discount_pct: number
+          created_at: string
+          duration_months: number
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          pharmacy_discount_pct: number
+          price: number
+          procedure_discount_pct: number
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          color?: string
+          consultation_discount_pct?: number
+          created_at?: string
+          duration_months?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          pharmacy_discount_pct?: number
+          price?: number
+          procedure_discount_pct?: number
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          color?: string
+          consultation_discount_pct?: number
+          created_at?: string
+          duration_months?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          pharmacy_discount_pct?: number
+          price?: number
+          procedure_discount_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clinic_payments: {
         Row: {
           amount: number
@@ -1312,6 +1360,7 @@ export type Database = {
           id: string
           invoice_id: string
           line_total: number
+          membership_discount_pct: number | null
           product_id: string
           quantity: number
           unit_price: number
@@ -1322,6 +1371,7 @@ export type Database = {
           id?: string
           invoice_id: string
           line_total?: number
+          membership_discount_pct?: number | null
           product_id: string
           quantity: number
           unit_price?: number
@@ -1332,6 +1382,7 @@ export type Database = {
           id?: string
           invoice_id?: string
           line_total?: number
+          membership_discount_pct?: number | null
           product_id?: string
           quantity?: number
           unit_price?: number
@@ -2009,6 +2060,72 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_memberships: {
+        Row: {
+          amount_paid: number
+          cancelled_at: string | null
+          card_number: string
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          end_date: string
+          id: string
+          notes: string | null
+          patient_id: string
+          plan_id: string
+          start_date: string
+          status: Database["public"]["Enums"]["membership_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          cancelled_at?: string | null
+          card_number: string
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          plan_id: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["membership_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          cancelled_at?: string | null
+          card_number?: string
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          plan_id?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["membership_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_memberships_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_memberships_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_membership_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -2917,6 +3034,17 @@ export type Database = {
         Args: { _email: string }
         Returns: Json
       }
+      enroll_patient_membership: {
+        Args: {
+          _amount_paid?: number
+          _clinic_id: string
+          _notes?: string
+          _patient_id: string
+          _plan_id: string
+          _start_date?: string
+        }
+        Returns: string
+      }
       generate_inventory_invoice_number: {
         Args: { _clinic_id: string }
         Returns: string
@@ -2928,6 +3056,26 @@ export type Database = {
       generate_inventory_return_number: {
         Args: { _clinic_id: string }
         Returns: string
+      }
+      generate_membership_card_number: {
+        Args: { _clinic_id: string }
+        Returns: string
+      }
+      get_active_patient_membership: {
+        Args: { _patient_id: string }
+        Returns: {
+          card_number: string
+          clinic_id: string
+          color: string
+          consultation_discount_pct: number
+          end_date: string
+          membership_id: string
+          pharmacy_discount_pct: number
+          plan_id: string
+          plan_name: string
+          procedure_discount_pct: number
+          start_date: string
+        }[]
       }
       get_doctor_clinic_id: { Args: { _doctor_id: string }; Returns: string }
       get_doctor_receptionist_doctor_id: {
@@ -3005,6 +3153,7 @@ export type Database = {
       appointment_status: "scheduled" | "start" | "cancelled" | "completed"
       gender: "male" | "female" | "other"
       inv_invoice_status: "draft" | "issued" | "cancelled"
+      membership_status: "active" | "expired" | "cancelled"
       payment_status: "pending" | "paid" | "partial" | "cancelled"
       po_status: "draft" | "ordered" | "received" | "cancelled"
     }
@@ -3146,6 +3295,7 @@ export const Constants = {
       appointment_status: ["scheduled", "start", "cancelled", "completed"],
       gender: ["male", "female", "other"],
       inv_invoice_status: ["draft", "issued", "cancelled"],
+      membership_status: ["active", "expired", "cancelled"],
       payment_status: ["pending", "paid", "partial", "cancelled"],
       po_status: ["draft", "ordered", "received", "cancelled"],
     },
