@@ -165,6 +165,41 @@ export default function InventoryInvoiceDetail() {
 
   const print = () => window.print();
 
+  const openReturn = () => {
+    const init: Record<string, number> = {};
+    items.forEach((it) => { if (it.id) init[it.id] = 0; });
+    setReturnQty(init); setReturnNotes(""); setReturnOpen(true);
+  };
+
+  const returnTotal = useMemo(() => {
+    return items.reduce((s, it) => {
+      const q = it.id ? Number(returnQty[it.id] || 0) : 0;
+      return s + q * Number(it.unit_price || 0);
+    }, 0);
+  }, [items, returnQty]);
+
+  const submitReturn = async () => {
+    const payload = items
+      .filter((it) => it.id && Number(returnQty[it.id!] || 0) > 0)
+      .map((it) => ({ invoice_item_id: it.id, quantity: Number(returnQty[it.id!]) }));
+    if (payload.length === 0) { toast({ title: "Enter at least one quantity to return", variant: "destructive" }); return; }
+    for (const it of items) {
+      if (!it.id) continue;
+      const q = Number(returnQty[it.id] || 0);
+      const max = Number(it.quantity) - Number(it._returned || 0);
+      if (q > max) { toast({ title: "Quantity exceeds returnable", description: `${it._productName}: max ${max}`, variant: "destructive" }); return; }
+    }
+    setBusy(true);
+    const { error } = await supabase.rpc("return_sales_invoice", {
+      _invoice_id: inv!.id, _items: payload as any, _notes: returnNotes || null, _return_date: null,
+    });
+    setBusy(false);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Return processed — stock restocked" });
+    setReturnOpen(false);
+    void load();
+  };
+
   if (loading || !inv) return <div className="py-20 text-center"><Loader2 className="h-6 w-6 animate-spin inline" /></div>;
 
   return (
