@@ -119,6 +119,7 @@ import InventoryInvoiceDetail from "./pages/inventory/InventoryInvoiceDetail";
 import InventoryStock from "./pages/inventory/InventoryStock";
 import InventoryAdjustments from "./pages/inventory/InventoryAdjustments";
 import InventoryLedger from "./pages/inventory/InventoryLedger";
+import ClinicMemberships from "./pages/memberships/ClinicMemberships";
 import DoctorActivityLogs from "./pages/DoctorActivityLogs";
 import ReceptionistActivityLogs from "./pages/ReceptionistActivityLogs";
 import DoctorReceptionistActivityLogs from "./pages/DoctorReceptionistActivityLogs";
@@ -767,6 +768,7 @@ const App = () => (
             <Route path="/clinic/inventory/stock" element={<Layout><InventoryStock /></Layout>} />
             <Route path="/clinic/inventory/adjustments" element={<Layout><InventoryAdjustments /></Layout>} />
             <Route path="/clinic/inventory/ledger" element={<Layout><InventoryLedger /></Layout>} />
+            <Route path="/clinic/memberships" element={<Layout><ClinicMemberships /></Layout>} />
             {/* Receptionist Routes */}
             <Route
               path="/receptionist/dashboard"
