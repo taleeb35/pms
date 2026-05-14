@@ -1360,6 +1360,112 @@ export type Database = {
           },
         ]
       }
+      inventory_invoice_return_items: {
+        Row: {
+          created_at: string
+          id: string
+          invoice_item_id: string | null
+          line_total: number
+          product_id: string
+          quantity: number
+          return_id: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invoice_item_id?: string | null
+          line_total?: number
+          product_id: string
+          quantity: number
+          return_id: string
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invoice_item_id?: string | null
+          line_total?: number
+          product_id?: string
+          quantity?: number
+          return_id?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_invoice_return_items_invoice_item_id_fkey"
+            columns: ["invoice_item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_invoice_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_invoice_return_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_invoice_return_items_return_id_fkey"
+            columns: ["return_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_invoice_returns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_invoice_returns: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          invoice_id: string
+          notes: string | null
+          return_date: string
+          return_number: string
+          total_refund: number
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invoice_id: string
+          notes?: string | null
+          return_date?: string
+          return_number: string
+          total_refund?: number
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invoice_id?: string
+          notes?: string | null
+          return_date?: string
+          return_number?: string
+          total_refund?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_invoice_returns_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_invoice_returns_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_invoices: {
         Row: {
           clinic_id: string
@@ -2816,6 +2922,10 @@ export type Database = {
         Args: { _clinic_id: string }
         Returns: string
       }
+      generate_inventory_return_number: {
+        Args: { _clinic_id: string }
+        Returns: string
+      }
       get_doctor_clinic_id: { Args: { _doctor_id: string }; Returns: string }
       get_doctor_receptionist_doctor_id: {
         Args: { _user_id: string }
@@ -2870,6 +2980,15 @@ export type Database = {
         Returns: string
       }
       receive_purchase_order: { Args: { _po_id: string }; Returns: undefined }
+      return_sales_invoice: {
+        Args: {
+          _invoice_id: string
+          _items: Json
+          _notes?: string
+          _return_date?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role:
