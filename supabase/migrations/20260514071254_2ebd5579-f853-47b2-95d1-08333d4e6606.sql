@@ -1,0 +1,1 @@
+ALTER TABLE public.visit_records ADD COLUMN IF NOT EXISTS ophthalmology_data jsonb NOT NULL DEFAULT '{}'::jsonb;

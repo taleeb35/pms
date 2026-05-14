@@ -2761,6 +2761,7 @@ export type Database = {
           left_eye_vision: string | null
           next_visit_date: string | null
           next_visit_notes: string | null
+          ophthalmology_data: Json
           pain_scale: number | null
           patient_history: string | null
           patient_id: string
@@ -2784,6 +2785,7 @@ export type Database = {
           left_eye_vision?: string | null
           next_visit_date?: string | null
           next_visit_notes?: string | null
+          ophthalmology_data?: Json
           pain_scale?: number | null
           patient_history?: string | null
           patient_id: string
@@ -2807,6 +2809,7 @@ export type Database = {
           left_eye_vision?: string | null
           next_visit_date?: string | null
           next_visit_notes?: string | null
+          ophthalmology_data?: Json
           pain_scale?: number | null
           patient_history?: string | null
           patient_id?: string
