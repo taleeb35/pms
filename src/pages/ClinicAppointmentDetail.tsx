@@ -42,6 +42,7 @@ import { AIVisitSummary } from "@/components/AIVisitSummary";
 import { useClinicId } from "@/hooks/useClinicId";
 import StartVideoConsultation from "@/components/StartVideoConsultation";
 import { printAppointmentInvoice } from "@/lib/printAppointmentInvoice";
+import OphthalmologyExamination, { OphthalmologyData } from "@/components/OphthalmologyExamination";
 
 interface Procedure {
   id: string;
@@ -127,6 +128,7 @@ const ClinicAppointmentDetail = () => {
   // Doctor specialization
   const [isGynecologist, setIsGynecologist] = useState(false);
   const [isOphthalmologist, setIsOphthalmologist] = useState(false);
+  const [ophthalmologyData, setOphthalmologyData] = useState<OphthalmologyData>({});
   
   // Pregnancy
   const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
@@ -223,7 +225,7 @@ const ClinicAppointmentDetail = () => {
 
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
-      setIsOphthalmologist(spec.includes("ophthalmologist"));
+      setIsOphthalmologist(spec.includes("ophthal") || spec.includes("eye surgeon") || spec.includes("eye specialist") || spec === "eye doctor");
 
       // Fetch procedures
       fetchProcedures(doctorId);
@@ -382,6 +384,8 @@ const ClinicAppointmentDetail = () => {
         refund: appointmentData?.refund?.toString() || "",
         confidential_notes: appointmentData?.confidential_notes || "",
       });
+
+      setOphthalmologyData(((data as any).ophthalmology_data) || {});
 
       if (appointmentData?.procedure_id) {
         setSelectedProcedure(appointmentData.procedure_id);
@@ -588,7 +592,8 @@ const ClinicAppointmentDetail = () => {
         test_reports: formData.test_reports,
         next_visit_notes: formData.next_visit_notes,
         next_visit_date: nextVisitDate ? format(nextVisitDate, "yyyy-MM-dd") : null,
-      };
+        ophthalmology_data: ophthalmologyData as any,
+      } as any;
 
       let error;
       if (existingRecord) {
@@ -913,6 +918,11 @@ const ClinicAppointmentDetail = () => {
                     )}
                   </div>
                 </div>
+
+                {/* Ophthalmology Examination - eye specialists only */}
+                {isOphthalmologist && (
+                  <OphthalmologyExamination value={ophthalmologyData} onChange={setOphthalmologyData} />
+                )}
 
                 {/* Chief Complaint */}
                 <div>

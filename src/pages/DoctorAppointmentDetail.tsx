@@ -42,6 +42,7 @@ import { printAppointmentInvoice } from "@/lib/printAppointmentInvoice";
 import { Receipt } from "lucide-react";
 import { AIVisitSummary } from "@/components/AIVisitSummary";
 import StartVideoConsultation from "@/components/StartVideoConsultation";
+import OphthalmologyExamination, { OphthalmologyData } from "@/components/OphthalmologyExamination";
 
 interface Procedure {
   id: string;
@@ -122,6 +123,7 @@ type CachedSnapshot = {
   icdCodes: ICDCode[];
   diseaseTemplates: DiseaseTemplate[];
   testTemplates: TestTemplate[];
+  ophthalmologyData: OphthalmologyData;
   cachedAt: number;
 };
 const appointmentCache = new Map<string, CachedSnapshot>();
@@ -143,6 +145,7 @@ const DoctorAppointmentDetail = () => {
   // Doctor specialization
   const [isGynecologist, setIsGynecologist] = useState(false);
   const [isOphthalmologist, setIsOphthalmologist] = useState(false);
+  const [ophthalmologyData, setOphthalmologyData] = useState<OphthalmologyData>({});
   
   // Pregnancy
   const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
@@ -192,7 +195,7 @@ const DoctorAppointmentDetail = () => {
     selectedProcedure, procedureFee, selectedICDCode,
     pregnancyStartDate, nextVisitDate,
     isGynecologist, isOphthalmologist,
-    procedures, icdCodes, diseaseTemplates, testTemplates,
+    procedures, icdCodes, diseaseTemplates, testTemplates, ophthalmologyData,
   };
 
   // Hydrate from cache synchronously when id changes — instant tab switching
@@ -214,6 +217,7 @@ const DoctorAppointmentDetail = () => {
     setIcdCodes(snap.icdCodes);
     setDiseaseTemplates(snap.diseaseTemplates);
     setTestTemplates(snap.testTemplates);
+    setOphthalmologyData(snap.ophthalmologyData || {});
   };
 
   const writeCache = (aptId: string) => {
@@ -237,6 +241,7 @@ const DoctorAppointmentDetail = () => {
       icdCodes: s.icdCodes,
       diseaseTemplates: s.diseaseTemplates,
       testTemplates: s.testTemplates,
+      ophthalmologyData: s.ophthalmologyData || {},
       cachedAt: Date.now(),
     });
   };
@@ -284,7 +289,7 @@ const DoctorAppointmentDetail = () => {
                 pregnancyStartDate: null, nextVisitDate: null,
                 isGynecologist: false, isOphthalmologist: false,
                 procedures: [], icdCodes: [],
-                diseaseTemplates: [], testTemplates: [],
+                diseaseTemplates: [], testTemplates: [], ophthalmologyData: {},
                 cachedAt: 0,
               });
             }
@@ -387,7 +392,7 @@ const DoctorAppointmentDetail = () => {
 
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
-      setIsOphthalmologist(spec.includes("ophthalmologist"));
+      setIsOphthalmologist(spec.includes("ophthal") || spec.includes("eye surgeon") || spec.includes("eye specialist") || spec === "eye doctor");
 
       // Set default consultation fee from doctor's profile if no existing record
       if (!hasExistingRecord && data?.consultation_fee) {
@@ -551,6 +556,8 @@ const DoctorAppointmentDetail = () => {
         refund: appointmentData?.refund?.toString() || "",
         confidential_notes: appointmentData?.confidential_notes || "",
       });
+
+      setOphthalmologyData((data as any).ophthalmology_data || {});
 
       if (appointmentData?.procedure_id) {
         setSelectedProcedure(appointmentData.procedure_id);
@@ -758,7 +765,8 @@ const DoctorAppointmentDetail = () => {
         test_reports: formData.test_reports,
         next_visit_notes: formData.next_visit_notes,
         next_visit_date: nextVisitDate ? format(nextVisitDate, "yyyy-MM-dd") : null,
-      };
+        ophthalmology_data: ophthalmologyData as any,
+      } as any;
 
       let error;
       if (existingRecord) {
@@ -1118,6 +1126,11 @@ const DoctorAppointmentDetail = () => {
                     )}
                   </div>
                 </div>
+
+                {/* Ophthalmology Examination - eye specialists only */}
+                {isOphthalmologist && (
+                  <OphthalmologyExamination value={ophthalmologyData} onChange={setOphthalmologyData} />
+                )}
 
                 {/* Chief Complaint */}
                 <div>
