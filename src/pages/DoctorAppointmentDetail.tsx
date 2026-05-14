@@ -289,7 +289,7 @@ const DoctorAppointmentDetail = () => {
                 pregnancyStartDate: null, nextVisitDate: null,
                 isGynecologist: false, isOphthalmologist: false,
                 procedures: [], icdCodes: [],
-                diseaseTemplates: [], testTemplates: [],
+                diseaseTemplates: [], testTemplates: [], ophthalmologyData: {},
                 cachedAt: 0,
               });
             }
