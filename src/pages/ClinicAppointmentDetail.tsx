@@ -225,7 +225,7 @@ const ClinicAppointmentDetail = () => {
 
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
-      setIsOphthalmologist(spec.includes("ophthalmologist"));
+      setIsOphthalmologist(spec.includes("ophthal") || spec.includes("eye surgeon") || spec.includes("eye specialist") || spec === "eye doctor");
 
       // Fetch procedures
       fetchProcedures(doctorId);
