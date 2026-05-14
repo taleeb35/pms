@@ -38,6 +38,9 @@ export default function InventoryProducts() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<Partial<Product>>(empty);
+  const [expiryDate, setExpiryDate] = useState("");
+  const [initialStock, setInitialStock] = useState(0);
+  const [initialCost, setInitialCost] = useState(0);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
