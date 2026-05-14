@@ -182,6 +182,7 @@ export default function InventoryInvoiceDetail() {
           {canIssue && <Button onClick={issue} disabled={busy || saving} className="bg-emerald-600 hover:bg-emerald-700"><CheckCircle2 className="h-4 w-4 mr-1" />Issue & Deduct Stock</Button>}
           {canCancel && <Button variant="outline" onClick={cancel} disabled={busy} className="text-rose-600"><XCircle className="h-4 w-4 mr-1" />Cancel</Button>}
           {inv.status === "issued" && <Button variant="outline" onClick={print}><Printer className="h-4 w-4 mr-1" />Print</Button>}
+          {canReturn && <Button variant="outline" onClick={openReturn} className="text-amber-700 border-amber-300"><Undo2 className="h-4 w-4 mr-1" />Refund / Return</Button>}
         </div>
       </div>
 
