@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Plus, Trash2, Save, CheckCircle2, XCircle, Printer } from "lucide-react";
+import { Loader2, ArrowLeft, Plus, Trash2, Save, CheckCircle2, XCircle, Printer, Undo2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface Inv {
   id: string; clinic_id: string; invoice_number: string; status: string;
