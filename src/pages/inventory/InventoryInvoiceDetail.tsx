@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft, Plus, Trash2, Save, CheckCircle2, XCircle, Printer, Undo2 } from "lucide-react";
+import { Loader2, ArrowLeft, Plus, Trash2, Save, CheckCircle2, XCircle, Printer, Undo2, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface Inv {
   id: string; clinic_id: string; invoice_number: string; status: string;
@@ -35,6 +36,52 @@ export default function InventoryInvoiceDetail() {
   const [returnOpen, setReturnOpen] = useState(false);
   const [returnQty, setReturnQty] = useState<Record<string, number>>({});
   const [returnNotes, setReturnNotes] = useState("");
+  const [membership, setMembership] = useState<{
+    plan_name: string; pharmacy_discount_pct: number; card_number: string; color: string;
+  } | null>(null);
+  const [memberDiscountApplied, setMemberDiscountApplied] = useState(false);
+
+  // Lookup patient by phone within clinic to find active membership
+  useEffect(() => {
+    const phone = inv?.customer_phone?.trim();
+    if (!phone || !inv?.clinic_id) { setMembership(null); return; }
+    const digits = phone.replace(/\D/g, "");
+    if (digits.length < 7) { setMembership(null); return; }
+    const t = setTimeout(async () => {
+      const { data: pats } = await supabase
+        .from("patients")
+        .select("id, phone")
+        .ilike("phone", `%${digits.slice(-9)}%`)
+        .limit(20);
+      if (!pats || pats.length === 0) { setMembership(null); return; }
+      // Try each candidate against active membership for this clinic
+      for (const p of pats) {
+        const { data } = await supabase.rpc("get_active_patient_membership", { _patient_id: p.id });
+        const arr = (data as any[]) ?? [];
+        const m = arr.find((x) => x.clinic_id === inv.clinic_id);
+        if (m && Number(m.pharmacy_discount_pct) > 0) {
+          setMembership({
+            plan_name: m.plan_name,
+            pharmacy_discount_pct: Number(m.pharmacy_discount_pct),
+            card_number: m.card_number,
+            color: m.color,
+          });
+          return;
+        }
+      }
+      setMembership(null);
+    }, 350);
+    return () => clearTimeout(t);
+  }, [inv?.customer_phone, inv?.clinic_id]);
+
+  const applyMembershipDiscount = () => {
+    if (!membership || !inv) return;
+    const subtotal = items.reduce((s, i) => s + Number(i.quantity || 0) * Number(i.unit_price || 0), 0);
+    const disc = Math.round(subtotal * membership.pharmacy_discount_pct) / 100;
+    setInv({ ...inv, discount: disc, notes: `${inv.notes ?? ""}${inv.notes ? " | " : ""}Member discount: ${membership.pharmacy_discount_pct}% (${membership.card_number})`.trim() });
+    setMemberDiscountApplied(true);
+  };
+
 
   useEffect(() => { if (id) void load(); /* eslint-disable-next-line */ }, [id]);
 
