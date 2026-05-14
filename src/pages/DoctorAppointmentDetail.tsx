@@ -392,7 +392,7 @@ const DoctorAppointmentDetail = () => {
 
       const spec = data?.specialization?.toLowerCase() || "";
       setIsGynecologist(spec.includes("gynecologist"));
-      setIsOphthalmologist(spec.includes("ophthalmologist"));
+      setIsOphthalmologist(spec.includes("ophthal") || spec.includes("eye surgeon") || spec.includes("eye specialist") || spec === "eye doctor");
 
       // Set default consultation fee from doctor's profile if no existing record
       if (!hasExistingRecord && data?.consultation_fee) {
