@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -38,6 +39,14 @@ const Index = () => {
   const { country } = useGeoLocation();
 
   const isUSA = country === "US";
+
+  useSEO({
+    title: "Clinic Practice & EMR Software for Doctors in Pakistan | Zonoir",
+    description:
+      "Zonoir is Pakistan's leading clinic management & EMR software. Manage patients, appointments, prescriptions, billing & medical records. Free trial for doctors & clinics.",
+    canonicalUrl: "https://zonoir.com/",
+    ogUrl: "https://zonoir.com/",
+  });
 
   // Check for password recovery redirect from Supabase
   useEffect(() => {
