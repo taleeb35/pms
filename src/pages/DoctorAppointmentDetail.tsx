@@ -145,6 +145,7 @@ const DoctorAppointmentDetail = () => {
   // Doctor specialization
   const [isGynecologist, setIsGynecologist] = useState(false);
   const [isOphthalmologist, setIsOphthalmologist] = useState(false);
+  const [ophthalmologyData, setOphthalmologyData] = useState<OphthalmologyData>({});
   
   // Pregnancy
   const [pregnancyStartDate, setPregnancyStartDate] = useState<Date>();
