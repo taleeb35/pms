@@ -31,6 +31,10 @@ export default function InventoryInvoiceDetail() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [returns, setReturns] = useState<any[]>([]);
+  const [returnOpen, setReturnOpen] = useState(false);
+  const [returnQty, setReturnQty] = useState<Record<string, number>>({});
+  const [returnNotes, setReturnNotes] = useState("");
 
   useEffect(() => { if (id) void load(); /* eslint-disable-next-line */ }, [id]);
 
@@ -41,23 +45,38 @@ export default function InventoryInvoiceDetail() {
     const invData = invRes.data as Inv;
     setInv(invData);
 
-    const [itemsRes, prodRes, batchRes] = await Promise.all([
+    const [itemsRes, prodRes, batchRes, retRes, retItemsRes] = await Promise.all([
       supabase.from("inventory_invoice_items").select("*").eq("invoice_id", id!).order("created_at"),
       supabase.from("inventory_products").select("id, name, unit, sale_price").eq("clinic_id", invData.clinic_id).eq("is_active", true).order("name"),
       supabase.from("inventory_batches").select("product_id, quantity_on_hand").eq("clinic_id", invData.clinic_id),
+      supabase.from("inventory_invoice_returns").select("*").eq("invoice_id", id!).order("created_at", { ascending: false }),
+      supabase.from("inventory_invoice_return_items").select("invoice_item_id, quantity").in("return_id",
+        ((await supabase.from("inventory_invoice_returns").select("id").eq("invoice_id", id!)).data ?? []).map((r: any) => r.id)
+      ),
     ]);
 
     const sm: Record<string, number> = {};
     (batchRes.data ?? []).forEach((b: any) => { sm[b.product_id] = (sm[b.product_id] ?? 0) + Number(b.quantity_on_hand); });
     setStockMap(sm);
-    setItems((itemsRes.data ?? []) as Item[]);
+
+    const returnedMap: Record<string, number> = {};
+    (retItemsRes.data ?? []).forEach((r: any) => {
+      if (r.invoice_item_id) returnedMap[r.invoice_item_id] = (returnedMap[r.invoice_item_id] ?? 0) + Number(r.quantity);
+    });
+    const prodMap = new Map((prodRes.data ?? []).map((p: any) => [p.id, p.name]));
+    const enriched = (itemsRes.data ?? []).map((it: any) => ({
+      ...it, _returned: returnedMap[it.id] ?? 0, _productName: prodMap.get(it.product_id) ?? "—",
+    }));
+    setItems(enriched as Item[]);
     setProducts((prodRes.data ?? []) as Product[]);
+    setReturns(retRes.data ?? []);
     setLoading(false);
   };
 
   const editable = inv?.status === "draft";
   const canIssue = inv?.status === "draft";
   const canCancel = inv?.status === "draft";
+  const canReturn = inv?.status === "issued";
 
   const totals = useMemo(() => {
     const subtotal = items.reduce((s, i) => s + Number(i.quantity || 0) * Number(i.unit_price || 0), 0);
