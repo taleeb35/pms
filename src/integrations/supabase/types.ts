@@ -527,6 +527,7 @@ export type Database = {
       clinics: {
         Row: {
           address: string
+          billable_doctors: number | null
           city: string
           clinic_name: string
           created_at: string
@@ -543,6 +544,7 @@ export type Database = {
         }
         Insert: {
           address: string
+          billable_doctors?: number | null
           city: string
           clinic_name: string
           created_at?: string
@@ -559,6 +561,7 @@ export type Database = {
         }
         Update: {
           address?: string
+          billable_doctors?: number | null
           city?: string
           clinic_name?: string
           created_at?: string
