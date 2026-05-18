@@ -56,6 +56,7 @@ interface Clinic {
   updated_at: string;
   trial_end_date: string | null;
   payment_plan: string;
+  billable_doctors: number | null;
   referred_by: string | null;
   profile?: {
     email: string;
