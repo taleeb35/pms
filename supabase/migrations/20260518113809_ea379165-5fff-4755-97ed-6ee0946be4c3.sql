@@ -1,0 +1,2 @@
+ALTER TABLE public.clinics ADD COLUMN IF NOT EXISTS billable_doctors integer;
+COMMENT ON COLUMN public.clinics.billable_doctors IS 'Override: number of doctors to bill for. NULL = use requested_doctors (doctor limit).';
