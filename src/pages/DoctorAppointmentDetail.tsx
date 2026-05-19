@@ -530,12 +530,19 @@ const DoctorAppointmentDetail = () => {
     if (data) {
       setExistingRecord(data);
 
-      // Also fetch appointment fees
-      const { data: appointmentData } = await supabase
-        .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id, refund")
-        .eq("id", appointmentId)
-        .single();
+      // Fetch appointment fees + patient-level confidential notes (lives on the patient profile)
+      const [{ data: appointmentData }, { data: patientData }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("consultation_fee, other_fee, procedure_id, procedure_fee, icd_code_id, refund, patient_id")
+          .eq("id", appointmentId)
+          .single(),
+        supabase
+          .from("patients")
+          .select("confidential_notes")
+          .eq("id", (appointment?.patient_id ?? data.patient_id))
+          .maybeSingle(),
+      ]);
 
       setFormData({
         blood_pressure: data.blood_pressure || "",
@@ -554,7 +561,7 @@ const DoctorAppointmentDetail = () => {
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
         refund: appointmentData?.refund?.toString() || "",
-        confidential_notes: appointmentData?.confidential_notes || "",
+        confidential_notes: (patientData as any)?.confidential_notes || "",
       });
 
       setOphthalmologyData((data as any).ophthalmology_data || {});
