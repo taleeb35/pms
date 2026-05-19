@@ -865,7 +865,6 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         other_fee: otherFee,
         refund: refundAmount,
         status: 'completed',
-        confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
       };
 
@@ -881,6 +880,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         .eq("id", appointment.id);
 
       if (feeError) throw feeError;
+
+      // Confidential notes now live on the patient profile (shared across all appointments)
+      const { error: noteError } = await supabase
+        .from("patients")
+        .update({ confidential_notes: formData.confidential_notes || null })
+        .eq("id", appointment.patient_id);
+      if (noteError) throw noteError;
 
       // Log activity for fee update (when editing existing record)
       if (existingRecord) {
