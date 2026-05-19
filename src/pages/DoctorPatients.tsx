@@ -2143,6 +2143,16 @@ const DoctorPatients = () => {
                 />
               </div>
               <div className="col-span-2">
+                <Label>Confidential Notes <span className="text-xs text-muted-foreground font-normal">(private — visible to doctor & staff only)</span></Label>
+                <Textarea
+                  value={addForm.confidential_notes}
+                  onChange={(e) => setAddForm({ ...addForm, confidential_notes: e.target.value })}
+                  placeholder="Private notes about this patient — shared across all visits"
+                  rows={3}
+                  className="bg-amber-50 border-amber-200"
+                />
+              </div>
+              <div className="col-span-2">
                 <Label>Address</Label>
                 <Textarea
                   value={addForm.address}
