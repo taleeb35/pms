@@ -436,34 +436,20 @@ const DoctorAppointmentDetail = () => {
 
   const fetchDiseaseTemplates = async (doctorId: string) => {
     try {
-      const { data: doctorData } = await supabase
-        .from("doctors")
-        .select("clinic_id")
-        .eq("id", doctorId)
-        .maybeSingle();
-
-      const { data: doctorTemplates } = await supabase
+      const { data, error } = await supabase
         .from("doctor_disease_templates")
-        .select("id, disease_name, prescription_template")
-        .eq("doctor_id", doctorId)
+        .select("id, disease_name, prescription_template, doctor_id")
         .order("disease_name");
 
-      let clinicTemplates: DiseaseTemplate[] = [];
-      if (doctorData?.clinic_id) {
-        const { data: cTemplates } = await supabase
-          .from("doctor_disease_templates")
-          .select("id, disease_name, prescription_template")
-          .eq("clinic_id", doctorData.clinic_id)
-          .is("doctor_id", null)
-          .order("disease_name");
-        clinicTemplates = (cTemplates || []).map(t => ({ ...t, disease_name: `${t.disease_name} (Clinic)` }));
-      }
+      if (error) throw error;
 
-      const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
-      // Dedupe by id only — keep templates with the same name (they may have different content)
-      const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.id === template.id)
-      );
+      const uniqueTemplates = (data || [])
+        .filter((template, index, self) => index === self.findIndex(t => t.id === template.id))
+        .map(({ doctor_id, ...template }) => ({
+          ...template,
+          disease_name: doctor_id === doctorId ? template.disease_name : `${template.disease_name} (Clinic)`,
+        }));
+
       setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
       console.error("Error fetching disease templates:", error);
@@ -472,33 +458,20 @@ const DoctorAppointmentDetail = () => {
 
   const fetchTestTemplates = async (doctorId: string) => {
     try {
-      const { data: doctorData } = await supabase
-        .from("doctors")
-        .select("clinic_id")
-        .eq("id", doctorId)
-        .maybeSingle();
-
-      const { data: doctorTemplates } = await supabase
+      const { data, error } = await supabase
         .from("doctor_test_templates")
-        .select("id, title, description")
-        .eq("doctor_id", doctorId)
+        .select("id, title, description, doctor_id")
         .order("title");
 
-      let clinicTemplates: TestTemplate[] = [];
-      if (doctorData?.clinic_id) {
-        const { data: cTemplates } = await supabase
-          .from("doctor_test_templates")
-          .select("id, title, description")
-          .eq("clinic_id", doctorData.clinic_id)
-          .is("doctor_id", null)
-          .order("title");
-        clinicTemplates = cTemplates || [];
-      }
+      if (error) throw error;
 
-      const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
-      const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.title === template.title)
-      );
+      const uniqueTemplates = (data || [])
+        .filter((template, index, self) => index === self.findIndex(t => t.id === template.id))
+        .map(({ doctor_id, ...template }) => ({
+          ...template,
+          title: doctor_id === doctorId ? template.title : `${template.title} (Clinic)`,
+        }));
+
       setTestTemplates(uniqueTemplates);
     } catch (error) {
       console.error("Error fetching test templates:", error);
