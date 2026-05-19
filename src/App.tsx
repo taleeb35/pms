@@ -632,6 +632,13 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/leads"
+              element={
+                <Layout>
+                  <ClinicLeads />
+                </Layout>
+              }
+            <Route
               path="/clinic/walk-in"
               element={
                 <Layout>
