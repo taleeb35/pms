@@ -1081,14 +1081,17 @@ const ClinicAppointmentDetail = () => {
                   </div>
                 </div>
 
-                {/* Confidential Notes */}
+                {/* Confidential Notes — stored on the patient profile, shared across all visits */}
                 <div>
-                  <Label className="text-xs">Confidential Notes (Staff Only)</Label>
+                  <Label className="text-xs">Confidential Notes (Patient, Staff Only)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">
+                    Shared across all visits for this patient.
+                  </p>
                   <Textarea
-                    placeholder="Internal notes..."
+                    placeholder="Internal notes about this patient..."
                     value={formData.confidential_notes}
                     onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
-                    rows={2}
+                    rows={3}
                   />
                 </div>
 
