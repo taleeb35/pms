@@ -707,6 +707,15 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/medicines"
+              element={
+                <Layout>
+                  <ClinicMedicines />
+                </Layout>
+              }
+            />
+
+            <Route
               path="/clinic/diseases"
               element={
                 <Layout>
