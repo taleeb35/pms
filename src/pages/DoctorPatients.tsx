@@ -99,6 +99,7 @@ const DoctorPatients = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    confidential_notes: string;
     added_date: string;
   }>({
     full_name: "",
@@ -114,6 +115,7 @@ const DoctorPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
     added_date: "",
   });
   const [addedDate, setAddedDate] = useState<Date>();
