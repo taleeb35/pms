@@ -279,12 +279,12 @@ const ClinicAppointmentDetail = () => {
           .eq("clinic_id", doctorData.clinic_id)
           .is("doctor_id", null)
           .order("disease_name");
-        clinicTemplates = cTemplates || [];
+        clinicTemplates = (cTemplates || []).map(t => ({ ...t, disease_name: `${t.disease_name} (Clinic)` }));
       }
 
       const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
       const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.disease_name === template.disease_name)
+        index === self.findIndex(t => t.id === template.id)
       );
       setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
