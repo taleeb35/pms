@@ -72,6 +72,8 @@ interface AppointmentData {
   id: string;
   patient_id: string;
   doctor_id: string;
+  source: string | null;
+  lead_status: string | null;
   appointment_date: string;
   appointment_time: string;
   appointment_type: string | null;
@@ -251,6 +253,11 @@ const DoctorAppointmentDetail = () => {
   useEffect(() => {
     if (!id) return;
     const cached = appointmentCache.get(id);
+    if (cached?.appointment?.source === "public_profile") {
+      appointmentCache.delete(id);
+      fetchAppointmentDetails(false);
+      return;
+    }
     if (cached) {
       hydrateFromCache(cached);
       setLoading(false);
@@ -317,9 +324,21 @@ const DoctorAppointmentDetail = () => {
           )
         `)
         .eq("id", id)
-        .single();
+        .neq("source", "public_profile")
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) {
+        if (!background) {
+          toast({
+            title: "Not an appointment",
+            description: "Public profile leads are no longer shown inside Appointments.",
+            variant: "destructive",
+          });
+          navigate("/doctor/appointments");
+        }
+        return;
+      }
       setAppointment(data);
 
       // Fire all secondary queries in parallel — none depend on each other
@@ -333,11 +352,13 @@ const DoctorAppointmentDetail = () => {
           .from("appointments")
           .select("id", { count: "exact", head: true })
           .eq("doctor_id", data.doctor_id)
+          .neq("source", "public_profile")
           .lte("created_at", data.created_at),
         supabase
           .from("appointments")
           .select("id")
           .eq("doctor_id", data.doctor_id)
+          .neq("source", "public_profile")
           .lt("created_at", data.created_at)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -346,6 +367,7 @@ const DoctorAppointmentDetail = () => {
           .from("appointments")
           .select("id")
           .eq("doctor_id", data.doctor_id)
+          .neq("source", "public_profile")
           .gt("created_at", data.created_at)
           .order("created_at", { ascending: true })
           .limit(1)
