@@ -295,15 +295,14 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           .order("disease_name");
 
         if (!clinicError && cTemplates) {
-          clinicTemplates = cTemplates;
+          clinicTemplates = cTemplates.map(t => ({ ...t, disease_name: `${t.disease_name} (Clinic)` }));
         }
       }
 
-      // Combine both doctor-specific and clinic-level templates
+      // Combine and dedupe by id (keep all templates, even with same name)
       const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
-      // Remove duplicates based on disease_name
       const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.disease_name === template.disease_name)
+        index === self.findIndex(t => t.id === template.id)
       );
       setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
