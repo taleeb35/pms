@@ -1192,10 +1192,10 @@ const DoctorAppointmentDetail = () => {
                   {diseaseTemplates.length > 0 && (
                     <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
                       <SelectTrigger className="mt-2 mb-2">
-                        <SelectValue placeholder="Load from template..." />
+                        <SelectValue placeholder="Append a template..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">-- Select Template --</SelectItem>
+                        <SelectItem value="none">-- Append Template (pick multiple) --</SelectItem>
                         {diseaseTemplates.map((t) => (
                           <SelectItem key={t.id} value={t.id}>{t.disease_name}</SelectItem>
                         ))}
