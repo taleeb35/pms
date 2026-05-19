@@ -1289,17 +1289,20 @@ const DoctorAppointmentDetail = () => {
               </CardContent>
             </Card>
 
-            {/* Confidential Notes Card */}
+            {/* Confidential Notes Card — stored on the patient profile */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Confidential Notes</CardTitle>
+                <CardTitle className="text-sm font-medium">Confidential Notes (Patient)</CardTitle>
+                <p className="text-[11px] text-muted-foreground">
+                  Shared across all visits for this patient. Visible to doctors and clinic staff only.
+                </p>
               </CardHeader>
               <CardContent>
                 <Textarea
-                  placeholder="Private notes visible only to doctors..."
+                  placeholder="Private notes about this patient..."
                   value={formData.confidential_notes}
                   onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
-                  rows={3}
+                  rows={4}
                   className="bg-amber-50 border-amber-200"
                 />
               </CardContent>
