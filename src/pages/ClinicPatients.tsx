@@ -168,6 +168,7 @@ const ClinicPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
   });
 
   // Delete Patient Dialog State
