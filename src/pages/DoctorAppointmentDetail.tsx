@@ -451,12 +451,13 @@ const DoctorAppointmentDetail = () => {
           .eq("clinic_id", doctorData.clinic_id)
           .is("doctor_id", null)
           .order("disease_name");
-        clinicTemplates = cTemplates || [];
+        clinicTemplates = (cTemplates || []).map(t => ({ ...t, disease_name: `${t.disease_name} (Clinic)` }));
       }
 
       const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
+      // Dedupe by id only — keep templates with the same name (they may have different content)
       const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.disease_name === template.disease_name)
+        index === self.findIndex(t => t.id === template.id)
       );
       setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
@@ -598,13 +599,21 @@ const DoctorAppointmentDetail = () => {
   };
 
   const handleTemplateChange = (templateId: string) => {
-    setSelectedTemplate(templateId);
     if (templateId && templateId !== "none") {
       const template = diseaseTemplates.find(t => t.id === templateId);
       if (template) {
-        setFormData(prev => ({ ...prev, current_prescription: template.prescription_template }));
+        setFormData(prev => {
+          const existing = (prev.current_prescription || "").trim();
+          const header = `--- ${template.disease_name} ---`;
+          const next = existing
+            ? `${existing}\n\n${header}\n${template.prescription_template}`
+            : `${header}\n${template.prescription_template}`;
+          return { ...prev, current_prescription: next };
+        });
       }
     }
+    // Reset so the same or another template can be picked again
+    setSelectedTemplate("");
   };
 
   const handleProcedureChange = (procedureId: string) => {
@@ -1183,10 +1192,10 @@ const DoctorAppointmentDetail = () => {
                   {diseaseTemplates.length > 0 && (
                     <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
                       <SelectTrigger className="mt-2 mb-2">
-                        <SelectValue placeholder="Load from template..." />
+                        <SelectValue placeholder="Append a template..." />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="none">-- Select Template --</SelectItem>
+                        <SelectItem value="none">-- Append Template (pick multiple) --</SelectItem>
                         {diseaseTemplates.map((t) => (
                           <SelectItem key={t.id} value={t.id}>{t.disease_name}</SelectItem>
                         ))}

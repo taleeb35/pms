@@ -295,15 +295,14 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           .order("disease_name");
 
         if (!clinicError && cTemplates) {
-          clinicTemplates = cTemplates;
+          clinicTemplates = cTemplates.map(t => ({ ...t, disease_name: `${t.disease_name} (Clinic)` }));
         }
       }
 
-      // Combine both doctor-specific and clinic-level templates
+      // Combine and dedupe by id (keep all templates, even with same name)
       const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
-      // Remove duplicates based on disease_name
       const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.disease_name === template.disease_name)
+        index === self.findIndex(t => t.id === template.id)
       );
       setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
@@ -358,22 +357,21 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
   };
 
   const handleTemplateChange = (templateId: string) => {
-    setSelectedTemplate(templateId);
     if (templateId && templateId !== "none") {
       const template = diseaseTemplates.find(t => t.id === templateId);
       if (template) {
-        setFormData(prev => ({
-          ...prev,
-          current_prescription: template.prescription_template
-        }));
+        setFormData(prev => {
+          const existing = (prev.current_prescription || "").trim();
+          const header = `--- ${template.disease_name} ---`;
+          const next = existing
+            ? `${existing}\n\n${header}\n${template.prescription_template}`
+            : `${header}\n${template.prescription_template}`;
+          return { ...prev, current_prescription: next };
+        });
       }
-    } else {
-      // Clear prescription when deselecting template
-      setFormData(prev => ({
-        ...prev,
-        current_prescription: ""
-      }));
     }
+    // Reset so multiple templates can be appended
+    setSelectedTemplate("");
   };
 
   const handleProcedureChange = (procedureId: string) => {
@@ -1244,13 +1242,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                 <h3 className="font-semibold mb-4">Current Prescription</h3>
                 {diseaseTemplates.length > 0 && (
                   <div className="mb-4">
-                    <Label className="text-sm text-muted-foreground">Load from Disease Template</Label>
+                    <Label className="text-sm text-muted-foreground">Append Disease Template (pick multiple to combine)</Label>
                     <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select a disease template..." />
+                        <SelectValue placeholder="Append a template..." />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px]">
-                        <SelectItem value="none">-- Select Template --</SelectItem>
+                        <SelectItem value="none">-- Append Template --</SelectItem>
                         {diseaseTemplates.map((template) => (
                           <SelectItem key={template.id} value={template.id}>
                             {template.disease_name}

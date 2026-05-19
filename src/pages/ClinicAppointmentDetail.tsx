@@ -279,12 +279,12 @@ const ClinicAppointmentDetail = () => {
           .eq("clinic_id", doctorData.clinic_id)
           .is("doctor_id", null)
           .order("disease_name");
-        clinicTemplates = cTemplates || [];
+        clinicTemplates = (cTemplates || []).map(t => ({ ...t, disease_name: `${t.disease_name} (Clinic)` }));
       }
 
       const allTemplates = [...(doctorTemplates || []), ...clinicTemplates];
       const uniqueTemplates = allTemplates.filter((template, index, self) =>
-        index === self.findIndex(t => t.disease_name === template.disease_name)
+        index === self.findIndex(t => t.id === template.id)
       );
       setDiseaseTemplates(uniqueTemplates);
     } catch (error) {
@@ -424,13 +424,20 @@ const ClinicAppointmentDetail = () => {
   };
 
   const handleTemplateChange = (templateId: string) => {
-    setSelectedTemplate(templateId);
     if (templateId && templateId !== "none") {
       const template = diseaseTemplates.find(t => t.id === templateId);
       if (template) {
-        setFormData(prev => ({ ...prev, current_prescription: template.prescription_template }));
+        setFormData(prev => {
+          const existing = (prev.current_prescription || "").trim();
+          const header = `--- ${template.disease_name} ---`;
+          const next = existing
+            ? `${existing}\n\n${header}\n${template.prescription_template}`
+            : `${header}\n${template.prescription_template}`;
+          return { ...prev, current_prescription: next };
+        });
       }
     }
+    setSelectedTemplate("");
   };
 
   const handleProcedureChange = (procedureId: string) => {
@@ -972,12 +979,12 @@ const ClinicAppointmentDetail = () => {
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-xs">Prescription</Label>
                     {diseaseTemplates.length > 0 && (
-                      <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
-                        <SelectTrigger className="w-48 h-8">
-                          <SelectValue placeholder="Use template..." />
+                      <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
+                        <SelectTrigger className="w-56 h-8">
+                          <SelectValue placeholder="Append template..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">No template</SelectItem>
+                          <SelectItem value="none">-- Append (pick multiple) --</SelectItem>
                           {diseaseTemplates.map((t) => (
                             <SelectItem key={t.id} value={t.id}>{t.disease_name}</SelectItem>
                           ))}
