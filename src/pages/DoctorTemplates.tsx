@@ -1304,7 +1304,7 @@ const DoctorTemplates = () => {
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingTemplate ? "Edit Template" : "Add New Template"}
@@ -1332,7 +1332,36 @@ const DoctorTemplates = () => {
               </Select>
             </div>
 
-            {templateType !== "report" ? (
+            {templateType === "disease" ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Disease Name *</Label>
+                  <Input
+                    placeholder="e.g., Hypertension"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+
+                <DiseaseTemplateMedicineEditor
+                  templateId={editingTemplate?.id ?? null}
+                  ownerType={clinicId ? "clinic" : "doctor"}
+                  ownerId={clinicId ?? (editingTemplate as any)?.doctor_id ?? ""}
+                  medicines={diseaseMedicines}
+                  onChange={setDiseaseMedicines}
+                />
+
+                <div className="space-y-2">
+                  <Label>Advice / General Notes (optional)</Label>
+                  <Textarea
+                    placeholder="Lifestyle advice, follow-up, dietary recommendations..."
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+              </>
+            ) : templateType !== "report" ? (
               <>
                 <div className="space-y-2">
                   <Label>{labels.name}</Label>
