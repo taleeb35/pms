@@ -504,13 +504,33 @@ const DoctorMedicineReport = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Medicine</TableHead>
-                    <TableHead className="text-right">Prescriptions</TableHead>
-                    <TableHead className="text-right">Patients</TableHead>
+                    <TableHead>
+                      <button onClick={() => toggleSort("name")} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                        Medicine <SortIcon k="name" />
+                      </button>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <button onClick={() => toggleSort("prescriptions")} className="inline-flex items-center gap-1 hover:text-foreground transition-colors ml-auto">
+                        Prescriptions <SortIcon k="prescriptions" />
+                      </button>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <button onClick={() => toggleSort("uniquePatients")} className="inline-flex items-center gap-1 hover:text-foreground transition-colors ml-auto">
+                        Patients <SortIcon k="uniquePatients" />
+                      </button>
+                    </TableHead>
                     <TableHead>Common Doses</TableHead>
                     <TableHead>Common Frequencies</TableHead>
-                    <TableHead className="text-right">Avg Days</TableHead>
-                    <TableHead>Last Prescribed</TableHead>
+                    <TableHead className="text-right">
+                      <button onClick={() => toggleSort("avgDays")} className="inline-flex items-center gap-1 hover:text-foreground transition-colors ml-auto">
+                        Avg Days <SortIcon k="avgDays" />
+                      </button>
+                    </TableHead>
+                    <TableHead>
+                      <button onClick={() => toggleSort("lastPrescribed")} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                        Last Prescribed <SortIcon k="lastPrescribed" />
+                      </button>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
