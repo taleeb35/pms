@@ -557,22 +557,33 @@ const DoctorTemplates = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from("doctor_disease_templates")
       .insert({
         doctor_id: session.user.id,
         clinic_id: clinicId,
         disease_name: `${template.disease_name} (Copy)`,
         prescription_template: template.prescription_template,
-      });
+      })
+      .select("id")
+      .single();
 
-    if (error) {
+    if (error || !inserted) {
       toast.error("Failed to copy template");
       console.error(error);
-    } else {
-      toast.success("Template copied to your personal templates");
-      fetchAllTemplates();
+      return;
     }
+
+    try {
+      const meds = await loadTemplateMedicines(template.id);
+      if (meds.length) {
+        await saveTemplateMedicines(inserted.id, meds);
+      }
+    } catch (e) {
+      console.error("Copy meds failed:", e);
+    }
+    toast.success("Template copied to your personal templates");
+    fetchAllTemplates();
   };
 
   const handleCopyTestTemplate = async (template: TestTemplate) => {
