@@ -161,6 +161,7 @@ const DoctorAppointmentDetail = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
   const [selectedTestTemplate, setSelectedTestTemplate] = useState<string>("");
+  const [stagedMedicines, setStagedMedicines] = useState<Array<{ medicine_name: string; brand?: string | null; dosage?: string | null; frequency?: string | null; timing: string[]; duration?: string | null; meal?: string | null; instructions?: string | null }>>([]);
   
   // Next Visit
   const [nextVisitDate, setNextVisitDate] = useState<Date>();
