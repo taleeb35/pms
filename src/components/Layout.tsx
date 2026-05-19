@@ -337,6 +337,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/clinic/patients", icon: Users, label: "Patients" },
         { path: "/clinic/appointments", icon: Calendar, label: "Appointments" },
+        { path: "/clinic/leads", icon: Target, label: "Leads" },
         { path: "/clinic/walk-in", icon: Sparkles, label: "Walk-In" },
       ],
     },

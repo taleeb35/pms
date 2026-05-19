@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useClinicId } from "@/hooks/useClinicId";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,11 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { TableSkeleton } from "@/components/TableSkeleton";
 import { format } from "date-fns";
-import { Calendar, Phone, Search, UserPlus, Sparkles, Plus, Pencil } from "lucide-react";
+import { Calendar, Phone, Search, Sparkles, Plus, Pencil, Stethoscope } from "lucide-react";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -35,10 +36,15 @@ interface LeadRow {
   phone: string | null;
   comment: string | null;
   status: string;
-  // for public-profile appointments
+  doctor_id: string;
+  doctor_name: string;
   appointmentId?: string;
-  // for manual leads
   leadId?: string;
+}
+
+interface DoctorOption {
+  id: string;
+  name: string;
 }
 
 const STATUS_OPTIONS = [
@@ -59,6 +65,7 @@ const statusVariant = (s: string | null) => {
 };
 
 const emptyForm = {
+  doctor_id: "",
   name: "",
   phone: "",
   lead_date: new Date().toISOString().slice(0, 10),
@@ -66,14 +73,16 @@ const emptyForm = {
   status: "active",
 };
 
-const DoctorLeads = () => {
+const ClinicLeads = () => {
   const { toast } = useToast();
-  const [doctorId, setDoctorId] = useState<string | null>(null);
-  const [clinicId, setClinicId] = useState<string | null>(null);
+  const { clinicId, loading: clinicLoading } = useClinicId();
+
   const [rows, setRows] = useState<LeadRow[]>([]);
+  const [doctors, setDoctors] = useState<DoctorOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [doctorFilter, setDoctorFilter] = useState<string>("all");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -81,30 +90,40 @@ const DoctorLeads = () => {
   const [saving, setSaving] = useState(false);
 
   const fetchAll = async () => {
+    if (!clinicId) return;
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setRows([]); return; }
-      setDoctorId(user.id);
-
-      const { data: doc } = await supabase
+      // Doctors in this clinic
+      const { data: docs, error: docErr } = await supabase
         .from("doctors")
-        .select("clinic_id")
-        .eq("id", user.id)
-        .maybeSingle();
-      setClinicId((doc as any)?.clinic_id ?? null);
+        .select("id, profiles(full_name)")
+        .eq("clinic_id", clinicId)
+        .eq("approved", true);
+      if (docErr) throw docErr;
+      const docOptions: DoctorOption[] = (docs || []).map((d: any) => ({
+        id: d.id,
+        name: d.profiles?.full_name || "Doctor",
+      }));
+      setDoctors(docOptions);
+      const docMap = new Map(docOptions.map((d) => [d.id, d.name]));
+      const doctorIds = docOptions.map((d) => d.id);
+
+      if (doctorIds.length === 0) {
+        setRows([]);
+        return;
+      }
 
       const [appsRes, leadsRes] = await Promise.all([
         supabase
           .from("appointments")
-          .select(`id, created_at, appointment_date, appointment_time, reason, lead_status, patients(full_name, phone)`)
-          .eq("doctor_id", user.id)
+          .select(`id, doctor_id, created_at, appointment_date, appointment_time, reason, lead_status, patients(full_name, phone)`)
+          .in("doctor_id", doctorIds)
           .eq("source", "public_profile")
           .order("created_at", { ascending: false }),
         supabase
           .from("leads" as any)
           .select("*")
-          .eq("doctor_id", user.id)
+          .eq("clinic_id", clinicId)
           .order("created_at", { ascending: false }),
       ]);
 
@@ -123,6 +142,8 @@ const DoctorLeads = () => {
           phone: a.patients.phone,
           comment: a.reason,
           status: a.lead_status || "active",
+          doctor_id: a.doctor_id,
+          doctor_name: docMap.get(a.doctor_id) || "Doctor",
           appointmentId: a.id,
         }));
 
@@ -136,6 +157,8 @@ const DoctorLeads = () => {
         phone: l.phone,
         comment: l.comment,
         status: l.status || "active",
+        doctor_id: l.doctor_id,
+        doctor_name: docMap.get(l.doctor_id) || "Doctor",
         leadId: l.id,
       }));
 
@@ -150,7 +173,9 @@ const DoctorLeads = () => {
     }
   };
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    if (!clinicLoading && clinicId) fetchAll();
+  }, [clinicLoading, clinicId]);
 
   const updateStatus = async (row: LeadRow, value: string) => {
     const { error } = row.kind === "public"
@@ -162,20 +187,6 @@ const DoctorLeads = () => {
     }
     setRows((prev) => prev.map((l) => l.id === row.id ? { ...l, status: value } : l));
     toast({ title: "Lead status updated" });
-  };
-
-  const convertToAppointment = async (row: LeadRow) => {
-    if (row.kind !== "public") return;
-    const { error } = await supabase
-      .from("appointments")
-      .update({ source: "direct", lead_status: "converted" } as any)
-      .eq("id", row.appointmentId!);
-    if (error) {
-      toast({ title: "Conversion failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    setRows((prev) => prev.filter((l) => l.id !== row.id));
-    toast({ title: "Lead converted to appointment" });
   };
 
   const deleteRow = async (row: LeadRow) => {
@@ -192,7 +203,7 @@ const DoctorLeads = () => {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ ...emptyForm });
+    setForm({ ...emptyForm, doctor_id: doctors[0]?.id || "" });
     setDialogOpen(true);
   };
 
@@ -200,6 +211,7 @@ const DoctorLeads = () => {
     if (row.kind !== "manual") return;
     setEditingId(row.leadId!);
     setForm({
+      doctor_id: row.doctor_id,
       name: row.name,
       phone: row.phone || "",
       lead_date: row.date,
@@ -210,15 +222,16 @@ const DoctorLeads = () => {
   };
 
   const saveLead = async () => {
-    if (!form.name.trim() || !form.phone.trim() || !form.lead_date) {
-      toast({ title: "Missing fields", description: "Name, phone and date are required", variant: "destructive" });
+    if (!form.doctor_id || !form.name.trim() || !form.phone.trim() || !form.lead_date) {
+      toast({ title: "Missing fields", description: "Doctor, name, phone and date are required", variant: "destructive" });
       return;
     }
-    if (!doctorId) return;
+    if (!clinicId) return;
     setSaving(true);
     try {
       if (editingId) {
         const { error } = await supabase.from("leads" as any).update({
+          doctor_id: form.doctor_id,
           name: form.name.trim(),
           phone: form.phone.trim(),
           lead_date: form.lead_date,
@@ -228,8 +241,9 @@ const DoctorLeads = () => {
         if (error) throw error;
         toast({ title: "Lead updated" });
       } else {
+        const { data: { user } } = await supabase.auth.getUser();
         const { error } = await supabase.from("leads" as any).insert({
-          doctor_id: doctorId,
+          doctor_id: form.doctor_id,
           clinic_id: clinicId,
           name: form.name.trim(),
           phone: form.phone.trim(),
@@ -237,7 +251,7 @@ const DoctorLeads = () => {
           comment: form.comment.trim() || null,
           status: form.status,
           source: "manual",
-          created_by: doctorId,
+          created_by: user?.id,
         } as any);
         if (error) throw error;
         toast({ title: "Lead added" });
@@ -252,13 +266,15 @@ const DoctorLeads = () => {
   };
 
   const filtered = rows.filter((l) => {
-    if (filter !== "all" && (l.status || "active") !== filter) return false;
+    if (statusFilter !== "all" && (l.status || "active") !== statusFilter) return false;
+    if (doctorFilter !== "all" && l.doctor_id !== doctorFilter) return false;
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (
       l.name?.toLowerCase().includes(q) ||
       l.phone?.toLowerCase().includes(q) ||
-      l.comment?.toLowerCase().includes(q)
+      l.comment?.toLowerCase().includes(q) ||
+      l.doctor_name?.toLowerCase().includes(q)
     );
   });
 
@@ -277,10 +293,10 @@ const DoctorLeads = () => {
             <h2 className="text-2xl sm:text-3xl font-bold">Leads</h2>
           </div>
           <p className="text-muted-foreground text-sm">
-            Appointment requests from your public profile and manual leads you add yourself.
+            All leads across your clinic — public profile requests and manual entries.
           </p>
         </div>
-        <Button onClick={openAdd}>
+        <Button onClick={openAdd} disabled={doctors.length === 0}>
           <Plus className="h-4 w-4 mr-1" /> Add Lead
         </Button>
       </div>
@@ -307,12 +323,23 @@ const DoctorLeads = () => {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name, phone or comment"
+                placeholder="Search name, phone, doctor or comment"
                 className="pl-9"
               />
             </div>
-            <Select value={filter} onValueChange={setFilter}>
-              <SelectTrigger className="w-full sm:w-48">
+            <Select value={doctorFilter} onValueChange={setDoctorFilter}>
+              <SelectTrigger className="w-full sm:w-52">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All doctors</SelectItem>
+                {doctors.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-44">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -324,12 +351,12 @@ const DoctorLeads = () => {
             </Select>
           </div>
 
-          {loading ? (
-            <TableSkeleton rows={5} columns={6} />
+          {loading || clinicLoading ? (
+            <TableSkeleton rows={5} columns={7} />
           ) : filtered.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Sparkles className="h-10 w-10 mx-auto mb-3 opacity-30" />
-              <p>No leads yet. Add a lead manually or wait for bookings from your public profile.</p>
+              <p>No leads yet. Add a lead manually or wait for bookings from your doctors' public profiles.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -338,6 +365,7 @@ const DoctorLeads = () => {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Phone</TableHead>
+                    <TableHead>Doctor</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Comment</TableHead>
                     <TableHead>Source</TableHead>
@@ -360,6 +388,12 @@ const DoctorLeads = () => {
                             <Phone className="h-3 w-3" /> {l.phone}
                           </a>
                         ) : <span className="text-muted-foreground">—</span>}
+                      </TableCell>
+                      <TableCell>
+                        <div className="inline-flex items-center gap-1 text-sm">
+                          <Stethoscope className="h-3 w-3 text-muted-foreground" />
+                          {l.doctor_name}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1 text-sm">
@@ -405,16 +439,6 @@ const DoctorLeads = () => {
                               <Pencil className="h-3 w-3 mr-1" /> Edit
                             </Button>
                           )}
-                          {l.kind === "public" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => convertToAppointment(l)}
-                              title="Move this lead into your Appointments list"
-                            >
-                              <UserPlus className="h-3 w-3 mr-1" /> Convert
-                            </Button>
-                          )}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button size="sm" variant="ghost" className="text-destructive">Delete</Button>
@@ -448,10 +472,21 @@ const DoctorLeads = () => {
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit Lead" : "Add Manual Lead"}</DialogTitle>
             <DialogDescription>
-              Capture a potential patient enquiry received outside the booking flow.
+              Capture a potential patient enquiry for one of your clinic's doctors.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Doctor *</Label>
+              <Select value={form.doctor_id} onValueChange={(v) => setForm({ ...form, doctor_id: v })}>
+                <SelectTrigger><SelectValue placeholder="Select doctor" /></SelectTrigger>
+                <SelectContent>
+                  {doctors.map((d) => (
+                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-2">
               <Label>Name *</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={120} />
@@ -500,4 +535,4 @@ const DoctorLeads = () => {
   );
 };
 
-export default DoctorLeads;
+export default ClinicLeads;
