@@ -186,7 +186,7 @@ const DoctorMedicines = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
-                  <TableHead className="w-[100px]">Actions</TableHead>
+                  <TableHead className="w-[120px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
