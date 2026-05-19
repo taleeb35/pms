@@ -16,6 +16,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import type { Json } from "@/integrations/supabase/types";
 import TableSkeleton from "@/components/TableSkeleton";
 import DeletingOverlay from "@/components/DeletingOverlay";
+import DiseaseTemplateMedicineEditor, { TemplateMedicine, loadTemplateMedicines, saveTemplateMedicines } from "@/components/DiseaseTemplateMedicineEditor";
 
 interface DiseaseTemplate {
   id: string;
