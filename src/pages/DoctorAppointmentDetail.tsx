@@ -586,6 +586,9 @@ const DoctorAppointmentDetail = () => {
         const structuredText = formatMedicinesAsText(meds, template.prescription_template);
         const block = structuredText || template.prescription_template;
 
+        // Stage structured medicines for saving on submit (for medicine reporting)
+        setStagedMedicines(prev => [...prev, ...meds]);
+
         setFormData(prev => {
           const existing = (prev.current_prescription || "").trim();
           const header = `--- ${template.disease_name} ---`;
