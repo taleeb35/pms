@@ -348,7 +348,7 @@ const DoctorWalkIn = () => {
                   {formErrors.full_name && <p className="text-sm text-destructive">{formErrors.full_name}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="father_name">Father Name</Label>
+                  <Label htmlFor="father_name">Father / Husband Name</Label>
                   <Input
                     id="father_name"
                     value={patientForm.father_name}
@@ -357,7 +357,7 @@ const DoctorWalkIn = () => {
                       clearFieldError("father_name");
                     }}
                     onBlur={() => handleFieldBlur("father_name", patientForm.father_name)}
-                    placeholder="Enter father name"
+                    placeholder="Enter father or husband name"
                     className={formErrors.father_name ? "border-destructive" : ""}
                   />
                   {formErrors.father_name && <p className="text-sm text-destructive">{formErrors.father_name}</p>}

@@ -1500,7 +1500,7 @@ const DoctorPatients = () => {
                                     </div>
                                     {selectedPatient.father_name && (
                                       <div>
-                                        <p className="text-sm text-muted-foreground">Father Name</p>
+                                        <p className="text-sm text-muted-foreground">Father / Husband Name</p>
                                         <p className="font-medium">{selectedPatient.father_name}</p>
                                       </div>
                                     )}
@@ -1921,11 +1921,11 @@ const DoctorPatients = () => {
                 />
               </div>
               <div>
-                <Label>Father Name</Label>
+                <Label>Father / Husband Name</Label>
                 <Input
                   value={addForm.father_name}
                   onChange={(e) => setAddForm({ ...addForm, father_name: e.target.value })}
-                  placeholder="Enter father name"
+                  placeholder="Enter father or husband name"
                 />
               </div>
               <div>
@@ -2242,11 +2242,11 @@ const DoctorPatients = () => {
                 />
               </div>
               <div>
-                <Label>Father Name</Label>
+                <Label>Father / Husband Name</Label>
                 <Input
                   value={editForm.father_name}
                   onChange={(e) => setEditForm({ ...editForm, father_name: e.target.value })}
-                  placeholder="Enter father name"
+                  placeholder="Enter father or husband name"
                 />
               </div>
               <div>

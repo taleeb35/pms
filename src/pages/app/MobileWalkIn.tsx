@@ -175,7 +175,7 @@ const MobileWalkIn = () => {
           />
         </Field>
 
-        <Field label="Father / Guardian name">
+        <Field label="Father / Husband Name">
           <Input value={form.father_name} onChange={(e) => update("father_name", handleNameInput(e))} className="h-11 rounded-lg" />
         </Field>
 

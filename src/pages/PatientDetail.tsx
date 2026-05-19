@@ -466,7 +466,7 @@ const PatientDetail = () => {
                 <p className="font-medium">{patient.full_name}</p>
               </div>
               <div>
-                <Label className="text-muted-foreground">Father Name</Label>
+                <Label className="text-muted-foreground">Father / Husband Name</Label>
                 <p className="font-medium">{patient.father_name || "N/A"}</p>
               </div>
               <div>
@@ -761,7 +761,7 @@ const PatientDetail = () => {
               />
             </div>
             <div>
-              <Label>Father Name</Label>
+              <Label>Father / Husband Name</Label>
               <Input
                 value={editForm.father_name}
                 onChange={(e) => setEditForm({ ...editForm, father_name: e.target.value })}
