@@ -206,13 +206,16 @@ const DoctorTemplates = () => {
     setLoading(false);
   };
 
-  const handleOpenDialog = (template?: DiseaseTemplate | TestTemplate | ReportTemplate | LeaveTemplate, type?: TemplateType) => {
+  const handleOpenDialog = async (template?: DiseaseTemplate | TestTemplate | ReportTemplate | LeaveTemplate, type?: TemplateType) => {
     if (template && type) {
       setEditingTemplate(template);
       setTemplateType(type);
       if (type === "disease") {
         const t = template as DiseaseTemplate;
         setFormData({ name: t.disease_name, content: t.prescription_template });
+        setDiseaseMedicines([]);
+        const meds = await loadTemplateMedicines(t.id);
+        setDiseaseMedicines(meds);
       } else if (type === "test") {
         const t = template as TestTemplate;
         setFormData({ name: t.title, content: t.description });
@@ -231,6 +234,7 @@ const DoctorTemplates = () => {
       setTemplateType(activeTab);
       setFormData({ name: "", content: "" });
       setReportFormData({ template_name: "", fields: [{ title: "", value: "" }] });
+      setDiseaseMedicines([]);
     }
     setDialogOpen(true);
   };
@@ -240,6 +244,7 @@ const DoctorTemplates = () => {
     setEditingTemplate(null);
     setFormData({ name: "", content: "" });
     setReportFormData({ template_name: "", fields: [{ title: "", value: "" }] });
+    setDiseaseMedicines([]);
   };
 
   const handleAddReportField = () => {
