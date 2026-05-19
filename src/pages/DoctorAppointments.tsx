@@ -195,6 +195,7 @@ const DoctorAppointments = () => {
         `,
         )
         .eq("doctor_id", user.id)
+        .neq("source", "public_profile")
         .order("appointment_date", { ascending: false })
         .order("appointment_time", { ascending: false });
 
