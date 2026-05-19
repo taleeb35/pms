@@ -311,6 +311,7 @@ const PatientDetail = () => {
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
         major_diseases: editForm.major_diseases || null,
+        confidential_notes: editForm.confidential_notes || null,
       })
       .eq("id", patient.id);
 
