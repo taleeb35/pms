@@ -2140,6 +2140,7 @@ export type Database = {
           blood_group: string | null
           city: string | null
           cnic: string | null
+          confidential_notes: string | null
           created_at: string
           created_by: string | null
           date_of_birth: string | null
@@ -2167,6 +2168,7 @@ export type Database = {
           blood_group?: string | null
           city?: string | null
           cnic?: string | null
+          confidential_notes?: string | null
           created_at?: string
           created_by?: string | null
           date_of_birth?: string | null
@@ -2194,6 +2196,7 @@ export type Database = {
           blood_group?: string | null
           city?: string | null
           cnic?: string | null
+          confidential_notes?: string | null
           created_at?: string
           created_by?: string | null
           date_of_birth?: string | null

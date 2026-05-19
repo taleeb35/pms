@@ -358,12 +358,19 @@ const ClinicAppointmentDetail = () => {
     if (data) {
       setExistingRecord(data);
 
-      // Also fetch appointment fees
-      const { data: appointmentData } = await supabase
-        .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id, refund")
-        .eq("id", appointmentId)
-        .single();
+      // Fetch appointment fees + patient-level confidential notes (lives on the patient profile)
+      const [{ data: appointmentData }, { data: patientData }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("consultation_fee, other_fee, procedure_id, procedure_fee, icd_code_id, refund, patient_id")
+          .eq("id", appointmentId)
+          .single(),
+        supabase
+          .from("patients")
+          .select("confidential_notes")
+          .eq("id", appointment?.patient_id ?? data.patient_id)
+          .maybeSingle(),
+      ]);
 
       setFormData({
         blood_pressure: data.blood_pressure || "",
@@ -382,7 +389,7 @@ const ClinicAppointmentDetail = () => {
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
         refund: appointmentData?.refund?.toString() || "",
-        confidential_notes: appointmentData?.confidential_notes || "",
+        confidential_notes: (patientData as any)?.confidential_notes || "",
       });
 
       setOphthalmologyData(((data as any).ophthalmology_data) || {});
@@ -616,7 +623,6 @@ const ClinicAppointmentDetail = () => {
         refund: refundAmount,
         status: 'completed',
         completed_at: new Date().toISOString(),
-        confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
       };
 
@@ -631,6 +637,13 @@ const ClinicAppointmentDetail = () => {
         .eq("id", appointment.id);
 
       if (feeError) throw feeError;
+
+      // Confidential notes now live on the patient profile (shared across all appointments)
+      const { error: noteError } = await supabase
+        .from("patients")
+        .update({ confidential_notes: formData.confidential_notes || null })
+        .eq("id", appointment.patient_id);
+      if (noteError) throw noteError;
 
       // Update pregnancy date if gynecologist
       if (isGynecologist && pregnancyStartDate) {
@@ -1068,14 +1081,17 @@ const ClinicAppointmentDetail = () => {
                   </div>
                 </div>
 
-                {/* Confidential Notes */}
+                {/* Confidential Notes — stored on the patient profile, shared across all visits */}
                 <div>
-                  <Label className="text-xs">Confidential Notes (Staff Only)</Label>
+                  <Label className="text-xs">Confidential Notes (Patient, Staff Only)</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1">
+                    Shared across all visits for this patient.
+                  </p>
                   <Textarea
-                    placeholder="Internal notes..."
+                    placeholder="Internal notes about this patient..."
                     value={formData.confidential_notes}
                     onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
-                    rows={2}
+                    rows={3}
                   />
                 </div>
 

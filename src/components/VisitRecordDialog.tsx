@@ -442,13 +442,20 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     if (data) {
       setExistingRecord(data);
       
-      // Fetch appointment fees and procedure
-      const { data: appointmentData } = await supabase
-        .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id, refund")
-        .eq("id", appointment.id)
-        .single();
-      
+      // Fetch appointment fees + patient-level confidential notes (stored on the patient profile)
+      const [{ data: appointmentData }, { data: patientData }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("consultation_fee, other_fee, procedure_id, procedure_fee, icd_code_id, refund")
+          .eq("id", appointment.id)
+          .single(),
+        supabase
+          .from("patients")
+          .select("confidential_notes")
+          .eq("id", appointment.patient_id)
+          .maybeSingle(),
+      ]);
+
       setFormData({
         blood_pressure: data.blood_pressure || "",
         temperature: data.temperature || "",
@@ -466,7 +473,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
         refund: appointmentData?.refund?.toString() || "",
-        confidential_notes: appointmentData?.confidential_notes || "",
+        confidential_notes: (patientData as any)?.confidential_notes || "",
       });
       
       // Load saved procedure if exists
@@ -858,7 +865,6 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         other_fee: otherFee,
         refund: refundAmount,
         status: 'completed',
-        confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
       };
 
@@ -874,6 +880,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         .eq("id", appointment.id);
 
       if (feeError) throw feeError;
+
+      // Confidential notes now live on the patient profile (shared across all appointments)
+      const { error: noteError } = await supabase
+        .from("patients")
+        .update({ confidential_notes: formData.confidential_notes || null })
+        .eq("id", appointment.patient_id);
+      if (noteError) throw noteError;
 
       // Log activity for fee update (when editing existing record)
       if (existingRecord) {
@@ -1416,14 +1429,17 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                 </div>
               </div>
 
-              {/* Confidential Notes Section - Doctor Only */}
+              {/* Confidential Notes Section — stored on patient profile */}
               <div className="border rounded-lg p-4 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
-                <h3 className="font-semibold mb-4 text-amber-800 dark:text-amber-200">Confidential Notes (Doctor Only)</h3>
+                <h3 className="font-semibold mb-1 text-amber-800 dark:text-amber-200">Confidential Notes (Patient)</h3>
+                <p className="text-xs text-amber-700/80 dark:text-amber-300/80 mb-3">
+                  Shared across all visits for this patient. Visible to doctors and clinic staff only.
+                </p>
                 <Textarea
-                  placeholder="Private notes visible only to doctors..."
+                  placeholder="Private notes about this patient..."
                   value={formData.confidential_notes}
                   onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
-                  rows={3}
+                  rows={4}
                   className="text-sm"
                 />
               </div>
