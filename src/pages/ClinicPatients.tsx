@@ -515,6 +515,7 @@ const ClinicPatients = () => {
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
         major_diseases: editSelectedDiseases.length > 0 ? editSelectedDiseases.join(", ") : null,
+        confidential_notes: editForm.confidential_notes || null,
       })
       .eq("id", selectedPatient.id);
 
