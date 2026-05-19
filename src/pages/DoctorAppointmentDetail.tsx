@@ -599,13 +599,21 @@ const DoctorAppointmentDetail = () => {
   };
 
   const handleTemplateChange = (templateId: string) => {
-    setSelectedTemplate(templateId);
     if (templateId && templateId !== "none") {
       const template = diseaseTemplates.find(t => t.id === templateId);
       if (template) {
-        setFormData(prev => ({ ...prev, current_prescription: template.prescription_template }));
+        setFormData(prev => {
+          const existing = (prev.current_prescription || "").trim();
+          const header = `--- ${template.disease_name} ---`;
+          const next = existing
+            ? `${existing}\n\n${header}\n${template.prescription_template}`
+            : `${header}\n${template.prescription_template}`;
+          return { ...prev, current_prescription: next };
+        });
       }
     }
+    // Reset so the same or another template can be picked again
+    setSelectedTemplate("");
   };
 
   const handleProcedureChange = (procedureId: string) => {
