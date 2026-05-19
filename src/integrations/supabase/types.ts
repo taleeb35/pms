@@ -66,6 +66,7 @@ export type Database = {
           duration_minutes: number | null
           icd_code_id: string | null
           id: string
+          lead_status: string | null
           notes: string | null
           other_fee: number | null
           patient_id: string
@@ -73,6 +74,7 @@ export type Database = {
           procedure_id: string | null
           reason: string | null
           refund: number | null
+          source: string
           started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"] | null
           total_fee: number | null
@@ -91,6 +93,7 @@ export type Database = {
           duration_minutes?: number | null
           icd_code_id?: string | null
           id?: string
+          lead_status?: string | null
           notes?: string | null
           other_fee?: number | null
           patient_id: string
@@ -98,6 +101,7 @@ export type Database = {
           procedure_id?: string | null
           reason?: string | null
           refund?: number | null
+          source?: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
@@ -116,6 +120,7 @@ export type Database = {
           duration_minutes?: number | null
           icd_code_id?: string | null
           id?: string
+          lead_status?: string | null
           notes?: string | null
           other_fee?: number | null
           patient_id?: string
@@ -123,6 +128,7 @@ export type Database = {
           procedure_id?: string | null
           reason?: string | null
           refund?: number | null
+          source?: string
           started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"] | null
           total_fee?: number | null
