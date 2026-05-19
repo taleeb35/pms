@@ -125,6 +125,7 @@ const DoctorCalendar = () => {
     const isLead = (a: any) => a.source === "public_profile" && (a.lead_status ?? "active") !== "converted";
     const counts: Record<string, number> = {};
     (appts ?? []).forEach((a: any) => {
+      if (isLead(a)) return;
       counts[a.appointment_date] = (counts[a.appointment_date] ?? 0) + 1;
     });
     setApptCounts(counts);
