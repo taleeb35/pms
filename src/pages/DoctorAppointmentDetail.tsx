@@ -215,8 +215,9 @@ const DoctorAppointmentDetail = () => {
     setIsOphthalmologist(snap.isOphthalmologist);
     setProcedures(snap.procedures);
     setIcdCodes(snap.icdCodes);
-    setDiseaseTemplates(snap.diseaseTemplates);
-    setTestTemplates(snap.testTemplates);
+    // Templates can change outside the appointment screen, so always refetch them.
+    setDiseaseTemplates([]);
+    setTestTemplates([]);
     setOphthalmologyData(snap.ophthalmologyData || {});
   };
 
@@ -252,6 +253,10 @@ const DoctorAppointmentDetail = () => {
     if (cached) {
       hydrateFromCache(cached);
       setLoading(false);
+      if (cached.appointment?.doctor_id) {
+        fetchDiseaseTemplates(cached.appointment.doctor_id);
+        fetchTestTemplates(cached.appointment.doctor_id);
+      }
       // Stale-while-revalidate: refresh in background only if cache is older than 30s
       if (Date.now() - cached.cachedAt > 30 * 1000) {
         fetchAppointmentDetails(true);
