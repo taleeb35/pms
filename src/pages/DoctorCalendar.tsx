@@ -116,12 +116,13 @@ const DoctorCalendar = () => {
     if (error) toast({ title: "Failed to load", description: error.message, variant: "destructive" });
     setTasks((data ?? []) as Task[]);
 
-    // Load appointment counts per date for this doctor (exclude cancelled)
+    // Load appointment counts per date for this doctor (exclude cancelled and unconverted leads)
     const { data: appts } = await supabase
       .from("appointments")
-      .select("appointment_date")
+      .select("appointment_date, source, lead_status")
       .eq("doctor_id", user.id)
       .neq("status", "cancelled");
+    const isLead = (a: any) => a.source === "public_profile" && (a.lead_status ?? "active") !== "converted";
     const counts: Record<string, number> = {};
     (appts ?? []).forEach((a: any) => {
       counts[a.appointment_date] = (counts[a.appointment_date] ?? 0) + 1;
