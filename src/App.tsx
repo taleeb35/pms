@@ -638,6 +638,7 @@ const App = () => (
                   <ClinicLeads />
                 </Layout>
               }
+            />
             <Route
               path="/clinic/walk-in"
               element={
