@@ -17,6 +17,7 @@ import {
   Settings,
   UserCog,
   Sparkles,
+  Target,
   Banknote,
   AlertTriangle,
   HeartPulse,
