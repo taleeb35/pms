@@ -768,6 +768,7 @@ const DoctorPatients = () => {
         pregnancy_start_date: isGynecologist && editForm.gender === "female" && editPregnancyStartDate 
           ? format(editPregnancyStartDate, "yyyy-MM-dd") 
           : null,
+        confidential_notes: editForm.confidential_notes || null,
       })
       .eq("id", selectedPatient.id)
       .select();
