@@ -144,6 +144,7 @@ const ClinicPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
     added_date: "",
   });
   const [addedDate, setAddedDate] = useState<Date>();
