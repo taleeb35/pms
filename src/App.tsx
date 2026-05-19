@@ -53,6 +53,7 @@ import DoctorSupport from "./pages/DoctorSupport";
 import DoctorFinance from "./pages/DoctorFinance";
 import DoctorReports from "./pages/DoctorReports";
 import DoctorSummary from "./pages/DoctorSummary";
+import DoctorMedicineReport from "./pages/DoctorMedicineReport";
 import DoctorWalkIn from "./pages/DoctorWalkIn";
 import DoctorProcedures from "./pages/DoctorProcedures";
 import DoctorAllergies from "./pages/DoctorAllergies";
@@ -422,6 +423,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorSummary />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/medicine-report"
+              element={
+                <Layout>
+                  <DoctorMedicineReport />
                 </Layout>
               }
             />

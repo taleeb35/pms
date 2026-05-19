@@ -161,6 +161,7 @@ const DoctorAppointmentDetail = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>("");
   const [testTemplates, setTestTemplates] = useState<TestTemplate[]>([]);
   const [selectedTestTemplate, setSelectedTestTemplate] = useState<string>("");
+  const [stagedMedicines, setStagedMedicines] = useState<Array<{ medicine_name: string; brand?: string | null; dosage?: string | null; frequency?: string | null; timing: string[]; duration?: string | null; meal?: string | null; instructions?: string | null }>>([]);
   
   // Next Visit
   const [nextVisitDate, setNextVisitDate] = useState<Date>();
@@ -586,6 +587,9 @@ const DoctorAppointmentDetail = () => {
         const structuredText = formatMedicinesAsText(meds, template.prescription_template);
         const block = structuredText || template.prescription_template;
 
+        // Stage structured medicines for saving on submit (for medicine reporting)
+        setStagedMedicines(prev => [...prev, ...meds]);
+
         setFormData(prev => {
           const existing = (prev.current_prescription || "").trim();
           const header = `--- ${template.disease_name} ---`;
@@ -776,6 +780,41 @@ const DoctorAppointmentDetail = () => {
       }
 
       if (error) throw error;
+
+      // Save structured prescribed medicines for reporting
+      if (stagedMedicines.length > 0) {
+        await supabase
+          .from("appointment_prescribed_medicines")
+          .delete()
+          .eq("appointment_id", appointment.id);
+        const rows = stagedMedicines
+          .filter(m => m.medicine_name && m.medicine_name.trim())
+          .map(m => {
+            const dur = (m.duration || "").trim();
+            const m1 = dur.match(/(\d+)\s*day/i);
+            const m2 = dur.match(/(\d+)\s*week/i);
+            const m3 = dur.match(/(\d+)\s*month/i);
+            const days = m1 ? parseInt(m1[1]) : m2 ? parseInt(m2[1]) * 7 : m3 ? parseInt(m3[1]) * 30 : null;
+            return {
+              appointment_id: appointment.id,
+              doctor_id: appointment.doctor_id,
+              patient_id: appointment.patient_id,
+              medicine_name: m.medicine_name.trim(),
+              brand: m.brand || null,
+              dosage: m.dosage || null,
+              frequency: m.frequency || null,
+              timing: m.timing || [],
+              duration: m.duration || null,
+              duration_days: days,
+              meal: m.meal || null,
+              instructions: m.instructions || null,
+            };
+          });
+        if (rows.length > 0) {
+          await supabase.from("appointment_prescribed_medicines").insert(rows as any);
+        }
+      }
+
 
       // Update appointment fees
       const consultationFee = formData.consultation_fee ? parseFloat(formData.consultation_fee) : 0;
