@@ -18,8 +18,8 @@ const MobileHome = () => {
 
       const [p, t, td, wl] = await Promise.all([
         supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
+        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).neq("source", "public_profile"),
+        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today).neq("source", "public_profile"),
         supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
       ]);
       setStats({
