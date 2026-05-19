@@ -374,7 +374,7 @@ const AdminDoctorPatients = () => {
               <TableRow>
                 <TableHead>Patient ID</TableHead>
                 <TableHead>Full Name</TableHead>
-                <TableHead>Father Name</TableHead>
+                <TableHead>Father / Husband Name</TableHead>
                 <TableHead>Age</TableHead>
                 <TableHead>Gender</TableHead>
                 <TableHead>City</TableHead>

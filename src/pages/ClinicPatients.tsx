@@ -1246,7 +1246,7 @@ const ClinicPatients = () => {
                                       </div>
                                       {selectedPatient.father_name && (
                                         <div>
-                                          <p className="text-sm text-muted-foreground">Father Name</p>
+                                          <p className="text-sm text-muted-foreground">Father / Husband Name</p>
                                           <p className="font-medium">{selectedPatient.father_name}</p>
                                         </div>
                                       )}
@@ -1518,11 +1518,11 @@ const ClinicPatients = () => {
                 {formErrors.full_name && <p className="text-sm text-destructive">{formErrors.full_name}</p>}
               </div>
               <div>
-                <Label>Father Name</Label>
+                <Label>Father / Husband Name</Label>
                 <Input
                   value={addForm.father_name}
                   onChange={(e) => setAddForm({ ...addForm, father_name: handleNameInput(e) })}
-                  placeholder="Enter father name"
+                  placeholder="Enter father or husband name"
                   className={formErrors.father_name ? "border-destructive" : ""}
                 />
                 {formErrors.father_name && <p className="text-sm text-destructive">{formErrors.father_name}</p>}
@@ -1742,11 +1742,11 @@ const ClinicPatients = () => {
                 {editFormErrors.full_name && <p className="text-sm text-destructive">{editFormErrors.full_name}</p>}
               </div>
               <div>
-                <Label>Father Name</Label>
+                <Label>Father / Husband Name</Label>
                 <Input
                   value={editForm.father_name}
                   onChange={(e) => setEditForm({ ...editForm, father_name: handleNameInput(e) })}
-                  placeholder="Enter father name"
+                  placeholder="Enter father or husband name"
                 />
               </div>
               <div>
