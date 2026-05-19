@@ -89,6 +89,7 @@ const PatientDetail = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    confidential_notes: string;
   }>({
     full_name: "",
     father_name: "",
@@ -103,6 +104,7 @@ const PatientDetail = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
   });
   const { toast } = useToast();
 
