@@ -260,7 +260,6 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
         console.error(err);
         toast.error(err.message || "Failed to save template");
       }
-      }
     } else if (templateType === "test") {
       if (!formData.name.trim() || !formData.content.trim()) {
         toast.error("Please fill in all fields");
