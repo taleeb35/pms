@@ -62,6 +62,7 @@ const DoctorReceptionistPatients = () => {
     city: "",
     address: "",
     maritalStatus: "",
+    confidentialNotes: "",
   });
 
   useEffect(() => {
