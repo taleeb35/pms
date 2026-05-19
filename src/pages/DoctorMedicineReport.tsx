@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { format, subDays, differenceInCalendarDays } from "date-fns";
-import { CalendarIcon, Pill, Search, Users, ClipboardList, Clock, FileText, Download } from "lucide-react";
+import { CalendarIcon, Pill, Search, Users, ClipboardList, Clock, FileText, Download, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
