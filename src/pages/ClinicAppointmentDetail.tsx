@@ -979,12 +979,12 @@ const ClinicAppointmentDetail = () => {
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-xs">Prescription</Label>
                     {diseaseTemplates.length > 0 && (
-                      <Select value={selectedTemplate} onValueChange={handleTemplateChange}>
-                        <SelectTrigger className="w-48 h-8">
-                          <SelectValue placeholder="Use template..." />
+                      <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
+                        <SelectTrigger className="w-56 h-8">
+                          <SelectValue placeholder="Append template..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">No template</SelectItem>
+                          <SelectItem value="none">-- Append (pick multiple) --</SelectItem>
                           {diseaseTemplates.map((t) => (
                             <SelectItem key={t.id} value={t.id}>{t.disease_name}</SelectItem>
                           ))}
