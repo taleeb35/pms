@@ -202,6 +202,7 @@ const DoctorReceptionistPatients = () => {
         marital_status: formData.maritalStatus || null,
         allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
         major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
+        confidential_notes: formData.confidentialNotes || null,
         created_by: doctorId,
       }).select();
 
