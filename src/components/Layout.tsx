@@ -283,7 +283,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/doctor/patients", icon: Users, label: "Patients" },
         { path: "/doctor/waitlist", icon: Clock, label: "Waitlist" },
         { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
-        { path: "/doctor/leads", icon: Sparkles, label: "Leads" },
+        { path: "/doctor/leads", icon: Target, label: "Leads" },
         { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In" },
       ],
     },
