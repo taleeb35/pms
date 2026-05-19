@@ -293,6 +293,7 @@ const Layout = ({ children }: LayoutProps) => {
       icon: Database,
       items: [
         { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/doctor/medicines", icon: Pill, label: "Medicines" },
         { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
         { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
