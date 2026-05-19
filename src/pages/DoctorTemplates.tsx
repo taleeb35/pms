@@ -770,12 +770,13 @@ const DoctorTemplates = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Disease Name</TableHead>
-                      <TableHead>Prescription Template</TableHead>
+                      <TableHead>Medicines</TableHead>
+                      <TableHead>Notes Preview</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableSkeleton columns={3} rows={5} />
+                    <TableSkeleton columns={4} rows={5} />
                   </TableBody>
                 </Table>
               ) : paginatedDiseaseTemplates.length === 0 ? (
@@ -788,7 +789,8 @@ const DoctorTemplates = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Disease Name</TableHead>
-                        <TableHead>Prescription Template</TableHead>
+                        <TableHead>Medicines</TableHead>
+                        <TableHead>Notes Preview</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -803,8 +805,13 @@ const DoctorTemplates = () => {
                               )}
                             </div>
                           </TableCell>
+                          <TableCell>
+                            <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">
+                              {medicineCounts[template.id] || 0} medicine{(medicineCounts[template.id] || 0) === 1 ? "" : "s"}
+                            </span>
+                          </TableCell>
                           <TableCell className="max-w-md">
-                            <div className="truncate">{template.prescription_template}</div>
+                            <div className="truncate text-sm text-muted-foreground">{template.prescription_template || "—"}</div>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
