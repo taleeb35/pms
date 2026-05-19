@@ -38,8 +38,8 @@ const DoctorDashboard = () => {
 
         const [patientsRes, totalAppointmentsRes, todayAppointmentsRes, waitlistRes, profileRes, doctorRes] = await Promise.all([
           supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),
-          supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id),
-          supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today),
+          supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).neq("source", "public_profile"),
+          supabase.from("appointments").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("appointment_date", today).neq("source", "public_profile"),
           supabase.from("wait_list").select("id", { count: "exact", head: true }).eq("doctor_id", user.id).eq("status", "active"),
           supabase.from("profiles").select("full_name").eq("id", user.id).single(),
           supabase.from("doctors").select("payment_plan, clinic_id").eq("id", user.id).single(),
