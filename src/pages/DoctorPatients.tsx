@@ -1044,6 +1044,7 @@ const DoctorPatients = () => {
             marital_status: addForm.marital_status || null,
             city: addForm.city || null,
             major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
+            confidential_notes: addForm.confidential_notes || null,
             patient_id: patientId,
             created_by: user.id,
             pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
