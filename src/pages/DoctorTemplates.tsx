@@ -88,6 +88,8 @@ const DoctorTemplates = () => {
     template_name: "",
     fields: [{ title: "", value: "" }] as ReportField[]
   });
+  const [diseaseMedicines, setDiseaseMedicines] = useState<TemplateMedicine[]>([]);
+  const [medicineCounts, setMedicineCounts] = useState<Record<string, number>>({});
   const pageSize = 10;
 
   useEffect(() => {
