@@ -215,6 +215,7 @@ const DoctorAppointments = () => {
           .from("appointments")
           .select("id")
           .eq("doctor_id", user.id)
+          .neq("source", "public_profile")
           .order("created_at", { ascending: true })
           .range(from, from + PAGE - 1);
         if (pageErr) break;
