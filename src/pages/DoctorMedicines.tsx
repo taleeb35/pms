@@ -199,8 +199,8 @@ const DoctorMedicines = () => {
                 ) : paginated.map((m) => (
                   <TableRow key={m.id}>
                     <TableCell>{m.name}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2 flex-wrap">
+                    <TableCell className="text-right">
+                      <div className="flex gap-1 justify-end flex-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => { setEditing(m); setIsEditDialogOpen(true); }}>
                           <Pencil className="h-4 w-4" />
                         </Button>
