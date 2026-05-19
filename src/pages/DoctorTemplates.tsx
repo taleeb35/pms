@@ -16,6 +16,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import type { Json } from "@/integrations/supabase/types";
 import TableSkeleton from "@/components/TableSkeleton";
 import DeletingOverlay from "@/components/DeletingOverlay";
+import DiseaseTemplateMedicineEditor, { TemplateMedicine, loadTemplateMedicines, saveTemplateMedicines } from "@/components/DiseaseTemplateMedicineEditor";
 
 interface DiseaseTemplate {
   id: string;
@@ -87,6 +88,8 @@ const DoctorTemplates = () => {
     template_name: "",
     fields: [{ title: "", value: "" }] as ReportField[]
   });
+  const [diseaseMedicines, setDiseaseMedicines] = useState<TemplateMedicine[]>([]);
+  const [medicineCounts, setMedicineCounts] = useState<Record<string, number>>({});
   const pageSize = 10;
 
   useEffect(() => {
@@ -129,6 +132,21 @@ const DoctorTemplates = () => {
       console.error("Error fetching disease templates:", diseaseError);
     } else {
       setDiseaseTemplates(diseaseData || []);
+      // Load medicine counts for each template
+      const ids = (diseaseData || []).map((d) => d.id);
+      if (ids.length) {
+        const { data: meds } = await supabase
+          .from("doctor_disease_template_medicines" as any)
+          .select("template_id")
+          .in("template_id", ids);
+        const counts: Record<string, number> = {};
+        ((meds as any[]) || []).forEach((m) => {
+          counts[m.template_id] = (counts[m.template_id] || 0) + 1;
+        });
+        setMedicineCounts(counts);
+      } else {
+        setMedicineCounts({});
+      }
     }
 
     // Fetch test templates (RLS handles visibility - own templates + clinic templates)
@@ -188,13 +206,16 @@ const DoctorTemplates = () => {
     setLoading(false);
   };
 
-  const handleOpenDialog = (template?: DiseaseTemplate | TestTemplate | ReportTemplate | LeaveTemplate, type?: TemplateType) => {
+  const handleOpenDialog = async (template?: DiseaseTemplate | TestTemplate | ReportTemplate | LeaveTemplate, type?: TemplateType) => {
     if (template && type) {
       setEditingTemplate(template);
       setTemplateType(type);
       if (type === "disease") {
         const t = template as DiseaseTemplate;
         setFormData({ name: t.disease_name, content: t.prescription_template });
+        setDiseaseMedicines([]);
+        const meds = await loadTemplateMedicines(t.id);
+        setDiseaseMedicines(meds);
       } else if (type === "test") {
         const t = template as TestTemplate;
         setFormData({ name: t.title, content: t.description });
@@ -213,6 +234,7 @@ const DoctorTemplates = () => {
       setTemplateType(activeTab);
       setFormData({ name: "", content: "" });
       setReportFormData({ template_name: "", fields: [{ title: "", value: "" }] });
+      setDiseaseMedicines([]);
     }
     setDialogOpen(true);
   };
@@ -222,6 +244,7 @@ const DoctorTemplates = () => {
     setEditingTemplate(null);
     setFormData({ name: "", content: "" });
     setReportFormData({ template_name: "", fields: [{ title: "", value: "" }] });
+    setDiseaseMedicines([]);
   };
 
   const handleAddReportField = () => {
@@ -252,46 +275,49 @@ const DoctorTemplates = () => {
     if (!session) return;
 
     if (templateType === "disease") {
-      if (!formData.name.trim() || !formData.content.trim()) {
-        toast.error("Please fill in all fields");
+      if (!formData.name.trim()) {
+        toast.error("Please enter the disease name");
+        return;
+      }
+      if (diseaseMedicines.length === 0 && !formData.content.trim()) {
+        toast.error("Add at least one medicine or general notes");
         return;
       }
 
-      if (editingTemplate) {
-        const { error } = await supabase
-          .from("doctor_disease_templates")
-          .update({
-            disease_name: formData.name,
-            prescription_template: formData.content,
-          })
-          .eq("id", editingTemplate.id);
-
-        if (error) {
-          toast.error("Failed to update template");
-          console.error(error);
+      try {
+        let templateId: string;
+        if (editingTemplate) {
+          const { error } = await supabase
+            .from("doctor_disease_templates")
+            .update({
+              disease_name: formData.name,
+              prescription_template: formData.content || "",
+            })
+            .eq("id", editingTemplate.id);
+          if (error) throw error;
+          templateId = editingTemplate.id;
         } else {
-          toast.success("Disease template updated successfully");
-          fetchAllTemplates();
-          handleCloseDialog();
+          const { data, error } = await supabase
+            .from("doctor_disease_templates")
+            .insert({
+              doctor_id: session.user.id,
+              clinic_id: clinicId,
+              disease_name: formData.name,
+              prescription_template: formData.content || "",
+            })
+            .select("id")
+            .single();
+          if (error) throw error;
+          templateId = data.id;
         }
-      } else {
-        const { error } = await supabase
-          .from("doctor_disease_templates")
-          .insert({
-            doctor_id: session.user.id,
-            clinic_id: clinicId,
-            disease_name: formData.name,
-            prescription_template: formData.content,
-          });
 
-        if (error) {
-          toast.error("Failed to create template");
-          console.error(error);
-        } else {
-          toast.success("Disease template created successfully");
-          fetchAllTemplates();
-          handleCloseDialog();
-        }
+        await saveTemplateMedicines(templateId, diseaseMedicines);
+        toast.success(editingTemplate ? "Disease template updated" : "Disease template created");
+        fetchAllTemplates();
+        handleCloseDialog();
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err.message || "Failed to save template");
       }
     } else if (templateType === "test") {
       if (!formData.name.trim() || !formData.content.trim()) {
@@ -531,22 +557,33 @@ const DoctorTemplates = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return;
 
-    const { error } = await supabase
+    const { data: inserted, error } = await supabase
       .from("doctor_disease_templates")
       .insert({
         doctor_id: session.user.id,
         clinic_id: clinicId,
         disease_name: `${template.disease_name} (Copy)`,
         prescription_template: template.prescription_template,
-      });
+      })
+      .select("id")
+      .single();
 
-    if (error) {
+    if (error || !inserted) {
       toast.error("Failed to copy template");
       console.error(error);
-    } else {
-      toast.success("Template copied to your personal templates");
-      fetchAllTemplates();
+      return;
     }
+
+    try {
+      const meds = await loadTemplateMedicines(template.id);
+      if (meds.length) {
+        await saveTemplateMedicines(inserted.id, meds);
+      }
+    } catch (e) {
+      console.error("Copy meds failed:", e);
+    }
+    toast.success("Template copied to your personal templates");
+    fetchAllTemplates();
   };
 
   const handleCopyTestTemplate = async (template: TestTemplate) => {
@@ -744,12 +781,13 @@ const DoctorTemplates = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Disease Name</TableHead>
-                      <TableHead>Prescription Template</TableHead>
+                      <TableHead>Medicines</TableHead>
+                      <TableHead>Notes Preview</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableSkeleton columns={3} rows={5} />
+                    <TableSkeleton columns={4} rows={5} />
                   </TableBody>
                 </Table>
               ) : paginatedDiseaseTemplates.length === 0 ? (
@@ -762,7 +800,8 @@ const DoctorTemplates = () => {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Disease Name</TableHead>
-                        <TableHead>Prescription Template</TableHead>
+                        <TableHead>Medicines</TableHead>
+                        <TableHead>Notes Preview</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -777,8 +816,13 @@ const DoctorTemplates = () => {
                               )}
                             </div>
                           </TableCell>
+                          <TableCell>
+                            <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">
+                              {medicineCounts[template.id] || 0} medicine{(medicineCounts[template.id] || 0) === 1 ? "" : "s"}
+                            </span>
+                          </TableCell>
                           <TableCell className="max-w-md">
-                            <div className="truncate">{template.prescription_template}</div>
+                            <div className="truncate text-sm text-muted-foreground">{template.prescription_template || "—"}</div>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
@@ -1278,7 +1322,7 @@ const DoctorTemplates = () => {
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingTemplate ? "Edit Template" : "Add New Template"}
@@ -1306,7 +1350,36 @@ const DoctorTemplates = () => {
               </Select>
             </div>
 
-            {templateType !== "report" ? (
+            {templateType === "disease" ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Disease Name *</Label>
+                  <Input
+                    placeholder="e.g., Hypertension"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+
+                <DiseaseTemplateMedicineEditor
+                  templateId={editingTemplate?.id ?? null}
+                  ownerType={clinicId ? "clinic" : "doctor"}
+                  ownerId={clinicId ?? (editingTemplate as any)?.doctor_id ?? ""}
+                  medicines={diseaseMedicines}
+                  onChange={setDiseaseMedicines}
+                />
+
+                <div className="space-y-2">
+                  <Label>Advice / General Notes (optional)</Label>
+                  <Textarea
+                    placeholder="Lifestyle advice, follow-up, dietary recommendations..."
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+              </>
+            ) : templateType !== "report" ? (
               <>
                 <div className="space-y-2">
                   <Label>{labels.name}</Label>

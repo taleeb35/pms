@@ -731,6 +731,62 @@ export type Database = {
         }
         Relationships: []
       }
+      doctor_disease_template_medicines: {
+        Row: {
+          brand: string | null
+          created_at: string
+          dosage: string | null
+          duration: string | null
+          frequency: string | null
+          id: string
+          instructions: string | null
+          meal: string | null
+          medicine_name: string
+          sort_order: number
+          template_id: string
+          timing: string[]
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          meal?: string | null
+          medicine_name: string
+          sort_order?: number
+          template_id: string
+          timing?: string[]
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          dosage?: string | null
+          duration?: string | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          meal?: string | null
+          medicine_name?: string
+          sort_order?: number
+          template_id?: string
+          timing?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_disease_template_medicines_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_disease_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       doctor_disease_templates: {
         Row: {
           clinic_id: string | null
