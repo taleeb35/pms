@@ -56,6 +56,7 @@ import DoctorSummary from "./pages/DoctorSummary";
 import DoctorWalkIn from "./pages/DoctorWalkIn";
 import DoctorProcedures from "./pages/DoctorProcedures";
 import DoctorAllergies from "./pages/DoctorAllergies";
+import DoctorMedicines from "./pages/DoctorMedicines";
 import DoctorDiseases from "./pages/DoctorDiseases";
 import DoctorTemplates from "./pages/DoctorTemplates";
 import DoctorSchedule from "./pages/DoctorSchedule";
@@ -79,6 +80,7 @@ import ClinicExpenses from "./pages/ClinicExpenses";
 import ClinicSupport from "./pages/ClinicSupport";
 import ClinicSpecializations from "./pages/ClinicSpecializations";
 import ClinicAllergies from "./pages/ClinicAllergies";
+import ClinicMedicines from "./pages/ClinicMedicines";
 import ClinicDiseases from "./pages/ClinicDiseases";
 import ClinicReceptionists from "./pages/ClinicReceptionists";
 import ClinicProcedures from "./pages/ClinicProcedures";
@@ -366,6 +368,15 @@ const App = () => (
                 </Layout>
               }
             />
+            <Route
+              path="/doctor/medicines"
+              element={
+                <Layout>
+                  <DoctorMedicines />
+                </Layout>
+              }
+            />
+
             <Route
               path="/doctor/diseases"
               element={
@@ -695,6 +706,15 @@ const App = () => (
                 </Layout>
               }
             />
+            <Route
+              path="/clinic/medicines"
+              element={
+                <Layout>
+                  <ClinicMedicines />
+                </Layout>
+              }
+            />
+
             <Route
               path="/clinic/diseases"
               element={

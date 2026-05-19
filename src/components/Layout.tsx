@@ -44,6 +44,7 @@ import {
   Truck,
   ShoppingCart,
   Receipt,
+  Pill,
 } from "lucide-react";
 import { User, Session } from "@supabase/supabase-js";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -292,6 +293,7 @@ const Layout = ({ children }: LayoutProps) => {
       icon: Database,
       items: [
         { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/doctor/medicines", icon: Pill, label: "Medicines" },
         { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
         { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
@@ -347,6 +349,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/clinic/specializations", icon: Building2, label: "Specializations" },
         { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/clinic/medicines", icon: Pill, label: "Medicines" },
         { path: "/clinic/diseases", icon: HeartPulse, label: "Diseases" },
         { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/clinic/procedures", icon: Settings, label: "Procedures" },
