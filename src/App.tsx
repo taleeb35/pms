@@ -424,6 +424,13 @@ const App = () => (
                   <DoctorSummary />
                 </Layout>
               }
+            <Route
+              path="/doctor/medicine-report"
+              element={
+                <Layout>
+                  <DoctorMedicineReport />
+                </Layout>
+              }
             />
             <Route
               path="/doctor/walk-in"
