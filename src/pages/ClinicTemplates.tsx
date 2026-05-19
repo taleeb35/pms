@@ -122,6 +122,21 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
       .order("created_at", { ascending: false });
     setDiseaseTemplates(diseaseData || []);
 
+    const ids = (diseaseData || []).map((d) => d.id);
+    if (ids.length) {
+      const { data: meds } = await supabase
+        .from("doctor_disease_template_medicines" as any)
+        .select("template_id")
+        .in("template_id", ids);
+      const counts: Record<string, number> = {};
+      ((meds as any[]) || []).forEach((m) => {
+        counts[m.template_id] = (counts[m.template_id] || 0) + 1;
+      });
+      setMedicineCounts(counts);
+    } else {
+      setMedicineCounts({});
+    }
+
     // Fetch test templates
     const { data: testData } = await supabase
       .from("doctor_test_templates")
