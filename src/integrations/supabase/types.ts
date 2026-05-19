@@ -400,6 +400,35 @@ export type Database = {
           },
         ]
       }
+      clinic_medicines: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_medicines_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_membership_plans: {
         Row: {
           clinic_id: string
@@ -845,6 +874,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "doctor_leaves_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      doctor_medicines: {
+        Row: {
+          created_at: string
+          doctor_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_id: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          doctor_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_medicines_doctor_id_fkey"
             columns: ["doctor_id"]
             isOneToOne: false
             referencedRelation: "doctors"
