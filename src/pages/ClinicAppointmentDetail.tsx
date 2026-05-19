@@ -623,7 +623,6 @@ const ClinicAppointmentDetail = () => {
         refund: refundAmount,
         status: 'completed',
         completed_at: new Date().toISOString(),
-        confidential_notes: formData.confidential_notes || null,
         icd_code_id: selectedICDCode || null,
       };
 
@@ -638,6 +637,13 @@ const ClinicAppointmentDetail = () => {
         .eq("id", appointment.id);
 
       if (feeError) throw feeError;
+
+      // Confidential notes now live on the patient profile (shared across all appointments)
+      const { error: noteError } = await supabase
+        .from("patients")
+        .update({ confidential_notes: formData.confidential_notes || null })
+        .eq("id", appointment.patient_id);
+      if (noteError) throw noteError;
 
       // Update pregnancy date if gynecologist
       if (isGynecologist && pregnancyStartDate) {
