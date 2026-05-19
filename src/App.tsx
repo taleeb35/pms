@@ -80,6 +80,7 @@ import ClinicExpenses from "./pages/ClinicExpenses";
 import ClinicSupport from "./pages/ClinicSupport";
 import ClinicSpecializations from "./pages/ClinicSpecializations";
 import ClinicAllergies from "./pages/ClinicAllergies";
+import ClinicMedicines from "./pages/ClinicMedicines";
 import ClinicDiseases from "./pages/ClinicDiseases";
 import ClinicReceptionists from "./pages/ClinicReceptionists";
 import ClinicProcedures from "./pages/ClinicProcedures";
