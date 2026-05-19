@@ -116,15 +116,15 @@ const ClinicMedicines = () => {
           </div>
           <div className="rounded-md border">
             <Table>
-              <TableHeader><TableRow><TableHead>Name</TableHead><TableHead className="w-[100px]">Actions</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow><TableHead>Name</TableHead><TableHead className="w-[120px] text-right">Actions</TableHead></TableRow></TableHeader>
               <TableBody>
                 {loading ? <Skel /> : paginated.length === 0 ? (
                   <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground py-8">{searchQuery ? "No medicines match your search" : "No medicines found."}</TableCell></TableRow>
                 ) : paginated.map((m) => (
                   <TableRow key={m.id}>
                     <TableCell>{m.name}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-2 flex-wrap">
+                    <TableCell className="text-right">
+                      <div className="flex gap-1 justify-end flex-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => { setEditing(m); setIsEditDialogOpen(true); }}><Pencil className="h-4 w-4" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => { setDeleting(m); setIsDeleteDialogOpen(true); }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                       </div>
