@@ -52,6 +52,85 @@ export type Database = {
           },
         ]
       }
+      appointment_prescribed_medicines: {
+        Row: {
+          appointment_id: string
+          brand: string | null
+          created_at: string
+          doctor_id: string
+          dosage: string | null
+          duration: string | null
+          duration_days: number | null
+          frequency: string | null
+          id: string
+          instructions: string | null
+          meal: string | null
+          medicine_name: string
+          patient_id: string
+          prescribed_at: string
+          timing: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id: string
+          brand?: string | null
+          created_at?: string
+          doctor_id: string
+          dosage?: string | null
+          duration?: string | null
+          duration_days?: number | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          meal?: string | null
+          medicine_name: string
+          patient_id: string
+          prescribed_at?: string
+          timing?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string
+          brand?: string | null
+          created_at?: string
+          doctor_id?: string
+          dosage?: string | null
+          duration?: string | null
+          duration_days?: number | null
+          frequency?: string | null
+          id?: string
+          instructions?: string | null
+          meal?: string | null
+          medicine_name?: string
+          patient_id?: string
+          prescribed_at?: string
+          timing?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_prescribed_medicines_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_prescribed_medicines_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointment_prescribed_medicines_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           appointment_date: string
