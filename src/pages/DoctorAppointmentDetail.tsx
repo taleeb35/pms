@@ -576,16 +576,22 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const handleTemplateChange = (templateId: string) => {
+  const handleTemplateChange = async (templateId: string) => {
     if (templateId && templateId !== "none") {
       const template = diseaseTemplates.find(t => t.id === templateId);
       if (template) {
+        // Load structured medicines for this template
+        const { loadTemplateMedicines, formatMedicinesAsText } = await import("@/components/DiseaseTemplateMedicineEditor");
+        const meds = await loadTemplateMedicines(templateId);
+        const structuredText = formatMedicinesAsText(meds, template.prescription_template);
+        const block = structuredText || template.prescription_template;
+
         setFormData(prev => {
           const existing = (prev.current_prescription || "").trim();
           const header = `--- ${template.disease_name} ---`;
           const next = existing
-            ? `${existing}\n\n${header}\n${template.prescription_template}`
-            : `${header}\n${template.prescription_template}`;
+            ? `${existing}\n\n${header}\n${block}`
+            : `${header}\n${block}`;
           return { ...prev, current_prescription: next };
         });
       }
