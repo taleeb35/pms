@@ -134,6 +134,10 @@ const DoctorMedicineReport = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [detail, setDetail] = useState<MedicineAgg | null>(null);
+  const [freqFilter, setFreqFilter] = useState<string>("all");
+  const [timingFilter, setTimingFilter] = useState<string>("all");
+  const [sortKey, setSortKey] = useState<"name" | "prescriptions" | "uniquePatients" | "avgDays" | "lastPrescribed">("prescriptions");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   useEffect(() => { void load(); }, [from, to]);
 
