@@ -1951,6 +1951,66 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          clinic_id: string | null
+          comment: string | null
+          created_at: string
+          created_by: string | null
+          doctor_id: string
+          id: string
+          lead_date: string
+          name: string
+          phone: string
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          doctor_id: string
+          id?: string
+          lead_date?: string
+          name: string
+          phone: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string | null
+          comment?: string | null
+          created_at?: string
+          created_by?: string | null
+          doctor_id?: string
+          id?: string
+          lead_date?: string
+          name?: string
+          phone?: string
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_documents: {
         Row: {
           created_at: string
