@@ -140,6 +140,7 @@ const DoctorReceptionistPatients = () => {
       city: "",
       address: "",
       maritalStatus: "",
+      confidentialNotes: "",
     });
     setSelectedAllergies([]);
     setSelectedDiseases([]);
