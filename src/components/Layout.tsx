@@ -349,6 +349,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/clinic/specializations", icon: Building2, label: "Specializations" },
         { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/clinic/medicines", icon: Pill, label: "Medicines" },
         { path: "/clinic/diseases", icon: HeartPulse, label: "Diseases" },
         { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/clinic/procedures", icon: Settings, label: "Procedures" },
