@@ -275,46 +275,49 @@ const DoctorTemplates = () => {
     if (!session) return;
 
     if (templateType === "disease") {
-      if (!formData.name.trim() || !formData.content.trim()) {
-        toast.error("Please fill in all fields");
+      if (!formData.name.trim()) {
+        toast.error("Please enter the disease name");
+        return;
+      }
+      if (diseaseMedicines.length === 0 && !formData.content.trim()) {
+        toast.error("Add at least one medicine or general notes");
         return;
       }
 
-      if (editingTemplate) {
-        const { error } = await supabase
-          .from("doctor_disease_templates")
-          .update({
-            disease_name: formData.name,
-            prescription_template: formData.content,
-          })
-          .eq("id", editingTemplate.id);
-
-        if (error) {
-          toast.error("Failed to update template");
-          console.error(error);
+      try {
+        let templateId: string;
+        if (editingTemplate) {
+          const { error } = await supabase
+            .from("doctor_disease_templates")
+            .update({
+              disease_name: formData.name,
+              prescription_template: formData.content || "",
+            })
+            .eq("id", editingTemplate.id);
+          if (error) throw error;
+          templateId = editingTemplate.id;
         } else {
-          toast.success("Disease template updated successfully");
-          fetchAllTemplates();
-          handleCloseDialog();
+          const { data, error } = await supabase
+            .from("doctor_disease_templates")
+            .insert({
+              doctor_id: session.user.id,
+              clinic_id: clinicId,
+              disease_name: formData.name,
+              prescription_template: formData.content || "",
+            })
+            .select("id")
+            .single();
+          if (error) throw error;
+          templateId = data.id;
         }
-      } else {
-        const { error } = await supabase
-          .from("doctor_disease_templates")
-          .insert({
-            doctor_id: session.user.id,
-            clinic_id: clinicId,
-            disease_name: formData.name,
-            prescription_template: formData.content,
-          });
 
-        if (error) {
-          toast.error("Failed to create template");
-          console.error(error);
-        } else {
-          toast.success("Disease template created successfully");
-          fetchAllTemplates();
-          handleCloseDialog();
-        }
+        await saveTemplateMedicines(templateId, diseaseMedicines);
+        toast.success(editingTemplate ? "Disease template updated" : "Disease template created");
+        fetchAllTemplates();
+        handleCloseDialog();
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err.message || "Failed to save template");
       }
     } else if (templateType === "test") {
       if (!formData.name.trim() || !formData.content.trim()) {
