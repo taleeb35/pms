@@ -174,6 +174,7 @@ const DoctorPatients = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    confidential_notes: string;
   }>({
     full_name: "",
     father_name: "",
@@ -188,6 +189,7 @@ const DoctorPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
   });
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
   const [newHistoryTitle, setNewHistoryTitle] = useState("");
