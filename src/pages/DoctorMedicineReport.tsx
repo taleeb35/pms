@@ -374,9 +374,6 @@ const DoctorMedicineReport = () => {
             <Pill className="h-7 w-7 text-primary" />
             Medicine Report
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            See which medicines you prescribe the most, common doses, frequencies and patient counts.
-          </p>
         </div>
 
         <div className="flex flex-wrap gap-2 items-center">
