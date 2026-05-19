@@ -1429,14 +1429,17 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                 </div>
               </div>
 
-              {/* Confidential Notes Section - Doctor Only */}
+              {/* Confidential Notes Section — stored on patient profile */}
               <div className="border rounded-lg p-4 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
-                <h3 className="font-semibold mb-4 text-amber-800 dark:text-amber-200">Confidential Notes (Doctor Only)</h3>
+                <h3 className="font-semibold mb-1 text-amber-800 dark:text-amber-200">Confidential Notes (Patient)</h3>
+                <p className="text-xs text-amber-700/80 dark:text-amber-300/80 mb-3">
+                  Shared across all visits for this patient. Visible to doctors and clinic staff only.
+                </p>
                 <Textarea
-                  placeholder="Private notes visible only to doctors..."
+                  placeholder="Private notes about this patient..."
                   value={formData.confidential_notes}
                   onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
-                  rows={3}
+                  rows={4}
                   className="text-sm"
                 />
               </div>
