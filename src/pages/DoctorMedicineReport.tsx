@@ -234,9 +234,22 @@ const DoctorMedicineReport = () => {
     }
   };
 
+  // Apply frequency + timing filters at the row level so the aggregated
+  // counts / patients / avg-days reflect ONLY the selected slice.
+  const rowsFiltered = useMemo(() => {
+    return rows.filter(r => {
+      if (freqFilter !== "all" && (r.frequency || "") !== freqFilter) return false;
+      if (timingFilter !== "all") {
+        const t = (r.timing || []).map(x => x.toLowerCase());
+        if (!t.includes(timingFilter.toLowerCase())) return false;
+      }
+      return true;
+    });
+  }, [rows, freqFilter, timingFilter]);
+
   const aggregated = useMemo<MedicineAgg[]>(() => {
     const map = new Map<string, MedicineAgg>();
-    for (const r of rows) {
+    for (const r of rowsFiltered) {
       const key = r.medicine_name.trim().toLowerCase();
       if (!key) continue;
       const existing = map.get(key);
@@ -264,24 +277,67 @@ const DoctorMedicineReport = () => {
       const pts = new Set(agg.rows.map(r => r.patient_id));
       agg.uniquePatients = pts.size;
     }
-    return Array.from(map.values()).sort((a, b) => b.prescriptions - a.prescriptions);
-  }, [rows]);
+    return Array.from(map.values());
+  }, [rowsFiltered]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return aggregated;
-    return aggregated.filter(a => a.name.toLowerCase().includes(q));
-  }, [aggregated, search]);
+    const base = q ? aggregated.filter(a => a.name.toLowerCase().includes(q)) : aggregated.slice();
+    const dir = sortDir === "asc" ? 1 : -1;
+    base.sort((a, b) => {
+      let av: number | string = 0, bv: number | string = 0;
+      switch (sortKey) {
+        case "name": av = a.name.toLowerCase(); bv = b.name.toLowerCase(); break;
+        case "prescriptions": av = a.prescriptions; bv = b.prescriptions; break;
+        case "uniquePatients": av = a.uniquePatients; bv = b.uniquePatients; break;
+        case "avgDays":
+          av = a.daysCount ? a.totalDays / a.daysCount : -1;
+          bv = b.daysCount ? b.totalDays / b.daysCount : -1;
+          break;
+        case "lastPrescribed":
+          av = new Date(a.lastPrescribed).getTime();
+          bv = new Date(b.lastPrescribed).getTime();
+          break;
+      }
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+    return base;
+  }, [aggregated, search, sortKey, sortDir]);
+
+  // All distinct frequencies available in the loaded data (built from raw rows,
+  // not the filtered set, so the dropdown options stay stable).
+  const availableFrequencies = useMemo(() => {
+    const s = new Set<string>();
+    rows.forEach(r => { if (r.frequency) s.add(r.frequency); });
+    return Array.from(s).sort();
+  }, [rows]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  useEffect(() => { setPage(1); }, [search, pageSize]);
+  useEffect(() => { setPage(1); }, [search, pageSize, freqFilter, timingFilter, sortKey, sortDir]);
 
   const totalPatients = useMemo(
-    () => new Set(rows.map(r => r.patient_id)).size,
-    [rows]
+    () => new Set(rowsFiltered.map(r => r.patient_id)).size,
+    [rowsFiltered]
   );
+
+  const toggleSort = (key: typeof sortKey) => {
+    if (sortKey === key) {
+      setSortDir(d => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "name" ? "asc" : "desc");
+    }
+  };
+
+  const SortIcon = ({ k }: { k: typeof sortKey }) => {
+    if (sortKey !== k) return <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />;
+    return sortDir === "asc" ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />;
+  };
+
 
   const exportCsv = () => {
     const headers = ["Medicine", "Prescriptions", "Unique Patients", "Common Doses", "Common Frequencies", "Avg Days", "Last Prescribed"];
