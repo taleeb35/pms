@@ -215,8 +215,9 @@ const DoctorAppointmentDetail = () => {
     setIsOphthalmologist(snap.isOphthalmologist);
     setProcedures(snap.procedures);
     setIcdCodes(snap.icdCodes);
-    setDiseaseTemplates(snap.diseaseTemplates);
-    setTestTemplates(snap.testTemplates);
+    // Templates can change outside the appointment screen, so always refetch them.
+    setDiseaseTemplates([]);
+    setTestTemplates([]);
     setOphthalmologyData(snap.ophthalmologyData || {});
   };
 
