@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { format, subDays, differenceInCalendarDays } from "date-fns";
-import { CalendarIcon, Pill, Search, Users, ClipboardList, Clock, FileText, Download } from "lucide-react";
+import { CalendarIcon, Pill, Search, Users, ClipboardList, Clock, FileText, Download, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -134,6 +135,10 @@ const DoctorMedicineReport = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [detail, setDetail] = useState<MedicineAgg | null>(null);
+  const [freqFilter, setFreqFilter] = useState<string>("all");
+  const [timingFilter, setTimingFilter] = useState<string>("all");
+  const [sortKey, setSortKey] = useState<"name" | "prescriptions" | "uniquePatients" | "avgDays" | "lastPrescribed">("prescriptions");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   useEffect(() => { void load(); }, [from, to]);
 
@@ -229,9 +234,22 @@ const DoctorMedicineReport = () => {
     }
   };
 
+  // Apply frequency + timing filters at the row level so the aggregated
+  // counts / patients / avg-days reflect ONLY the selected slice.
+  const rowsFiltered = useMemo(() => {
+    return rows.filter(r => {
+      if (freqFilter !== "all" && (r.frequency || "") !== freqFilter) return false;
+      if (timingFilter !== "all") {
+        const t = (r.timing || []).map(x => x.toLowerCase());
+        if (!t.includes(timingFilter.toLowerCase())) return false;
+      }
+      return true;
+    });
+  }, [rows, freqFilter, timingFilter]);
+
   const aggregated = useMemo<MedicineAgg[]>(() => {
     const map = new Map<string, MedicineAgg>();
-    for (const r of rows) {
+    for (const r of rowsFiltered) {
       const key = r.medicine_name.trim().toLowerCase();
       if (!key) continue;
       const existing = map.get(key);
@@ -259,24 +277,67 @@ const DoctorMedicineReport = () => {
       const pts = new Set(agg.rows.map(r => r.patient_id));
       agg.uniquePatients = pts.size;
     }
-    return Array.from(map.values()).sort((a, b) => b.prescriptions - a.prescriptions);
-  }, [rows]);
+    return Array.from(map.values());
+  }, [rowsFiltered]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return aggregated;
-    return aggregated.filter(a => a.name.toLowerCase().includes(q));
-  }, [aggregated, search]);
+    const base = q ? aggregated.filter(a => a.name.toLowerCase().includes(q)) : aggregated.slice();
+    const dir = sortDir === "asc" ? 1 : -1;
+    base.sort((a, b) => {
+      let av: number | string = 0, bv: number | string = 0;
+      switch (sortKey) {
+        case "name": av = a.name.toLowerCase(); bv = b.name.toLowerCase(); break;
+        case "prescriptions": av = a.prescriptions; bv = b.prescriptions; break;
+        case "uniquePatients": av = a.uniquePatients; bv = b.uniquePatients; break;
+        case "avgDays":
+          av = a.daysCount ? a.totalDays / a.daysCount : -1;
+          bv = b.daysCount ? b.totalDays / b.daysCount : -1;
+          break;
+        case "lastPrescribed":
+          av = new Date(a.lastPrescribed).getTime();
+          bv = new Date(b.lastPrescribed).getTime();
+          break;
+      }
+      if (av < bv) return -1 * dir;
+      if (av > bv) return 1 * dir;
+      return 0;
+    });
+    return base;
+  }, [aggregated, search, sortKey, sortDir]);
+
+  // All distinct frequencies available in the loaded data (built from raw rows,
+  // not the filtered set, so the dropdown options stay stable).
+  const availableFrequencies = useMemo(() => {
+    const s = new Set<string>();
+    rows.forEach(r => { if (r.frequency) s.add(r.frequency); });
+    return Array.from(s).sort();
+  }, [rows]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageRows = filtered.slice((page - 1) * pageSize, page * pageSize);
 
-  useEffect(() => { setPage(1); }, [search, pageSize]);
+  useEffect(() => { setPage(1); }, [search, pageSize, freqFilter, timingFilter, sortKey, sortDir]);
 
   const totalPatients = useMemo(
-    () => new Set(rows.map(r => r.patient_id)).size,
-    [rows]
+    () => new Set(rowsFiltered.map(r => r.patient_id)).size,
+    [rowsFiltered]
   );
+
+  const toggleSort = (key: typeof sortKey) => {
+    if (sortKey === key) {
+      setSortDir(d => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "name" ? "asc" : "desc");
+    }
+  };
+
+  const SortIcon = ({ k }: { k: typeof sortKey }) => {
+    if (sortKey !== k) return <ArrowUpDown className="h-3.5 w-3.5 opacity-40" />;
+    return sortDir === "asc" ? <ArrowUp className="h-3.5 w-3.5" /> : <ArrowDown className="h-3.5 w-3.5" />;
+  };
+
 
   const exportCsv = () => {
     const headers = ["Medicine", "Prescriptions", "Unique Patients", "Common Doses", "Common Frequencies", "Avg Days", "Last Prescribed"];
@@ -341,12 +402,6 @@ const DoctorMedicineReport = () => {
               <Calendar mode="single" selected={to} onSelect={d => d && setTo(d)} initialFocus className="p-3 pointer-events-auto" />
             </PopoverContent>
           </Popover>
-          <Button variant="outline" onClick={() => { setFrom(subDays(new Date(), 30)); setTo(new Date()); }}>
-            Last 30 days
-          </Button>
-          <Button variant="outline" onClick={() => { setFrom(subDays(new Date(), 90)); setTo(new Date()); }}>
-            Last 90 days
-          </Button>
           <Button onClick={exportCsv} variant="default" disabled={filtered.length === 0}>
             <Download className="mr-2 h-4 w-4" /> Export CSV
           </Button>
@@ -363,7 +418,7 @@ const DoctorMedicineReport = () => {
 
       {/* Filters + table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <CardTitle className="text-lg">Medicines used ({fmtRange(from, to)})</CardTitle>
             <div className="relative w-full md:w-72">
@@ -376,6 +431,60 @@ const DoctorMedicineReport = () => {
               />
             </div>
           </div>
+
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Frequency:</span>
+              <Select value={freqFilter} onValueChange={setFreqFilter}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All frequencies</SelectItem>
+                  <SelectItem value="Once a day">Once a day (1×)</SelectItem>
+                  <SelectItem value="Twice a day">Twice a day (2×)</SelectItem>
+                  <SelectItem value="3 times a day">3 times a day</SelectItem>
+                  <SelectItem value="4 times a day">4 times a day</SelectItem>
+                  <SelectItem value="Every 6 hours">Every 6 hours</SelectItem>
+                  <SelectItem value="Every 8 hours">Every 8 hours</SelectItem>
+                  <SelectItem value="Every 12 hours">Every 12 hours</SelectItem>
+                  <SelectItem value="SOS (as needed)">SOS / As needed</SelectItem>
+                  {availableFrequencies
+                    .filter(f => ![
+                      "Once a day","Twice a day","3 times a day","4 times a day",
+                      "Every 6 hours","Every 8 hours","Every 12 hours","SOS (as needed)",
+                    ].includes(f))
+                    .map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Time of day:</span>
+              <Select value={timingFilter} onValueChange={setTimingFilter}>
+                <SelectTrigger className="w-[160px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any time</SelectItem>
+                  <SelectItem value="Morning">Morning</SelectItem>
+                  <SelectItem value="Afternoon">Afternoon</SelectItem>
+                  <SelectItem value="Evening">Evening</SelectItem>
+                  <SelectItem value="Night">Night</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {(freqFilter !== "all" || timingFilter !== "all" || search) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => { setFreqFilter("all"); setTimingFilter("all"); setSearch(""); }}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
@@ -385,11 +494,9 @@ const DoctorMedicineReport = () => {
           ) : filtered.length === 0 ? (
             <div className="p-10 text-center text-muted-foreground">
               <FileText className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p>No medicines prescribed in this range yet.</p>
+              <p>No medicines match the current filters.</p>
               <p className="text-xs mt-1">
-                Tip: load a disease template in an appointment, or write structured prescriptions like
-                <code className="mx-1 px-1 bg-muted rounded">Augmentin 625mg twice daily for 5 days</code>
-                so they get picked up automatically.
+                Try clearing the filters, or load a disease template in an appointment so structured medicines get tracked.
               </p>
             </div>
           ) : (
@@ -397,13 +504,33 @@ const DoctorMedicineReport = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Medicine</TableHead>
-                    <TableHead className="text-right">Prescriptions</TableHead>
-                    <TableHead className="text-right">Patients</TableHead>
+                    <TableHead>
+                      <button onClick={() => toggleSort("name")} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                        Medicine <SortIcon k="name" />
+                      </button>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <button onClick={() => toggleSort("prescriptions")} className="inline-flex items-center gap-1 hover:text-foreground transition-colors ml-auto">
+                        Prescriptions <SortIcon k="prescriptions" />
+                      </button>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <button onClick={() => toggleSort("uniquePatients")} className="inline-flex items-center gap-1 hover:text-foreground transition-colors ml-auto">
+                        Patients <SortIcon k="uniquePatients" />
+                      </button>
+                    </TableHead>
                     <TableHead>Common Doses</TableHead>
                     <TableHead>Common Frequencies</TableHead>
-                    <TableHead className="text-right">Avg Days</TableHead>
-                    <TableHead>Last Prescribed</TableHead>
+                    <TableHead className="text-right">
+                      <button onClick={() => toggleSort("avgDays")} className="inline-flex items-center gap-1 hover:text-foreground transition-colors ml-auto">
+                        Avg Days <SortIcon k="avgDays" />
+                      </button>
+                    </TableHead>
+                    <TableHead>
+                      <button onClick={() => toggleSort("lastPrescribed")} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                        Last Prescribed <SortIcon k="lastPrescribed" />
+                      </button>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
