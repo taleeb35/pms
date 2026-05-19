@@ -252,6 +252,10 @@ const DoctorAppointmentDetail = () => {
     if (cached) {
       hydrateFromCache(cached);
       setLoading(false);
+      if (cached.appointment?.doctor_id) {
+        fetchDiseaseTemplates(cached.appointment.doctor_id);
+        fetchTestTemplates(cached.appointment.doctor_id);
+      }
       // Stale-while-revalidate: refresh in background only if cache is older than 30s
       if (Date.now() - cached.cachedAt > 30 * 1000) {
         fetchAppointmentDetails(true);
