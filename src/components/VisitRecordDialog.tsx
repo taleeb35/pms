@@ -1242,13 +1242,13 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
                 <h3 className="font-semibold mb-4">Current Prescription</h3>
                 {diseaseTemplates.length > 0 && (
                   <div className="mb-4">
-                    <Label className="text-sm text-muted-foreground">Load from Disease Template</Label>
+                    <Label className="text-sm text-muted-foreground">Append Disease Template (pick multiple to combine)</Label>
                     <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
                       <SelectTrigger className="mt-1">
-                        <SelectValue placeholder="Select a disease template..." />
+                        <SelectValue placeholder="Append a template..." />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px]">
-                        <SelectItem value="none">-- Select Template --</SelectItem>
+                        <SelectItem value="none">-- Append Template --</SelectItem>
                         {diseaseTemplates.map((template) => (
                           <SelectItem key={template.id} value={template.id}>
                             {template.disease_name}
