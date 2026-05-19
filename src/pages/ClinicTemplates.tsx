@@ -696,7 +696,36 @@ const ClinicTemplates = ({ userType }: ClinicTemplatesProps) => {
               </Select>
             </div>
 
-            {templateType !== "report" ? (
+            {templateType === "disease" ? (
+              <>
+                <div className="space-y-2">
+                  <Label>Disease Name *</Label>
+                  <Input
+                    placeholder="e.g., Hypertension"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+                {clinicId && (
+                  <DiseaseTemplateMedicineEditor
+                    templateId={editingTemplate?.id ?? null}
+                    ownerType="clinic"
+                    ownerId={clinicId}
+                    medicines={diseaseMedicines}
+                    onChange={setDiseaseMedicines}
+                  />
+                )}
+                <div className="space-y-2">
+                  <Label>Advice / General Notes (optional)</Label>
+                  <Textarea
+                    placeholder="Lifestyle advice, follow-up, dietary recommendations..."
+                    value={formData.content}
+                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                    rows={4}
+                  />
+                </div>
+              </>
+            ) : templateType !== "report" ? (
               <>
                 <div className="space-y-2">
                   <Label>{labels.name}</Label>
