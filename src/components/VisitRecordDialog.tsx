@@ -442,13 +442,20 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     if (data) {
       setExistingRecord(data);
       
-      // Fetch appointment fees and procedure
-      const { data: appointmentData } = await supabase
-        .from("appointments")
-        .select("consultation_fee, other_fee, procedure_id, procedure_fee, confidential_notes, icd_code_id, refund")
-        .eq("id", appointment.id)
-        .single();
-      
+      // Fetch appointment fees + patient-level confidential notes (stored on the patient profile)
+      const [{ data: appointmentData }, { data: patientData }] = await Promise.all([
+        supabase
+          .from("appointments")
+          .select("consultation_fee, other_fee, procedure_id, procedure_fee, icd_code_id, refund")
+          .eq("id", appointment.id)
+          .single(),
+        supabase
+          .from("patients")
+          .select("confidential_notes")
+          .eq("id", appointment.patient_id)
+          .maybeSingle(),
+      ]);
+
       setFormData({
         blood_pressure: data.blood_pressure || "",
         temperature: data.temperature || "",
@@ -466,7 +473,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
         consultation_fee: appointmentData?.consultation_fee?.toString() || "",
         other_fee: appointmentData?.other_fee?.toString() || "",
         refund: appointmentData?.refund?.toString() || "",
-        confidential_notes: appointmentData?.confidential_notes || "",
+        confidential_notes: (patientData as any)?.confidential_notes || "",
       });
       
       // Load saved procedure if exists
