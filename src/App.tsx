@@ -44,6 +44,7 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 import DoctorPatients from "./pages/DoctorPatients";
 import DoctorAppointments from "./pages/DoctorAppointments";
 import DoctorAppointmentDetail from "./pages/DoctorAppointmentDetail";
+import DoctorLeads from "./pages/DoctorLeads";
 import DoctorProfile from "./pages/DoctorProfile";
 import WaitlistPatients from "./pages/WaitlistPatients";
 import PatientDetail from "./pages/PatientDetail";
@@ -337,6 +338,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorAppointmentDetail />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/leads"
+              element={
+                <Layout>
+                  <DoctorLeads />
                 </Layout>
               }
             />
