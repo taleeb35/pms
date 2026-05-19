@@ -705,6 +705,7 @@ const DoctorPatients = () => {
       marital_status: patient.marital_status || "",
       city: patient.city || "",
       major_diseases: patient.major_diseases || "",
+      confidential_notes: (patient as any).confidential_notes || "",
     });
     setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
     setEditPregnancyStartDate(patient.pregnancy_start_date ? new Date(patient.pregnancy_start_date) : undefined);
