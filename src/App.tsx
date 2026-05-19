@@ -56,6 +56,7 @@ import DoctorSummary from "./pages/DoctorSummary";
 import DoctorWalkIn from "./pages/DoctorWalkIn";
 import DoctorProcedures from "./pages/DoctorProcedures";
 import DoctorAllergies from "./pages/DoctorAllergies";
+import DoctorMedicines from "./pages/DoctorMedicines";
 import DoctorDiseases from "./pages/DoctorDiseases";
 import DoctorTemplates from "./pages/DoctorTemplates";
 import DoctorSchedule from "./pages/DoctorSchedule";
