@@ -402,12 +402,6 @@ const DoctorMedicineReport = () => {
               <Calendar mode="single" selected={to} onSelect={d => d && setTo(d)} initialFocus className="p-3 pointer-events-auto" />
             </PopoverContent>
           </Popover>
-          <Button variant="outline" onClick={() => { setFrom(subDays(new Date(), 30)); setTo(new Date()); }}>
-            Last 30 days
-          </Button>
-          <Button variant="outline" onClick={() => { setFrom(subDays(new Date(), 90)); setTo(new Date()); }}>
-            Last 90 days
-          </Button>
           <Button onClick={exportCsv} variant="default" disabled={filtered.length === 0}>
             <Download className="mr-2 h-4 w-4" /> Export CSV
           </Button>
