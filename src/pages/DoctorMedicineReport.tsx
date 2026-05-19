@@ -418,7 +418,7 @@ const DoctorMedicineReport = () => {
 
       {/* Filters + table */}
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-3">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <CardTitle className="text-lg">Medicines used ({fmtRange(from, to)})</CardTitle>
             <div className="relative w-full md:w-72">
@@ -431,6 +431,60 @@ const DoctorMedicineReport = () => {
               />
             </div>
           </div>
+
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Frequency:</span>
+              <Select value={freqFilter} onValueChange={setFreqFilter}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All frequencies</SelectItem>
+                  <SelectItem value="Once a day">Once a day (1×)</SelectItem>
+                  <SelectItem value="Twice a day">Twice a day (2×)</SelectItem>
+                  <SelectItem value="3 times a day">3 times a day</SelectItem>
+                  <SelectItem value="4 times a day">4 times a day</SelectItem>
+                  <SelectItem value="Every 6 hours">Every 6 hours</SelectItem>
+                  <SelectItem value="Every 8 hours">Every 8 hours</SelectItem>
+                  <SelectItem value="Every 12 hours">Every 12 hours</SelectItem>
+                  <SelectItem value="SOS (as needed)">SOS / As needed</SelectItem>
+                  {availableFrequencies
+                    .filter(f => ![
+                      "Once a day","Twice a day","3 times a day","4 times a day",
+                      "Every 6 hours","Every 8 hours","Every 12 hours","SOS (as needed)",
+                    ].includes(f))
+                    .map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Time of day:</span>
+              <Select value={timingFilter} onValueChange={setTimingFilter}>
+                <SelectTrigger className="w-[160px] h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Any time</SelectItem>
+                  <SelectItem value="Morning">Morning</SelectItem>
+                  <SelectItem value="Afternoon">Afternoon</SelectItem>
+                  <SelectItem value="Evening">Evening</SelectItem>
+                  <SelectItem value="Night">Night</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {(freqFilter !== "all" || timingFilter !== "all" || search) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => { setFreqFilter("all"); setTimingFilter("all"); setSearch(""); }}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="p-0">
           {loading ? (
@@ -440,11 +494,9 @@ const DoctorMedicineReport = () => {
           ) : filtered.length === 0 ? (
             <div className="p-10 text-center text-muted-foreground">
               <FileText className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p>No medicines prescribed in this range yet.</p>
+              <p>No medicines match the current filters.</p>
               <p className="text-xs mt-1">
-                Tip: load a disease template in an appointment, or write structured prescriptions like
-                <code className="mx-1 px-1 bg-muted rounded">Augmentin 625mg twice daily for 5 days</code>
-                so they get picked up automatically.
+                Try clearing the filters, or load a disease template in an appointment so structured medicines get tracked.
               </p>
             </div>
           ) : (
