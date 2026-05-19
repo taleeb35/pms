@@ -313,6 +313,7 @@ const Layout = ({ children }: LayoutProps) => {
       items: [
         { path: "/doctor/summary", icon: BarChart3, label: "Daily Summary" },
         { path: "/doctor/reports", icon: BarChart3, label: "My Reports" },
+        { path: "/doctor/medicine-report", icon: Pill, label: "Medicine Report" },
       ],
     },
     {
