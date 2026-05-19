@@ -89,6 +89,7 @@ const PatientDetail = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    confidential_notes: string;
   }>({
     full_name: "",
     father_name: "",
@@ -103,6 +104,7 @@ const PatientDetail = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
   });
   const { toast } = useToast();
 
@@ -284,6 +286,7 @@ const PatientDetail = () => {
       marital_status: patient.marital_status || "",
       city: patient.city || "",
       major_diseases: patient.major_diseases || "",
+      confidential_notes: (patient as any).confidential_notes || "",
     });
     setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
     setIsEditDialogOpen(true);
@@ -308,6 +311,7 @@ const PatientDetail = () => {
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
         major_diseases: editForm.major_diseases || null,
+        confidential_notes: editForm.confidential_notes || null,
       })
       .eq("id", patient.id);
 
@@ -885,6 +889,16 @@ const PatientDetail = () => {
               <Textarea
                 value={editForm.major_diseases}
                 onChange={(e) => setEditForm({ ...editForm, major_diseases: e.target.value })}
+              />
+            </div>
+            <div className="col-span-2">
+              <Label>Confidential Notes <span className="text-xs text-muted-foreground font-normal">(private — visible to doctor & staff only)</span></Label>
+              <Textarea
+                value={editForm.confidential_notes}
+                onChange={(e) => setEditForm({ ...editForm, confidential_notes: e.target.value })}
+                placeholder="Private notes about this patient — shared across all visits"
+                rows={3}
+                className="bg-amber-50 border-amber-200"
               />
             </div>
           </div>

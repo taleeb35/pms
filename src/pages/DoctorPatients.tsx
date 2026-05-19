@@ -99,6 +99,7 @@ const DoctorPatients = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    confidential_notes: string;
     added_date: string;
   }>({
     full_name: "",
@@ -114,6 +115,7 @@ const DoctorPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
     added_date: "",
   });
   const [addedDate, setAddedDate] = useState<Date>();
@@ -172,6 +174,7 @@ const DoctorPatients = () => {
     marital_status: string;
     city: string;
     major_diseases: string;
+    confidential_notes: string;
   }>({
     full_name: "",
     father_name: "",
@@ -186,6 +189,7 @@ const DoctorPatients = () => {
     marital_status: "",
     city: "",
     major_diseases: "",
+    confidential_notes: "",
   });
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
   const [newHistoryTitle, setNewHistoryTitle] = useState("");
@@ -701,6 +705,7 @@ const DoctorPatients = () => {
       marital_status: patient.marital_status || "",
       city: patient.city || "",
       major_diseases: patient.major_diseases || "",
+      confidential_notes: (patient as any).confidential_notes || "",
     });
     setEditDobDate(patient.date_of_birth ? new Date(patient.date_of_birth) : undefined);
     setEditPregnancyStartDate(patient.pregnancy_start_date ? new Date(patient.pregnancy_start_date) : undefined);
@@ -763,6 +768,7 @@ const DoctorPatients = () => {
         pregnancy_start_date: isGynecologist && editForm.gender === "female" && editPregnancyStartDate 
           ? format(editPregnancyStartDate, "yyyy-MM-dd") 
           : null,
+        confidential_notes: editForm.confidential_notes || null,
       })
       .eq("id", selectedPatient.id)
       .select();
@@ -1038,6 +1044,7 @@ const DoctorPatients = () => {
             marital_status: addForm.marital_status || null,
             city: addForm.city || null,
             major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
+            confidential_notes: addForm.confidential_notes || null,
             patient_id: patientId,
             created_by: user.id,
             pregnancy_start_date: isGynecologist && addForm.gender === "female" && pregnancyStartDate 
@@ -1093,6 +1100,7 @@ const DoctorPatients = () => {
         marital_status: "",
         city: "",
         major_diseases: "",
+        confidential_notes: "",
         added_date: "",
       });
       setAddedDate(undefined);
@@ -2135,6 +2143,16 @@ const DoctorPatients = () => {
                 />
               </div>
               <div className="col-span-2">
+                <Label>Confidential Notes <span className="text-xs text-muted-foreground font-normal">(private — visible to doctor & staff only)</span></Label>
+                <Textarea
+                  value={addForm.confidential_notes}
+                  onChange={(e) => setAddForm({ ...addForm, confidential_notes: e.target.value })}
+                  placeholder="Private notes about this patient — shared across all visits"
+                  rows={3}
+                  className="bg-amber-50 border-amber-200"
+                />
+              </div>
+              <div className="col-span-2">
                 <Label>Address</Label>
                 <Textarea
                   value={addForm.address}
@@ -2417,6 +2435,16 @@ const DoctorPatients = () => {
                   placeholder="Select diseases"
                   searchPlaceholder="Search diseases..."
                   emptyMessage="No diseases found. Ask clinic to add diseases."
+                />
+              </div>
+              <div className="col-span-2">
+                <Label>Confidential Notes <span className="text-xs text-muted-foreground font-normal">(private — visible to doctor & staff only)</span></Label>
+                <Textarea
+                  value={editForm.confidential_notes}
+                  onChange={(e) => setEditForm({ ...editForm, confidential_notes: e.target.value })}
+                  placeholder="Private notes about this patient — shared across all visits"
+                  rows={3}
+                  className="bg-amber-50 border-amber-200"
                 />
               </div>
               <div className="col-span-2">
