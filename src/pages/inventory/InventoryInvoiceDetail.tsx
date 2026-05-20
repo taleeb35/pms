@@ -210,7 +210,18 @@ export default function InventoryInvoiceDetail() {
     void load();
   };
 
-  const print = () => window.print();
+  const print = async () => {
+    if (!inv) return;
+    const { printSalesInvoice } = await import("@/lib/printSalesInvoice");
+    await printSalesInvoice({
+      invoice: inv,
+      items: items.map((it) => {
+        const p = products.find((pp) => pp.id === it.product_id);
+        return { ...it, _productName: it._productName || p?.name || "—", _unit: p?.unit };
+      }),
+      returns: returns as any[],
+    });
+  };
 
   const openReturn = () => {
     const init: Record<string, number> = {};
