@@ -498,49 +498,50 @@ const ClinicAppointmentDetail = () => {
   };
 
   const handlePrint = () => {
-    const printWindow = window.open('', '_blank');
-    if (!printWindow || !appointment) return;
-
-    const patientName = appointment.patients.full_name;
-    const patientId = appointment.patients.patient_id;
-    const patientAge = calculateAge(appointment.patients.date_of_birth);
-    const visitDate = format(new Date(appointment.appointment_date), "dd MMMM yyyy");
-
-    const printContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Patient Visit Record</title>
-        <style>
-          @page { margin: 3.5cm 1.5cm 2.5cm 1.5cm; size: A4; }
-          body { font-family: 'Segoe UI', sans-serif; font-size: 10pt; line-height: 1.4; color: #222; }
-          .header { text-align: right; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
-          .patient-info { display: flex; gap: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 15px; }
-          .section { margin-bottom: 15px; }
-          .section-title { font-weight: bold; margin-bottom: 8px; text-transform: uppercase; font-size: 9pt; color: #555; }
-          .content-box { padding: 10px; background: #fafafa; border-left: 3px solid #333; white-space: pre-wrap; }
-          .prescription-box { padding: 10px; background: #fffbeb; border-left: 3px solid #f59e0b; white-space: pre-wrap; }
-        </style>
-      </head>
-      <body>
-        <div class="header">Date: ${visitDate}</div>
-        <div class="patient-info">
-          <div><strong>Name:</strong> ${patientName}</div>
-          <div><strong>ID:</strong> ${patientId}</div>
-          <div><strong>Age:</strong> ${patientAge} years</div>
-        </div>
-        ${formData.chief_complaint ? `<div class="section"><div class="section-title">Chief Complaint</div><div class="content-box">${formData.chief_complaint}</div></div>` : ''}
-        ${formData.current_prescription ? `<div class="section"><div class="section-title">℞ Prescription</div><div class="prescription-box">${formData.current_prescription}</div></div>` : ''}
-        ${formData.test_reports ? `<div class="section"><div class="section-title">Tests</div><div class="content-box">${formData.test_reports}</div></div>` : ''}
-      </body>
-      </html>
-    `;
-
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.onload = () => {
-      setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-    };
+    if (!appointment) return;
+    const icd = icdCodes.find((c) => c.id === selectedICDCode);
+    const docName = (appointment as any)?.doctors?.profiles?.full_name;
+    const docSpec = (appointment as any)?.doctors?.specialization;
+    printAppointmentPrescription({
+      appointment: {
+        id: appointment.id,
+        appointment_date: appointment.appointment_date,
+        appointment_time: appointment.appointment_time,
+        appointment_type: appointment.appointment_type,
+        doctor_id: appointment.doctor_id,
+      },
+      patient: {
+        full_name: appointment.patients.full_name,
+        patient_id: appointment.patients.patient_id,
+        date_of_birth: appointment.patients.date_of_birth,
+        gender: appointment.patients.gender,
+        phone: appointment.patients.phone,
+        address: appointment.patients.address,
+        city: appointment.patients.city,
+      },
+      vitals: {
+        blood_pressure: formData.blood_pressure,
+        temperature: formData.temperature,
+        pulse: formData.pulse,
+        weight: formData.weight,
+        height: formData.height,
+        pain_scale: formData.pain_scale,
+        right_eye_vision: formData.right_eye_vision,
+        left_eye_vision: formData.left_eye_vision,
+      },
+      clinical: {
+        chief_complaint: formData.chief_complaint,
+        patient_history: formData.patient_history,
+        current_prescription: formData.current_prescription,
+        test_reports: formData.test_reports,
+        next_visit_notes: formData.next_visit_notes,
+        next_visit_date: nextVisitDate ? format(nextVisitDate, "yyyy-MM-dd") : null,
+        icd_code: (icd as any)?.code || null,
+        icd_description: icd?.description || null,
+      },
+      doctorName: docName,
+      doctorSpecialization: docSpec,
+    });
   };
 
   const handlePrintInvoice = () => {
