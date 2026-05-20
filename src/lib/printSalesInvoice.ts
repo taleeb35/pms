@@ -60,16 +60,15 @@ export async function printSalesInvoice(opts: {
     address?: string;
     city?: string;
     phone_number?: string;
-    email?: string;
   } | null = null;
 
   try {
     const { data: c } = await supabase
       .from("clinics")
-      .select("clinic_name, address, city, phone_number, email")
+      .select("clinic_name, address, city, phone_number")
       .eq("id", invoice.clinic_id)
       .maybeSingle();
-    clinicInfo = c || null;
+    clinicInfo = (c as any) || null;
   } catch (e) {
     console.error("Sales invoice header fetch failed", e);
   }
