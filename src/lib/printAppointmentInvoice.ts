@@ -118,16 +118,8 @@ export async function printAppointmentInvoice(opts: {
   const invoiceNo = `INV-${appointment.id.slice(0, 8).toUpperCase()}`;
   const issuedOn = format(new Date(), "dd MMM yyyy, h:mm a");
 
-  const vitalsRows: { label: string; value?: string }[] = [
-    { label: "Blood Pressure", value: vitals.blood_pressure },
-    { label: "Temperature", value: vitals.temperature ? `${vitals.temperature} °F` : "" },
-    { label: "Pulse", value: vitals.pulse ? `${vitals.pulse} bpm` : "" },
-    { label: "Weight", value: vitals.weight ? `${vitals.weight} kg` : "" },
-    { label: "Height", value: vitals.height ? `${vitals.height} cm` : "" },
-    { label: "Pain Scale", value: vitals.pain_scale != null ? `${vitals.pain_scale}/10` : "" },
-    { label: "Right Eye Vision", value: vitals.right_eye_vision },
-    { label: "Left Eye Vision", value: vitals.left_eye_vision },
-  ].filter((v) => v.value && String(v.value).trim().length > 0);
+  // Vitals intentionally not shown on invoice — see prescription print.
+  void vitals;
 
   const lineItems: { label: string; amount: number }[] = [];
   if (consultation > 0) lineItems.push({ label: "Consultation Fee", amount: consultation });
@@ -219,30 +211,8 @@ export async function printAppointmentInvoice(opts: {
     </div>
   </div>
 
-  ${
-    vitalsRows.length > 0
-      ? `<h3 class="section">Vitals Recorded</h3>
-  <table class="vitals">
-    <tbody>
-      ${(() => {
-        const rows: string[] = [];
-        for (let i = 0; i < vitalsRows.length; i += 2) {
-          const a = vitalsRows[i];
-          const b = vitalsRows[i + 1];
-          rows.push(
-            `<tr><td class="lab">${escapeHtml(a.label)}</td><td>${escapeHtml(a.value || "")}</td>${
-              b
-                ? `<td class="lab">${escapeHtml(b.label)}</td><td>${escapeHtml(b.value || "")}</td>`
-                : `<td></td><td></td>`
-            }</tr>`
-          );
-        }
-        return rows.join("");
-      })()}
-    </tbody>
-  </table>`
-      : ""
-  }
+
+
 
   <h3 class="section">Charges</h3>
   ${
