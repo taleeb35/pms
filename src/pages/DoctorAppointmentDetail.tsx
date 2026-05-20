@@ -1011,7 +1011,7 @@ const DoctorAppointmentDetail = () => {
           )}
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
-            Print
+            Print Prescription
           </Button>
           {appointment.status === "completed" && (
             <Button size="sm" onClick={handlePrintInvoice} className="bg-emerald-600 hover:bg-emerald-700 text-white">
