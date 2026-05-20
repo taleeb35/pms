@@ -42,6 +42,7 @@ import { AIVisitSummary } from "@/components/AIVisitSummary";
 import { useClinicId } from "@/hooks/useClinicId";
 import StartVideoConsultation from "@/components/StartVideoConsultation";
 import { printAppointmentInvoice } from "@/lib/printAppointmentInvoice";
+import { printAppointmentPrescription } from "@/lib/printAppointmentPrescription";
 import OphthalmologyExamination, { OphthalmologyData } from "@/components/OphthalmologyExamination";
 
 interface Procedure {
