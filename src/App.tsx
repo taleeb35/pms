@@ -858,6 +858,14 @@ const App = () => (
               }
             />
             <Route
+              path="/receptionist/leads"
+              element={
+                <Layout>
+                  <ClinicLeads />
+                </Layout>
+              }
+            />
+            <Route
               path="/receptionist/walk-in"
               element={
                 <Layout>
