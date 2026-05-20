@@ -150,7 +150,6 @@ export async function printSalesInvoice(opts: {
       <div class="clinic-meta">
         ${clinicInfo?.address ? escapeHtml(clinicInfo.address) + (clinicInfo.city ? ", " + escapeHtml(clinicInfo.city) : "") : ""}
         ${clinicInfo?.phone_number ? `<br/>Phone: ${escapeHtml(clinicInfo.phone_number)}` : ""}
-        ${clinicInfo?.email ? ` &middot; ${escapeHtml(clinicInfo.email)}` : ""}
       </div>
     </div>
     <div class="invoice-block">
