@@ -39,6 +39,7 @@ import { DoctorTimeSelect } from "@/components/DoctorTimeSelect";
 import { logActivity } from "@/lib/activityLogger";
 import { AIPrescriptionAssistant } from "@/components/AIPrescriptionAssistant";
 import { printAppointmentInvoice } from "@/lib/printAppointmentInvoice";
+import { printAppointmentPrescription } from "@/lib/printAppointmentPrescription";
 import { Receipt } from "lucide-react";
 import { AIVisitSummary } from "@/components/AIVisitSummary";
 import StartVideoConsultation from "@/components/StartVideoConsultation";
