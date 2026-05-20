@@ -211,30 +211,8 @@ export async function printAppointmentInvoice(opts: {
     </div>
   </div>
 
-  ${
-    vitalsRows.length > 0
-      ? `<h3 class="section">Vitals Recorded</h3>
-  <table class="vitals">
-    <tbody>
-      ${(() => {
-        const rows: string[] = [];
-        for (let i = 0; i < vitalsRows.length; i += 2) {
-          const a = vitalsRows[i];
-          const b = vitalsRows[i + 1];
-          rows.push(
-            `<tr><td class="lab">${escapeHtml(a.label)}</td><td>${escapeHtml(a.value || "")}</td>${
-              b
-                ? `<td class="lab">${escapeHtml(b.label)}</td><td>${escapeHtml(b.value || "")}</td>`
-                : `<td></td><td></td>`
-            }</tr>`
-          );
-        }
-        return rows.join("");
-      })()}
-    </tbody>
-  </table>`
-      : ""
-  }
+
+
 
   <h3 class="section">Charges</h3>
   ${
