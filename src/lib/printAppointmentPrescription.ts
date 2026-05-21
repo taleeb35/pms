@@ -131,6 +131,134 @@ export async function printAppointmentPrescription(opts: {
     }
   }
 
+  // ---- Ophthalmology data (eye specialists) ----
+  const oph = (ophthalmology || {}) as Record<string, any>;
+  const hasOph = Object.values(oph).some((v) => v != null && String(v).trim() !== "");
+  const v = (k: string) => (oph[k] != null && String(oph[k]).trim() !== "" ? String(oph[k]) : "");
+
+  // Build fallbacks from ophthalmology if main clinical fields are blank
+  const effChiefComplaint = clinical.chief_complaint?.trim() || v("presenting_complaints");
+  const historyParts = [
+    v("ocular_history") && `Ocular: ${v("ocular_history")}`,
+    v("systemic_history") && `Systemic: ${v("systemic_history")}`,
+    v("drug_allergy") && `Drug allergy: ${v("drug_allergy")}`,
+    v("surgical_history") && `Surgical: ${v("surgical_history")}`,
+  ].filter(Boolean) as string[];
+  const effPatientHistory = clinical.patient_history?.trim() || historyParts.join("\n");
+  const effDiagnosisText = clinical.icd_description || v("eye_diagnosis");
+  const effPrescription =
+    clinical.current_prescription?.trim() ||
+    [v("treatment_plan"), v("management_plan")].filter(Boolean).join("\n\n");
+
+  // Vision & Refraction table
+  const visionFilled = ["va_right_unaided","va_right_glasses","va_right_pinhole","va_right_near","va_left_unaided","va_left_glasses","va_left_pinhole","va_left_near"].some(k=>v(k));
+  const refractionFilled = ["refraction_right_sphere","refraction_right_cylinder","refraction_right_axis","refraction_right_add","refraction_right_final_va","refraction_left_sphere","refraction_left_cylinder","refraction_left_axis","refraction_left_add","refraction_left_final_va"].some(k=>v(k));
+  const extraVision = ["auto_refraction","cyclo_auto_refraction","retinoscopy","iop"].filter(k=>v(k));
+
+  const visionHTML = visionFilled ? `
+    <table class="vitals" style="margin-bottom:8px;">
+      <thead><tr><td class="lab">Visual Acuity</td><td class="lab">Unaided</td><td class="lab">With Glasses</td><td class="lab">Pinhole</td><td class="lab">Near</td></tr></thead>
+      <tbody>
+        <tr><td class="lab">OD (Right)</td><td>${escapeHtml(v("va_right_unaided"))}</td><td>${escapeHtml(v("va_right_glasses"))}</td><td>${escapeHtml(v("va_right_pinhole"))}</td><td>${escapeHtml(v("va_right_near"))}</td></tr>
+        <tr><td class="lab">OS (Left)</td><td>${escapeHtml(v("va_left_unaided"))}</td><td>${escapeHtml(v("va_left_glasses"))}</td><td>${escapeHtml(v("va_left_pinhole"))}</td><td>${escapeHtml(v("va_left_near"))}</td></tr>
+      </tbody>
+    </table>` : "";
+
+  const refractionHTML = refractionFilled ? `
+    <table class="vitals" style="margin-bottom:8px;">
+      <thead><tr><td class="lab">Refraction</td><td class="lab">Sphere</td><td class="lab">Cyl</td><td class="lab">Axis</td><td class="lab">Add</td><td class="lab">Final VA</td></tr></thead>
+      <tbody>
+        <tr><td class="lab">OD</td><td>${escapeHtml(v("refraction_right_sphere"))}</td><td>${escapeHtml(v("refraction_right_cylinder"))}</td><td>${escapeHtml(v("refraction_right_axis"))}</td><td>${escapeHtml(v("refraction_right_add"))}</td><td>${escapeHtml(v("refraction_right_final_va"))}</td></tr>
+        <tr><td class="lab">OS</td><td>${escapeHtml(v("refraction_left_sphere"))}</td><td>${escapeHtml(v("refraction_left_cylinder"))}</td><td>${escapeHtml(v("refraction_left_axis"))}</td><td>${escapeHtml(v("refraction_left_add"))}</td><td>${escapeHtml(v("refraction_left_final_va"))}</td></tr>
+      </tbody>
+    </table>` : "";
+
+  const extraVisionHTML = extraVision.length ? `
+    <table class="vitals" style="margin-bottom:8px;"><tbody>
+      ${(() => {
+        const labels: Record<string,string> = { auto_refraction:"Auto Refraction", cyclo_auto_refraction:"Cyclo Auto Refraction", retinoscopy:"Retinoscopy", iop:"IOP" };
+        const rows: string[] = [];
+        for (let i=0;i<extraVision.length;i+=2){
+          const a = extraVision[i]; const b = extraVision[i+1];
+          rows.push(`<tr><td class="lab">${labels[a]}</td><td>${escapeHtml(v(a))}</td>${b?`<td class="lab">${labels[b]}</td><td>${escapeHtml(v(b))}</td>`:`<td></td><td></td>`}</tr>`);
+        }
+        return rows.join("");
+      })()}
+    </tbody></table>` : "";
+
+  // External examination
+  const externalRows = [
+    { k: "pupil", label: "Pupil" },
+    { k: "lids", label: "Lids" },
+    { k: "lacrimal_passage", label: "Lacrimal Passage" },
+    { k: "other_external_findings", label: "Other Findings" },
+  ].filter(r => v(r.k));
+  const externalHTML = externalRows.length ? `
+    <table class="vitals" style="margin-bottom:8px;"><tbody>
+      ${(() => {
+        const rows: string[] = [];
+        for (let i=0;i<externalRows.length;i+=2){
+          const a = externalRows[i]; const b = externalRows[i+1];
+          rows.push(`<tr><td class="lab">${a.label}</td><td>${escapeHtml(v(a.k))}</td>${b?`<td class="lab">${b.label}</td><td>${escapeHtml(v(b.k))}</td>`:`<td></td><td></td>`}</tr>`);
+        }
+        return rows.join("");
+      })()}
+    </tbody></table>` : "";
+
+  // Anterior segment
+  const antRows = [
+    { key: "conjunctiva", label: "Conjunctiva" },
+    { key: "sclera", label: "Sclera" },
+    { key: "cornea", label: "Cornea" },
+    { key: "ac", label: "AC" },
+    { key: "iris", label: "Iris" },
+    { key: "lens", label: "Lens" },
+  ].map(r => ({
+    ...r,
+    right: v(`ant_${r.key}_right`),
+    left: v(`ant_${r.key}_left`),
+    status: v(`ant_${r.key}_status`),
+  })).filter(r => r.right || r.left || r.status);
+  const antHTML = antRows.length ? `
+    <table class="vitals" style="margin-bottom:8px;">
+      <thead><tr><td class="lab">Structure</td><td class="lab">OD (Right)</td><td class="lab">OS (Left)</td><td class="lab">Status</td></tr></thead>
+      <tbody>
+        ${antRows.map(r => `<tr><td class="lab">${r.label}</td><td>${escapeHtml(r.right)}</td><td>${escapeHtml(r.left)}</td><td>${escapeHtml(r.status)}</td></tr>`).join("")}
+      </tbody>
+    </table>` : "";
+
+  // Posterior segment
+  const postRows = [
+    { k: "fundus", label: "Fundus" },
+    { k: "optic_disc", label: "Optic Disc" },
+    { k: "vitreous", label: "Vitreous" },
+    { k: "cd_ratio", label: "C/D Ratio" },
+    { k: "macula", label: "Macula" },
+    { k: "peripheral_retina", label: "Peripheral Retina" },
+  ].filter(r => v(r.k));
+  const postHTML = postRows.length ? `
+    <table class="vitals" style="margin-bottom:8px;"><tbody>
+      ${(() => {
+        const rows: string[] = [];
+        for (let i=0;i<postRows.length;i+=2){
+          const a = postRows[i]; const b = postRows[i+1];
+          rows.push(`<tr><td class="lab">${a.label}</td><td>${escapeHtml(v(a.k))}</td>${b?`<td class="lab">${b.label}</td><td>${escapeHtml(v(b.k))}</td>`:`<td></td><td></td>`}</tr>`);
+        }
+        return rows.join("");
+      })()}
+    </tbody></table>` : "";
+
+  const octHTML = v("oct_findings") ? `<div class="content-box">${escapeHtml(v("oct_findings"))}</div>` : "";
+
+  const ophthalmologySections = hasOph ? `
+    ${(visionHTML || refractionHTML || extraVisionHTML) ? `<h3 class="section">Vision &amp; Refraction</h3>${visionHTML}${refractionHTML}${extraVisionHTML}` : ""}
+    ${externalHTML ? `<h3 class="section">External Examination</h3>${externalHTML}` : ""}
+    ${antHTML ? `<h3 class="section">Anterior Segment</h3>${antHTML}` : ""}
+    ${(postHTML || octHTML) ? `<h3 class="section">Posterior Segment</h3>${postHTML}${octHTML}` : ""}
+  ` : "";
+
+
+
   const html = `<!DOCTYPE html>
 <html>
 <head>
