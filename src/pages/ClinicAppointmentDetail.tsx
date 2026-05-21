@@ -44,6 +44,8 @@ import StartVideoConsultation from "@/components/StartVideoConsultation";
 import { printAppointmentInvoice } from "@/lib/printAppointmentInvoice";
 import { printAppointmentPrescription } from "@/lib/printAppointmentPrescription";
 import OphthalmologyExamination, { OphthalmologyData } from "@/components/OphthalmologyExamination";
+import { PrintReportDialog } from "@/components/PrintReportDialog";
+import { FileBarChart } from "lucide-react";
 
 interface Procedure {
   id: string;
@@ -124,6 +126,7 @@ const ClinicAppointmentDetail = () => {
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
   
   // Doctor specialization
@@ -792,6 +795,10 @@ const ClinicAppointmentDetail = () => {
             <Printer className="h-4 w-4 mr-2" />
             Print Prescription
           </Button>
+          <Button variant="outline" size="sm" onClick={() => setShowReportDialog(true)} className="border-teal-600 text-teal-700 hover:bg-teal-50">
+            <FileBarChart className="h-4 w-4 mr-2" />
+            Generate Report
+          </Button>
           {appointment.status === "completed" && (
             <Button size="sm" onClick={handlePrintInvoice} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Receipt className="h-4 w-4 mr-2" />
@@ -1321,6 +1328,23 @@ const ClinicAppointmentDetail = () => {
           </div>
         </div>
       </form>
+      <PrintReportDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        appointment={appointment ? {
+          id: appointment.id,
+          appointment_date: appointment.appointment_date,
+          appointment_time: appointment.appointment_time,
+          doctor_id: appointment.doctor_id,
+          patients: {
+            full_name: appointment.patients.full_name,
+            patient_id: appointment.patients.patient_id,
+            phone: appointment.patients.phone,
+            date_of_birth: appointment.patients.date_of_birth,
+            gender: appointment.patients.gender,
+          },
+        } : null}
+      />
     </div>
   );
 };
