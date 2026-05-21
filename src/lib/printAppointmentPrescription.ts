@@ -351,21 +351,24 @@ export async function printAppointmentPrescription(opts: {
     </tbody>
   </table>` : ""}
 
-  ${clinical.chief_complaint ? `<h3 class="section">Chief Complaint</h3><div class="content-box">${escapeHtml(clinical.chief_complaint)}</div>` : ""}
+  ${effChiefComplaint ? `<h3 class="section">Chief Complaint</h3><div class="content-box">${escapeHtml(effChiefComplaint)}</div>` : ""}
 
-  ${clinical.patient_history ? `<h3 class="section">History</h3><div class="content-box">${escapeHtml(clinical.patient_history)}</div>` : ""}
+  ${effPatientHistory ? `<h3 class="section">History</h3><div class="content-box">${escapeHtml(effPatientHistory)}</div>` : ""}
 
-  ${(clinical.icd_code || clinical.icd_description) ? `<h3 class="section">Diagnosis</h3>
+  ${ophthalmologySections}
+
+  ${(clinical.icd_code || effDiagnosisText) ? `<h3 class="section">Diagnosis</h3>
     <div style="font-size:10.5pt;">
       ${clinical.icd_code ? `<span class="icd">${escapeHtml(clinical.icd_code)}</span> ` : ""}
-      ${clinical.icd_description ? escapeHtml(clinical.icd_description) : ""}
+      ${effDiagnosisText ? escapeHtml(effDiagnosisText) : ""}
     </div>` : ""}
 
-  ${clinical.current_prescription ? `<h3 class="section"><span class="rx-symbol">℞</span>Prescription</h3>
-    <div class="rx-box">${escapeHtml(clinical.current_prescription)}</div>` : ""}
+  ${effPrescription ? `<h3 class="section"><span class="rx-symbol">℞</span>Prescription</h3>
+    <div class="rx-box">${escapeHtml(effPrescription)}</div>` : ""}
 
   ${clinical.test_reports ? `<h3 class="section">Recommended Tests</h3>
     <div class="test-box">${escapeHtml(clinical.test_reports)}</div>` : ""}
+
 
   ${(nextVisitFormatted || clinical.next_visit_notes) ? `<h3 class="section">Next Visit</h3>
     <div class="nv-box">
