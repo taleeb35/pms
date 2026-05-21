@@ -126,6 +126,7 @@ const ClinicAppointmentDetail = () => {
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
   
   // Doctor specialization
