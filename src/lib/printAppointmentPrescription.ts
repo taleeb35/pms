@@ -41,6 +41,9 @@ export interface PrescriptionClinical {
   icd_description?: string | null;
 }
 
+export type OphthalmologyPrintData = Record<string, any>;
+
+
 const escapeHtml = (s: any) =>
   String(s ?? "")
     .replace(/&/g, "&amp;")
