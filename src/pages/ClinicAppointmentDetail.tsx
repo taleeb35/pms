@@ -1328,6 +1328,23 @@ const ClinicAppointmentDetail = () => {
           </div>
         </div>
       </form>
+      <PrintReportDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        appointment={appointment ? {
+          id: appointment.id,
+          appointment_date: appointment.appointment_date,
+          appointment_time: appointment.appointment_time,
+          doctor_id: appointment.doctor_id,
+          patients: {
+            full_name: appointment.patients.full_name,
+            patient_id: appointment.patients.patient_id,
+            phone: appointment.patients.phone,
+            date_of_birth: appointment.patients.date_of_birth,
+            gender: appointment.patients.gender,
+          },
+        } : null}
+      />
     </div>
   );
 };
