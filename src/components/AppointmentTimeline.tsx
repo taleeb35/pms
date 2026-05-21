@@ -362,7 +362,12 @@ export const AppointmentTimeline = ({
                               {formatEventTime(event.created_at)}
                             </span>
                           </div>
-                          {event.details?.comment && (
+                          {event.actor_name && (
+                            <p className="text-[11px] text-muted-foreground mt-0.5 lowercase">
+                              by {event.actor_name}
+                            </p>
+                          )}
+                          {event.details?.comment && event.type !== "comment" && (
                             <div className="mt-2 p-2 bg-muted/50 rounded text-sm">
                               {event.details.comment as string}
                             </div>
