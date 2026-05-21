@@ -66,10 +66,12 @@ export async function printAppointmentPrescription(opts: {
   patient: PrescriptionPatient;
   vitals: PrescriptionVitals;
   clinical: PrescriptionClinical;
+  ophthalmology?: OphthalmologyPrintData | null;
   doctorName?: string;
   doctorSpecialization?: string;
 }) {
-  const { appointment, patient, vitals, clinical } = opts;
+  const { appointment, patient, vitals, clinical, ophthalmology } = opts;
+
 
   let doctorName = opts.doctorName || "";
   let doctorSpecialization = opts.doctorSpecialization || "";
