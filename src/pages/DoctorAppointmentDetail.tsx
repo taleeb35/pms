@@ -725,6 +725,7 @@ const DoctorAppointmentDetail = () => {
         icd_code: (icd as any)?.code || null,
         icd_description: icd?.description || null,
       },
+      ophthalmology: ophthalmologyData as any,
       doctorName: docName,
       doctorSpecialization: docSpec,
     });
