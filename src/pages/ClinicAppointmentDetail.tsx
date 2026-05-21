@@ -794,6 +794,10 @@ const ClinicAppointmentDetail = () => {
             <Printer className="h-4 w-4 mr-2" />
             Print Prescription
           </Button>
+          <Button variant="outline" size="sm" onClick={() => setShowReportDialog(true)} className="border-teal-600 text-teal-700 hover:bg-teal-50">
+            <FileBarChart className="h-4 w-4 mr-2" />
+            Generate Report
+          </Button>
           {appointment.status === "completed" && (
             <Button size="sm" onClick={handlePrintInvoice} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Receipt className="h-4 w-4 mr-2" />
