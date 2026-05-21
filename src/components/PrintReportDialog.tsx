@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Printer, FileText } from "lucide-react";
@@ -16,10 +16,14 @@ interface ReportField {
   value: string;
 }
 
-interface ReportTemplate {
+type TemplateKind = "report" | "test";
+
+interface CombinedTemplate {
   id: string;
-  template_name: string;
+  kind: TemplateKind;
+  name: string;
   fields: ReportField[];
+  description?: string;
 }
 
 interface PrintReportDialogProps {
@@ -41,7 +45,7 @@ interface PrintReportDialogProps {
 }
 
 export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintReportDialogProps) => {
-  const [templates, setTemplates] = useState<ReportTemplate[]>([]);
+  const [templates, setTemplates] = useState<CombinedTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   const [editableFields, setEditableFields] = useState<ReportField[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState("");
@@ -55,12 +59,12 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
       setEditableFields([]);
       setAdditionalNotes("");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, appointment?.doctor_id]);
 
   const fetchTemplates = async () => {
     try {
       setLoading(true);
-      // Prefer the appointment's doctor (works for clinic/receptionist views too)
       let doctorId = appointment?.doctor_id;
       if (!doctorId) {
         const { data: { user } } = await supabase.auth.getUser();
@@ -68,21 +72,43 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
       }
       if (!doctorId) return;
 
-      const { data, error } = await supabase
-        .from("doctor_report_templates")
-        .select("*")
-        .eq("doctor_id", doctorId)
-        .order("template_name");
+      // Resolve clinic of doctor so we also pull clinic-shared templates
+      const { data: doc } = await supabase
+        .from("doctors")
+        .select("clinic_id")
+        .eq("id", doctorId)
+        .maybeSingle();
+      const clinicId = doc?.clinic_id;
 
-      if (error) throw error;
+      const reportQuery = clinicId
+        ? supabase.from("doctor_report_templates").select("*").or(`doctor_id.eq.${doctorId},clinic_id.eq.${clinicId}`)
+        : supabase.from("doctor_report_templates").select("*").eq("doctor_id", doctorId);
 
-      const formattedTemplates: ReportTemplate[] = (data || []).map((t: any) => ({
-        id: t.id,
-        template_name: t.template_name,
-        fields: Array.isArray(t.fields) ? t.fields : [],
-      }));
+      const testQuery = clinicId
+        ? supabase.from("doctor_test_templates").select("*").or(`doctor_id.eq.${doctorId},clinic_id.eq.${clinicId}`)
+        : supabase.from("doctor_test_templates").select("*").eq("doctor_id", doctorId);
 
-      setTemplates(formattedTemplates);
+      const [{ data: reports, error: rErr }, { data: tests, error: tErr }] = await Promise.all([reportQuery, testQuery]);
+      if (rErr) throw rErr;
+      if (tErr) throw tErr;
+
+      const combined: CombinedTemplate[] = [
+        ...((reports || []) as any[]).map((t) => ({
+          id: `report:${t.id}`,
+          kind: "report" as const,
+          name: t.template_name,
+          fields: Array.isArray(t.fields) ? t.fields : [],
+        })),
+        ...((tests || []) as any[]).map((t) => ({
+          id: `test:${t.id}`,
+          kind: "test" as const,
+          name: t.title,
+          fields: [],
+          description: t.description || "",
+        })),
+      ];
+
+      setTemplates(combined);
     } catch (error: any) {
       toast({ title: "Error fetching templates", description: error.message, variant: "destructive" });
     } finally {
@@ -93,8 +119,14 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
   const handleTemplateSelect = (templateId: string) => {
     setSelectedTemplateId(templateId);
     const template = templates.find(t => t.id === templateId);
-    if (template) {
+    if (!template) return;
+    if (template.kind === "report") {
       setEditableFields(template.fields.map(f => ({ ...f })));
+      setAdditionalNotes("");
+    } else {
+      // Test template: seed notes with description, no field grid
+      setEditableFields([]);
+      setAdditionalNotes(template.description || "");
     }
   };
 
@@ -125,7 +157,7 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
         gender: appointment.patients.gender ?? null,
         phone: appointment.patients.phone,
       },
-      templateName: selectedTemplate.template_name,
+      templateName: selectedTemplate.name,
       fields: editableFields,
       additionalNotes,
     });
@@ -133,6 +165,9 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
   };
 
   const selectedTemplate = templates.find(t => t.id === selectedTemplateId);
+  const reportTemplates = templates.filter(t => t.kind === "report");
+  const testTemplates = templates.filter(t => t.kind === "test");
+  const canPrint = !!selectedTemplate && (selectedTemplate.kind === "test" || editableFields.length > 0);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -154,7 +189,7 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
             </div>
 
             <div className="space-y-2">
-              <Label>Select Report Template</Label>
+              <Label>Select Template</Label>
               <Select value={selectedTemplateId} onValueChange={handleTemplateSelect}>
                 <SelectTrigger>
                   <SelectValue placeholder={loading ? "Loading templates..." : "Select a template"} />
@@ -163,17 +198,34 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
                   {templates.length === 0 ? (
                     <SelectItem value="none" disabled>No templates available</SelectItem>
                   ) : (
-                    templates.map((template) => (
-                      <SelectItem key={template.id} value={template.id}>
-                        {template.template_name} ({template.fields.length} fields)
-                      </SelectItem>
-                    ))
+                    <>
+                      {reportTemplates.length > 0 && (
+                        <SelectGroup>
+                          <SelectLabel>Report Templates</SelectLabel>
+                          {reportTemplates.map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              {t.name} ({t.fields.length} fields)
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      )}
+                      {testTemplates.length > 0 && (
+                        <SelectGroup>
+                          <SelectLabel>Test Templates</SelectLabel>
+                          {testTemplates.map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              {t.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      )}
+                    </>
                   )}
                 </SelectContent>
               </Select>
             </div>
 
-            {selectedTemplate && editableFields.length > 0 && (
+            {selectedTemplate?.kind === "report" && editableFields.length > 0 && (
               <div className="space-y-4">
                 <Label className="text-base font-semibold">Fill Report Details</Label>
                 <div className="space-y-3 border rounded-lg p-4">
@@ -193,12 +245,16 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
 
             {selectedTemplate && (
               <div className="space-y-2">
-                <Label>Additional Notes (optional)</Label>
+                <Label>
+                  {selectedTemplate.kind === "test" ? "Report Content" : "Additional Notes (optional)"}
+                </Label>
                 <Textarea
                   value={additionalNotes}
                   onChange={(e) => setAdditionalNotes(e.target.value)}
-                  placeholder="Add any observations, interpretation, or remarks..."
-                  rows={4}
+                  placeholder={selectedTemplate.kind === "test"
+                    ? "Edit the test report content as needed..."
+                    : "Add any observations, interpretation, or remarks..."}
+                  rows={selectedTemplate.kind === "test" ? 10 : 4}
                 />
               </div>
             )}
@@ -207,11 +263,7 @@ export const PrintReportDialog = ({ open, onOpenChange, appointment }: PrintRepo
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handlePrint}
-                disabled={!selectedTemplateId || editableFields.length === 0}
-                className="gap-2"
-              >
+              <Button onClick={handlePrint} disabled={!canPrint} className="gap-2">
                 <Printer className="h-4 w-4" />
                 Print Report
               </Button>
