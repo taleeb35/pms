@@ -870,6 +870,32 @@ const DoctorAppointmentDetail = () => {
 
       if (feeError) throw feeError;
 
+      // Log fee changes
+      const feeChanges: Array<{ field: string; oldV: number; newV: number }> = [
+        { field: "consultation_fee", oldV: Number(appointment.consultation_fee || 0), newV: consultationFee },
+        { field: "other_fee", oldV: Number(appointment.other_fee || 0), newV: otherFee },
+        { field: "procedure_fee", oldV: Number(appointment.procedure_fee || 0), newV: procFee },
+      ];
+      for (const c of feeChanges) {
+        if (c.oldV !== c.newV) {
+          await logActivity({
+            action: "fee_updated",
+            entityType: "appointment",
+            entityId: appointment.id,
+            details: { field: c.field, old_value: c.oldV, new_value: c.newV, patient_name: appointment.patients.full_name },
+          });
+        }
+      }
+      const oldRefund = Number(appointment.refund || 0);
+      if (oldRefund !== refundAmount && refundAmount > 0) {
+        await logActivity({
+          action: "refund_applied",
+          entityType: "appointment",
+          entityId: appointment.id,
+          details: { field: "refund", old_value: oldRefund, new_value: refundAmount, refund_amount: refundAmount, patient_name: appointment.patients.full_name },
+        });
+      }
+
       // Confidential notes now live on the patient profile (shared across all appointments)
       const { error: noteError } = await supabase
         .from("patients")
