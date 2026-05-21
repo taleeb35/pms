@@ -171,11 +171,26 @@ export const AppointmentTimeline = ({
     }
   };
 
+  const formatMoney = (v: unknown): string => {
+    const n = Number(v);
+    if (!isFinite(n)) return String(v ?? "");
+    return `Rs. ${n.toFixed(0)}`;
+  };
+
   const getActionMessage = (action: string, details: Record<string, unknown> | null): string => {
     const patientName = details?.patient_name as string || "patient";
     const newStatus = details?.new_status as string || "";
     const oldStatus = details?.old_status as string || "";
-    const actorName = details?.actorName as string || "";
+    const field = (details?.field as string) || "";
+    const oldVal = details?.old_value;
+    const newVal = details?.new_value;
+    const feeLabel: Record<string, string> = {
+      consultation_fee: "Consultation fee",
+      other_fee: "Other fee",
+      procedure_fee: "Procedure fee",
+      test_fee: "Test fee",
+      refund: "Refund",
+    };
 
     switch (action) {
       case "appointment_created":
@@ -187,15 +202,24 @@ export const AppointmentTimeline = ({
       case "appointment_cancelled":
         return `Appointment was cancelled`;
       case "appointment_comment_added":
-        return `${actorName || "Staff"} left a comment`;
-      case "fee_updated":
-        return `Consultation fee was updated`;
+        return (details?.comment as string) || `Left a comment`;
+      case "fee_updated": {
+        const label = feeLabel[field] || "Fee";
+        if (oldVal !== undefined && newVal !== undefined) {
+          return `${label} updated from ${formatMoney(oldVal)} to ${formatMoney(newVal)}`;
+        }
+        return `${label} was updated`;
+      }
       case "procedure_set":
-        return `Procedure was assigned to appointment`;
+        return details?.procedure_name
+          ? `Procedure assigned: ${details.procedure_name as string}`
+          : `Procedure was assigned to appointment`;
       case "discount_applied":
         return `Discount was applied`;
       case "refund_applied":
-        return `Refund was processed`;
+        return newVal !== undefined
+          ? `Refund of ${formatMoney(newVal)} processed`
+          : `Refund was processed`;
       case "visit_record_created":
         return `Visit record was created`;
       case "visit_record_updated":
