@@ -44,6 +44,8 @@ import { Receipt } from "lucide-react";
 import { AIVisitSummary } from "@/components/AIVisitSummary";
 import StartVideoConsultation from "@/components/StartVideoConsultation";
 import OphthalmologyExamination, { OphthalmologyData } from "@/components/OphthalmologyExamination";
+import { PrintReportDialog } from "@/components/PrintReportDialog";
+import { FileBarChart } from "lucide-react";
 
 interface Procedure {
   id: string;
