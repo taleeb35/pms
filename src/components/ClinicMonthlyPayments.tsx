@@ -241,6 +241,30 @@ const ClinicMonthlyPayments = ({
 
   const months = generateMonthsToShow();
 
+  // Compute access expiry based on billing_cycle_day + latest paid month
+  const computeExpiry = (): Date | null => {
+    if (!billingCycleDay) return null;
+    const paidMonths = payments
+      .filter((p) => p.status === "paid")
+      .map((p) => new Date(p.month))
+      .sort((a, b) => b.getTime() - a.getTime());
+    const today = new Date();
+    let baseMonth: Date;
+    if (paidMonths.length > 0) {
+      // Expiry = (latest paid month + 1 month) at cycle day
+      baseMonth = addMonths(startOfMonth(paidMonths[0]), 1);
+    } else {
+      // Not paid → expires at current cycle's billing day
+      const cur = startOfMonth(today);
+      baseMonth = today.getDate() <= billingCycleDay ? cur : addMonths(cur, 1);
+    }
+    const expiry = new Date(baseMonth.getFullYear(), baseMonth.getMonth(), billingCycleDay);
+    return expiry;
+  };
+
+  const expiryDate = computeExpiry();
+  const isExpired = expiryDate ? expiryDate < new Date(new Date().toDateString()) : false;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -251,10 +275,21 @@ const ClinicMonthlyPayments = ({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <CreditCard className="h-4 w-4 text-muted-foreground" />
-        <h4 className="font-medium text-sm">Monthly Payment History</h4>
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-4 w-4 text-muted-foreground" />
+          <h4 className="font-medium text-sm">Monthly Payment History</h4>
+        </div>
+        {expiryDate && (
+          <Badge
+            variant="outline"
+            className={isExpired ? "border-destructive text-destructive" : "border-green-600 text-green-700"}
+          >
+            Access {isExpired ? "expired on" : "valid until"}: {format(expiryDate, "dd MMM yyyy")}
+          </Badge>
+        )}
       </div>
+
       
       <div className="border rounded-lg overflow-hidden">
         <Table>
