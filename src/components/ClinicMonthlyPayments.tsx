@@ -57,12 +57,24 @@ const ClinicMonthlyPayments = ({
 }: ClinicMonthlyPaymentsProps) => {
   const [payments, setPayments] = useState<ClinicPayment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [billingCycleDay, setBillingCycleDay] = useState<number | null>(null);
 
   useEffect(() => {
     fetchPayments();
+    fetchBillingCycle();
   }, [clinicId]);
 
+  const fetchBillingCycle = async () => {
+    const { data } = await supabase
+      .from("clinics")
+      .select("billing_cycle_day")
+      .eq("id", clinicId)
+      .maybeSingle();
+    setBillingCycleDay((data as any)?.billing_cycle_day ?? null);
+  };
+
   const fetchPayments = async () => {
+
     setLoading(true);
     try {
       const { data, error } = await supabase
