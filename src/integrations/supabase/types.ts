@@ -642,6 +642,7 @@ export type Database = {
         Row: {
           address: string
           billable_doctors: number | null
+          billing_cycle_day: number | null
           city: string
           clinic_name: string
           created_at: string
@@ -659,6 +660,7 @@ export type Database = {
         Insert: {
           address: string
           billable_doctors?: number | null
+          billing_cycle_day?: number | null
           city: string
           clinic_name: string
           created_at?: string
@@ -676,6 +678,7 @@ export type Database = {
         Update: {
           address?: string
           billable_doctors?: number | null
+          billing_cycle_day?: number | null
           city?: string
           clinic_name?: string
           created_at?: string
@@ -3298,6 +3301,10 @@ export type Database = {
       check_password_reset_eligibility: {
         Args: { _email: string }
         Returns: Json
+      }
+      clinic_required_paid_month: {
+        Args: { _clinic_id: string }
+        Returns: string
       }
       enroll_patient_membership: {
         Args: {
