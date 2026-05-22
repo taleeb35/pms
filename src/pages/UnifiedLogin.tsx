@@ -159,7 +159,7 @@ const UnifiedLogin = () => {
   const handleClinicLogin = async (userId: string) => {
     const { data: clinicData, error: clinicError } = await supabase
       .from("clinics")
-      .select("status, clinic_name, trial_end_date")
+      .select("status, clinic_name, trial_end_date, billing_cycle_day")
       .eq("id", userId)
       .maybeSingle();
 
@@ -192,6 +192,32 @@ const UnifiedLogin = () => {
       await supabase.auth.signOut();
       setShowInactiveDialog(true);
       return { success: false };
+    }
+
+    // Billing cycle enforcement: require a paid invoice for the current cycle
+    const cycleDay = (clinicData as any).billing_cycle_day as number | null;
+    if (cycleDay) {
+      const today = new Date();
+      const day = today.getDate();
+      const target = new Date(today.getFullYear(), today.getMonth() + (day <= cycleDay ? 0 : 1), 1);
+      const requiredMonth = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, "0")}-01`;
+
+      const { data: pay } = await supabase
+        .from("clinic_payments")
+        .select("id")
+        .eq("clinic_id", userId)
+        .eq("month", requiredMonth)
+        .eq("status", "paid")
+        .maybeSingle();
+
+      if (!pay) {
+        await supabase.auth.signOut();
+        setDialogMessage(
+          "Your monthly subscription payment for the current billing cycle is pending. Please contact support to continue using your account."
+        );
+        setShowAccountNotFoundDialog(true);
+        return { success: false };
+      }
     }
 
     toast({
