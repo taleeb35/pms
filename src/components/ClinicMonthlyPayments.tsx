@@ -241,23 +241,22 @@ const ClinicMonthlyPayments = ({
 
   const months = generateMonthsToShow();
 
-  // Compute access expiry based on billing_cycle_day + latest paid month
+  // Compute access expiry from the latest invoice month.
+  // Unpaid latest invoice => access ends on that month's billing day.
+  // Paid latest invoice => access extends to the next month's billing day.
   const computeExpiry = (): Date | null => {
     if (!billingCycleDay) return null;
-    const paidMonths = payments
-      .filter((p) => p.status === "paid")
-      .map((p) => new Date(p.month))
-      .sort((a, b) => b.getTime() - a.getTime());
-    const today = new Date();
-    let baseMonth: Date;
-    if (paidMonths.length > 0) {
-      // Expiry = (latest paid month + 1 month) at cycle day
-      baseMonth = addMonths(startOfMonth(paidMonths[0]), 1);
-    } else {
-      // Not paid → expires at current cycle's billing day
-      const cur = startOfMonth(today);
-      baseMonth = today.getDate() <= billingCycleDay ? cur : addMonths(cur, 1);
+    const latestPayment = [...payments].sort(
+      (a, b) => new Date(b.month).getTime() - new Date(a.month).getTime()
+    )[0];
+
+    let baseMonth = startOfMonth(new Date());
+
+    if (latestPayment) {
+      const latestMonth = startOfMonth(new Date(`${latestPayment.month}T00:00:00`));
+      baseMonth = latestPayment.status === "paid" ? addMonths(latestMonth, 1) : latestMonth;
     }
+
     const expiry = new Date(baseMonth.getFullYear(), baseMonth.getMonth(), billingCycleDay);
     return expiry;
   };
