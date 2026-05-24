@@ -6959,3 +6959,450 @@ const ManagingExpensesArticle = () => {
     </div>
   );
 };
+
+const ResetPasswordArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Account & Security</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Resetting Your Password</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-violet-500/10 text-violet-600 hover:bg-violet-500/20">
+                <Shield className="w-3 h-3 mr-1" />
+                Account & Security
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Resetting Your Password
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Forgot your Zonoir password? Reset it yourself in under two minutes — from any
+              device, without contacting support. Works for clinic owners, doctors, receptionists,
+              and admins.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where to find the Forgot Password link",
+                  "Requesting a reset email",
+                  "Opening the secure reset link",
+                  "Choosing a strong new password",
+                  "Why some accounts can't reset",
+                  "What to do if the email doesn't arrive",
+                  "Password rules and best practices",
+                  "When to contact your clinic owner or support",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">When you need this</h2>
+              <p>
+                You forgot your password, you're locked out after too many wrong attempts, or you
+                just want to rotate to a stronger one. Zonoir uses a self-service reset flow — a
+                one-time secure link is emailed to the address on your account, and you set a new
+                password yourself. Nobody at Zonoir (or your clinic) ever sees your password.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Mail, title: "Email-based", desc: "A unique link is sent to your registered email" },
+                  { icon: Shield, title: "Secure", desc: "Link expires in 1 hour and works only once" },
+                  { icon: Smartphone, title: "Any device", desc: "Works on web and the mobile app" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the login page</h2>
+                  <p className="text-muted-foreground m-0">Same page you normally sign in from</p>
+                </div>
+              </div>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Clinic owners, doctors, receptionists:</strong> go to the main <em>Login</em> page on zonoir.com.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Admins / content writers:</strong> use the <em>Admin Login</em> page.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Mobile app:</strong> open the app, tap <em>Forgot Password</em> on the login screen, or go to <em>More → Profile → Change Password</em>.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Click "Forgot your password?"</h2>
+                  <p className="text-muted-foreground m-0">The small link below the password field</p>
+                </div>
+              </div>
+              <p>
+                On every Zonoir login screen there is a <strong>Forgot your password?</strong> link
+                directly below the password input. Click it and you'll land on the reset request
+                page.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Enter your registered email</h2>
+                  <p className="text-muted-foreground m-0">The same email you use to sign in</p>
+                </div>
+              </div>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <Mail className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Type your email exactly as it's stored on your account.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Mail className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Click <strong>Send Reset Link</strong>.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>You'll see a green "Check Your Email" confirmation on the page.</span>
+                </li>
+              </ul>
+              <Card className="not-prose mt-4 border-amber-500/20 bg-amber-500/5">
+                <CardContent className="py-5">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-sm m-0">
+                      <strong>Doctors and receptionists added by a clinic:</strong> use the email
+                      address your clinic owner set when creating your account. If you're not sure
+                      what that is, ask the clinic owner to check your profile.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the email and click the link</h2>
+                  <p className="text-muted-foreground m-0">From "Zonoir &lt;noreply@zonoir.com&gt;"</p>
+                </div>
+              </div>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Subject line: <em>"Zonoir - Password Reset Request"</em>.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Tap the <strong>Reset Password</strong> button — or copy the long link into your browser.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>The link expires in <strong>1 hour</strong> and can only be used <strong>once</strong>. Request a new one if it's older than that.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Choose a new password</h2>
+                  <p className="text-muted-foreground m-0">Make it strong — you'll only set it once</p>
+                </div>
+              </div>
+              <p>
+                The link drops you on the <strong>Reset Password</strong> page. Enter your new
+                password twice (to catch typos) and click <strong>Update Password</strong>. You'll
+                be signed in automatically and redirected to your dashboard.
+              </p>
+              <Card className="not-prose mt-4 border-primary/20 bg-primary/5">
+                <CardContent className="py-5">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-primary" />
+                    Password rules
+                  </h4>
+                  <ul className="text-sm space-y-2 m-0 list-none p-0">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>Minimum <strong>8 characters</strong>.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>Mix upper, lower, a number, and a symbol for the strongest score.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>Don't reuse a password from another website — patient data lives behind this login.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>Avoid clinic name, phone number, or "Password123" — these are guessed first.</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Sign in with the new password</h2>
+                  <p className="text-muted-foreground m-0">From any device — desktop, tablet, mobile app</p>
+                </div>
+              </div>
+              <p>
+                Your old password is permanently invalidated the moment you save the new one.
+                Update any saved passwords in your browser or password manager so they don't auto-fill
+                the stale value.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Why some accounts can't reset</h2>
+              <p>
+                Zonoir checks eligibility before sending the link. If your account isn't allowed to
+                reset, you'll see a clear message on screen instead of the email being sent.
+              </p>
+              <div className="space-y-3 mt-4">
+                {[
+                  {
+                    icon: AlertCircle,
+                    title: "Clinic Not Active",
+                    desc: "Your clinic's status is pending, suspended, or its billing cycle is overdue. The clinic owner must clear the unpaid invoice in Monthly Payments first — then everyone in that clinic can sign in and reset again.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Account Not Active",
+                    desc: "Your individual doctor or receptionist account has been set to inactive or draft. Ask your clinic owner to reactivate you from the Doctors or Receptionists page.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Email not found",
+                    desc: "The email you entered isn't on any Zonoir account. Double-check spelling, and try the exact address you used to sign up or that your clinic owner used to create your profile.",
+                  },
+                ].map((c, idx) => (
+                  <Card key={idx} className="border-destructive/20 bg-destructive/5">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <c.icon className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{c.title}</h4>
+                        <p className="text-sm text-muted-foreground m-0 mt-1">{c.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Email didn't arrive?</h2>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Wait <strong>2–3 minutes</strong> — delivery is usually instant but can occasionally be delayed.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Check your <strong>Spam / Junk / Promotions</strong> folder. Mark <em>noreply@zonoir.com</em> as "Not spam" so the next one lands in your inbox.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Make sure you typed the email correctly — a single missing letter sends the link to nobody.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Click <strong>Try a Different Email</strong> on the confirmation screen if you used the wrong address.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>If your inbox is full or your mail server is blocking external senders, the email will silently drop — free up space and try again.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Card className="not-prose mb-8 border-success/20 bg-success/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Pro tips</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Use a password manager (Apple Keychain, Google Password Manager, 1Password, Bitwarden) to store the new password — you'll never have to reset again.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Rotate your password every 6–12 months, especially if a staff member who knew it has left the clinic.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Never share your password over WhatsApp or SMS — every staff member should have their own account instead.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>If you suspect someone else used your account, reset the password immediately — it logs every other session out.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-destructive/20 bg-destructive/5 not-prose">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Common pitfalls</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Clicking an old reset link — they expire in 1 hour. Always request a fresh one.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Opening the reset link, then closing the page without saving — your old password is still active until you click <em>Update Password</em>.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Trying to reset a clinic-staff account while the clinic's billing is overdue — settle the invoice first, then reset.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Asking your clinic owner for "my password" — nobody (not Zonoir, not the owner) can see it. They can only trigger a reset link the same way you can.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold mb-3">Still stuck?</h2>
+              <p>
+                If you've tried the steps above and still can't get in, contact your clinic owner
+                (they can verify your email on file) or reach Zonoir support via the contact form
+                on the website. Include the email you're trying to reset and a screenshot of the
+                error message — it speeds the fix up dramatically.
+              </p>
+            </div>
+          </article>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
+                { title: "Managing Receptionists", slug: "manage-receptionists" },
+                { title: "Understanding Your Subscription", slug: "subscription" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
