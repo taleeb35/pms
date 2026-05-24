@@ -1664,7 +1664,9 @@ const slugTitleMap: Record<string, string> = {
   "payment-tracking": "Payment Tracking",
   "expenses": "Managing Expenses",
   "managing-expenses": "Managing Expenses",
+  "reset-password": "Resetting Your Password",
 };
+
 
 const KnowledgeBaseArticle = () => {
   const kbBase = useKBBase();
