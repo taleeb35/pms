@@ -1784,6 +1784,12 @@ const KnowledgeBaseArticle = () => {
     return <ManagingExpensesArticle />;
   }
 
+  if (slug === "reset-password" || slug === "resetting-your-password" || slug === "forgot-password") {
+    return <ResetPasswordArticle />;
+  }
+
+
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
