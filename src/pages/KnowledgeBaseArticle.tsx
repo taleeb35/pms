@@ -1669,6 +1669,7 @@ const slugTitleMap: Record<string, string> = {
   "expenses": "Managing Expenses",
   "managing-expenses": "Managing Expenses",
   "reset-password": "Resetting Your Password",
+  "login-portals": "Logging In: Clinic vs Doctor vs Receptionist Portals",
 };
 
 
