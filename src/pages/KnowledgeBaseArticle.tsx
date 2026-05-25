@@ -50,7 +50,11 @@ import {
   Printer,
   Percent,
   PieChart,
-  FileSpreadsheet
+  FileSpreadsheet,
+  LogIn,
+  KeyRound,
+  Fingerprint,
+  Lock
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
