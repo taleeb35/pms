@@ -1793,7 +1793,9 @@ const KnowledgeBaseArticle = () => {
     return <ResetPasswordArticle />;
   }
 
-
+  if (slug === "login-portals" || slug === "logging-in" || slug === "sign-in") {
+    return <LoginPortalsArticle />;
+  }
 
   // Placeholder for other articles
   return (
