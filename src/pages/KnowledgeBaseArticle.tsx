@@ -50,7 +50,11 @@ import {
   Printer,
   Percent,
   PieChart,
-  FileSpreadsheet
+  FileSpreadsheet,
+  LogIn,
+  KeyRound,
+  Fingerprint,
+  Lock
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -1665,6 +1669,7 @@ const slugTitleMap: Record<string, string> = {
   "expenses": "Managing Expenses",
   "managing-expenses": "Managing Expenses",
   "reset-password": "Resetting Your Password",
+  "login-portals": "Logging In: Clinic vs Doctor vs Receptionist Portals",
 };
 
 
@@ -1788,7 +1793,9 @@ const KnowledgeBaseArticle = () => {
     return <ResetPasswordArticle />;
   }
 
-
+  if (slug === "login-portals" || slug === "logging-in" || slug === "sign-in") {
+    return <LoginPortalsArticle />;
+  }
 
   // Placeholder for other articles
   return (
@@ -7387,6 +7394,595 @@ const ResetPasswordArticle = () => {
                 { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
                 { title: "Managing Receptionists", slug: "manage-receptionists" },
                 { title: "Understanding Your Subscription", slug: "subscription" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const LoginPortalsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Logging In: Clinic vs Doctor vs Receptionist Portals</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                <LogIn className="w-3 h-3 mr-1" />
+                Getting Started
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Logging In: Clinic vs Doctor vs Receptionist Portals
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Zonoir uses a single, unified login page for every role — clinic owners, doctors,
+              and receptionists. After you sign in, the system automatically sends you to the right
+              dashboard with the correct permissions. No separate URLs to remember.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How the unified login page works",
+                  "Clinic owner portal — what you see after login",
+                  "Doctor portal — single doctor vs clinic doctor",
+                  "Receptionist portal — clinic vs doctor receptionist",
+                  "What happens when you click Sign In",
+                  "Biometric login with Face ID / Fingerprint",
+                  "Common login issues and how to fix them",
+                  "Security tips for every role",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">One login page for everyone</h2>
+              <p>
+                Whether you run the clinic, work as a doctor, or sit at the reception desk, you all
+                use the same <strong>Login</strong> page at zonoir.com. There are no separate portals,
+                no role-specific URLs, and no confusing dropdowns. You type your email and password,
+                and Zonoir reads your account role behind the scenes to route you to the correct
+                dashboard.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Building2, title: "Clinic Owner", desc: "Full clinic control, payments, staff, analytics" },
+                  { icon: Stethoscope, title: "Doctor", desc: "Appointments, patients, prescriptions, schedule" },
+                  { icon: Users, title: "Receptionist", desc: "Bookings, walk-ins, patient check-ins" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Login page</h2>
+                  <p className="text-muted-foreground m-0">Same URL, any device, any browser</p>
+                </div>
+              </div>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Go to <strong>zonoir.com</strong> and click <em>Sign In</em> from the top menu, or bookmark the direct login link.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Mobile app:</strong> open the Zonoir app — the login screen appears automatically if you're not signed in.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>PWA (installed web app):</strong> tap the Zonoir icon on your phone's home screen — it loads straight to login if your session expired.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-1">Enter your email and password</h2>
+                  <p className="text-muted-foreground m-0">The credentials created during signup or given by your clinic owner</p>
+                </div>
+              </div>
+              <p>
+                Type the email address registered on your Zonoir account and your password. If you
+                don't remember your password, click <strong>Forgot your password?</strong> below the
+                password field to start a reset flow. Read the <em>Resetting Your Password</em> article
+                for full details.
+              </p>
+              <Card className="not-prose mt-4 border-primary/20 bg-primary/5">
+                <CardContent className="py-5">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-primary" />
+                    Password rules at login
+                  </h4>
+                  <ul className="text-sm space-y-2 m-0 list-none p-0">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>Passwords are case-sensitive — <em>Clinic123</em> and <em>clinic123</em> are treated as different passwords.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>Your browser may auto-fill a saved password — make sure it's the current one, not an old reset.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span>If you share the device with colleagues, do not save the password in the browser.</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Click Sign In — automatic role detection</h2>
+                  <p className="text-muted-foreground m-0">Zonoir checks who you are and opens the right dashboard</p>
+                </div>
+              </div>
+              <p>
+                After you click <strong>Sign In</strong>, Zonoir inspects your account roles in this
+                exact order:
+              </p>
+              <div className="space-y-3 mt-4">
+                {[
+                  {
+                    icon: Shield,
+                    title: "Admin",
+                    desc: "If you have the admin role, you're sent to the Admin Dashboard where you can manage all clinics, doctors, and content.",
+                  },
+                  {
+                    icon: Building2,
+                    title: "Clinic Owner",
+                    desc: "If you're a clinic owner, you land on the Clinic Dashboard with your full overview: appointments, doctors, payments, expenses, and analytics.",
+                  },
+                  {
+                    icon: Stethoscope,
+                    title: "Doctor",
+                    desc: "If you're a doctor, you go to the Doctor Dashboard where you manage your own patients, schedule, prescriptions, and visit records.",
+                  },
+                  {
+                    icon: Users,
+                    title: "Receptionist",
+                    desc: "If you're a receptionist, you're routed to the Receptionist Dashboard. Clinic receptionists see the full clinic view; doctor receptionists see only their assigned doctor's view.",
+                  },
+                ].map((c, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-1">
+                        <c.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{c.title}</h4>
+                        <p className="text-sm text-muted-foreground m-className mt-1">{c.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <Card className="not-prose mt-4 border-amber-500/20 bg-amber-500/5">
+                <CardContent className="py-5">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-sm m-0">
+                      <strong>One account, one role:</strong> you can't be a clinic owner and a doctor
+                      with the same login. If you need both roles, contact support — they'll guide you
+                      on the correct account structure.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Clinic Owner Portal</h2>
+              <p>
+                As a clinic owner, your dashboard is the command center. After logging in you see:
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Clinic Dashboard:</strong> appointment load, revenue today, active doctors, patient queue, and monthly analytics charts.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Doctors:</strong> add, edit, approve, or deactivate doctors in your clinic. Set their specialties and consultation fees.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Receptionists:</strong> add clinic receptionists and assign them permissions. Toggle them active or draft.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Appointments:</strong> view, reschedule, or cancel any appointment across all doctors in your clinic.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Payments:</strong> see Monthly Payments, mark invoices paid, and track your subscription billing cycle.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Expenses:</strong> log and categorize every clinic cost for accurate profit-and-loss reports.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Doctor Portal</h2>
+              <p>
+                Doctors get a focused, clinical workspace. What you see depends on whether you're a
+                <em>single doctor</em> (your own practice) or a <em>clinic doctor</em> (employed by a clinic).
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mt-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Stethoscope className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-1">Single Doctor</h4>
+                    </div>
+                    <ul className="text-sm space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Full control of your own schedule, patients, and prescriptions.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Your own billing cycle and trial period.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>You can add your own receptionist if needed.</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Building2 className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Clinic Doctor</h4>
+                    </div>
+                    <ul className="text-sm space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Access only your own patients and appointments within the clinic.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Your schedule is managed by the clinic owner.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Billing is handled by the clinic owner — you don't see invoices.</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+              <p className="mt-4">
+                Both types of doctors see the same core tools: appointment calendar, patient search,
+                visit recording, prescription templates, medical history, and their own analytics.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Receptionist Portal</h2>
+              <p>
+                Receptionists handle front-desk work: booking, rescheduling, checking patients in, and
+                managing walk-ins. There are two kinds of receptionist accounts:
+              </p>
+              <div className="space-y-3 mt-4">
+                {[
+                  {
+                    icon: Building2,
+                    title: "Clinic Receptionist",
+                    desc: "Assigned to a clinic. You see all doctors in that clinic, can book for any of them, and manage the full patient flow. Your access is tied to the clinic's active status — if the clinic is suspended or billing is overdue, you cannot log in.",
+                  },
+                  {
+                    icon: Stethoscope,
+                    title: "Doctor Receptionist",
+                    desc: "Assigned to one specific doctor. You see only that doctor's schedule and patients. If the doctor's clinic is inactive or the doctor's account is not approved, your login is blocked too.",
+                  },
+                ].map((c, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-1">
+                        <c.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{c.title}</h4>
+                        <p className="text-sm text-muted-foreground m-0 mt-1">{c.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Biometric login — Face ID & Fingerprint</h2>
+              <p>
+                On supported mobile devices and the Zonoir mobile app, you can log in with your
+                device's biometric sensor instead of typing your password every time.
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <Fingerprint className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>After your first successful password login, the app asks if you want to save credentials for biometric use.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Fingerprint className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Next time, tap <strong>Sign in with Fingerprint / Face ID</strong> — the app fills your email and password securely from the device's keychain.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Fingerprint className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Biometric login works only on the same device where you saved it. If you switch phones, you'll need to password-log in once and re-enable biometrics.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Shield className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Your password is never stored in plain text — it's protected by your phone's hardware security (iOS Keychain or Android Keystore).</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common login issues</h2>
+              <p>
+                Zonoir blocks logins when there are account or billing problems. Here's what each
+                message means and who can fix it.
+              </p>
+              <div className="space-y-3 mt-4">
+                {[
+                  {
+                    icon: AlertCircle,
+                    title: "Account Pending",
+                    desc: "Your clinic or individual account is not yet activated. Clinic owners must wait for admin approval; doctors must wait for clinic owner approval.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Trial Expired",
+                    desc: "Your free trial has ended. Clinic owners and single doctors need to subscribe before they can log in again.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Clinic Not Active",
+                    desc: "Your clinic's status is pending, suspended, or its monthly payment is overdue. The clinic owner must settle the invoice in Monthly Payments first.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Subscription Payment Pending",
+                    desc: "Your clinic's current billing cycle hasn't been paid. Access is blocked until the clinic owner marks the invoice as paid.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Receptionist Inactive",
+                    desc: "Your receptionist account has been set to draft or inactive by the clinic owner or doctor. Ask them to reactivate you.",
+                  },
+                  {
+                    icon: AlertCircle,
+                    title: "Doctor Not Approved",
+                    desc: "A clinic doctor whose account hasn't been approved by the clinic owner yet cannot log in. The owner must approve you from the Doctors page.",
+                  },
+                ].map((c, idx) => (
+                  <Card key={idx} className="border-destructive/20 bg-destructive/5">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <c.icon className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-sm m-0">{c.title}</h4>
+                        <p className="text-sm text-muted-foreground m-0 mt-1">{c.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Session and security</h2>
+              <p>
+                Zonoir keeps you signed in for an extended period on the same device, but there are
+                situations where you'll be asked to log in again:
+              </p>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>When your session naturally expires after a long period of inactivity.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>After you reset your password — all sessions are invalidated for security.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>When your clinic owner or an admin changes your role or deactivates your account.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>If you sign in from a second device, the first may stay active or be logged out depending on your organization's security settings.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Card className="not-prose mb-8 border-success/20 bg-success/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-success shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Pro tips for every role</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Bookmark the login page on your browser for one-tap access. Clinic staff should pin it to the reception desk computer's bookmarks bar.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Use a password manager so each staff member has a unique, strong password. Never share one login between multiple people.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Enable biometric login on the mobile app — it's faster and just as secure as typing the password manually.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>Clinic owners: check Monthly Payments before the billing cycle day so your staff never gets locked out due to an overdue invoice.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                        <span>If a receptionist or doctor can't log in, verify their status is "active" and, for clinic staff, that the clinic itself is active and paid up.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-destructive/20 bg-destructive/5 not-prose">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Common pitfalls</h4>
+                    <ul className="text-sm text-muted-foreground space-y-2 m-0 list-none p-0">
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Thinking there's a separate URL for doctors — there's not. Everyone uses the same login page.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Trying to log in with a phone number instead of email — Zonoir requires the registered email address.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Receptionists trying to sign in before the clinic owner has activated them — the owner must toggle your status to "active" first.</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                        <span>Doctors signing in on a new device and expecting biometric to work — it won't until you password-log in once and re-save credentials.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="mt-10">
+              <h2 className="text-2xl font-bold mb-3">Still stuck?</h2>
+              <p>
+                If you can't log in after reading this guide, contact your clinic owner first — they
+                can verify your account status and billing in seconds. If you're the clinic owner or
+                the issue persists, reach Zonoir support via the contact form on the website. Include
+                your email, role, and the exact error message you see on the login screen.
+              </p>
+            </div>
+          </article>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Resetting Your Password", slug: "reset-password" },
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
+                { title: "Managing Receptionists", slug: "manage-receptionists" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
