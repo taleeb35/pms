@@ -8009,3 +8009,430 @@ const LoginPortalsArticle = () => {
     </div>
   );
 };
+
+const FreeTrialArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Your 14-Day Free Trial Explained</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Gift className="w-3 h-3 mr-1" />
+                For Everyone
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Your 14-Day Free Trial Explained
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Every new clinic and independent doctor gets 14 days free to explore every feature,
+              add staff, see real patients, and decide if Zonoir is the right fit — no credit card required.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Who qualifies for the free trial",
+                  "What you can do during the 14 days",
+                  "How the daily countdown works",
+                  "Reminder emails before expiry",
+                  "What happens when the trial ends",
+                  "How to subscribe and keep your data",
+                  "Trial limitations and fair use",
+                  "What to do if your trial expired",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Overview */}
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-3">What the trial includes</h2>
+              <p>
+                The 14-day free trial is a full-access preview of Zonoir. You are not limited to a
+                "demo mode" — you can add real doctors, book real appointments, record real patient visits,
+                and generate actual invoices. If you subscribe, everything you built during the trial stays
+                exactly as it is.
+              </p>
+              <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                {[
+                  { icon: Building2, title: "Clinics", desc: "14 days from the day you register your clinic account" },
+                  { icon: Stethoscope, title: "Single Doctors", desc: "14 days from the day you sign up as an independent doctor" },
+                  { icon: Users, title: "Receptionists", desc: "Included automatically when the clinic or doctor is on trial" },
+                ].map((b, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-6">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <b.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm mb-1">{b.title}</h4>
+                      <p className="text-xs text-muted-foreground m-0">{b.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* What you can do */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Everything unlocked during trial</h2>
+              <p>There are no artificial feature gates. During your 14 days you have the same permissions as a paid subscriber:</p>
+              <div className="grid md:grid-cols-2 gap-4 mt-6">
+                {[
+                  { icon: UserPlus, label: "Add unlimited doctors", desc: "Test the full multi-doctor clinic workflow" },
+                  { icon: Calendar, label: "Book appointments", desc: "Calendar scheduling, walk-ins, and reminders" },
+                  { icon: ClipboardList, label: "Record visits", desc: "Prescriptions, vitals, diagnosis, and notes" },
+                  { icon: FileText, label: "Patient records", desc: "Complete medical history, documents, and allergies" },
+                  { icon: CreditCard, label: "Track payments", desc: "Invoices, partial payments, and expense logging" },
+                  { icon: BarChart3, label: "View analytics", desc: "Revenue charts, patient drop-off, and peak hours" },
+                  { icon: Zap, label: "AI assistants", desc: "Visit summaries, prescription help, and revenue forecasts" },
+                  { icon: Video, label: "Video consultations", desc: "Daily.co integrated video calls with patients" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Daily countdown */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How the countdown works</h2>
+                  <p className="text-muted-foreground m-0">Day 1 starts the moment you complete signup</p>
+                </div>
+              </div>
+              <ul className="space-y-3 mt-4">
+                <li className="flex items-start gap-2">
+                  <Calendar className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Your <strong>trial end date</strong> is calculated automatically and stored on your account.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>A <strong>trial banner</strong> appears on your dashboard showing exactly how many days remain.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 mt-1 shrink-0" />
+                  <span>When fewer than <strong>4 days</strong> remain, the banner turns amber to warn you.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span>Day 0 is the last full day of access. On Day -1 the trial is over.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Reminder emails */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reminder emails before expiry</h2>
+                  <p className="text-muted-foreground m-0">We notify you so you don't lose access unexpectedly</p>
+                </div>
+              </div>
+              <p>Zonoir sends automated emails to your registered address at these milestones:</p>
+              <div className="space-y-3 mt-4">
+                {[
+                  { day: "Day 7", title: "Halfway through your trial", desc: "A friendly summary of what you've used and a reminder to subscribe." },
+                  { day: "Day 11", title: "Trial expires in 3 days", desc: "Your first urgency reminder with a direct link to subscribe." },
+                  { day: "Day 13", title: "Trial expires tomorrow", desc: "Final warning with instructions on how to keep your account active." },
+                  { day: "Day 14 (expired)", title: "Your trial has ended", desc: "What happens next and how to contact support if you need more time." },
+                ].map((r, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Mail className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge variant="outline" className="text-xs">{r.day}</Badge>
+                          <h4 className="font-semibold text-sm m-0">{r.title}</h4>
+                        </div>
+                        <p className="text-sm text-muted-foreground m-0">{r.desc}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* What happens when trial ends */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What happens when the trial ends</h2>
+                  <p className="text-muted-foreground m-0">Grace period, then restricted access</p>
+                </div>
+              </div>
+              <p>
+                When your trial expires, Zonoir does <strong>not</strong> delete your data. Instead, access
+                is restricted in stages:
+              </p>
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                {[
+                  { title: "Trial Expired Banner", desc: "A red banner appears on login: 'Your 14-day free trial has ended. Contact support to subscribe and continue using all features.' You can still log in and view (read-only) most screens." },
+                  { title: "Admin Sets Status to Pending", desc: "The Zonoir team changes your clinic status from 'Active' to 'Pending'. At this point, doctors and receptionists can no longer log in. Only the clinic owner can access the dashboard to view billing information." },
+                  { title: "Payment Unlocks Full Access", desc: "Once you pay for the current month (or year), the team marks your clinic as 'Active' again. All staff can log in immediately and everything works exactly as before." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <Card className="not-prose mt-4 border-amber-500/20 bg-amber-500/5">
+                <CardContent className="py-5">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-sm m-0">
+                      <strong>Your data is never deleted because of a missed payment.</strong> Patient
+                      records, appointments, and financial history remain safe in your account. You simply
+                      cannot create new data until the subscription is active again.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* How to subscribe */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How to subscribe and keep your data</h2>
+                  <p className="text-muted-foreground m-0">Two plans, one simple process</p>
+                </div>
+              </div>
+              <p>
+                There is no self-service checkout inside the app. To subscribe, contact the Zonoir support
+                team who will verify your clinic details and generate an invoice. Here's how it works:
+              </p>
+              <div className="space-y-4 mt-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <CreditCard className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Monthly Plan</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground m-0">
+                      PKR <strong>5,999</strong> per doctor per month. Billed monthly on your
+                      clinic's billing date. Best for trying Zonoir with no long-term commitment.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Yearly Plan</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground m-0">
+                      PKR <strong>59,700</strong> per doctor per year (a total of 12 months with an
+                      extra 17% discount applied). Billed once annually. Best value for established
+                      clinics.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="mt-6 space-y-3">
+                <p>To activate your subscription:</p>
+                <ol className="space-y-2 list-none pl-0">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                    <span><strong>Contact support</strong> via WhatsApp at <strong>+92 300 4313139</strong> or the in-app chat.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                    <span>Tell us your clinic name, the plan you want (monthly or yearly), and how many doctors you have.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                    <span>We generate an invoice and share payment instructions (bank transfer, EasyPaisa, or JazzCash).</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                    <span>Once payment is confirmed, we mark your next billing month as <strong>Paid</strong> and restore full access.</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* FAQ / Troubleshooting */}
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I extend my trial beyond 14 days?",
+                    a: "Trials are not extendable by default. If you need a few extra days due to a genuine delay (e.g., bank holiday, owner traveling), contact support before the trial expires and we may grant a short grace extension.",
+                  },
+                  {
+                    q: "What if I added doctors during the trial — do they also lose access?",
+                    a: "Yes. When a clinic's trial expires, every doctor and receptionist under that clinic is also locked out. Their personal login credentials remain valid, but the platform blocks access because the parent clinic is inactive.",
+                  },
+                  {
+                    q: "I'm a single doctor, not part of a clinic. Is my trial different?",
+                    a: "No. Independent doctors get the same 14-day trial. The only difference is that you manage your own billing directly instead of a clinic owner doing it for you.",
+                  },
+                  {
+                    q: "Do I need a credit card to start the trial?",
+                    a: "No credit card, no deposit, and no upfront payment of any kind. Just register and start using the platform immediately.",
+                  },
+                  {
+                    q: "If I don't subscribe, will my data be deleted?",
+                    a: "No. Your data remains stored securely. You simply won't be able to log in and create new records. If you return months later and subscribe, your historical data will still be there.",
+                  },
+                  {
+                    q: "Can I switch from monthly to yearly later?",
+                    a: "Yes. Contact support at any time to switch plans. The change takes effect at your next billing cycle.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Tips card */}
+            <Card className="not-prose border-primary/20 bg-primary/5">
+              <CardContent className="py-5">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-primary" />
+                  Tips to get the most from your trial
+                </h4>
+                <ul className="text-sm space-y-2 m-0 list-none p-0">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Add at least one doctor and one receptionist in the first 2 days to see the full workflow.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Book 5–10 real or test appointments so the analytics dashboards populate with meaningful data.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Try the AI assistants (visit summary, prescription helper, revenue forecast) — they're included in the trial.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Install the PWA on your phone to test the mobile experience before committing.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </article>
+
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Understanding Your Subscription", slug: "subscription" },
+                { title: "Payment Tracking", slug: "payment-tracking" },
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "Logging In: Clinic vs Doctor vs Receptionist Portals", slug: "login-portals" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
