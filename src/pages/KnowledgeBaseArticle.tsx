@@ -8130,7 +8130,7 @@ const FreeTrialArticle = () => {
                   { icon: CreditCard, label: "Track payments", desc: "Invoices, partial payments, and expense logging" },
                   { icon: BarChart3, label: "View analytics", desc: "Revenue charts, patient drop-off, and peak hours" },
                   { icon: Zap, label: "AI assistants", desc: "Visit summaries, prescription help, and revenue forecasts" },
-                  { icon: Video, label: "Video consultations", desc: "Daily.co integrated video calls with patients" },
+                  { icon: Smartphone, label: "Video consultations", desc: "Daily.co integrated video calls with patients" },
                 ].map((item, idx) => (
                   <Card key={idx} className="border-border/50">
                     <CardContent className="pt-4 pb-4">
