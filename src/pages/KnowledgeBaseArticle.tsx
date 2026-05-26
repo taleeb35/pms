@@ -1800,6 +1800,10 @@ const KnowledgeBaseArticle = () => {
     return <LoginPortalsArticle />;
   }
 
+  if (slug === "free-trial" || slug === "14-day-trial" || slug === "trial") {
+    return <FreeTrialArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
