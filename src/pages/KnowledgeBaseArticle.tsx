@@ -8449,3 +8449,417 @@ const FreeTrialArticle = () => {
     </div>
   );
 };
+
+const ClinicProfileListingArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Getting Started</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Setting Up Your Clinic Profile & Public Listing</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Building2 className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Setting Up Your Clinic Profile & Public Listing
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              How to complete your clinic profile so patients can find you, and how your public listing works.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Edit your clinic name, phone, and address",
+                  "Upload a clinic logo for brand recognition",
+                  "Understand your public listing visibility",
+                  "Learn how patients discover your clinic online"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Navigate to Your Profile</h2>
+                  <p className="text-muted-foreground m-0">Access your clinic profile settings</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p>
+                  After logging in as a clinic owner, go to your <strong>Clinic Profile</strong> page from the sidebar or header menu. This is the central place where you control everything about how your clinic appears to staff and to the public.
+                </p>
+                <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                  <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    <strong>Pro Tip:</strong> Only the clinic owner can edit the clinic profile. Doctors and receptionists cannot change clinic-level information.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Update Clinic Information</h2>
+                  <p className="text-muted-foreground m-0">Name, phone, city, and address</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your clinic profile has two sections: <strong>Clinic Information</strong> and <strong>Personal Information</strong>. Here's what to fill in:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Building2, label: "Clinic Name", desc: "Your registered clinic name as patients will see it" },
+                  { icon: Phone, label: "Clinic Phone", desc: "Primary contact number for appointments" },
+                  { icon: MapPin, label: "City", desc: "Select your city (e.g., Lahore, Karachi, Islamabad)" },
+                  { icon: User, label: "Owner Name", desc: "Your full name as the clinic owner" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <p>Additional fields you can manage:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Complete Address:</strong> Full street address with landmarks for patient navigation</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Personal Phone:</strong> Your own contact number (kept private from public listing)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Email Address:</strong> Read-only; used for login and cannot be changed</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Understanding Your Public Listing</h2>
+                  <p className="text-muted-foreground m-0">How patients find your clinic online</p>
+                </div>
+              </div>
+
+              <Card className="mb-6 border-primary/20 bg-primary/5">
+                <CardContent className="py-6">
+                  <div className="flex items-start gap-3">
+                    <Globe className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm m-0 font-medium">Public Listing Explained</p>
+                      <p className="text-sm m-0 text-muted-foreground">
+                        Your clinic information (name, city, address, and phone) appears on our public "Find a Doctor" directory. This helps patients in your city discover your clinic when they search by specialty or location.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-3">
+                <p>What appears on your public listing:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Clinic Name:</strong> The official name patients will see</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>City:</strong> Patients filter by city; correct city = more visibility</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Address:</strong> Helps patients locate and visit your clinic</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Phone Number:</strong> Direct line for appointment bookings</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Doctors:</strong> All active doctors under your clinic appear in search results</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mt-6">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Your personal email and personal phone number are never shown publicly. Only the <strong>clinic phone</strong> and <strong>clinic address</strong> appear on the public listing.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Clinic Logo & Branding</h2>
+                  <p className="text-muted-foreground m-0">Make your clinic instantly recognizable</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p>
+                  A clinic logo helps build trust with patients and makes your listing stand out in search results. While logo upload is optional, we strongly recommend adding one.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Camera className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">Recommended Format</h4>
+                          <p className="text-xs text-muted-foreground">PNG or JPG, square ratio, at least 400x400px</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Eye className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">Where it Appears</h4>
+                          <p className="text-xs text-muted-foreground">Public listing, doctor profile pages, and appointment cards</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  To add or update your logo, contact our support team with your logo file and we will set it up for you.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Save Your Changes</h2>
+                  <p className="text-muted-foreground m-0">Don't forget to click Save</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <p>
+                  After editing any field, scroll to the bottom of the profile page and click the <strong>"Save Changes"</strong> button. Changes to your clinic profile are reflected immediately on your public listing.
+                </p>
+                <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm m-0 font-medium">Instant Updates</p>
+                    <p className="text-sm m-0 text-muted-foreground">
+                      Public listing updates are instant. There is no review or approval delay. Patients searching for your clinic will see the latest information right away.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tips card */}
+            <Card className="not-prose border-primary/20 bg-primary/5">
+              <CardContent className="py-5">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-primary" />
+                  Tips for a better public listing
+                </h4>
+                <ul className="text-sm space-y-2 m-0 list-none p-0">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Use your exact, officially registered clinic name so patients recognize you.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Include nearby landmarks in the address (e.g., "Opposite Services Hospital, Jail Road").</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Keep the clinic phone number active during business hours — missed calls = missed appointments.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Make sure every doctor has their specialty set so they appear in specialty-based searches.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I hide my clinic from public search?",
+                    a: "Currently, all active clinics appear in public search. If you have a specific privacy concern, contact our support team.",
+                  },
+                  {
+                    q: "What happens to my public listing if my subscription expires?",
+                    a: "If your clinic status becomes Pending or Inactive, your public listing is automatically hidden. Patients will no longer find your clinic in search results.",
+                  },
+                  {
+                    q: "Can I change my clinic name later?",
+                    a: "Yes, you can edit the clinic name from the Clinic Profile page at any time. The change is reflected instantly across the platform.",
+                  },
+                  {
+                    q: "Do patients see my personal email or personal phone?",
+                    a: "No. Only the clinic phone and clinic address set in the Clinic Information section are visible publicly. Your personal contact details remain private.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "How to Sign Up Your Clinic", slug: "clinic-signup" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
+                { title: "Logging In: Clinic vs Doctor vs Receptionist Portals", slug: "login-portals" },
+                { title: "Your 14-Day Free Trial Explained", slug: "free-trial" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
