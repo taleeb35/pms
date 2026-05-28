@@ -1813,6 +1813,10 @@ const KnowledgeBaseArticle = () => {
     return <FreeTrialArticle />;
   }
 
+  if (slug === "clinic-profile" || slug === "public-listing" || slug === "setting-up-profile") {
+    return <ClinicProfileListingArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
