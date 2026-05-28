@@ -1679,6 +1679,9 @@ const slugTitleMap: Record<string, string> = {
   "free-trial": "Your 14-Day Free Trial Explained",
   "14-day-trial": "Your 14-Day Free Trial Explained",
   "trial": "Your 14-Day Free Trial Explained",
+  "clinic-profile": "Setting Up Your Clinic Profile & Public Listing",
+  "public-listing": "Setting Up Your Clinic Profile & Public Listing",
+  "setting-up-profile": "Setting Up Your Clinic Profile & Public Listing",
 };
 
 
