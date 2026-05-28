@@ -54,7 +54,13 @@ import {
   LogIn,
   KeyRound,
   Fingerprint,
-  Lock
+  Lock,
+  Globe,
+  MapPin,
+  Phone,
+  Camera,
+  Eye,
+  Star
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
