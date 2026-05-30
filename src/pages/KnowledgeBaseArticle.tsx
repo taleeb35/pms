@@ -19,6 +19,8 @@ import {
   ThumbsUp,
   ThumbsDown,
   BookOpen,
+  History,
+  UserCheck,
   LayoutDashboard,
   Users,
   Calendar,
@@ -1652,6 +1654,453 @@ const AddDoctorsArticle = () => {
   );
 };
 
+const ActivityLogsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Clinic Management</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Activity Logs — Tracking Who Did What</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-blue-500/10 text-blue-600 hover:bg-blue-500/20">
+                <Activity className="w-3 h-3 mr-1" />
+                Clinic Management
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Activity Logs — Tracking Who Did What
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A complete audit trail of every action in your clinic. See who created, updated, or deleted records — with timestamps, actor names, and full details.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "What actions are automatically tracked",
+                  "Who can view activity logs (role-based access)",
+                  "How to filter, search, and navigate logs",
+                  "Export and print options for compliance",
+                  "How long logs are retained",
+                  "Using logs for security and dispute resolution"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Are Activity Logs?</h2>
+                  <p className="text-muted-foreground m-0">Your clinic's automatic audit trail</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Activity Logs capture every significant action performed inside your clinic — from creating a patient record to updating an appointment, applying a discount, or deleting a document. Each entry includes:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: UserCheck, label: "Actor Name", desc: "The user who performed the action" },
+                  { icon: Clock, label: "Timestamp", desc: "Exact date and time of the event" },
+                  { icon: Activity, label: "Action Type", desc: "Created, updated, deleted, cancelled, etc." },
+                  { icon: FileText, label: "Details", desc: "Patient name, fee, procedure, and more" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Automatic & Tamper-Proof</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Logs are generated automatically by the system. They cannot be edited or deleted by clinic staff, ensuring a reliable audit trail for compliance and internal review.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Gets Tracked?</h2>
+                  <p className="text-muted-foreground m-0">Comprehensive coverage across all modules</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The platform logs actions across every major module of your clinic. Here is a categorized summary:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { title: "Patients", actions: "Created, updated, deleted" },
+                  { title: "Appointments", actions: "Created, updated, cancelled, completed, status changed, comments added" },
+                  { title: "Visit Records", actions: "Created, updated" },
+                  { title: "Procedures", actions: "Created, updated, deleted, set on a visit" },
+                  { title: "Fees & Billing", actions: "Fee updated, discount applied, refund applied" },
+                  { title: "Doctors & Receptionists", actions: "Added, removed" },
+                  { title: "Documents", actions: "Uploaded, deleted" },
+                  { title: "Schedules & Leaves", actions: "Schedule updated, leave added or deleted" },
+                  { title: "Specializations", actions: "Created, updated, deleted" },
+                  { title: "Expenses", actions: "Created, updated, deleted" },
+                  { title: "Waitlist & Walk-ins", actions: "Added to or removed from waitlist, walk-in created" },
+                  { title: "Medical Data", actions: "Allergy, disease, ICD code, template created/updated/deleted" },
+                ].map((group, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/40 rounded-lg">
+                    <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                      <History className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm">{group.title}</h4>
+                      <p className="text-xs text-muted-foreground">{group.actions}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> When a fee is updated or a discount is applied, the log includes the exact amount and the patient name, making it easy to trace financial changes back to their source.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Who Can See the Logs?</h2>
+                  <p className="text-muted-foreground m-0">Role-based visibility for privacy and security</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Activity logs are not public. Access is scoped to the user's role, ensuring staff only see actions relevant to their responsibilities:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { role: "Clinic Owner / Admin", scope: "Full access — sees all actions across the clinic, including every doctor and receptionist" },
+                  { role: "Doctor", scope: "Sees their own actions and actions performed by their linked receptionists" },
+                  { role: "Receptionist", scope: "Sees their own actions and their linked doctor's actions" },
+                  { role: "Content Writer", scope: "No access to activity logs (content-only role)" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Shield className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.role}</h4>
+                          <p className="text-xs text-muted-foreground">{item.scope}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/5 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Privacy Note</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Even clinic owners cannot delete or alter logs. This immutability protects both the clinic and its staff in case of disputes or regulatory inspections.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How to Use the Activity Logs Page</h2>
+                  <p className="text-muted-foreground m-0">Filtering, searching, and navigating history</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Activity Logs page is accessible from your dashboard sidebar (desktop) or the "More" menu (mobile). Here's how to work with it:
+              </p>
+
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Search className="w-4 h-4 text-primary" />
+                    Search by Actor, Action, or Keyword
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Use the search bar to quickly find actions by the person who performed them, the type of action (e.g., "patient_created"), or keywords inside the log details.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Filter className="w-4 h-4 text-primary" />
+                    Filter by Action Type
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    The dropdown filter lets you narrow down to specific action categories — for example, show only "appointment_cancelled" or "refund_applied" events.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Download className="w-4 h-4 text-primary" />
+                    Load More & Pagination
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    Logs are loaded in batches. Click "Load More" to fetch older entries. On mobile, the most recent 50 events are shown by default with the same filtering capability.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" />
+                    Timestamps & Timezones
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    All timestamps are stored in UTC and displayed in your local time format (e.g., "22 May 2026, 03:45 PM"). Mobile view shows relative time (e.g., "2 hours ago") for quick scanning.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Log Retention & Compliance</h2>
+                  <p className="text-muted-foreground m-0">How long history is kept and why it matters</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Activity logs serve as an audit trail for internal management, dispute resolution, and regulatory compliance. Here's what you should know:
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-start gap-3 p-4 bg-muted/40 rounded-lg">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium m-0">No Manual Deletion</p>
+                    <p className="text-sm text-muted-foreground m-0">Logs are immutable. Clinic owners and admins cannot remove or edit entries.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-muted/40 rounded-lg">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium m-0">Long-Term Retention</p>
+                    <p className="text-sm text-muted-foreground m-0">Logs are retained for the lifetime of your clinic account and subscription period.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-muted/40 rounded-lg">
+                  <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium m-0">Financial Transparency</p>
+                    <p className="text-sm text-muted-foreground m-0">Every fee change, discount, and refund is logged with amounts and patient names for accounting reconciliation.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Best Practice:</strong> Review activity logs weekly to spot unusual patterns (e.g., frequent cancellations, repeated refund events) and address operational issues early.
+                </p>
+              </div>
+            </div>
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Common Use Cases</h2>
+                  <p className="text-muted-foreground m-0">Real scenarios where logs save the day</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { scenario: "A patient claims they weren't refunded", solution: "Search the patient's name in logs and filter by 'refund_applied' to verify the exact date, amount, and who processed it." },
+                  { scenario: "An appointment went missing from the calendar", solution: "Filter by 'appointment_deleted' or 'appointment_cancelled' and search the patient's name to trace who removed it and when." },
+                  { scenario: "A receptionist disputes a fee change", solution: "Filter by 'fee_updated' and cross-reference the actor name and timestamp with the clinic's internal records." },
+                  { scenario: "Regulatory inspection requires proof of record handling", solution: "Export or screenshot the relevant patient_created / patient_updated logs to demonstrate secure, auditable data management." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                          <span className="text-xs font-bold text-primary">{idx + 1}</span>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">{item.scenario}</h4>
+                          <p className="text-xs text-muted-foreground">{item.solution}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Activity logs are visible only to authenticated users within your clinic ecosystem</li>
+                      <li>• Logs do not capture sensitive patient medical data — only action metadata (names, fees, procedures)</li>
+                      <li>• If you notice suspicious activity, contact the platform admin immediately with the log timestamps</li>
+                      <li>• Mobile activity logs have the same filtering but show a compact card layout for small screens</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Managing Expenses", slug: "expenses" },
+                { title: "Adding New Patients", slug: "add-patients" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 const slugTitleMap: Record<string, string> = {
   "clinic-signup": "How to Sign Up Your Clinic",
   "doctor-signup": "How to Sign Up as a Doctor",
@@ -1682,6 +2131,9 @@ const slugTitleMap: Record<string, string> = {
   "clinic-profile": "Setting Up Your Clinic Profile & Public Listing",
   "public-listing": "Setting Up Your Clinic Profile & Public Listing",
   "setting-up-profile": "Setting Up Your Clinic Profile & Public Listing",
+  "activity-logs": "Activity Logs — Tracking Who Did What",
+  "tracking-activity": "Activity Logs — Tracking Who Did What",
+  "audit-logs": "Activity Logs — Tracking Who Did What",
 };
 
 
@@ -1815,6 +2267,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "clinic-profile" || slug === "public-listing" || slug === "setting-up-profile") {
     return <ClinicProfileListingArticle />;
+  }
+
+  if (slug === "activity-logs" || slug === "tracking-activity" || slug === "audit-logs") {
+    return <ActivityLogsArticle />;
   }
 
   // Placeholder for other articles
