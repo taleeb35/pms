@@ -19,6 +19,8 @@ import {
   ThumbsUp,
   ThumbsDown,
   BookOpen,
+  History,
+  UserCheck,
   LayoutDashboard,
   Users,
   Calendar,
