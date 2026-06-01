@@ -9611,13 +9611,11 @@ const DoctorLimitsArticle = () => {
                     </div>
                     <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-muted-foreground">Your current doctor limit</span>
-                      <span className="font-medium">X doctors</span>
+                      <span className="font-medium">Set during signup or upgrade</span>
                     </div>
                     <div className="flex justify-between items-center py-2 text-lg font-bold">
-                      <span>Total {clinic.payment_plan === "yearly" ? "Yearly" : "Monthly"}</span>
-                      <span>PKR {clinic.payment_plan === "yearly" 
-                        ? (Math.round(5999 * 12 * 0.83) * clinic.requested_doctors).toLocaleString()
-                        : (5999 * clinic.requested_doctors).toLocaleString()}</span>
+                      <span>Total calculation</span>
+                      <span>Rate × Doctor Count × Period</span>
                     </div>
                   </div>
                 </CardContent>
