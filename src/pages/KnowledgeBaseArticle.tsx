@@ -9824,3 +9824,455 @@ const DoctorLimitsArticle = () => {
     </div>
   );
 };
+
+const ClinicReportsAnalyticsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Clinic Management</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Clinic Reports & Analytics Dashboard</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Building2 className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Clinic Reports & Analytics Dashboard
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand every metric on your clinic dashboard — from patient volume and revenue trends to AI-powered forecasts and activity logs.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Read your clinic dashboard stats cards",
+                  "Navigate appointment & patient analytics",
+                  "Use AI-powered revenue forecasts",
+                  "Export and print reports",
+                  "Track team activity with audit logs",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Dashboard Stats at a Glance</h2>
+                  <p className="text-muted-foreground m-0">Key numbers every clinic owner should watch daily</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When you log into your clinic portal, the top of your dashboard displays four live stat cards. These update automatically as your team works.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Building2, label: "Clinic Name", desc: "Your registered clinic identity — visible to patients on public listings." },
+                  { icon: Stethoscope, label: "Total Doctors", desc: "Active doctor accounts vs. your plan limit (e.g. 3 / 5)." },
+                  { icon: Users, label: "Total Patients", desc: "Cumulative patients created by all doctors in your clinic." },
+                  { icon: Calendar, label: "Next Due Date", desc: "Monthly subscription payment due on the 10th of each month." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Watch the "Total Doctors" card closely. If it shows <strong>5 / 5</strong>, you've hit your limit and must request a capacity increase before adding new doctors.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-info to-info/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Appointment & Patient Analytics</h2>
+                  <p className="text-muted-foreground m-0">Visual charts that reveal clinic performance trends</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Below the stat cards, your dashboard includes interactive charts powered by Recharts. These help you spot trends, peak hours, and operational bottlenecks.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <BarChart3 className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Patient Volume Chart</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Bar chart showing daily or weekly new patient registrations across all doctors. Use this to identify your busiest days and plan staffing accordingly.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <PieChart className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Appointment Status Breakdown</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Pie chart displaying the ratio of completed, cancelled, no-show, and pending appointments. A high no-show slice signals a need for reminder automation.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                        <TrendingUp className="w-5 h-5 text-success" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Revenue Trend Line</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Line chart tracking fee collection over time. Compare current month vs. previous month to measure growth.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Charts are interactive — hover over any bar, slice, or point to see exact numbers. Data refreshes in real time as appointments and visits are recorded.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">AI-Powered Revenue Forecast</h2>
+                  <p className="text-muted-foreground m-0">Predict next month's earnings before the month begins</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your clinic dashboard includes an <strong>AI Revenue Forecast</strong> card powered by Gemini AI. It analyzes your historical appointment data, fee patterns, and seasonal trends to project upcoming revenue.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Sparkles, label: "Smart Prediction", desc: "AI models your past 3 months of data to forecast the next 30 days." },
+                  { icon: TrendingDown, label: "Drop-off Alerts", desc: "Flags if predicted revenue is lower than your average — a signal to run promotions." },
+                  { icon: DollarSign, label: "Per-Doctor Breakdown", desc: "See which specialties or doctors are expected to generate the most revenue." },
+                  { icon: Activity, label: "Confidence Score", desc: "Each forecast includes a confidence level — higher when historical data is consistent." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-warning" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> The forecast improves as you collect more data. For the most accurate predictions, ensure every visit has a fee recorded and appointments are marked as "Completed" rather than left pending.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Activity Logs — Who Did What</h2>
+                  <p className="text-muted-foreground m-0">Immutable audit trail for compliance and oversight</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The <strong>Activity Logs</strong> section on your dashboard provides a tamper-proof record of every significant action taken by doctors and receptionists in your clinic.
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Patient Records:</strong> Who created or edited a patient file and when</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Appointments:</strong> Bookings, cancellations, and reschedules with actor identity</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Fees & Discounts:</strong> Every discount, refund, or fee waiver is logged with reason</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Documents:</strong> Uploads, deletions, and replacements of medical documents</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Schedules:</strong> Changes to doctor availability, break times, or leave dates</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Activity logs are <strong>immutable</strong> — they cannot be edited or deleted by anyone, including clinic owners. This ensures audit integrity for compliance and dispute resolution.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Exporting & Printing Reports</h2>
+                  <p className="text-muted-foreground m-0">Share data with stakeholders or your accountant</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Every chart and data table in your dashboard supports export. Use these features to generate monthly reports for stakeholders, tax filing, or internal reviews.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Download, label: "CSV Export", desc: "Download raw patient, appointment, or revenue data as a spreadsheet for Excel or Google Sheets." },
+                  { icon: Printer, label: "Print-Friendly Reports", desc: "Generate formatted print views of charts and tables — ideal for board meetings or clinic reviews." },
+                  { icon: FileSpreadsheet, label: "Monthly Summary Sheets", desc: "One-click generation of a full-month report with all key metrics combined." },
+                  { icon: Filter, label: "Filtered Exports", desc: "Apply date ranges, doctor filters, or status filters before exporting to get exactly the data you need." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Exports respect your dashboard filters. If you filter appointments to show only "Completed" status for Dr. Ahmed in March, the CSV will contain exactly those records.
+                </p>
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Privacy & Data Access</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Only the clinic owner and designated admins can view full clinic-wide analytics</li>
+                      <li>• Doctors can only see analytics for their own patients and appointments</li>
+                      <li>• Receptionists do not have access to revenue or financial analytics</li>
+                      <li>• All exports are logged in the Activity Logs for security auditing</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "How often is dashboard data refreshed?",
+                    a: "Stat cards and charts update in real time as actions happen. The AI Revenue Forecast refreshes daily based on the latest completed appointments and fee records.",
+                  },
+                  {
+                    q: "Can I compare performance between two doctors?",
+                    a: "Yes. Use the doctor filter on analytics charts to isolate individual performance. You can also export side-by-side CSVs for deeper comparison in Excel.",
+                  },
+                  {
+                    q: "What happens to my analytics data if a doctor leaves?",
+                    a: "Historical data remains intact. Even if a doctor is deactivated, their past appointments, patients, and revenue contributions still appear in historical charts and reports.",
+                  },
+                  {
+                    q: "Is there a mobile view for the analytics dashboard?",
+                    a: "Yes. The entire clinic dashboard, including charts and activity logs, is fully responsive and optimized for mobile browsers. No separate app download is required.",
+                  },
+                  {
+                    q: "Can I schedule automatic monthly reports to be emailed?",
+                    a: "Not yet. We are working on scheduled report delivery. For now, use the one-click export and monthly summary features to generate reports on demand.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Activity Logs — Tracking Who Did What", slug: "activity-logs" },
+                { title: "Understanding Your Subscription", slug: "subscription" },
+                { title: "Managing Doctor Limits & Capacity Increase", slug: "doctor-limits" },
+                { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
