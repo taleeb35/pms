@@ -9326,3 +9326,496 @@ const ClinicProfileListingArticle = () => {
     </div>
   );
 };
+
+const DoctorLimitsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Doctor Limits & Capacity Increase</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Building2 className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Doctor Limits & Capacity Increase
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand how doctor limits work, monitor your clinic's capacity, and request an increase when you are ready to grow.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How doctor limits are set during signup",
+                  "Monitor active doctors vs your plan limit",
+                  "What happens when you reach your limit",
+                  "How to request a capacity increase",
+                  "Billing impact of adding more doctors",
+                  "Downgrade options if you need fewer doctors"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How Doctor Limits Work</h2>
+                  <p className="text-muted-foreground m-0">Understanding your clinic's capacity</p>
+                </div>
+              </div>
+              
+              <p className="mb-6">
+                When you sign up your clinic, you choose how many doctors you plan to add to the system. This number becomes your <strong>doctor limit</strong> (also called <strong>requested doctors</strong>). It acts as a ceiling on how many active doctor accounts your clinic can have at any given time.
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Requested Doctors</h4>
+                        <p className="text-xs text-muted-foreground">The maximum number of doctors your plan allows. Set during signup or upgrade.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Activity className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Active Doctors</h4>
+                        <p className="text-xs text-muted-foreground">Currently enrolled and active doctor accounts under your clinic.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> You can check your current usage anytime from the <strong>Subscription</strong> page in your clinic dashboard. The doctor limit card shows a visual progress bar of how many slots you have used.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Happens When You Reach Your Limit</h2>
+                  <p className="text-muted-foreground m-0">Adding doctors beyond your capacity</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                If you try to add a new doctor when your active count equals your requested limit, the system will block the creation and show a clear message: <strong>"Doctor limit reached. Please increase your capacity to add more doctors."</strong>
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                
+                {[
+                  { title: "Warning on Add Doctor", desc: "When you open the 'Add Doctor' form, the system checks your limit before allowing submission." },
+                  { title: "Block at Creation", desc: "If the limit is hit, the form submission is blocked with a clear error message." },
+                  { title: "No Auto-Upgrade", desc: "The system does NOT automatically upgrade your plan. You must manually request a capacity increase." },
+                  { title: "Existing Doctors Unaffected", desc: "All currently active doctors remain fully functional. The limit only affects new additions." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Deleting an active doctor frees up one slot in your limit, but the doctor's historical data (appointments, visit records, prescriptions) is retained for compliance purposes.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Requesting a Capacity Increase</h2>
+                  <p className="text-muted-foreground m-0">Growing your clinic on the platform</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                To increase the number of doctors your clinic can support, you need to update your <strong>requested doctors</strong> value. Currently, this is handled directly by our support team to ensure accurate billing adjustments.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <TrendingUp className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Increase Limit</h4>
+                        <p className="text-xs text-muted-foreground">Contact support with your desired new doctor count. We'll update your plan within 24 hours.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <TrendingDown className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Decrease Limit</h4>
+                        <p className="text-xs text-muted-foreground">You can also reduce your limit. However, you must first deactivate excess doctors to match the new cap.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-3">
+                <p>To request a capacity change:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Go to <strong>Settings &gt; Subscription</strong> in your clinic dashboard</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Click <strong>"Request Capacity Change"</strong> or contact support via WhatsApp</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Provide your clinic name and the new doctor limit you need</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span>Our team will confirm the billing change and apply the update</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20 mt-6">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Fast Turnaround</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Most capacity increase requests are processed within 24 hours. Your billing is prorated so you only pay for the extra doctors from the day the change is applied.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Billing Impact of Adding Doctors</h2>
+                  <p className="text-muted-foreground m-0">How your subscription cost changes</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your subscription fee is calculated <strong>per doctor, per billing period</strong>. This means adding more doctors directly increases your total cost. Here's how it works:
+              </p>
+
+              <Card className="mb-6 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-muted-foreground">Discounted rate per doctor</span>
+                      <span className="font-medium">PKR 5,999 / month</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-muted-foreground">Yearly plan discount</span>
+                      <span className="font-medium text-success">17% additional savings</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b">
+                      <span className="text-muted-foreground">Your current doctor limit</span>
+                      <span className="font-medium">X doctors</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 text-lg font-bold">
+                      <span>Total {clinic.payment_plan === "yearly" ? "Yearly" : "Monthly"}</span>
+                      <span>PKR {clinic.payment_plan === "yearly" 
+                        ? (Math.round(5999 * 12 * 0.83) * clinic.requested_doctors).toLocaleString()
+                        : (5999 * clinic.requested_doctors).toLocaleString()}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Example:</strong> If you are on a monthly plan with 3 doctors, your bill is PKR 17,997/month. Adding 2 more doctors raises it to PKR 29,995/month. On a yearly plan, those same 5 doctors cost roughly PKR 29,800/year per doctor after the 17% discount.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Removing or Deactivating Doctors</h2>
+                  <p className="text-muted-foreground m-0">Freeing up capacity without increasing your limit</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Sometimes you need to make room for a new doctor without increasing your overall limit. You can do this by deactivating or removing an existing doctor account.
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Deactivation</h4>
+                        <p className="text-xs text-muted-foreground">Doctor can no longer log in, but all records remain intact. Frees up one slot.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Permanent Removal</h4>
+                        <p className="text-xs text-muted-foreground">Deletes the doctor account. Historical data is preserved for compliance.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <p className="mb-4">To deactivate a doctor:</p>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Go to <strong>Doctors &gt; All Doctors</strong></span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Click the three-dot menu next to the doctor's name</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Select <strong>"Deactivate"</strong> or <strong>"Delete"</strong></span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>The slot becomes available immediately for a new doctor</span>
+                </li>
+              </ul>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Warning:</strong> Deleting a doctor account is irreversible. If the doctor may return in the future, use <strong>Deactivate</strong> instead. Deactivation preserves the account and all data while freeing the slot.
+                </p>
+              </div>
+            </div>
+
+            {/* Tips Card */}
+            <Card className="not-prose border-primary/20 bg-primary/5">
+              <CardContent className="py-5">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-4 h-4 text-primary" />
+                  Best practices for managing doctor limits
+                </h4>
+                <ul className="text-sm space-y-2 m-0 list-none p-0">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Plan your limit 1-2 doctors ahead of your immediate need to avoid delays when hiring.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Review your Subscription page monthly to track usage trends and avoid surprise blocks.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Deactivate (don't delete) doctors on extended leave so you can reactivate them easily.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                    <span>Switch to a yearly plan before increasing doctor count to maximize your 17% discount on the larger bill.</span>
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I add unlimited doctors during my 14-day free trial?",
+                    a: "Yes. During your trial, you can add as many doctors as you need to test the platform. The doctor limit only becomes enforced after your trial ends and your subscription begins.",
+                  },
+                  {
+                    q: "Will I be charged immediately when I increase my doctor limit?",
+                    a: "No. If you are already on a paid plan, the increase is prorated from the day of change. If you are still on trial, the new limit takes effect when billing starts.",
+                  },
+                  {
+                    q: "What if I reduce my doctor limit mid-cycle?",
+                    a: "Downgrades are applied at the start of your next billing cycle. You will not receive a partial refund for the current cycle, but your next bill will reflect the lower limit.",
+                  },
+                  {
+                    q: "Can a single doctor account be shared among multiple people?",
+                    a: "No. Each doctor must have their own account for compliance, activity logging, and proper record attribution. Sharing accounts violates our terms and compromises audit trails.",
+                  },
+                  {
+                    q: "Do receptionists count toward the doctor limit?",
+                    a: "No. Receptionist accounts are separate and do not count against your doctor limit. Only doctor profiles are included in the limit and billing calculation.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Understanding Your Subscription", slug: "subscription" },
+                { title: "How to Add Doctors in Your Clinic", slug: "add-doctors" },
+                { title: "Your 14-Day Free Trial Explained", slug: "free-trial" },
+                { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
