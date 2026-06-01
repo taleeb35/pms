@@ -2134,6 +2134,9 @@ const slugTitleMap: Record<string, string> = {
   "activity-logs": "Activity Logs — Tracking Who Did What",
   "tracking-activity": "Activity Logs — Tracking Who Did What",
   "audit-logs": "Activity Logs — Tracking Who Did What",
+  "doctor-limits": "Managing Doctor Limits & Capacity Increase",
+  "capacity-increase": "Managing Doctor Limits & Capacity Increase",
+  "manage-doctors-limit": "Managing Doctor Limits & Capacity Increase",
 };
 
 
@@ -2271,6 +2274,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "activity-logs" || slug === "tracking-activity" || slug === "audit-logs") {
     return <ActivityLogsArticle />;
+  }
+
+  if (slug === "doctor-limits" || slug === "capacity-increase" || slug === "manage-doctors-limit") {
+    return <DoctorLimitsArticle />;
   }
 
   // Placeholder for other articles
