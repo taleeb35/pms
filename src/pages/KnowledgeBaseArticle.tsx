@@ -2137,6 +2137,9 @@ const slugTitleMap: Record<string, string> = {
   "doctor-limits": "Managing Doctor Limits & Capacity Increase",
   "capacity-increase": "Managing Doctor Limits & Capacity Increase",
   "manage-doctors-limit": "Managing Doctor Limits & Capacity Increase",
+  "clinic-reports": "Clinic Reports & Analytics Dashboard",
+  "analytics-dashboard": "Clinic Reports & Analytics Dashboard",
+  "reports": "Clinic Reports & Analytics Dashboard",
 };
 
 
