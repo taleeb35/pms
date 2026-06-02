@@ -61,6 +61,7 @@ import {
   MapPin,
   Phone,
   Camera,
+  Eye,
   Star,
   Hash,
   Syringe
