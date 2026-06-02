@@ -61,8 +61,9 @@ import {
   MapPin,
   Phone,
   Camera,
-  Eye,
-  Star
+  Star,
+  Hash,
+  Syringe
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -2140,6 +2141,11 @@ const slugTitleMap: Record<string, string> = {
   "clinic-reports": "Clinic Reports & Analytics Dashboard",
   "analytics-dashboard": "Clinic Reports & Analytics Dashboard",
   "reports": "Clinic Reports & Analytics Dashboard",
+  "allergies-diseases": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "icd-codes": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "procedures": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "clinical-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "manage-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
 };
 
 
@@ -2285,6 +2291,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "clinic-reports" || slug === "analytics-dashboard" || slug === "reports") {
     return <ClinicReportsAnalyticsArticle />;
+  }
+
+  if (slug === "allergies-diseases" || slug === "icd-codes" || slug === "procedures" || slug === "clinical-catalogs" || slug === "manage-catalogs") {
+    return <ClinicalCatalogsArticle />;
   }
 
   // Placeholder for other articles
