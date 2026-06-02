@@ -31,6 +31,9 @@ import {
   UserPlus,
   ClipboardList,
   HeadphonesIcon,
+  Plus,
+  Pencil,
+  Trash2,
   Stethoscope,
   Briefcase,
   AlertTriangle,
@@ -62,7 +65,9 @@ import {
   Phone,
   Camera,
   Eye,
-  Star
+  Star,
+  Hash,
+  Syringe
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -2140,6 +2145,11 @@ const slugTitleMap: Record<string, string> = {
   "clinic-reports": "Clinic Reports & Analytics Dashboard",
   "analytics-dashboard": "Clinic Reports & Analytics Dashboard",
   "reports": "Clinic Reports & Analytics Dashboard",
+  "allergies-diseases": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "icd-codes": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "procedures": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "clinical-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "manage-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
 };
 
 
@@ -2285,6 +2295,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "clinic-reports" || slug === "analytics-dashboard" || slug === "reports") {
     return <ClinicReportsAnalyticsArticle />;
+  }
+
+  if (slug === "allergies-diseases" || slug === "icd-codes" || slug === "procedures" || slug === "clinical-catalogs" || slug === "manage-catalogs") {
+    return <ClinicalCatalogsArticle />;
   }
 
   // Placeholder for other articles
@@ -10257,6 +10271,615 @@ const ClinicReportsAnalyticsArticle = () => {
                 { title: "Understanding Your Subscription", slug: "subscription" },
                 { title: "Managing Doctor Limits & Capacity Increase", slug: "doctor-limits" },
                 { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const ClinicalCatalogsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors & Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Allergies, Diseases, ICD Codes & Procedures</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors & Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Allergies, Diseases, ICD Codes & Procedures
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A complete guide to building and maintaining your clinical catalogs so patient records, prescriptions, and billing stay accurate and consistent.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Create allergies, diseases, ICD codes & procedures",
+                  "Understand clinic-level vs doctor-level catalogs",
+                  "Link catalogs to patient visits and prescriptions",
+                  "Use mobile catalog management on the go",
+                  "Search and filter large catalogs efficiently",
+                  "Set procedure prices for automatic billing"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Are Clinical Catalogs?</h2>
+                  <p className="text-muted-foreground m-0">The four building blocks of every patient record</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Clinical catalogs are reusable reference lists that power your daily workflow. Instead of typing "Penicillin allergy" or "Hypertension" manually every time, you pick from a pre-built list. This ensures consistency, reduces errors, and speeds up documentation.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: AlertTriangle, label: "Allergies", desc: "Drug, food, and environmental allergies recorded per patient. Flagged automatically during prescribing." },
+                  { icon: Activity, label: "Diseases & Conditions", desc: "Chronic and acute diagnoses attached to patient profiles. Used in medical history and visit summaries." },
+                  { icon: Hash, label: "ICD Codes", desc: "Standardized international diagnosis codes (e.g., I10 for Hypertension). Essential for insurance and reporting." },
+                  { icon: Syringe, label: "Procedures", desc: "Services you perform — each linked to a price. Automatically fills fees when selected during a visit." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Set up your catalogs <em>before</em> your first patient visit. It takes 10 minutes and saves hours of repetitive typing later.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-info to-info/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Managing Allergies</h2>
+                  <p className="text-muted-foreground m-0">Track sensitivities that affect prescribing decisions</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Allergies catalog lets you record every substance a patient reacts to. These entries appear as visual warnings when you are writing prescriptions, helping prevent adverse drug events.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Plus className="w-4 h-4 text-primary" />
+                      Adding an Allergy
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Navigate to <strong>Allergies</strong> in your sidebar, click <strong>Add Allergy</strong>, and enter the name (e.g., "Penicillin" or "Shellfish"). The entry is instantly available across all your patient records.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-primary" />
+                      Searching & Filtering
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Use the search bar to quickly find allergies when assigning them to a patient. The system supports partial matching — typing "pen" will surface "Penicillin" and "Pentasa".
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-primary" />
+                      Prescription Safety Warnings
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      When a drug in your prescription template matches a recorded allergy, the system displays a prominent warning banner on the prescription screen before you finalize.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Allergies are scoped by default: clinic owners can create <strong>clinic-level allergies</strong> shared across all doctors, while individual doctors can maintain <strong>personal allergy lists</strong> for their own practice.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Managing Diseases & Conditions</h2>
+                  <p className="text-muted-foreground m-0">Build a structured medical history for every patient</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Diseases catalog holds all conditions you diagnose or track — from chronic illnesses like Diabetes and Hypertension to acute infections like Influenza. Each disease can be attached to a patient's permanent medical history or to a specific visit record.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: ClipboardList, label: "Chronic Conditions", desc: "Mark diseases as 'chronic' so they persist across visits and appear in the patient's summary card." },
+                  { icon: Calendar, label: "Onset Date Tracking", desc: "Record when a condition began. Useful for monitoring disease progression and treatment timelines." },
+                  { icon: FileText, label: "Visit-Level Assignment", desc: "Attach a disease to a specific visit to document a new diagnosis without altering the permanent history." },
+                  { icon: Users, label: "Cross-Doctor Visibility", desc: "Clinic-level diseases are visible to all doctors in the practice, ensuring continuity of care." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-warning" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Create disease entries for the most common conditions in your specialty first. Most Pakistani clinics see Hypertension, Diabetes, and Respiratory Infections daily — having these ready cuts documentation time by half.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">ICD Codes Management</h2>
+                  <p className="text-muted-foreground m-0">Standardized coding for insurance, reporting, and compliance</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                ICD (International Classification of Diseases) codes provide a universal language for diagnoses. Whether you are filing insurance claims, generating government health reports, or simply want searchable, structured records, ICD codes are essential.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Hash className="w-4 h-4 text-primary" />
+                      Creating ICD Entries
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Add entries with a code (e.g., <strong>E11.9</strong>) and a plain-English description (e.g., "Type 2 diabetes mellitus without complications"). Both fields are searchable when you are documenting a visit.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Search className="w-4 h-4 text-primary" />
+                      Code or Name Search
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      During a visit, type either the ICD code or a keyword from the description. Searching "diabetes" surfaces E10, E11, and related codes instantly.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <FileSpreadsheet className="w-4 h-4 text-primary" />
+                      Reporting & Analytics
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      ICD-coded visits feed directly into your clinic analytics. You can generate disease-prevalence reports, track outbreak patterns, and satisfy regulatory reporting requirements with one click.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> ICD codes are maintained per doctor by default. However, clinic owners can create a <strong>shared clinic ICD catalog</strong> that all doctors inherit, ensuring consistency across the practice.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Procedures & Pricing</h2>
+                  <p className="text-muted-foreground m-0">Services linked to automatic fee calculation</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Procedures catalog is where you define every billable service — from consultations and ECGs to injections and wound dressing. Each procedure carries a price in PKR. When you select a procedure during a patient visit, the fee auto-populates, eliminating manual calculation errors.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: DollarSign, label: "Fixed Pricing", desc: "Set a standard fee for each procedure. Every time it is selected during a visit, the exact amount is applied." },
+                  { icon: Zap, label: "One-Click Billing", desc: "During visit recording, simply pick procedures from your catalog. The total fee is calculated automatically." },
+                  { icon: Percent, label: "Discount Handling", desc: "Apply percentage or flat discounts on the auto-filled total. Discounts are logged in activity logs for audit." },
+                  { icon: Receipt, label: "Invoice Generation", desc: "Procedures selected during a visit appear on the printed invoice with individual line items and totals." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Create a "General Consultation" procedure with your standard fee first. This is the most frequently selected item and having it ready streamlines every visit.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-info to-info/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Clinic-Level vs Doctor-Level Catalogs</h2>
+                  <p className="text-muted-foreground m-0">Control who sees what and where data lives</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Zonoir supports two scopes for clinical catalogs. Understanding the difference helps you decide whether to build a shared library or let each doctor manage independently.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <Building2 className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Clinic-Level Catalogs</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Created by the clinic owner or admin. Shared across <em>all</em> doctors and receptionists in the clinic. Ideal for standardizing terminology and pricing.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Doctor-Level Catalogs</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Private to the individual doctor. Other doctors in the same clinic cannot see or use these entries. Useful for specialized sub-specialty terminology.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Allergies & Diseases:</strong> Can be created at either clinic or doctor level depending on your clinic's policy</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>ICD Codes:</strong> Clinic owners can maintain a master list; doctors can supplement with their own</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Procedures:</strong> Always doctor-scoped for pricing accuracy, since each doctor may charge differently</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Using Catalogs During Patient Visits</h2>
+                  <p className="text-muted-foreground m-0">How clinical data flows into records, prescriptions, and invoices</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once your catalogs are populated, they integrate seamlessly into the visit workflow. Here is how each catalog type is used during a typical appointment:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+
+                {[
+                  { title: "Allergies", desc: "Displayed as warning chips on the patient card and prescription screen. New allergies can be added mid-visit if discovered." },
+                  { title: "Diseases", desc: "Selected from the catalog to document the visit diagnosis. Can be marked as chronic to persist in the patient's history." },
+                  { title: "ICD Codes", desc: "Attached to the diagnosis for structured reporting. Optional but recommended for insurance and analytics." },
+                  { title: "Procedures", desc: "Selected from a dropdown. Price auto-fills. Multiple procedures stack. Discounts apply to the total before invoicing." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  All catalog selections during a visit are captured in the <strong>Activity Logs</strong>. If a prescription is later disputed, you have an immutable record of which allergies were known, which diseases were diagnosed, and which procedures were performed.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 8 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  8
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Mobile Catalog Management</h2>
+                  <p className="text-muted-foreground m-0">Manage your catalogs on the go from any device</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Zonoir's mobile-optimized interface lets you add, edit, and search catalog entries directly from your phone or tablet. No app installation is required — just open your clinic portal in your mobile browser.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Smartphone, label: "Touch-Optimized Forms", desc: "Large input fields and clear labels make adding new entries easy even on small screens." },
+                  { icon: Search, label: "Instant Search", desc: "The catalog search bar is always visible at the top of the mobile list. Results filter as you type." },
+                  { icon: Pencil, label: "Quick Edit", desc: "Tap any entry to edit its name, description, or price. Changes sync immediately across all devices." },
+                  { icon: Trash2, label: "Safe Delete", desc: "Deletion requires confirmation. If an entry is linked to existing patient records, the system warns you before removal." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-warning" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Deleting a catalog entry does not remove it from historical patient records — it only prevents future selection</li>
+                      <li>• Procedure prices are stored in PKR (Rs). Always use local currency — never USD</li>
+                      <li>• Clinic owners can view and manage all doctor-level catalogs from the admin panel</li>
+                      <li>• ICD codes follow the WHO standard. Using outdated or incorrect codes may cause claim rejections</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I import a bulk list of ICD codes instead of adding one by one?",
+                    a: "Bulk import is not yet available in the self-serve UI. Contact our support team via WhatsApp and we can upload a pre-formatted CSV of ICD codes to your clinic account.",
+                  },
+                  {
+                    q: "What happens to existing visits if I change a procedure's price?",
+                    a: "Historical visits keep the price that was recorded at the time of the visit. Changing a procedure's price today only affects future visits.",
+                  },
+                  {
+                    q: "Can receptionists add allergies and diseases?",
+                    a: "Receptionists can view and select from existing catalogs when registering patients, but adding new catalog entries is typically restricted to doctors and clinic admins.",
+                  },
+                  {
+                    q: "Is there a limit to how many catalog entries I can create?",
+                    a: "No. There is no hard limit on allergies, diseases, ICD codes, or procedures. You can build as large a catalog as your practice requires.",
+                  },
+                  {
+                    q: "Do catalogs work offline?",
+                    a: "Catalogs require an internet connection to sync. However, once loaded on your mobile browser, recent entries may remain cached for quick access during brief connectivity gaps.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Creating Prescription Templates", slug: "prescription-templates" },
+                { title: "Patient History & Documents", slug: "patient-history" },
+                { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
