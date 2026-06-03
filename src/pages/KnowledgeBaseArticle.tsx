@@ -67,7 +67,8 @@ import {
   Eye,
   Star,
   Hash,
-  Syringe
+  Syringe,
+  XCircle
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -2150,6 +2151,10 @@ const slugTitleMap: Record<string, string> = {
   "procedures": "Managing Allergies, Diseases, ICD Codes & Procedures",
   "clinical-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
   "manage-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "weekly-availability": "Setting Weekly Availability & Break Times",
+  "break-times": "Setting Weekly Availability & Break Times",
+  "doctor-availability": "Setting Weekly Availability & Break Times",
+  "set-schedule": "Setting Weekly Availability & Break Times",
 };
 
 
@@ -2299,6 +2304,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "allergies-diseases" || slug === "icd-codes" || slug === "procedures" || slug === "clinical-catalogs" || slug === "manage-catalogs") {
     return <ClinicalCatalogsArticle />;
+  }
+
+  if (slug === "weekly-availability" || slug === "break-times" || slug === "doctor-availability" || slug === "set-schedule") {
+    return <WeeklyAvailabilityArticle />;
   }
 
   // Placeholder for other articles
@@ -10879,6 +10888,602 @@ const ClinicalCatalogsArticle = () => {
                 { title: "Recording Patient Visits", slug: "visit-records" },
                 { title: "Creating Prescription Templates", slug: "prescription-templates" },
                 { title: "Patient History & Documents", slug: "patient-history" },
+                { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const WeeklyAvailabilityArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Setting Weekly Availability & Break Times</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Building2 className="w-3 h-3 mr-1" />
+                For Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Setting Weekly Availability & Break Times
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how clinic owners and admins configure each doctor's weekly working hours,
+              daily break windows, and day-off preferences so patients always see accurate,
+              bookable slots.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Configure each doctor's weekly working days",
+                  "Set start and end times per day of the week",
+                  "Add daily break windows (lunch, prayer, etc.)",
+                  "Mark weekly off-days so they never appear for booking",
+                  "Understand how 15-minute slots are auto-generated",
+                  "Manage schedules from both web and mobile"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Why Weekly Availability Matters</h2>
+                  <p className="text-muted-foreground m-0">The foundation of every booking on the platform</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Every appointment slot a patient sees — on your public profile, in the walk-in screen,
+                or in the receptionist booking form — is derived from a doctor's <strong>weekly availability</strong>.
+                If a day is marked unavailable, no slots appear. If a break window overlaps a 15-minute interval,
+                that slot is automatically hidden. This ensures patients can only book times when the doctor
+                is actually free.
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: CalendarDays, label: "Working Days", desc: "Which days the doctor is in" },
+                  { icon: Clock, label: "Start / End Times", desc: "Per-day opening and closing hours" },
+                  { icon: Coffee, label: "Break Windows", desc: "Midday gaps removed from booking" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> A doctor's public profile displays a clean weekly calendar
+                  view of their availability. Keeping this accurate builds patient trust and reduces
+                  no-shows caused by misunderstood timing.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Open the Schedule Editor</h2>
+                  <p className="text-muted-foreground m-0">Two ways to reach the schedule screen</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Clinic owners can configure any doctor's schedule. Doctors can also edit their own.
+                Here's how to access the schedule editor:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-primary" />
+                      For Clinic Owners (Web)
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Navigate to <strong>Doctors</strong> in the sidebar, click the doctor's card,
+                      then select <strong>Schedule</strong>. You'll see all seven days with toggles
+                      and time pickers.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Stethoscope className="w-4 h-4 text-primary" />
+                      For Doctors (Web)
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      From the doctor dashboard, open <strong>My Schedule</strong> from the sidebar.
+                      The same editor opens, scoped to your own account.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Smartphone className="w-4 h-4 text-primary" />
+                      On Mobile
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      In the Zonoir mobile app, go to <strong>More → Schedule & Leaves</strong>.
+                      All schedule controls are touch-optimized and save instantly.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Toggle Days & Set Start/End Times</h2>
+                  <p className="text-muted-foreground m-0">One row per day, full control</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Each day from Sunday to Saturday has its own card with an <strong>Available</strong> toggle.
+                Switch it on to make that day bookable, then pick a <strong>Start Time</strong> and
+                <strong> End Time</strong>. Switch it off to mark the day as closed — patients won't see
+                it in the booking calendar at all.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Calendar, label: "Example: Full Week", desc: "Mon–Fri 09:00 AM – 05:00 PM, Sat 10:00 AM – 02:00 PM, Sun off" },
+                  { icon: CalendarDays, label: "Example: Split Schedule", desc: "Mon/Wed/Fri 09:00 AM – 01:00 PM, Tue/Thu 02:00 PM – 06:00 PM, Sat/Sun off" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Changes take effect immediately after saving. Existing booked appointments are <strong>never</strong> auto-cancelled — only <em>future</em> slots are affected.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Adding Daily Break Times</h2>
+                  <p className="text-muted-foreground m-0">Block midday gaps for lunch, prayer, or admin work</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Inside each day's schedule card, you'll find optional <strong>Break Start</strong> and
+                <strong> Break End</strong> fields. Any 15-minute slot that falls inside this window
+                is automatically removed from the booking grid. Patients simply won't see those times.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Coffee className="w-4 h-4 text-primary" />
+                      Typical Break Setup
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Many Pakistani clinics set a break from <strong>01:00 PM to 02:00 PM</strong> for
+                      lunch and Jummah prayer on Fridays. The system automatically hides all 15-minute
+                      slots between those times.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-primary" />
+                      Multiple Breaks?
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      The current version supports one continuous break per day. If you need two separate
+                      breaks (e.g., morning tea + lunch), split the working day into two segments by setting
+                      break boundaries accordingly.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Best Practice:</strong> Always set a break, even a short one. It prevents
+                  back-to-back bookings that leave no time for charting, prayer, or a meal.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How 15-Minute Slots Are Auto-Generated</h2>
+                  <p className="text-muted-foreground m-0">No manual slot creation needed</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once weekly hours and break times are saved, the platform automatically divides the
+                doctor's day into <strong>15-minute appointment slots</strong>. Here's how it works:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+
+                {[
+                  { title: "Read Schedule", desc: "The system reads the start time, end time, and break window for each day." },
+                  { title: "Generate Intervals", desc: "It creates 15-minute blocks from start to end (e.g., 09:00, 09:15, 09:30...)." },
+                  { title: "Remove Break Slots", desc: "Any interval that overlaps the break window is silently dropped." },
+                  { title: "Remove Booked Slots", desc: "Already-booked or completed appointments are hidden so no double-booking occurs." },
+                  { title: "Serve Everywhere", desc: "The remaining slots appear instantly on the public profile, booking widget, and receptionist screen." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Slot generation is dynamic. If you change a doctor's
+                  end time from 5:00 PM to 4:00 PM, the 4:15 PM and 4:30 PM slots disappear immediately
+                  for new bookings. Existing appointments in that window remain untouched.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Public Profile Weekly Calendar Display</h2>
+                  <p className="text-muted-foreground m-0">What patients see when they browse your doctors</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Every doctor with a public profile gets a clean <strong>weekly calendar</strong> that
+                shows their availability at a glance. This builds trust and helps patients plan ahead.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: CheckCircle2, label: "Available Days", desc: "Shown in green with start and end times clearly listed." },
+                  { icon: XCircle, label: "Closed Days", desc: "Shown as 'Closed' with a muted grey indicator." },
+                  { icon: Coffee, label: "Break Mention", desc: "If a break is set, patients see a note like 'Lunch break: 1:00 PM – 2:00 PM'." },
+                  { icon: Users, label: "Live Sync", desc: "Changes made by the clinic owner update on the public profile within seconds." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Marketing Tip:</strong> Doctors with complete, accurate schedules receive
+                  more appointment requests from the public finder. Incomplete schedules signal
+                  disorganization and deter new patients.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Managing Multiple Doctors at Once</h2>
+                  <p className="text-muted-foreground m-0">Clinic-wide schedule oversight</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Clinic owners can review and edit schedules for <strong>all</strong> doctors from
+                a single screen. This is especially useful when:
+              </p>
+
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>A new doctor joins and you need to clone another doctor's schedule as a template</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Ramadan timings change and every doctor's hours need shifting earlier</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>You want to ensure no two surgeons are on lunch break at the same time</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>A doctor is on extended leave and you want to temporarily mark all days off</span>
+                </li>
+              </ul>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  From the <strong>Doctors</strong> module, click any doctor's card, then
+                  <strong> Schedule</strong>. All edits are real-time and reflect across the entire
+                  platform instantly.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 8 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  8
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Mobile Schedule Management</h2>
+                  <p className="text-muted-foreground m-0">Make changes from anywhere</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Both doctors and clinic owners can update schedules directly from their phones.
+                The mobile interface preserves every feature of the desktop version:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Smartphone, label: "Toggle Days", desc: "Tap the switch to turn a day on or off." },
+                  { icon: Clock, label: "Time Pickers", desc: "Native mobile time wheels for fast start/end selection." },
+                  { icon: Coffee, label: "Break Editor", desc: "Set break start and end with the same time wheels." },
+                  { icon: Save, label: "Instant Save", desc: "Tap Save Schedule — changes sync to the cloud immediately." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Best Practices Card */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="py-6">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                  Best Practices for Clinic Owners
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-2">
+                  <li>• Set schedules <strong>before</strong> launching your public profile — empty schedules hide doctors from the finder</li>
+                  <li>• Use <strong>realistic end times</strong> that include charting and checkout time, not just last patient entry</li>
+                  <li>• Always configure a <strong>break window</strong> so the booking grid respects midday gaps</li>
+                  <li>• Review all doctor schedules <strong>once a month</strong> to catch outdated timings</li>
+                  <li>• During Ramadan, shift start/end times earlier and extend the break for Iftar preparation</li>
+                  <li>• Coordinate lunch breaks across doctors so the front desk always has someone available for walk-ins</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I set different hours for the same doctor on different weeks?",
+                    a: "The current system uses a repeating weekly pattern. For temporary changes (e.g., a conference week), use the Leaves feature to block specific dates rather than editing the weekly schedule.",
+                  },
+                  {
+                    q: "What happens if I don't set a break time?",
+                    a: "Without a break, 15-minute slots will be generated continuously from start to end time. Patients can book straight through your lunch hour.",
+                  },
+                  {
+                    q: "Can patients see the exact break time?",
+                    a: "Yes, the public profile shows a note indicating the break window. This sets expectations and reduces patient frustration.",
+                  },
+                  {
+                    q: "Does changing a schedule affect existing appointments?",
+                    a: "No. Existing appointments remain intact. Only new bookings are restricted by the updated schedule. You'll need to manually reschedule any affected future appointments.",
+                  },
+                  {
+                    q: "Can a doctor edit their own schedule, or only the clinic owner?",
+                    a: "Both. Doctors can edit their own schedule from the 'My Schedule' screen. Clinic owners can edit any doctor's schedule from the Doctors module.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Adding Doctors", slug: "add-doctors" },
                 { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
