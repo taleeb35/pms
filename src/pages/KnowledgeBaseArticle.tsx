@@ -2150,6 +2150,10 @@ const slugTitleMap: Record<string, string> = {
   "procedures": "Managing Allergies, Diseases, ICD Codes & Procedures",
   "clinical-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
   "manage-catalogs": "Managing Allergies, Diseases, ICD Codes & Procedures",
+  "weekly-availability": "Setting Weekly Availability & Break Times",
+  "break-times": "Setting Weekly Availability & Break Times",
+  "doctor-availability": "Setting Weekly Availability & Break Times",
+  "set-schedule": "Setting Weekly Availability & Break Times",
 };
 
 
@@ -2299,6 +2303,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "allergies-diseases" || slug === "icd-codes" || slug === "procedures" || slug === "clinical-catalogs" || slug === "manage-catalogs") {
     return <ClinicalCatalogsArticle />;
+  }
+
+  if (slug === "weekly-availability" || slug === "break-times" || slug === "doctor-availability" || slug === "set-schedule") {
+    return <WeeklyAvailabilityArticle />;
   }
 
   // Placeholder for other articles
