@@ -2155,6 +2155,11 @@ const slugTitleMap: Record<string, string> = {
   "break-times": "Setting Weekly Availability & Break Times",
   "doctor-availability": "Setting Weekly Availability & Break Times",
   "set-schedule": "Setting Weekly Availability & Break Times",
+  "manage-leaves": "Managing Leaves (Full-Day & Half-Day)",
+  "full-day-leave": "Managing Leaves (Full-Day & Half-Day)",
+  "half-day-leave": "Managing Leaves (Full-Day & Half-Day)",
+  "doctor-leaves": "Managing Leaves (Full-Day & Half-Day)",
+  "add-leave": "Managing Leaves (Full-Day & Half-Day)",
 };
 
 
