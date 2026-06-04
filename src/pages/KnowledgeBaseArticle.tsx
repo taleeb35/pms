@@ -11513,3 +11513,656 @@ const WeeklyAvailabilityArticle = () => {
     </div>
   );
 };
+
+const ManagingLeavesArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Managing Leaves (Full-Day & Half-Day)</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Managing Leaves (Full-Day & Half-Day)
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A complete guide to blocking specific dates on your calendar — whether you're taking a full day off or just a half-day break.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Difference between weekly schedule and leaves",
+                  "Add a full-day leave",
+                  "Add a half-day leave (morning or evening)",
+                  "Cancel or delete a leave",
+                  "How leaves affect patient bookings",
+                  "Quick-add shortcuts for common scenarios",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Leaves vs. Weekly Schedule</h2>
+                  <p className="text-muted-foreground m-0">Understand when to use each feature</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Zonoir offers <strong>two</strong> ways to control your availability. They serve different purposes and work together:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Weekly Schedule</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Your repeating pattern — e.g., Mon–Fri 9 AM to 5 PM. Use for normal working hours.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <Plane className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Leaves</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Specific date exceptions — e.g., "I'm off on March 15th" or "Half-day on Eid."
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Rule of thumb:</strong> If you take the same day off every week (e.g., Sundays), use the Weekly Schedule toggle. If it's a one-off or irregular date, use Leaves.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Navigate to the Leaves Tab</h2>
+                  <p className="text-muted-foreground m-0">Access your leave manager from Timing & Schedule</p>
+                </div>
+              </div>
+
+              <Card className="mb-6">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-8 text-center mb-4">
+                    <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 mx-auto mb-3 bg-background rounded-xl flex items-center justify-center shadow-lg">
+                          <CalendarDays className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">Leaves & Days Off Tab</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm text-center">
+                    Inside Timing & Schedule, click the "Leaves & Days Off" tab to see your upcoming leaves
+                  </p>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-3">
+                <p>
+                  Go to <strong>Timing & Schedule</strong> from your sidebar. You'll see two tabs at the top:
+                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Weekly Schedule</strong> — for your regular repeating hours</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Leaves & Days Off</strong> — for specific date exceptions</span>
+                  </li>
+                </ul>
+                <p>Click the <strong>Leaves & Days Off</strong> tab to access your leave management panel.</p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Adding a Full-Day Leave</h2>
+                  <p className="text-muted-foreground m-0">Block the entire day from bookings</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                A <strong>Full-Day Leave</strong> makes you completely unavailable for that date. No patient will be able to book any slot, and your public profile will show the day as off.
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                
+                {[
+                  { title: "Click Add Leave", desc: "In the Leaves tab, click the 'Add Leave' button." },
+                  { title: "Select the Date", desc: "Use the calendar picker to choose the date you want off. Past dates are disabled." },
+                  { title: "Choose 'Full Day'", desc: "From the Leave Type dropdown, select 'Full Day'." },
+                  { title: "Add a Reason (Optional)", desc: "Enter a note like 'Personal leave' or 'Conference' for your records." },
+                  { title: "Confirm", desc: "Click 'Add Leave'. The date is immediately blocked across the platform." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Full-day leaves appear on your public profile as <strong>"Off"</strong> for that day. Patients browsing your profile will see the day is unavailable and can plan accordingly.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Adding a Half-Day Leave</h2>
+                  <p className="text-muted-foreground m-0">Morning off or evening off — flexible partial blocking</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                <strong>Half-Day Leaves</strong> are perfect when you're available for part of the day but need the other half off — for a morning surgery, an afternoon seminar, or personal errands.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Sun className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Morning Off</h4>
+                        <p className="text-xs text-muted-foreground">
+                          All slots before your break/midday are blocked. You start seeing patients from the afternoon onward.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Moon className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Evening Off</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Morning slots remain bookable. All afternoon/evening slots after your break are blocked.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <p className="mb-4">
+                To add a half-day leave:
+              </p>
+              <ol className="space-y-2 mb-6">
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary">1.</span>
+                  <span>Click <strong>Add Leave</strong> and pick your date.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary">2.</span>
+                  <span>In the <strong>Leave Type</strong> dropdown, choose either <em>Morning Off</em> or <em>Evening Off</em>.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-semibold text-primary">3.</span>
+                  <span>Add an optional reason and confirm.</span>
+                </li>
+              </ol>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>How it works:</strong> The system uses your weekly schedule's break window as the dividing line. If your typical break is 1:00 PM – 2:00 PM, a "Morning Off" blocks all slots before 1:00 PM, while "Evening Off" blocks everything after 2:00 PM.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Quick-Add Shortcuts</h2>
+                  <p className="text-muted-foreground m-0">One-click leaves for common scenarios</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                For frequently needed leaves, the platform offers <strong>quick-add buttons</strong> that skip the form entirely:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Zap, label: "Off Tomorrow", desc: "Instantly adds a full-day leave for tomorrow. Perfect for sudden illness or emergencies." },
+                  { icon: Plus, label: "Add Leave (Custom)", desc: "Opens the full form where you pick any future date, type, and reason." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Note:</strong> Quick-add always defaults to a <strong>Full Day</strong> leave. If you need a half-day, use the custom Add Leave form instead.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Cancelling or Deleting a Leave</h2>
+                  <p className="text-muted-foreground m-0">Restore availability if plans change</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                If your plans change and you become available again, you can remove a leave instantly:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                      Delete from the Leaves List
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      In the Leaves tab, every upcoming leave has a trash icon on the right. Click it to remove the leave immediately. Slots for that date will reappear in the booking grid right away.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Deleting a leave is <strong>instant and irreversible</strong>. The date becomes bookable immediately. If a patient already booked during that time before you deleted the leave, their appointment remains valid.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How Leaves Affect Patient Bookings</h2>
+                  <p className="text-muted-foreground m-0">What patients see when you're on leave</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Leaves automatically sync across every booking touchpoint on the platform:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Globe, label: "Public Profile", desc: "The date is hidden or marked 'Off'. Patients cannot request appointments on that day." },
+                  { icon: Smartphone, label: "Booking Widget", desc: "The day is greyed out in the date picker. No time slots are shown." },
+                  { icon: Users, label: "Receptionist Screen", desc: "Receptionists see the leave indicator when attempting to book for that doctor." },
+                  { icon: Calendar, label: "Existing Appointments", desc: "Appointments already booked before the leave was added are NEVER auto-cancelled." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> If you already have appointments scheduled on a date and then add a leave, those existing appointments <strong>remain untouched</strong>. You must manually reschedule them if needed.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 8 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  8
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Who Can Manage Leaves?</h2>
+                  <p className="text-muted-foreground m-0">Doctor self-service + clinic owner oversight</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Leaves can be managed by two types of users, depending on your clinic's workflow:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Doctors</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Any doctor can add, view, and delete their own leaves from the "Timing & Schedule" screen.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Building2 className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Clinic Owners</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Owners can manage leaves for any doctor from the Doctors module, making it easy to handle absences centrally.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Every leave addition and deletion is <strong>logged in the Activity Logs</strong> with the doctor's name, date, leave type, and timestamp. This creates an audit trail for clinic administrators.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 9 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  9
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Best Practices for Leave Management</h2>
+                  <p className="text-muted-foreground m-0">Keep your calendar accurate and patients informed</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-primary" />
+                      Plan Ahead
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Add leaves as soon as you know about them — ideally 1–2 weeks in advance. This prevents patients from requesting slots you'll just have to cancel later.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Coffee className="w-4 h-4 text-primary" />
+                      Use Half-Days for Partial Absences
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Instead of taking a full day off for a 2-hour commitment, use Morning Off or Evening Off. This maximizes your availability and revenue.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-primary" />
+                      Check Existing Appointments First
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Before adding a leave, review your appointment calendar for that date. If patients are already booked, you'll need to reschedule them manually.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Users className="w-4 h-4 text-primary" />
+                      Coordinate with Your Team
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Clinic owners should review leave patterns across all doctors to ensure the clinic always has coverage for walk-ins and emergencies.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I add a leave for a past date?",
+                    a: "No. The calendar picker only allows future dates. Past dates are disabled to prevent backdated changes that could affect billing or reporting.",
+                  },
+                  {
+                    q: "What happens if I delete a leave that was blocking a booked appointment?",
+                    a: "The appointment remains valid. Deleting a leave only restores empty slots. It does not cancel or affect any existing patient appointments.",
+                  },
+                  {
+                    q: "Can a receptionist add leaves on behalf of a doctor?",
+                    a: "Currently, only doctors and clinic owners can manage leaves. Receptionists can view schedules but cannot add or delete leave entries.",
+                  },
+                  {
+                    q: "Is there a limit to how many leaves I can add?",
+                    a: "No. You can add as many future leaves as needed. The system only shows upcoming leaves (today onwards) in the active list.",
+                  },
+                  {
+                    q: "Do leaves sync with my public profile instantly?",
+                    a: "Yes. Leaves are applied in real-time. As soon as you add or delete a leave, the public booking calendar updates within seconds.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
