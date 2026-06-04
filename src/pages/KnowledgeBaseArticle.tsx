@@ -68,7 +68,9 @@ import {
   Star,
   Hash,
   Syringe,
-  XCircle
+  XCircle,
+  Sun,
+  Moon
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
