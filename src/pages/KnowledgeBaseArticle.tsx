@@ -2315,6 +2315,10 @@ const KnowledgeBaseArticle = () => {
     return <WeeklyAvailabilityArticle />;
   }
 
+  if (slug === "manage-leaves" || slug === "full-day-leave" || slug === "half-day-leave" || slug === "doctor-leaves" || slug === "add-leave") {
+    return <ManagingLeavesArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
