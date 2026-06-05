@@ -37,7 +37,17 @@ export interface OphthalmologyData {
   auto_refraction?: string;
   cyclo_auto_refraction?: string;
   retinoscopy?: string;
-  iop?: string;
+  iop?: string; // legacy free-text
+  // Structured IOP / Pachymetry / Correction Factor
+  iop_right?: string;
+  iop_left?: string;
+  pachymetry_right?: string;
+  pachymetry_left?: string;
+  cf_right?: string;
+  cf_left?: string;
+  iop_final_right?: string;
+  iop_final_left?: string;
+  iop_method?: string;
   // External Examination
   pupil?: string;
   lids?: string;
@@ -111,7 +121,7 @@ export default function OphthalmologyExamination({ value, onChange }: Props) {
     fields.filter((k) => !!value[k]).length;
 
   const historyFields: (keyof OphthalmologyData)[] = ["presenting_complaints", "ocular_history", "systemic_history", "drug_allergy", "surgical_history"];
-  const visionFields: (keyof OphthalmologyData)[] = ["va_right_unaided", "va_right_glasses", "va_right_pinhole", "va_right_near", "va_left_unaided", "va_left_glasses", "va_left_pinhole", "va_left_near", "refraction_right_sphere", "refraction_right_cylinder", "refraction_right_axis", "refraction_right_add", "refraction_right_final_va", "refraction_left_sphere", "refraction_left_cylinder", "refraction_left_axis", "refraction_left_add", "refraction_left_final_va", "auto_refraction", "cyclo_auto_refraction", "retinoscopy", "iop"];
+  const visionFields: (keyof OphthalmologyData)[] = ["va_right_unaided", "va_right_glasses", "va_right_pinhole", "va_right_near", "va_left_unaided", "va_left_glasses", "va_left_pinhole", "va_left_near", "refraction_right_sphere", "refraction_right_cylinder", "refraction_right_axis", "refraction_right_add", "refraction_right_final_va", "refraction_left_sphere", "refraction_left_cylinder", "refraction_left_axis", "refraction_left_add", "refraction_left_final_va", "auto_refraction", "cyclo_auto_refraction", "retinoscopy", "iop", "iop_right", "iop_left", "pachymetry_right", "pachymetry_left", "cf_right", "cf_left", "iop_final_right", "iop_final_left", "iop_method"];
   const externalFields: (keyof OphthalmologyData)[] = ["pupil", "lids", "lacrimal_passage", "other_external_findings"];
   const anteriorFields: (keyof OphthalmologyData)[] = ["ant_conjunctiva_right", "ant_conjunctiva_left", "ant_conjunctiva_status", "ant_sclera_right", "ant_sclera_left", "ant_sclera_status", "ant_cornea_right", "ant_cornea_left", "ant_cornea_status", "ant_ac_right", "ant_ac_left", "ant_ac_status", "ant_iris_right", "ant_iris_left", "ant_iris_status", "ant_lens_right", "ant_lens_left", "ant_lens_status"];
   const posteriorFields: (keyof OphthalmologyData)[] = ["fundus", "optic_disc", "vitreous", "cd_ratio", "macula", "peripheral_retina"];
@@ -320,7 +330,7 @@ export default function OphthalmologyExamination({ value, onChange }: Props) {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <Label className="text-xs">Auto Refraction</Label>
                 <Input placeholder="Optional" value={value.auto_refraction || ""} onChange={(e) => set({ auto_refraction: e.target.value })} />
@@ -337,9 +347,60 @@ export default function OphthalmologyExamination({ value, onChange }: Props) {
                 <Label className="text-xs">Retinoscopy</Label>
                 <Input placeholder="Optional" value={value.retinoscopy || ""} onChange={(e) => set({ retinoscopy: e.target.value })} />
               </div>
-              <div>
-                <Label className="text-xs">IOP</Label>
-                <Input placeholder="R/L mmHg" value={value.iop || ""} onChange={(e) => set({ iop: e.target.value })} />
+            </div>
+
+            {/* Structured IOP */}
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">IOP / Pachymetry / Correction</Label>
+              <div className="overflow-x-auto border rounded-md">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="p-2 text-left text-xs">For</th>
+                      <th className="p-2 text-left text-xs">IOP (mmHg)</th>
+                      <th className="p-2 text-left text-xs">Pachymetry (µm)</th>
+                      <th className="p-2 text-left text-xs">CF</th>
+                      <th className="p-2 text-left text-xs">Final</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(["right", "left"] as const).map((eye) => (
+                      <tr key={eye} className="border-t">
+                        <td className="p-2 font-semibold">({eye === "right" ? "R" : "L"})</td>
+                        {(["iop", "pachymetry", "cf", "iop_final"] as const).map((col) => {
+                          const k = `${col}_${eye}` as keyof OphthalmologyData;
+                          return (
+                            <td key={col} className="p-2">
+                              <Input
+                                value={(value[k] as string) || ""}
+                                onChange={(e) => set({ [k]: e.target.value } as any)}
+                                className="h-8"
+                              />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-3 grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs">Method</Label>
+                  <Input
+                    placeholder="e.g. GAT, NCT, Tonopen"
+                    value={value.iop_method || ""}
+                    onChange={(e) => set({ iop_method: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">IOP (legacy notes)</Label>
+                  <Input
+                    placeholder="Optional free text"
+                    value={value.iop || ""}
+                    onChange={(e) => set({ iop: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           </TabsContent>
