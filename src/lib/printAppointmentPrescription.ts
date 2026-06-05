@@ -330,6 +330,8 @@ export async function printAppointmentPrescription(opts: {
 
   ${ophthalmologySections}
 
+  ${eyeHistorySection}
+
   ${(clinical.icd_code || effDiagnosisText) ? `<h3 class="section">Diagnosis</h3>
     <div style="font-size:10.5pt;">
       ${clinical.icd_code ? `<span class="icd">${escapeHtml(clinical.icd_code)}</span> ` : ""}
