@@ -2162,6 +2162,11 @@ const slugTitleMap: Record<string, string> = {
   "half-day-leave": "Managing Leaves (Full-Day & Half-Day)",
   "doctor-leaves": "Managing Leaves (Full-Day & Half-Day)",
   "add-leave": "Managing Leaves (Full-Day & Half-Day)",
+  "public-doctor-profile": "Your Public Doctor Profile — How Patients Find You",
+  "doctor-profile": "Your Public Doctor Profile — How Patients Find You",
+  "patient-find-you": "Your Public Doctor Profile — How Patients Find You",
+  "online-presence": "Your Public Doctor Profile — How Patients Find You",
+  "seo-profile": "Your Public Doctor Profile — How Patients Find You",
 };
 
 
