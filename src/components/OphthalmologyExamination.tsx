@@ -37,7 +37,17 @@ export interface OphthalmologyData {
   auto_refraction?: string;
   cyclo_auto_refraction?: string;
   retinoscopy?: string;
-  iop?: string;
+  iop?: string; // legacy free-text
+  // Structured IOP / Pachymetry / Correction Factor
+  iop_right?: string;
+  iop_left?: string;
+  pachymetry_right?: string;
+  pachymetry_left?: string;
+  cf_right?: string;
+  cf_left?: string;
+  iop_final_right?: string;
+  iop_final_left?: string;
+  iop_method?: string;
   // External Examination
   pupil?: string;
   lids?: string;
