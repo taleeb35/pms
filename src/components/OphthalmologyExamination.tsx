@@ -330,7 +330,7 @@ export default function OphthalmologyExamination({ value, onChange }: Props) {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <Label className="text-xs">Auto Refraction</Label>
                 <Input placeholder="Optional" value={value.auto_refraction || ""} onChange={(e) => set({ auto_refraction: e.target.value })} />
@@ -347,9 +347,60 @@ export default function OphthalmologyExamination({ value, onChange }: Props) {
                 <Label className="text-xs">Retinoscopy</Label>
                 <Input placeholder="Optional" value={value.retinoscopy || ""} onChange={(e) => set({ retinoscopy: e.target.value })} />
               </div>
-              <div>
-                <Label className="text-xs">IOP</Label>
-                <Input placeholder="R/L mmHg" value={value.iop || ""} onChange={(e) => set({ iop: e.target.value })} />
+            </div>
+
+            {/* Structured IOP */}
+            <div>
+              <Label className="text-sm font-semibold mb-2 block">IOP / Pachymetry / Correction</Label>
+              <div className="overflow-x-auto border rounded-md">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      <th className="p-2 text-left text-xs">For</th>
+                      <th className="p-2 text-left text-xs">IOP (mmHg)</th>
+                      <th className="p-2 text-left text-xs">Pachymetry (µm)</th>
+                      <th className="p-2 text-left text-xs">CF</th>
+                      <th className="p-2 text-left text-xs">Final</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(["right", "left"] as const).map((eye) => (
+                      <tr key={eye} className="border-t">
+                        <td className="p-2 font-semibold">({eye === "right" ? "R" : "L"})</td>
+                        {(["iop", "pachymetry", "cf", "iop_final"] as const).map((col) => {
+                          const k = `${col}_${eye}` as keyof OphthalmologyData;
+                          return (
+                            <td key={col} className="p-2">
+                              <Input
+                                value={(value[k] as string) || ""}
+                                onChange={(e) => set({ [k]: e.target.value } as any)}
+                                className="h-8"
+                              />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="mt-3 grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs">Method</Label>
+                  <Input
+                    placeholder="e.g. GAT, NCT, Tonopen"
+                    value={value.iop_method || ""}
+                    onChange={(e) => set({ iop_method: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">IOP (legacy notes)</Label>
+                  <Input
+                    placeholder="Optional free text"
+                    value={value.iop || ""}
+                    onChange={(e) => set({ iop: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           </TabsContent>
