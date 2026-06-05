@@ -221,13 +221,7 @@ export async function printAppointmentPrescription(opts: {
     ? `<h3 class="section">History &amp; Presenting Complaints</h3>${eyeHistoryHTML}`
     : "";
 
-  // Prevent duplicating presenting complaints / ocular history in the generic
-  // Chief Complaint / History sections when an ophthalmology block is being rendered.
-  if (eyeHistoryHTML) {
-    if (!clinical.chief_complaint?.trim()) {
-      // already shown above — clear so it doesn't repeat
-    }
-  }
+
 
 
 
