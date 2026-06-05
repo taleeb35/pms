@@ -136,10 +136,10 @@ export async function printAppointmentPrescription(opts: {
   const hasOph = Object.values(oph).some((v) => v != null && String(v).trim() !== "");
   const v = (k: string) => (oph[k] != null && String(oph[k]).trim() !== "" ? String(oph[k]) : "");
 
-  // Build fallbacks from ophthalmology if main clinical fields are blank
-  const effChiefComplaint = clinical.chief_complaint?.trim() || v("presenting_complaints");
+  // For eye specialists we render presenting_complaints / ocular_history in a dedicated
+  // ophthalmology block, so don't auto-promote them into the generic Chief Complaint / History sections.
+  const effChiefComplaint = clinical.chief_complaint?.trim() || "";
   const historyParts = [
-    v("ocular_history") && `Ocular: ${v("ocular_history")}`,
     v("systemic_history") && `Systemic: ${v("systemic_history")}`,
     v("drug_allergy") && `Drug allergy: ${v("drug_allergy")}`,
     v("surgical_history") && `Surgical: ${v("surgical_history")}`,
