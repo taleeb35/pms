@@ -2748,6 +2748,521 @@ const ManageReceptionistsArticle = () => {
 
 export default KnowledgeBaseArticle;
 
+const PublicDoctorProfileArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Your Public Doctor Profile — How Patients Find You</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Your Public Doctor Profile — How Patients Find You
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand how your public profile works, how patients discover you through search engines,
+              and what you can do to maximise your visibility and bookings.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How your public profile is automatically created",
+                  "What patients see when they find you online",
+                  "SEO-friendly URLs and structured data",
+                  "Tips to improve your profile and get more bookings",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Your Profile Is Automatic</h2>
+                  <p className="text-muted-foreground m-0">No setup required — we build it from your account data</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                As soon as your clinic owner adds you to the system and your account is marked <strong>approved</strong>,
+                a public doctor profile is generated automatically. You do not need to create a separate website or fill out lengthy forms.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: User, label: "Your Name & Photo", desc: "Pulled from your profile. Upload a professional avatar for trust." },
+                  { icon: Stethoscope, label: "Specialization", desc: "The specialty your clinic assigned — e.g., Cardiologist, ENT." },
+                  { icon: Building2, label: "Clinic Details", desc: "Clinic name, address, and city are shown automatically." },
+                  { icon: MapPin, label: "Map Location", desc: "An embedded Google Map helps patients navigate to your clinic." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Ask your clinic owner to ensure your <em>qualification</em>, <em>experience years</em>, and <em>introduction</em> are filled in your doctor record. These fields power the SEO description patients see on Google.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Patients See on Your Profile</h2>
+                  <p className="text-muted-foreground m-0">A complete, mobile-friendly page built to convert visitors into bookings</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When a patient lands on your public profile — either from Google search, our doctor finder, or a shared link — they see a clean, high-converting page with everything they need to book an appointment.
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+
+                {[
+                  { title: "Hero Card", desc: "Your name, photo, verified badge, specialization, qualification, and years of experience appear at the top." },
+                  { title: "About Section", desc: "Your personal introduction tells patients your expertise, approach, and what conditions you treat." },
+                  { title: "Weekly Schedule", desc: "Patients see which days you work and your available time slots at a glance." },
+                  { title: "Clinic Location & Map", desc: "An interactive Google Map with the clinic name, address, and a one-tap 'Get Directions' button." },
+                  { title: "Book Appointment Button", desc: "A prominent call-to-action lets patients request a slot in seconds without creating an account." },
+                  { title: "Related Doctors", desc: "If you're unavailable, patients see similar specialists in your city as alternatives." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  Every profile is fully responsive. Patients browsing on mobile phones get the same rich experience — maps, booking, and schedule all work smoothly on small screens.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">SEO & How Google Finds You</h2>
+                  <p className="text-muted-foreground m-0">Structured data and clean URLs help search engines rank your profile</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your public profile is built with modern SEO best practices so patients searching Google for doctors in your city and specialty can find you easily.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Globe, label: "Clean URL Slug", desc: "Example: zonoir.com/doctors/lahore/cardiologist/dr-ahmed-khan — readable by humans and search engines." },
+                  { icon: FileText, label: "Meta Tags", desc: "Every profile has a unique page title, description, and Open Graph tags for social sharing." },
+                  { icon: Star, label: "JSON-LD Schema", desc: "Structured data marks you as a Physician with your specialty, credentials, and clinic." },
+                  { icon: Search, label: "Keyword Rich", desc: "Your name, specialty, city, and qualification are woven into the page content naturally." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>How slugs are generated:</strong> Your city and specialty are converted to URL-friendly slugs (e.g., "ENT Specialist" becomes "ent-specialist"). Your name always gets a "dr-" prefix (e.g., "Dr. Ahmed Khan" becomes "dr-ahmed-khan").
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The Doctor Finder Chatbot</h2>
+                  <p className="text-muted-foreground m-0">AI-powered search helps patients discover you through conversation</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                In addition to traditional search, patients can use our <strong>AI Doctor Finder Chatbot</strong> on the homepage. They describe symptoms, mention a specialty, or simply ask "Who is the best paediatrician in Karachi?" — and the chatbot surfaces matching doctor profiles, including yours.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      How it works
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      The chatbot reads your specialization, city, qualification, and introduction to match you with patient queries. A detailed introduction and clear specialty name improve your chances of being recommended.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-primary" />
+                      WhatsApp Integration
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Patients can also reach your clinic instantly via the floating WhatsApp button on your profile. Make sure your clinic's WhatsApp number is kept up to date.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  The chatbot works 24/7. Even when your clinic is closed, patients can discover your profile, view your schedule, and leave a booking request.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How to Optimise Your Profile</h2>
+                  <p className="text-muted-foreground m-0">Small improvements that lead to more patient bookings</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                While your profile is automatic, there are several things you (or your clinic owner) can do to make it more compelling and trustworthy.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Camera, label: "Upload a Professional Photo", desc: "Profiles with a clear, professional headshot get significantly more engagement than those with a placeholder." },
+                  { icon: FileText, label: "Write a Detailed Introduction", desc: "Explain your expertise, the conditions you treat, your approach to care, and any languages you speak." },
+                  { icon: Star, label: "Add Qualifications & Experience", desc: "Patients trust credentials. Make sure your degrees and years of experience are accurately recorded." },
+                  { icon: CalendarDays, label: "Keep Your Schedule Updated", desc: "Accurate weekly availability and timely leaves prevent frustrated patients and no-shows." },
+                  { icon: MapPin, label: "Verify Clinic Address", desc: "A precise address powers the map and helps patients find you without calling." },
+                  { icon: Phone, label: "Keep Contact Info Current", desc: "Ensure your clinic phone and WhatsApp number are reachable during working hours." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Privacy Note:</strong> Only information explicitly entered into your doctor record and clinic profile is public. Private patient data, internal notes, and financial records are never exposed.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Booking Flow for Patients</h2>
+                  <p className="text-muted-foreground m-0">From discovery to confirmed appointment — what happens behind the scenes</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Understanding the patient journey helps you appreciate how your profile converts visitors into real appointments.
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+
+                {[
+                  { title: "Discovery", desc: "Patient searches Google or uses our chatbot and lands on your profile." },
+                  { title: "Browse Schedule", desc: "They view your weekly availability and pick a day with open slots." },
+                  { title: "Select a Slot", desc: "The booking widget shows 15-minute intervals. They choose a time that suits them." },
+                  { title: "Enter Details", desc: "Patient provides their name, phone, age, gender, and reason for visit. No account needed." },
+                  { title: "Request Sent", desc: "The appointment is created with 'Requested' status. Your receptionist or clinic owner confirms it." },
+                  { title: "Confirmation", desc: "The patient receives confirmation and a reminder. You see it in your dashboard calendar." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Receptionist tip:</strong> Respond to booking requests quickly. Patients who receive fast confirmations are far more likely to show up and leave positive reviews.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Profile Visibility Rules</h2>
+                  <p className="text-muted-foreground m-0">When your profile is live and when it is hidden</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Not every doctor record becomes a public profile. The system follows strict rules to ensure only legitimate, active providers are listed.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-emerald-600" />
+                      Visible
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Your profile is public when: your doctor account is <strong>approved</strong>, your clinic is active, and you have a valid specialization and city set.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <XCircle className="w-4 h-4 text-destructive" />
+                      Hidden
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Your profile is hidden when: your account is <strong>not approved</strong>, your clinic's subscription has expired, or your clinic owner has deactivated your account.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  If you leave a clinic and join another, your old profile is automatically de-linked and a new one is generated under the new clinic's details.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 8 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  8
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Frequently Asked Questions</h2>
+                  <p className="text-muted-foreground m-0">Common questions from doctors about their public profile</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I edit my public profile directly?",
+                    a: "Doctors can update their photo, phone, and address from their mobile app or dashboard. Changes to specialization, qualification, or clinic details must be done by the clinic owner.",
+                  },
+                  {
+                    q: "How long does it take for changes to appear on Google?",
+                    a: "Profile updates are live on Zonoir instantly. Google may take a few days to re-crawl and refresh search results.",
+                  },
+                  {
+                    q: "Is my patient data visible on my public profile?",
+                    a: "Absolutely not. Your public profile only shows professional information. All patient records, visit history, and internal notes remain strictly private.",
+                  },
+                  {
+                    q: "Can I hide my profile temporarily without deleting my account?",
+                    a: "Your clinic owner can mark you as inactive, which hides your profile from public search while preserving your account and data.",
+                  },
+                  {
+                    q: "Does the profile work without a separate website?",
+                    a: "Yes. Your Zonoir public profile acts as your online presence. You can share the link on business cards, social media, or clinic signage.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
+                { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves" },
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 const AddPatientsArticle = () => {
   const kbBase = useKBBase();
   return (
