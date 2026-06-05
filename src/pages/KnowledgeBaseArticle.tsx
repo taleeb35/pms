@@ -2326,6 +2326,10 @@ const KnowledgeBaseArticle = () => {
     return <ManagingLeavesArticle />;
   }
 
+  if (slug === "public-doctor-profile" || slug === "doctor-profile" || slug === "patient-find-you" || slug === "online-presence" || slug === "seo-profile") {
+    return <PublicDoctorProfileArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
