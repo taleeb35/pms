@@ -14,6 +14,7 @@ import {
   Smartphone,
   User,
   ChevronRight,
+  HelpCircle,
   Lightbulb,
   AlertCircle,
   ThumbsUp,
@@ -2167,6 +2168,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-find-you": "Your Public Doctor Profile — How Patients Find You",
   "online-presence": "Your Public Doctor Profile — How Patients Find You",
   "seo-profile": "Your Public Doctor Profile — How Patients Find You",
+  "doctor-faqs": "Adding Custom FAQs to Your Profile",
+  "custom-faqs": "Adding Custom FAQs to Your Profile",
+  "profile-faqs": "Adding Custom FAQs to Your Profile",
+  "faq-editor": "Adding Custom FAQs to Your Profile",
 };
 
 
@@ -2328,6 +2333,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "public-doctor-profile" || slug === "doctor-profile" || slug === "patient-find-you" || slug === "online-presence" || slug === "seo-profile") {
     return <PublicDoctorProfileArticle />;
+  }
+
+  if (slug === "doctor-faqs" || slug === "custom-faqs" || slug === "profile-faqs" || slug === "faq-editor") {
+    return <DoctorFaqsArticle />;
   }
 
   // Placeholder for other articles
@@ -12673,6 +12682,605 @@ const ManagingLeavesArticle = () => {
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Booking Appointments", slug: "book-appointments" },
                 { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const DoctorFaqsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Adding Custom FAQs to Your Profile</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-purple-500/10 text-purple-600 hover:bg-purple-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                4 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Adding Custom FAQs to Your Profile
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Answer the questions patients ask most — directly on your public profile. 
+              Build trust, reduce phone calls, and help visitors book with confidence.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Why FAQs matter for your online presence",
+                  "How to add, edit, and delete FAQ entries",
+                  "How FAQs appear on your public profile",
+                  "Best practices for writing patient-friendly answers",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Are Profile FAQs?</h2>
+                  <p className="text-muted-foreground m-0">Your 24/7 patient communication assistant</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Every doctor on Zonoir has a public profile that patients can find through Google, 
+                our AI chatbot, or direct links. The <strong>Custom FAQs section</strong> lets you 
+                publish your own questions and answers directly on that profile — so patients get 
+                instant clarity before they book.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: HelpCircle, label: "Reduce Repetitive Calls", desc: "Answer common questions once and let patients self-serve at any hour." },
+                  { icon: Star, label: "Build Trust & Credibility", desc: "Transparency about your services, fees, and policies builds patient confidence." },
+                  { icon: Search, label: "Boost SEO Visibility", desc: "FAQs are indexed by search engines and can surface your profile for long-tail queries." },
+                  { icon: Smartphone, label: "Mobile-Friendly", desc: "Patients browsing on phones can expand answers quickly without leaving your profile." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Think about the top 3 questions your receptionist 
+                  answers on the phone every day. Those are the perfect FAQs to add first.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where to Edit Your FAQs</h2>
+                  <p className="text-muted-foreground m-0">Access the FAQ editor from your doctor dashboard</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                You can manage your FAQs from the <strong>Doctor Profile</strong> section of your dashboard. 
+                Here's how to get there:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                {[
+                  { title: "Log in to your Doctor Portal", desc: "Use your registered email and password." },
+                  { title: "Navigate to Profile Settings", desc: "Click your name or avatar in the top-right, then select 'Edit Profile'." },
+                  { title: "Find the FAQs Tab", desc: "Scroll down or click the 'Frequently Asked Questions' section in the profile form." },
+                  { title: "Start Adding FAQs", desc: "Use the 'Add FAQ' button to create your first question-and-answer pair." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Card className="mb-6 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-8 text-center mb-4">
+                    <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 mx-auto mb-3 bg-background rounded-xl flex items-center justify-center shadow-lg">
+                          <HelpCircle className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">FAQ Editor Preview</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm text-center">
+                    The FAQ editor shows each question with a drag handle, question field, and answer textarea.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Adding a New FAQ</h2>
+                  <p className="text-muted-foreground m-0">Create patient-friendly Q&A pairs in seconds</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Each FAQ entry has two required fields: a <strong>Question</strong> and an <strong>Answer</strong>. 
+                Here's how the process works:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Plus className="w-4 h-4 text-primary" />
+                      Step 1 — Click "Add FAQ"
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      A new empty FAQ card appears at the bottom of the list. You can add as many FAQs as you want — there is no limit.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Pencil className="w-4 h-4 text-primary" />
+                      Step 2 — Write the Question
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Keep it conversational. Write the way a patient would ask. For example: "Do you offer evening appointments?" instead of "Evening Appointment Availability."
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      Step 3 — Write the Answer
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Be clear and concise. Aim for 2–4 sentences. If applicable, mention days, times, or fees. Avoid medical jargon — write for a general audience.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Save className="w-4 h-4 text-primary" />
+                      Step 4 — Save Your Profile
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      FAQs are saved as part of your overall profile. Click the main "Save" or "Update Profile" button at the bottom of the page to publish your changes.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Auto-Save Note:</strong> While the FAQ cards update in real-time as you type, 
+                  they are only permanently saved when you submit the entire profile form. Don't forget 
+                  to hit Save before leaving the page.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Editing and Reordering FAQs</h2>
+                  <p className="text-muted-foreground m-0">Fine-tune your answers and control the display order</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your FAQ list is fully flexible. You can edit the text of any entry or remove questions 
+                that are no longer relevant:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Pencil className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Edit Anytime</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Click into any question or answer field and change the text. Changes apply immediately in the preview.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Trash2 className="w-5 h-5 text-destructive" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Delete with One Click</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Each FAQ card has a trash icon in the top-right. Click it to remove that entry from your list.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Note on Order:</strong> FAQs currently display in the order you create them. 
+                  The most important or most common questions should be added first so they appear at the top 
+                  of your public profile. We recommend placing your most popular question first.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How FAQs Appear on Your Public Profile</h2>
+                  <p className="text-muted-foreground m-0">What patients see when they visit your page</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once saved, your FAQs are published as an interactive accordion section on your 
+                public doctor profile. Here's how they render for patients:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-primary" />
+                      Visible to Everyone
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      FAQs are public. Anyone who visits your profile — via Google, social media, or our AI chatbot — can read them without logging in.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-primary" />
+                      Collapsible Accordion Format
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Questions are shown as clickable headers. Patients tap a question to expand and read the answer. This keeps the page clean and scannable.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      Indexed for SEO
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Your FAQ text is rendered in the page HTML, making it searchable by Google. Well-written FAQs can help your profile rank for specific patient queries.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="mb-6 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-8 text-center mb-4">
+                    <div className="w-full h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-16 h-16 mx-auto mb-3 bg-background rounded-xl flex items-center justify-center shadow-lg">
+                          <HelpCircle className="w-8 h-8 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">Public Profile FAQ Accordion Preview</p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm text-center">
+                    The FAQ section appears below your bio and above the booking form on your public profile.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Great FAQ Ideas for Doctors</h2>
+                  <p className="text-muted-foreground m-0">Questions patients actually ask before booking</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Not sure what to write? Here are proven FAQ topics that reduce phone calls and 
+                increase booking conversions:
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  "What are your consultation fees?",
+                  "Do I need an appointment or do you accept walk-ins?",
+                  "What should I bring to my first visit?",
+                  "How long does a typical appointment last?",
+                  "Do you offer online/video consultations?",
+                  "What insurance or payment methods do you accept?",
+                  "What are your clinic hours?",
+                  "How can I prepare for my procedure?",
+                  "Do you treat children / elderly patients?",
+                  "What is your cancellation policy?",
+                ].map((q, idx) => (
+                  <div key={idx} className="flex items-start gap-2 p-3 bg-muted/50 rounded-lg">
+                    <HelpCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{q}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Conversion Tip:</strong> Doctors who add 5+ relevant FAQs see up to 
+                  <strong> 30% more online bookings</strong> because patients feel informed and confident before they click "Book Appointment."
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Best Practices for Writing FAQs</h2>
+                  <p className="text-muted-foreground m-0">Make every answer count</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <User className="w-4 h-4 text-primary" />
+                      Write in the Patient's Voice
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Start questions with "Do you...", "What is...", or "How do I..." so patients instantly recognize their own concerns.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-primary" />
+                      Keep Answers Short
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      2–4 sentences is the sweet spot. Long paragraphs are skipped on mobile. If a topic is complex, summarize and invite the patient to book a consultation.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4 text-primary" />
+                      Update Seasonally
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      Review your FAQs every 3 months. Update fees, hours, or services as your practice evolves. Outdated FAQs erode trust.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-primary" />
+                      Avoid Sensitive Medical Advice
+                    </h4>
+                    <p className="text-xs text-muted-foreground m-0">
+                      FAQs are for general information only. Never provide diagnosis or treatment advice. Always steer patients toward an in-person or video consultation.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Is there a limit to how many FAQs I can add?",
+                    a: "No. You can add as many FAQs as you like. However, we recommend keeping the list focused — 5 to 10 well-written FAQs perform better than 30 generic ones.",
+                  },
+                  {
+                    q: "Can I include links or formatting in my answers?",
+                    a: "Currently, FAQ answers support plain text only. URLs will display as text. For rich formatting needs, consider adding the details to your bio section instead.",
+                  },
+                  {
+                    q: "Do FAQs appear in the AI chatbot responses?",
+                    a: "Yes. Our AI Doctor Finder chatbot can reference your FAQ content when answering patient queries, making your profile even more discoverable.",
+                  },
+                  {
+                    q: "Can I hide my FAQs temporarily?",
+                    a: "The only way to hide FAQs is to delete them from the editor. If you want to preserve the text, copy the question and answer somewhere safe before deleting.",
+                  },
+                  {
+                    q: "Who can edit my FAQs?",
+                    a: "Only you (the doctor) and your clinic owner can edit your profile FAQs. Receptionists and other staff do not have access to this section.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Your Public Doctor Profile — How Patients Find You", slug: "public-doctor-profile" },
+                { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile" },
+                { title: "Online Booking from Your Public Profile", slug: "online-booking" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
