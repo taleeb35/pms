@@ -2167,6 +2167,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-find-you": "Your Public Doctor Profile — How Patients Find You",
   "online-presence": "Your Public Doctor Profile — How Patients Find You",
   "seo-profile": "Your Public Doctor Profile — How Patients Find You",
+  "doctor-faqs": "Adding Custom FAQs to Your Profile",
+  "custom-faqs": "Adding Custom FAQs to Your Profile",
+  "profile-faqs": "Adding Custom FAQs to Your Profile",
+  "faq-editor": "Adding Custom FAQs to Your Profile",
 };
 
 
