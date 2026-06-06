@@ -13,7 +13,7 @@ import {
   Shield,
   Smartphone,
   User,
-  ChevronRight,
+  HelpCircle,
   Lightbulb,
   AlertCircle,
   ThumbsUp,
