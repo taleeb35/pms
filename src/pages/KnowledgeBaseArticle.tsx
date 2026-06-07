@@ -2343,6 +2343,10 @@ const KnowledgeBaseArticle = () => {
     return <DoctorFaqsArticle />;
   }
 
+  if (slug === "doctor-reports" || slug === "patient-analytics" || slug === "doctor-analytics" || slug === "my-reports") {
+    return <DoctorReportsAnalyticsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
