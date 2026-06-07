@@ -2172,6 +2172,10 @@ const slugTitleMap: Record<string, string> = {
   "custom-faqs": "Adding Custom FAQs to Your Profile",
   "profile-faqs": "Adding Custom FAQs to Your Profile",
   "faq-editor": "Adding Custom FAQs to Your Profile",
+  "doctor-reports": "Doctor Reports & Patient Analytics",
+  "patient-analytics": "Doctor Reports & Patient Analytics",
+  "doctor-analytics": "Doctor Reports & Patient Analytics",
+  "my-reports": "Doctor Reports & Patient Analytics",
 };
 
 
@@ -2337,6 +2341,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "doctor-faqs" || slug === "custom-faqs" || slug === "profile-faqs" || slug === "faq-editor") {
     return <DoctorFaqsArticle />;
+  }
+
+  if (slug === "doctor-reports" || slug === "patient-analytics" || slug === "doctor-analytics" || slug === "my-reports") {
+    return <DoctorReportsAnalyticsArticle />;
   }
 
   // Placeholder for other articles
@@ -13281,6 +13289,454 @@ const DoctorFaqsArticle = () => {
                 { title: "Setting Up Your Clinic Profile & Public Listing", slug: "clinic-profile" },
                 { title: "Online Booking from Your Public Profile", slug: "online-booking" },
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const DoctorReportsAnalyticsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Doctor Portal</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Doctor Reports & Patient Analytics</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Doctor Reports & Patient Analytics
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand your patient base, track revenue trends, and make data-driven decisions with the analytics tools built into your doctor dashboard.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "View patient demographics by gender",
+                  "Analyze age distribution of your patients",
+                  "See which cities your patients come from",
+                  "Track revenue trends over time",
+                  "Filter analytics by custom date ranges",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Accessing Your Analytics</h2>
+                  <p className="text-muted-foreground m-0">Where to find your personal reports and charts</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When you log into your doctor portal, navigate to the <strong>Reports</strong> or <strong>Analytics</strong> section from the sidebar. This area displays four interactive charts built from your own patient and appointment data — not clinic-wide data. Only patients you have personally created or consulted appear here.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: BarChart3, label: "Gender Distribution", desc: "A doughnut chart showing the ratio of male, female, and other-gender patients in your practice." },
+                  { icon: Activity, label: "Age Groups", desc: "A bar chart breaking patients into brackets: 0-18, 19-30, 31-45, 46-60, and 60+." },
+                  { icon: MapPin, label: "City Breakdown", desc: "A bar chart of the top 10 cities your patients come from — useful for marketing focus." },
+                  { icon: TrendingUp, label: "Revenue Trend", desc: "A filled line chart tracking your fee collection day-by-day over the selected period." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Charts update in real time. As soon as you mark an appointment "Completed" with a fee, the revenue chart reflects it. Patient demographics update the moment a new patient is added.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-info to-info/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Filtering by Date Range</h2>
+                  <p className="text-muted-foreground m-0">Narrow your view to specific days, weeks, or custom periods</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Above the charts, you'll find a date period selector. This lets you slice your data to match reporting needs — whether you want a quick look at last week or a deep review of a custom date range.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Preset Periods</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Choose from All Time, Last 7 Days, Last 14 Days, Last 30 Days, or Last 90 Days. Revenue charts automatically pad missing days with zero so trends are visually continuous.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Filter className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Custom Date Range</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Select a start and end date using the calendar popovers. This is ideal for tax filing, quarterly reviews, or checking performance during a specific campaign.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  All four charts — Gender, Age, City, and Revenue — respect the same date filter. Changing the period updates every chart simultaneously for a consistent view.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reading Each Chart</h2>
+                  <p className="text-muted-foreground m-0">What the numbers mean and how to act on them</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Each chart is interactive — hover over bars, slices, or points to see exact counts and values. Below is a breakdown of what to look for in each visualization.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-blue-500" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Gender Distribution</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Displays Male (blue), Female (pink), and Other (purple) counts with large numeric badges below the chart. A lopsided ratio may indicate a specialty skew — for example, gynaecology practices naturally trend female. Use this to tailor patient education materials.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
+                        <Activity className="w-5 h-5 text-indigo-500" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Age Distribution</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Bar heights represent patient volume per age bracket. Peaks in 0-18 may suggest a paediatric focus, while a 60+ spike is common for cardiologists and general physicians. Plan clinic resources and referral networks around these demographics.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <MapPin className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Top Cities</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Only the top 10 cities are shown. If most patients come from one city, consider local SEO or community outreach there. A scattered distribution may justify expanding telemedicine services to reduce travel burden.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <DollarSign className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Revenue Trend</h4>
+                        <p className="text-xs text-muted-foreground">
+                          A smooth filled line chart with Total Revenue and Daily Average cards above it. Flat lines may indicate scheduling gaps; spikes often correlate with high-traffic weekdays. Use this to optimize your weekly availability.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Revenue Summary Cards</h2>
+                  <p className="text-muted-foreground m-0">Quick totals that appear above the revenue chart</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When you switch to the <strong>Revenue</strong> tab, two summary cards appear directly above the line chart. These give you instant financial context without needing to sum values manually.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: DollarSign, label: "Total Revenue", desc: "Sum of all 'total_fee' values from completed appointments in the selected date range." },
+                  { icon: TrendingUp, label: "Daily Average", desc: "Total revenue divided by the number of days in the selected period — including days with zero income." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-success" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Revenue only counts appointments marked <strong>Completed</strong>. Pending, cancelled, or no-show appointments are excluded. Always update appointment status promptly for accurate revenue tracking.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Data Privacy & Scope</h2>
+                  <p className="text-muted-foreground m-0">What you can see vs. what clinic owners can see</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your analytics are scoped strictly to your own patient and appointment records. You cannot view another doctor's charts, and no one else can view yours — not even clinic owners.
+              </p>
+
+              <div className="space-y-3 mb-6">
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Patient Data:</strong> Only patients you created or have visited appear in demographics</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>Revenue Data:</strong> Only fees from your own completed appointments are summed</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>City Data:</strong> Derived from the city field on patient profiles you created</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-primary" />
+                    <span><strong>No Cross-Access:</strong> Clinic owners see clinic-wide analytics; you see only your own</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Analytics data is not exported automatically. If you need a local copy of your performance data for tax or review purposes, take screenshots or request a CSV export from your clinic administrator.
+                </p>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Why is my revenue chart empty?",
+                    a: "The revenue chart only includes appointments marked as 'Completed' with a recorded fee. If you have not marked any appointments completed in the selected period, the chart will show zero.",
+                  },
+                  {
+                    q: "Can patients see my analytics?",
+                    a: "No. All analytics are private to your doctor portal. Patients only see your public profile, which does not include any demographic or revenue data.",
+                  },
+                  {
+                    q: "How is patient age calculated?",
+                    a: "Age is computed from the Date of Birth field on each patient profile using the current calendar date. If a DOB is missing, that patient is excluded from the Age chart.",
+                  },
+                  {
+                    q: "Does the city chart include all cities?",
+                    a: "Only the top 10 cities by patient count are shown. If your patients come from fewer than 10 cities, all of them appear. If more, the rest are grouped out of view.",
+                  },
+                  {
+                    q: "Can I export my analytics data?",
+                    a: "Currently, direct CSV export is available from the clinic-level reports. Doctor-level analytics are view-only in the portal. We recommend taking periodic screenshots for your own records.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Booking Appointments", slug: "book-appointments" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
