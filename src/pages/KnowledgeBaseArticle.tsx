@@ -2172,6 +2172,10 @@ const slugTitleMap: Record<string, string> = {
   "custom-faqs": "Adding Custom FAQs to Your Profile",
   "profile-faqs": "Adding Custom FAQs to Your Profile",
   "faq-editor": "Adding Custom FAQs to Your Profile",
+  "doctor-reports": "Doctor Reports & Patient Analytics",
+  "patient-analytics": "Doctor Reports & Patient Analytics",
+  "doctor-analytics": "Doctor Reports & Patient Analytics",
+  "my-reports": "Doctor Reports & Patient Analytics",
 };
 
 
