@@ -53,6 +53,7 @@ import {
   TrendingUp,
   Filter,
   Download,
+  Upload,
   Printer,
   Percent,
   PieChart,
