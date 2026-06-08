@@ -2177,6 +2177,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-analytics": "Doctor Reports & Patient Analytics",
   "doctor-analytics": "Doctor Reports & Patient Analytics",
   "my-reports": "Doctor Reports & Patient Analytics",
+  "import-patients": "Importing & Exporting Patients (CSV)",
+  "export-patients": "Importing & Exporting Patients (CSV)",
+  "csv-import": "Importing & Exporting Patients (CSV)",
+  "patient-csv": "Importing & Exporting Patients (CSV)",
 };
 
 
@@ -2346,6 +2350,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "doctor-reports" || slug === "patient-analytics" || slug === "doctor-analytics" || slug === "my-reports") {
     return <DoctorReportsAnalyticsArticle />;
+  }
+
+  if (slug === "import-patients" || slug === "export-patients" || slug === "csv-import" || slug === "patient-csv") {
+    return <ImportExportPatientsArticle />;
   }
 
   // Placeholder for other articles
