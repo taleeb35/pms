@@ -53,6 +53,7 @@ import {
   TrendingUp,
   Filter,
   Download,
+  Upload,
   Printer,
   Percent,
   PieChart,
@@ -2176,6 +2177,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-analytics": "Doctor Reports & Patient Analytics",
   "doctor-analytics": "Doctor Reports & Patient Analytics",
   "my-reports": "Doctor Reports & Patient Analytics",
+  "import-patients": "Importing & Exporting Patients (CSV)",
+  "export-patients": "Importing & Exporting Patients (CSV)",
+  "csv-import": "Importing & Exporting Patients (CSV)",
+  "patient-csv": "Importing & Exporting Patients (CSV)",
 };
 
 
@@ -2345,6 +2350,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "doctor-reports" || slug === "patient-analytics" || slug === "doctor-analytics" || slug === "my-reports") {
     return <DoctorReportsAnalyticsArticle />;
+  }
+
+  if (slug === "import-patients" || slug === "export-patients" || slug === "csv-import" || slug === "patient-csv") {
+    return <ImportExportPatientsArticle />;
   }
 
   // Placeholder for other articles
@@ -13737,6 +13746,469 @@ const DoctorReportsAnalyticsArticle = () => {
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Recording Patient Visits", slug: "visit-records" },
                 { title: "Booking Appointments", slug: "book-appointments" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const ImportExportPatientsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors & Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Importing & Exporting Patients (CSV)</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Users className="w-3 h-3 mr-1" />
+                For Doctors & Clinics
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Importing & Exporting Patients (CSV)
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Bulk upload existing patient records or download your full patient list for backups, reporting, and external use.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Export all patients to Excel/CSV",
+                  "Download a sample import template",
+                  "Bulk import patients from a spreadsheet",
+                  "Understand required vs optional columns",
+                  "Handle duplicates during import",
+                  "Fix common import errors"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1: Export */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Exporting Patients</h2>
+                  <p className="text-muted-foreground m-0">Download your patient list as a spreadsheet</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Both clinics and individual doctors can export their patient records to an Excel file. This is useful for backups, data migration, or creating reports outside the platform.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Download className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">How to Export</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Navigate to the Patients page. Click the Import/Export dropdown button in the top-right corner and select Export to Excel. The file downloads immediately with every patient you have access to.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <FileSpreadsheet className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">What's Included</h4>
+                        <p className="text-xs text-muted-foreground">
+                          The exported file contains: Patient ID, Full Name, Father/Husband Name, Email, Phone, CNIC, Date of Birth, Gender, Blood Group, Address, City, Allergies, Major Diseases, and Marital Status. Each row represents one patient.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Exports respect your role. Doctors only see patients they created. Clinic owners and admins see all patients under their clinic. Export regularly as a backup strategy.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2: Import */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Importing Patients</h2>
+                  <p className="text-muted-foreground m-0">Bulk upload patient records from a spreadsheet</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                If you are moving from another system or have patient records stored in spreadsheets, you can import them in bulk instead of adding each patient manually. The system accepts Excel (.xlsx) and CSV files.
+              </p>
+
+              <h3 className="text-lg font-semibold mb-4">Step-by-step import process</h3>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <FileSpreadsheet className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">1. Download the Sample File</h4>
+                        <p className="text-xs text-muted-foreground">
+                          On the Patients page, open the Import/Export dropdown and click Download Sample Excel. This gives you a correctly formatted template with two example rows.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <Pencil className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">2. Fill in Your Data</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Replace the sample rows with your actual patient data. Keep the column headers exactly as they are. Do not add extra columns or rename existing ones.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                        <Upload className="w-5 h-5 text-warning" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">3. Upload the File</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Click Import from Excel, select your file, and confirm. The system reads the file and shows a preview before saving.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Success:</strong> After a successful import, the Patients list refreshes automatically and you will see a toast notification confirming how many records were added.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3: Required & Optional Columns */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-info to-info/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Required & Optional Columns</h2>
+                  <p className="text-muted-foreground m-0">What your spreadsheet must contain</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The import engine expects specific column names. Missing required fields will cause that row to be rejected. Optional fields can be left blank.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { label: "full_name", required: true, desc: "Patient's complete name" },
+                  { label: "phone", required: true, desc: "Contact number without spaces or dashes" },
+                  { label: "date_of_birth", required: true, desc: "Format: YYYY-MM-DD (e.g., 1990-05-15)" },
+                  { label: "gender", required: true, desc: "Must be male, female, or other" },
+                  { label: "father_name", required: false, desc: "Father or husband name" },
+                  { label: "email", required: false, desc: "Valid email address" },
+                  { label: "cnic", required: false, desc: "National ID without spaces" },
+                  { label: "blood_group", required: false, desc: "e.g., O+, A-, B+" },
+                  { label: "address", required: false, desc: "Full street address" },
+                  { label: "city", required: false, desc: "City name" },
+                  { label: "allergies", required: false, desc: "Comma-separated list" },
+                  { label: "major_diseases", required: false, desc: "Comma-separated list" },
+                  { label: "marital_status", required: false, desc: "e.g., Married, Single" },
+                ].map((col, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <code className="text-xs bg-muted px-2 py-1 rounded font-mono">{col.label}</code>
+                        {col.required ? (
+                          <Badge variant="destructive" className="text-[10px]">Required</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px]">Optional</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{col.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Do not change column headers or add extra columns. The importer matches columns by exact name. If a required field is missing or invalid, that entire row is skipped and reported in the error summary.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4: Duplicate Detection */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Duplicate Detection</h2>
+                  <p className="text-muted-foreground m-0">How the system prevents duplicate patient records</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Before creating any patient during import, the system checks for existing records that share the same phone number or CNIC. This prevents your database from filling with duplicates.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                        <Phone className="w-5 h-5 text-warning" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Phone Number Match</h4>
+                        <p className="text-xs text-muted-foreground">
+                          If a patient with the same phone number already exists, the importer flags the row as a duplicate. You can review matched patients before deciding to skip or proceed.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <Fingerprint className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">CNIC Match</h4>
+                        <p className="text-xs text-muted-foreground">
+                          If CNIC is provided and matches an existing record, the row is also flagged. Both phone and CNIC are normalized during comparison so formatting differences do not matter.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Always include phone numbers in your import file. Phone is the most reliable unique identifier in the system and triggers the strongest duplicate protection.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5: Common Errors */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-destructive to-destructive/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Common Errors & Fixes</h2>
+                  <p className="text-muted-foreground m-0">What to do when an import fails</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { title: "Invalid Date Format", desc: "date_of_birth must be YYYY-MM-DD. Slashes or other formats are rejected. Use 1990-05-15, not 05/15/1990." },
+                  { title: "Gender Not Recognized", desc: "Only male, female, and other are accepted. Variations like 'M', 'F', 'Male', or 'Female' are rejected. Use lowercase exact values." },
+                  { title: "Missing Required Fields", desc: "Any row missing full_name, phone, date_of_birth, or gender is skipped entirely. Fill all required fields for every row." },
+                  { title: "Duplicate Row Skipped", desc: "If phone or CNIC matches an existing patient, the row is skipped. This is expected behavior, not an error." },
+                  { title: "File Type Not Supported", desc: "Only .xlsx and .csv files are accepted. If you have an .xls or .numbers file, export it as .xlsx first." },
+                ].map((err, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
+                          <AlertTriangle className="w-4 h-4 text-destructive" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{err.title}</h4>
+                          <p className="text-xs text-muted-foreground">{err.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Best Practice:</strong> Before importing hundreds of rows, test with 5-10 rows first. Review the error summary, fix any issues, then run the full import.
+                </p>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I update existing patients via import?",
+                    a: "No. The importer only creates new patients. It does not overwrite or update existing records. To update a patient, edit their profile directly in the app.",
+                  },
+                  {
+                    q: "Is there a row limit for imports?",
+                    a: "There is no hard row limit, but we recommend importing in batches of 500 or fewer for the best performance. Very large files may time out.",
+                  },
+                  {
+                    q: "Can receptionists import patients?",
+                    a: "Yes. Any user with access to the Patients page can import and export, subject to their role permissions. Receptionists see patients for their assigned clinic or doctor.",
+                  },
+                  {
+                    q: "Will imported patients get an auto-generated Patient ID?",
+                    a: "Yes. Every imported patient receives a unique Patient ID in the format PAT-XXXXX automatically. You do not need to assign IDs manually.",
+                  },
+                  {
+                    q: "What happens if I import the same file twice?",
+                    a: "Duplicate rows are skipped based on phone/CNIC matching. Already-imported patients are not recreated. You will see a summary of how many were added vs skipped.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Adding New Patients", slug: "add-patients" },
+                { title: "Managing Medical Records", slug: "medical-records" },
+                { title: "Patient History & Documents", slug: "patient-history" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
