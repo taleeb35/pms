@@ -2181,6 +2181,10 @@ const slugTitleMap: Record<string, string> = {
   "export-patients": "Importing & Exporting Patients (CSV)",
   "csv-import": "Importing & Exporting Patients (CSV)",
   "patient-csv": "Importing & Exporting Patients (CSV)",
+  "visit-timeline": "Patient Visit Timeline — Reading the History",
+  "patient-visits": "Patient Visit Timeline — Reading the History",
+  "visit-history": "Patient Visit Timeline — Reading the History",
+  "reading-history": "Patient Visit Timeline — Reading the History",
 };
 
 
