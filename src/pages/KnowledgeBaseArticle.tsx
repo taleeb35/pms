@@ -2360,6 +2360,10 @@ const KnowledgeBaseArticle = () => {
     return <ImportExportPatientsArticle />;
   }
 
+  if (slug === "visit-timeline" || slug === "patient-visits" || slug === "visit-history" || slug === "reading-history") {
+    return <VisitTimelineArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
