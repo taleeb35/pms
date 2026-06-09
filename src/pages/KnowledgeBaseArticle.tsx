@@ -2181,6 +2181,10 @@ const slugTitleMap: Record<string, string> = {
   "export-patients": "Importing & Exporting Patients (CSV)",
   "csv-import": "Importing & Exporting Patients (CSV)",
   "patient-csv": "Importing & Exporting Patients (CSV)",
+  "visit-timeline": "Patient Visit Timeline — Reading the History",
+  "patient-visits": "Patient Visit Timeline — Reading the History",
+  "visit-history": "Patient Visit Timeline — Reading the History",
+  "reading-history": "Patient Visit Timeline — Reading the History",
 };
 
 
@@ -2354,6 +2358,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "import-patients" || slug === "export-patients" || slug === "csv-import" || slug === "patient-csv") {
     return <ImportExportPatientsArticle />;
+  }
+
+  if (slug === "visit-timeline" || slug === "patient-visits" || slug === "visit-history" || slug === "reading-history") {
+    return <VisitTimelineArticle />;
   }
 
   // Placeholder for other articles
@@ -14209,6 +14217,547 @@ const ImportExportPatientsArticle = () => {
                 { title: "Managing Medical Records", slug: "medical-records" },
                 { title: "Patient History & Documents", slug: "patient-history" },
                 { title: "Recording Patient Visits", slug: "visit-records" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const VisitTimelineArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Doctors</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Patient Visit Timeline — Reading the History</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Stethoscope className="w-3 h-3 mr-1" />
+                For Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Patient Visit Timeline — Reading the History
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how to read, interpret, and use the Patient Visit Timeline to understand a
+              patient's complete care journey at a glance.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where to find the Visit Timeline",
+                  "How visits are ordered and numbered",
+                  "Reading vitals, complaints, and prescriptions",
+                  "Understanding next-visit recommendations",
+                  "Using the timeline on desktop and mobile",
+                  "Printing a patient history summary"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1: Where to Find It */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where to Find the Visit Timeline</h2>
+                  <p className="text-muted-foreground m-0">Access the full history from any patient record</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Visit Timeline lives inside every patient's profile. Open any patient from
+                your Patients list, then switch to the <strong>Visits</strong> tab. If you are on
+                the mobile app, tap the patient card and select the <strong>Visits</strong> tab
+                at the bottom.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: LayoutDashboard, label: "Desktop Dashboard", desc: "Patients → Select patient → Visits tab" },
+                  { icon: Smartphone, label: "Mobile App", desc: "Patients → Tap patient → Visits tab" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> You can also reach the Visit Timeline from the
+                  appointment detail screen. Open a past appointment and click
+                  <strong> View Visit Record</strong> to jump straight to that visit inside the
+                  timeline.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2: Reading the Timeline */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reading the Timeline</h2>
+                  <p className="text-muted-foreground m-0">What each visit card contains</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Visits are listed in reverse chronological order — the most recent visit appears
+                at the top. Each visit is numbered automatically (Visit #5, Visit #4, etc.) so
+                you can quickly reference how many times the patient has been seen.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Visit Date</h4>
+                        <p className="text-xs text-muted-foreground">
+                          The exact date the appointment took place. Format is localized to
+                          your region (e.g., 15 June 2025).
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <ClipboardList className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Chief Complaint</h4>
+                        <p className="text-xs text-muted-foreground">
+                          The primary reason the patient came in. This is entered during the
+                          visit record and helps you spot recurring issues across appointments.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-warning/10 flex items-center justify-center shrink-0">
+                        <Activity className="w-5 h-5 text-warning" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Vitals</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Blood pressure, temperature, pulse, and weight captured at that visit.
+                          These are shown side-by-side so you can compare trends across visits.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-success" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Prescription</h4>
+                        <p className="text-xs text-muted-foreground">
+                          The full prescription written during that visit, including medicines,
+                          dosages, and instructions. Formatted cleanly for quick reading.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Privacy Note:</strong> Doctors only see visits they created or that
+                  belong to patients under their clinic. Individual doctors cannot see visit
+                  records from other doctors unless they are a clinic owner or admin.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3: Next Visit & Follow-ups */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Next Visit & Follow-ups</h2>
+                  <p className="text-muted-foreground m-0">Track future appointments from past records</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Every visit card can display a <strong>Next Visit</strong> section at the bottom.
+                If the doctor scheduled a follow-up during the appointment, the recommended date
+                and any special notes appear here. This makes it easy to see whether the patient
+                is overdue for a follow-up before they even speak.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <CalendarDays className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Scheduled Date</h4>
+                        <p className="text-xs text-muted-foreground">
+                          The exact follow-up date set by the doctor. Use this to cross-check
+                          against your upcoming appointment calendar.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Follow-up Notes</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Special instructions such as "bring lab reports" or "fasting required".
+                          These notes are carried forward for the receptionist's attention.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Receptionist Tip:</strong> When a patient calls to confirm a follow-up,
+                  the receptionist can open the patient's last visit and read the Next Visit notes
+                  to remind the patient of any preparation steps.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4: Desktop vs Mobile */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-info to-info/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Desktop vs Mobile Experience</h2>
+                  <p className="text-muted-foreground m-0">Same data, optimized for every screen</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The Visit Timeline adapts to the device you are using. On desktop, you get a
+                spacious scrollable panel with full-width visit cards. On mobile, the same
+                information is compressed into a clean vertical feed that is easy to thumb
+                through during rounds.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <LayoutDashboard className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Desktop View</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Large scrollable area (up to 500px height) with hover effects.
+                          Vitals are displayed in a 2-column grid. Prescriptions use a pre-formatted
+                          block with a subtle background so they are easy to spot.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center shrink-0">
+                        <Smartphone className="w-5 h-5 text-success" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Mobile View</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Condensed cards with collapsible sections. Date and diagnosis are
+                          surfaced at the top. Symptoms and notes are truncated to 3 lines with
+                          the full text available on tap.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5: Printing & Sharing */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-warning to-warning/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Printing & Sharing the History</h2>
+                  <p className="text-muted-foreground m-0">Create physical or digital summaries</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                You can print the patient's visit history at any time. This is useful for
+                referrals, insurance claims, or when the patient requests a physical copy of
+                their medical record.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Printer className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Print Prescription & History</h4>
+                        <p className="text-xs text-muted-foreground">
+                          From any appointment, click the Print button. Choose Prescription to
+                          print only the medicines, or choose Full Report to include vitals,
+                          complaints, and notes.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center shrink-0">
+                        <Download className="w-5 h-5 text-info" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Export for Referral</h4>
+                        <p className="text-xs text-muted-foreground">
+                          The printed report is formatted with your clinic letterhead and doctor
+                          signature block. You can hand it directly to a referring specialist or
+                          scan it for digital transfer.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> Patient data is protected under your clinic's
+                  privacy policy. Only share printed records with the patient's explicit consent
+                  or when required by law. Do not email unencrypted medical records.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6: Best Practices */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Best Practices</h2>
+                  <p className="text-muted-foreground m-0">Get the most value from the timeline</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { title: "Review Before Appointments", desc: "Always open the Visit Timeline before seeing a returning patient. It takes 10 seconds and prevents redundant questions." },
+                  { title: "Spot Trends", desc: "Compare vitals across visits. Rising BP or falling weight across 3+ visits is a signal that warrants attention." },
+                  { title: "Update Next Visits", desc: "When a patient is checking out, set the Next Visit date and notes. Future you will thank present you." },
+                  { title: "Use Visit Numbers", desc: "Refer to 'Visit #3' when dictating notes or discussing cases with colleagues. It creates a shared reference point." },
+                ].map((tip, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <h4 className="font-medium text-sm mb-1">{tip.title}</h4>
+                      <p className="text-xs text-muted-foreground">{tip.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="mt-12 mb-12">
+              <h2 className="text-2xl font-bold mb-4">Common questions</h2>
+              <div className="space-y-4">
+                {[
+                  {
+                    q: "Can I edit a past visit?",
+                    a: "Yes. Clinic owners, admins, and the doctor who created the visit can edit the visit record. Changes are logged in the Activity Logs for audit purposes.",
+                  },
+                  {
+                    q: "Can I delete a visit?",
+                    a: "Deleting visits is restricted to clinic owners and admins. Doctors can edit but not delete their own visit records. This protects the audit trail.",
+                  },
+                  {
+                    q: "How far back does the timeline go?",
+                    a: "There is no time limit. Every visit record ever created for that patient is shown, from their first appointment to their most recent one.",
+                  },
+                  {
+                    q: "Do receptionists see the same timeline?",
+                    a: "Receptionists can see the Visit tab on the patient profile, but the depth of information may be limited based on clinic settings. They typically see dates and complaints, not full prescriptions.",
+                  },
+                  {
+                    q: "Is the timeline available offline?",
+                    a: "The timeline requires an internet connection to load from the database. If you need offline access, print or export the visit summary beforehand.",
+                  },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="py-4">
+                      <h4 className="font-semibold text-sm mb-2">{faq.q}</h4>
+                      <p className="text-sm text-muted-foreground m-0">{faq.a}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Managing Medical Records", slug: "medical-records" },
+                { title: "Patient History & Documents", slug: "patient-history" },
+                { title: "Booking Appointments", slug: "book-appointments" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
