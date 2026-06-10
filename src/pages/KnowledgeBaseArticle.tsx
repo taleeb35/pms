@@ -72,7 +72,9 @@ import {
   Syringe,
   XCircle,
   Sun,
-  Moon
+  Moon,
+  Heart,
+  Baby
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -2185,6 +2187,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-visits": "Patient Visit Timeline — Reading the History",
   "visit-history": "Patient Visit Timeline — Reading the History",
   "reading-history": "Patient Visit Timeline — Reading the History",
+  "gynaecology": "Gynaecology & Pregnancy Tracking",
+  "pregnancy-tracking": "Gynaecology & Pregnancy Tracking",
+  "pregnancy": "Gynaecology & Pregnancy Tracking",
+  "obgyn": "Gynaecology & Pregnancy Tracking",
 };
 
 
@@ -2362,6 +2368,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "visit-timeline" || slug === "patient-visits" || slug === "visit-history" || slug === "reading-history") {
     return <VisitTimelineArticle />;
+  }
+
+  if (slug === "gynaecology" || slug === "pregnancy-tracking" || slug === "pregnancy" || slug === "obgyn") {
+    return <GynaecologyPregnancyArticle />;
   }
 
   // Placeholder for other articles
