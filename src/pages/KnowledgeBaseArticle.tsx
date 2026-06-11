@@ -2378,6 +2378,10 @@ const KnowledgeBaseArticle = () => {
     return <GynaecologyPregnancyArticle />;
   }
 
+  if (slug === "duplicate-patients" || slug === "avoid-duplicates" || slug === "patient-duplicates" || slug === "merge-patients") {
+    return <DuplicatePatientsArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
