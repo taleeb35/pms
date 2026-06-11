@@ -2195,6 +2195,10 @@ const slugTitleMap: Record<string, string> = {
   "avoid-duplicates": "Avoiding Duplicate Patient Records",
   "patient-duplicates": "Avoiding Duplicate Patient Records",
   "merge-patients": "Avoiding Duplicate Patient Records",
+  "appointment-slots": "Understanding 15-Minute Appointment Slots",
+  "15-minute-slots": "Understanding 15-Minute Appointment Slots",
+  "time-slots": "Understanding 15-Minute Appointment Slots",
+  "slot-duration": "Understanding 15-Minute Appointment Slots",
 };
 
 
@@ -2380,6 +2384,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "duplicate-patients" || slug === "avoid-duplicates" || slug === "patient-duplicates" || slug === "merge-patients") {
     return <DuplicatePatientsArticle />;
+  }
+
+  if (slug === "appointment-slots" || slug === "15-minute-slots" || slug === "time-slots" || slug === "slot-duration") {
+    return <AppointmentSlotsArticle />;
   }
 
   // Placeholder for other articles
@@ -15678,6 +15686,440 @@ const DuplicatePatientsArticle = () => {
                 { title: "Importing & Exporting Patients (CSV)", slug: "import-patients" },
                 { title: "Patient Visit Timeline", slug: "visit-timeline" },
                 { title: "Managing Medical Records", slug: "medical-records" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const AppointmentSlotsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Appointments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Understanding 15-Minute Appointment Slots</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                <Clock className="w-3 h-3 mr-1" />
+                Appointments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Understanding 15-Minute Appointment Slots
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how our 15-minute time slot system works, why it keeps your clinic schedule efficient, 
+              and how it adapts to each doctor's availability, leaves, and existing bookings.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How 15-minute slots are generated",
+                  "How doctor schedules filter available times",
+                  "How leaves (full & half-day) affect slots",
+                  "How booked slots are blocked automatically",
+                  "Tips for optimizing your daily appointment flow"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The 15-Minute Grid</h2>
+                  <p className="text-muted-foreground m-0">How time is divided across the day</p>
+                </div>
+              </div>
+              
+              <p className="mb-6">
+                Our platform divides every day into <strong>15-minute intervals</strong> — from 00:00 (midnight) 
+                to 23:45. This fine-grained grid gives you maximum flexibility when booking appointments, 
+                whether a consultation takes 15 minutes or a full hour.
+              </p>
+
+              <Card className="mb-6">
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                    {["09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45", "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45"].map((time) => (
+                      <div key={time} className="text-center p-2 rounded-lg bg-muted text-xs font-mono">
+                        {time}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground text-sm text-center mt-4">
+                    Sample morning slots — each cell represents one 15-minute block
+                  </p>
+                </CardContent>
+              </Card>
+
+              <div className="space-y-3">
+                <p>
+                  When you open the time selector on the booking screen, you see only the slots that are 
+                  <strong> actually available</strong> for the chosen doctor and date. The list is filtered 
+                  in real time so you never accidentally double-book.
+                </p>
+                <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                  <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    <strong>Pro Tip:</strong> If a doctor usually needs 30 minutes per patient, simply book 
+                    two consecutive 15-minute slots. The system will block both, preventing overlaps.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Doctor Schedules Filter the Grid</h2>
+                  <p className="text-muted-foreground m-0">Availability is driven by weekly schedule settings</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Before any slots are shown, the system checks the doctor's <strong>weekly schedule</strong>. 
+                Each day of the week can have its own start time, end time, and on/off toggle.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Sun, label: "Working Days", desc: "Only days marked 'Available' show slots." },
+                  { icon: Clock, label: "Start & End Time", desc: "Slots outside working hours are hidden." },
+                  { icon: Moon, label: "Day Off", desc: "If a day is toggled off, no slots appear at all." },
+                  { icon: Calendar, label: "Per-Doctor", desc: "Each doctor has an independent schedule." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Example</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Dr. Ayesha is scheduled Monday–Friday from 09:00 to 14:00. On Tuesday, a patient opens 
+                    the booking calendar — only slots between 09:00 and 14:00 are listed, in 15-minute steps.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Leaves Remove Slots Automatically</h2>
+                  <p className="text-muted-foreground m-0">Full-day and half-day leave handling</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When a doctor adds a leave entry, the system immediately recalculates available slots for that date:
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
+                        <Coffee className="w-5 h-5 text-destructive" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Full-Day Leave</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      All slots for the day are removed. Patients see "Doctor not available" instead of a time list.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <Sun className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Half-Day Morning</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Slots before 12:00 are hidden. Afternoon slots (12:00 onwards) remain bookable.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Moon className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Half-Day Evening</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Slots from 12:00 onwards are hidden. Morning slots (before 12:00) remain bookable.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Leaves can be added from the doctor's dashboard under 
+                  <em> Schedule &gt; Manage Leaves</em>. The change is instant — no cache delay.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Booked Slots Are Blocked</h2>
+                  <p className="text-muted-foreground m-0">Real-time conflict prevention</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once an appointment is confirmed for a specific doctor, date, and time, that 15-minute slot 
+                is <strong>automatically excluded</strong> from the selector. Cancelled and completed appointments 
+                do not block the slot — only active/upcoming bookings count.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Active / Pending</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      These statuses block the slot. No other patient can be booked at the same time.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
+                        <XCircle className="w-5 h-5 text-destructive" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Cancelled / Completed</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      These statuses free the slot. A cancelled slot becomes available for re-booking immediately.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Editing an Appointment</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    When you edit an existing appointment and change its time, the old slot is released 
+                    and the new one is checked for conflicts before saving. This prevents accidental double-booking 
+                    during rescheduling.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Optimizing Your Daily Flow</h2>
+                  <p className="text-muted-foreground m-0">Best practices for clinic efficiency</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The 15-minute grid is designed to be flexible. Here is how clinics get the most out of it:
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Zap, label: "Back-to-Back Booking", desc: "Book consecutive slots for longer procedures (30 min = 2 slots, 45 min = 3 slots)." },
+                  { icon: Clock, label: "Buffer Time", desc: "Leave one 15-minute gap between heavy cases to avoid running late." },
+                  { icon: CalendarDays, label: "Walk-in Buffer", desc: "Keep a few unbooked afternoon slots for urgent walk-ins." },
+                  { icon: Activity, label: "Rapid Consults", desc: "For follow-ups that take 5–10 minutes, one slot is usually enough." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Receptionists can see a live calendar view that highlights booked, 
+                  available, and leave-blocked slots in different colors. Use this visual overview to spot 
+                  gaps and suggest alternate times to patients quickly.
+                </p>
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Slots are generated in 15-minute intervals across the full 24-hour day</li>
+                      <li>• A doctor's weekly schedule is the first filter applied to the raw grid</li>
+                      <li>• Full-day and half-day leaves override the schedule for that specific date</li>
+                      <li>• Only active/pending appointments block a slot; cancelled ones free it immediately</li>
+                      <li>• Each doctor has an independent slot pool — bookings for Dr. A do not affect Dr. B</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves" },
+                { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
