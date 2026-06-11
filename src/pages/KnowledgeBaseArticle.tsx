@@ -2191,6 +2191,10 @@ const slugTitleMap: Record<string, string> = {
   "pregnancy-tracking": "Gynaecology & Pregnancy Tracking",
   "pregnancy": "Gynaecology & Pregnancy Tracking",
   "obgyn": "Gynaecology & Pregnancy Tracking",
+  "duplicate-patients": "Avoiding Duplicate Patient Records",
+  "avoid-duplicates": "Avoiding Duplicate Patient Records",
+  "patient-duplicates": "Avoiding Duplicate Patient Records",
+  "merge-patients": "Avoiding Duplicate Patient Records",
 };
 
 
