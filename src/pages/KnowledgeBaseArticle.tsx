@@ -2195,6 +2195,10 @@ const slugTitleMap: Record<string, string> = {
   "avoid-duplicates": "Avoiding Duplicate Patient Records",
   "patient-duplicates": "Avoiding Duplicate Patient Records",
   "merge-patients": "Avoiding Duplicate Patient Records",
+  "appointment-slots": "Understanding 15-Minute Appointment Slots",
+  "15-minute-slots": "Understanding 15-Minute Appointment Slots",
+  "time-slots": "Understanding 15-Minute Appointment Slots",
+  "slot-duration": "Understanding 15-Minute Appointment Slots",
 };
 
 
