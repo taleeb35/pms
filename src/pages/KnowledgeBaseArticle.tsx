@@ -2191,6 +2191,10 @@ const slugTitleMap: Record<string, string> = {
   "pregnancy-tracking": "Gynaecology & Pregnancy Tracking",
   "pregnancy": "Gynaecology & Pregnancy Tracking",
   "obgyn": "Gynaecology & Pregnancy Tracking",
+  "duplicate-patients": "Avoiding Duplicate Patient Records",
+  "avoid-duplicates": "Avoiding Duplicate Patient Records",
+  "patient-duplicates": "Avoiding Duplicate Patient Records",
+  "merge-patients": "Avoiding Duplicate Patient Records",
 };
 
 
@@ -2372,6 +2376,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "gynaecology" || slug === "pregnancy-tracking" || slug === "pregnancy" || slug === "obgyn") {
     return <GynaecologyPregnancyArticle />;
+  }
+
+  if (slug === "duplicate-patients" || slug === "avoid-duplicates" || slug === "patient-duplicates" || slug === "merge-patients") {
+    return <DuplicatePatientsArticle />;
   }
 
   // Placeholder for other articles
@@ -15272,6 +15280,404 @@ const GynaecologyPregnancyArticle = () => {
                 { title: "Managing Walk-ins", slug: "walk-ins" },
                 { title: "Patient Visit Timeline", slug: "visit-timeline" },
                 { title: "Doctor Reports & Patient Analytics", slug: "doctor-reports" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const DuplicatePatientsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">For Clinics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Avoiding Duplicate Patient Records</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20">
+                <Users className="w-3 h-3 mr-1" />
+                For Clinics & Doctors
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Avoiding Duplicate Patient Records
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how the system detects and prevents duplicate patients using Contact Number 
+              and CNIC matching — and what to do when a duplicate warning appears.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How duplicate detection works automatically",
+                  "Normalization of phone numbers and CNICs",
+                  "Duplicate warnings during manual entry",
+                  "Duplicate detection during CSV import",
+                  "How to review and resolve duplicates",
+                  "Best practices to keep your records clean"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Introduction */}
+            <div className="mb-12">
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 mb-6">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Why Duplicates Matter</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Duplicate patient records fragment medical history, make prescriptions harder to track, 
+                    and inflate your patient count. The system automatically checks for duplicates 
+                    whenever a new patient is added — by hand or via CSV import.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How Duplicate Detection Works</h2>
+                  <p className="text-muted-foreground m-0">Automatic matching on Contact Number and CNIC</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The system checks for duplicates by comparing two key identifiers:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Phone className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Contact Number Match</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      If the phone number you enter already belongs to an existing patient, 
+                      the system flags it as a duplicate. Spaces and dashes are ignored during comparison.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Hash className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">CNIC Match</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      If a CNIC (National ID) is provided and it matches an existing record, 
+                      the system raises a duplicate warning regardless of the phone number.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Normalization:</strong> Before comparison, the system strips all spaces 
+                  and dashes from phone numbers and CNICs. This means <code>0300-1234567</code>, 
+                  <code>0300 1234567</code>, and <code>03001234567</code> are treated as identical.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Duplicate Warning During Manual Entry</h2>
+                  <p className="text-muted-foreground m-0">What happens when adding a patient by hand</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When you create a new patient from the <strong>Patients</strong> page or during a 
+                <strong>Walk-In</strong>, the system runs a real-time duplicate check before saving:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+
+                {[
+                  { title: "Enter Patient Details", desc: "Fill in the name, phone, and optionally CNIC in the patient form." },
+                  { title: "Background Check", desc: "As you proceed, the system silently checks the database for matching phone or CNIC." },
+                  { title: "Warning Shown", desc: "If a match is found, a confirmation dialog appears listing the existing patient(s) with name and ID." },
+                  { title: "Your Choice", desc: "You can cancel to avoid the duplicate, or proceed if you are certain this is a different person." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Always prefer updating an existing patient's record 
+                  rather than creating a duplicate. Use the search box on the Patients page to find 
+                  the original record quickly.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Duplicate Detection in CSV Imports</h2>
+                  <p className="text-muted-foreground m-0">How bulk import handles duplicates</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When importing patients via Excel/CSV, the system performs a two-level duplicate check:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <FileSpreadsheet className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Within-File Duplicates</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      The importer scans your spreadsheet for duplicate rows before touching the database. 
+                      If the same phone or CNIC appears twice in the file, the second row is skipped.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Database Duplicates</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Each row is then checked against existing patients in your database. 
+                      Matches are skipped and reported in the import summary with the reason.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <p className="mb-4">
+                After the import completes, you will see a summary:
+              </p>
+
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span><strong>Imported:</strong> Number of new patients successfully added</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-destructive" />
+                  <span><strong>Skipped:</strong> Number of rows ignored due to duplicates or validation errors</span>
+                </li>
+              </ul>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Download the sample Excel template before importing. 
+                  It shows the exact column names and formats the system expects, reducing errors 
+                  and duplicate mismatches.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Resolving & Preventing Duplicates</h2>
+                  <p className="text-muted-foreground m-0">Best practices for clean patient data</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Follow these guidelines to keep your patient database clean and accurate:
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Search, label: "Search First", desc: "Always search the patient list before creating a new record." },
+                  { icon: Phone, label: "Use One Phone Format", desc: "Enter phone numbers consistently (e.g., 03001234567)." },
+                  { icon: Hash, label: "Always Enter CNIC", desc: "When available, CNIC is the strongest unique identifier." },
+                  { icon: FileSpreadsheet, label: "Clean Before Import", desc: "Remove duplicate rows from spreadsheets before uploading." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+                <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">What If a Duplicate Slips Through?</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    If you discover a duplicate after creation, open the original patient record 
+                    and update it with the correct information. For now, there is no automatic 
+                    merge feature — choose one record as the "master" and archive or edit the other 
+                    to indicate it is a duplicate. Contact support if you need bulk cleanup assistance.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li>• Duplicate detection runs on both manual entry and CSV import workflows</li>
+                      <li>• Phone numbers and CNICs are normalized (spaces/dashes removed) before matching</li>
+                      <li>• A patient with only a name and no phone/CNIC will not trigger duplicate warnings</li>
+                      <li>• Always verify patient identity before overriding a duplicate warning</li>
+                      <li>• Import summaries list every skipped row with the exact duplicate reason</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Adding New Patients", slug: "add-patients" },
+                { title: "Importing & Exporting Patients (CSV)", slug: "import-patients" },
+                { title: "Patient Visit Timeline", slug: "visit-timeline" },
+                { title: "Managing Medical Records", slug: "medical-records" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
