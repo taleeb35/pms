@@ -2199,6 +2199,10 @@ const slugTitleMap: Record<string, string> = {
   "15-minute-slots": "Understanding 15-Minute Appointment Slots",
   "time-slots": "Understanding 15-Minute Appointment Slots",
   "slot-duration": "Understanding 15-Minute Appointment Slots",
+  "appointment-statuses": "The 4 Appointment Statuses Explained",
+  "appointment-status": "The 4 Appointment Statuses Explained",
+  "statuses": "The 4 Appointment Statuses Explained",
+  "status-workflow": "The 4 Appointment Statuses Explained",
 };
 
 
@@ -2388,6 +2392,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "appointment-slots" || slug === "15-minute-slots" || slug === "time-slots" || slug === "slot-duration") {
     return <AppointmentSlotsArticle />;
+  }
+
+  if (slug === "appointment-statuses" || slug === "appointment-status" || slug === "statuses" || slug === "status-workflow") {
+    return <AppointmentStatusesArticle />;
   }
 
   // Placeholder for other articles
