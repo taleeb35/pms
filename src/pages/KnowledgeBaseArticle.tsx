@@ -2199,6 +2199,10 @@ const slugTitleMap: Record<string, string> = {
   "15-minute-slots": "Understanding 15-Minute Appointment Slots",
   "time-slots": "Understanding 15-Minute Appointment Slots",
   "slot-duration": "Understanding 15-Minute Appointment Slots",
+  "appointment-statuses": "The 4 Appointment Statuses Explained",
+  "appointment-status": "The 4 Appointment Statuses Explained",
+  "statuses": "The 4 Appointment Statuses Explained",
+  "status-workflow": "The 4 Appointment Statuses Explained",
 };
 
 
@@ -2388,6 +2392,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "appointment-slots" || slug === "15-minute-slots" || slug === "time-slots" || slug === "slot-duration") {
     return <AppointmentSlotsArticle />;
+  }
+
+  if (slug === "appointment-statuses" || slug === "appointment-status" || slug === "statuses" || slug === "status-workflow") {
+    return <AppointmentStatusesArticle />;
   }
 
   // Placeholder for other articles
@@ -16120,6 +16128,502 @@ const AppointmentSlotsArticle = () => {
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves" },
                 { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const AppointmentStatusesArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Appointments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">The 4 Appointment Statuses Explained</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-blue-500/10 text-blue-600 hover:bg-blue-500/20">
+                <Calendar className="w-3 h-3 mr-1" />
+                Appointments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              The 4 Appointment Statuses Explained
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand how Scheduled, Started, Completed, and Cancelled work together to keep your clinic organized and conflict-free.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "What each status means and when to use it",
+                  "How statuses prevent double-booking",
+                  "The lifecycle from booking to completion",
+                  "How cancellations free up slots instantly",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Intro */}
+            <div className="mb-12">
+              <p className="mb-6">
+                Every appointment on the platform moves through a simple but powerful status workflow. 
+                These four states — <strong>Scheduled</strong>, <strong>Started</strong>, <strong>Completed</strong>, 
+                and <strong>Cancelled</strong> — are designed to keep your calendar accurate, your patient flow smooth, 
+                and your reporting reliable.
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {[
+                  { label: "Scheduled", color: "bg-blue-500", desc: "Booked & waiting" },
+                  { label: "Started", color: "bg-yellow-500", desc: "Patient is in" },
+                  { label: "Completed", color: "bg-purple-500", desc: "Visit finished" },
+                  { label: "Cancelled", color: "bg-red-500", desc: "Booking voided" },
+                ].map((s, idx) => (
+                  <div key={idx} className="flex flex-col items-center gap-2 p-4 bg-muted/50 rounded-lg text-center">
+                    <div className={`w-4 h-4 rounded-full ${s.color}`} />
+                    <span className="font-semibold text-sm">{s.label}</span>
+                    <span className="text-xs text-muted-foreground">{s.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 — Scheduled */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Scheduled</h2>
+                  <p className="text-muted-foreground m-0">The appointment is booked and the slot is reserved</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                <strong>Scheduled</strong> is the starting state of every new appointment. When a receptionist 
+                or doctor creates a booking — whether for a future date or a same-day walk-in — the appointment 
+                is created with this status.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                        <Calendar className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Slot Blocking</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      A Scheduled appointment blocks its 15-minute slot. No other patient can be booked at the same doctor, date, and time.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Who Can Create</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Receptionists, clinic owners, and doctors can all create Scheduled appointments from their respective dashboards.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Use the Calendar view to see all Scheduled appointments at a glance. 
+                  Scheduled bookings appear with a blue indicator so receptionists can quickly spot upcoming visits.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 — Started */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-amber-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Started</h2>
+                  <p className="text-muted-foreground m-0">The patient has arrived and the consultation is in progress</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When the patient arrives and the doctor begins the consultation, the status is updated to 
+                <strong> Started</strong>. This is a critical transition — it records a timestamp and signals 
+                that the doctor is currently occupied.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Timestamp Recorded</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      The exact time the status changes to Started is saved automatically. This helps track actual wait times and consultation duration.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center shrink-0">
+                        <Zap className="w-5 h-5 text-yellow-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Slot Remains Blocked</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      The 15-minute slot stays reserved while the appointment is Started. Other patients cannot be booked into this time.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">How to Mark as Started</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Receptionists and doctors can change the status from the appointment list or calendar view. 
+                    Bulk actions are also supported — select multiple appointments and mark them all as Started in one click.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 — Completed */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Completed</h2>
+                  <p className="text-muted-foreground m-0">The consultation is finished and the slot is released</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once the doctor finishes the visit — vitals recorded, prescription written, notes saved — 
+                the appointment is marked <strong>Completed</strong>. This finalizes the encounter and 
+                frees the time slot for future bookings.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Slot Released</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      A Completed appointment no longer blocks its 15-minute slot. The time becomes available for new bookings immediately.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                        <Activity className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Reporting Impact</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Completed appointments feed into analytics dashboards — daily counts, revenue, doctor performance, and patient drop-off rates.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                <Lightbulb className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Completed appointments are included in revenue and visit-count reports. 
+                  Make sure to mark visits as Completed before generating end-of-day reports for accurate numbers.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 — Cancelled */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Cancelled</h2>
+                  <p className="text-muted-foreground m-0">The appointment will not happen and the slot is freed</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When a patient cancels, no-shows, or the clinic decides not to proceed, the appointment is marked 
+                <strong> Cancelled</strong>. This immediately frees the 15-minute slot so another patient can be booked.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                        <XCircle className="w-5 h-5 text-red-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Instant Slot Release</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Unlike Scheduled or Started, a Cancelled appointment releases its slot the moment the status is changed. No delay, no manual refresh needed.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                        <BarChart3 className="w-5 h-5 text-red-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Tracking No-Shows</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Cancelled appointments are tracked separately in analytics. High cancellation rates may indicate scheduling or communication issues worth investigating.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Re-Using Cancelled Slots</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Because the slot is freed immediately, receptionists can book another patient into the same time 
+                    without waiting. This is especially useful for same-day cancellations where walk-ins or urgent cases can fill the gap.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Lifecycle Summary */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  <RefreshCw className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The Full Lifecycle</h2>
+                  <p className="text-muted-foreground m-0">How an appointment moves from booking to closure</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Most appointments follow a predictable path. Here is the typical flow:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-blue-500 via-yellow-500 to-purple-500" />
+
+                {[
+                  { title: "Scheduled", desc: "Patient books an appointment. Slot is blocked." },
+                  { title: "Started", desc: "Patient arrives. Doctor begins consultation. Timestamp recorded." },
+                  { title: "Completed", desc: "Visit ends. Slot freed. Data feeds into reports." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-muted rounded-lg border mt-6">
+                <AlertCircle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <p className="text-sm m-0 text-muted-foreground">
+                  <strong>Alternative path:</strong> A Scheduled appointment can also move directly to Cancelled 
+                  if the patient calls ahead. It never needs to pass through Started.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Slot Blocking Summary */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Which Statuses Block Slots?</h2>
+                  <p className="text-muted-foreground m-0">A quick reference for receptionists</p>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 px-4 font-semibold">Status</th>
+                      <th className="text-left py-3 px-4 font-semibold">Blocks Slot</th>
+                      <th className="text-left py-3 px-4 font-semibold">Visible in Calendar</th>
+                      <th className="text-left py-3 px-4 font-semibold">Counts in Reports</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { status: "Scheduled", blocks: "Yes", visible: "Yes", reports: "No" },
+                      { status: "Started", blocks: "Yes", visible: "Yes", reports: "No" },
+                      { status: "Completed", blocks: "No", visible: "Yes", reports: "Yes" },
+                      { status: "Cancelled", blocks: "No", visible: "Yes (marked red)", reports: "Yes (as cancelled)" },
+                    ].map((row, idx) => (
+                      <tr key={idx} className="border-b last:border-0">
+                        <td className="py-3 px-4 font-medium">{row.status}</td>
+                        <td className="py-3 px-4">{row.blocks}</td>
+                        <td className="py-3 px-4">{row.visible}</td>
+                        <td className="py-3 px-4">{row.reports}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Only Scheduled and Started appointments prevent double-booking</li>
+                      <li>• Cancelled and Completed slots are immediately available for re-booking</li>
+                      <li>• Status changes are logged in Activity Logs for audit purposes</li>
+                      <li>• Bulk status updates are available in the appointment list view</li>
+                      <li>• Video consultations follow the exact same status workflow as in-person visits</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Understanding 15-Minute Appointment Slots", slug: "appointment-slots" },
+                { title: "Booking Appointments", slug: "book-appointments" },
+                { title: "Managing Your Schedule", slug: "doctor-schedule" },
+                { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
