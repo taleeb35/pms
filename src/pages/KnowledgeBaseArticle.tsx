@@ -2402,6 +2402,10 @@ const KnowledgeBaseArticle = () => {
     return <AppointmentStatusesArticle />;
   }
 
+  if (slug === "online-booking" || slug === "public-booking" || slug === "book-online" || slug === "patient-booking") {
+    return <OnlineBookingArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
