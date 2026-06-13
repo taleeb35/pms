@@ -2203,6 +2203,10 @@ const slugTitleMap: Record<string, string> = {
   "appointment-status": "The 4 Appointment Statuses Explained",
   "statuses": "The 4 Appointment Statuses Explained",
   "status-workflow": "The 4 Appointment Statuses Explained",
+  "online-booking": "Online Booking from Your Public Profile",
+  "public-booking": "Online Booking from Your Public Profile",
+  "book-online": "Online Booking from Your Public Profile",
+  "patient-booking": "Online Booking from Your Public Profile",
 };
 
 
