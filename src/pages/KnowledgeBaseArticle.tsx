@@ -2203,6 +2203,10 @@ const slugTitleMap: Record<string, string> = {
   "appointment-status": "The 4 Appointment Statuses Explained",
   "statuses": "The 4 Appointment Statuses Explained",
   "status-workflow": "The 4 Appointment Statuses Explained",
+  "online-booking": "Online Booking from Your Public Profile",
+  "public-booking": "Online Booking from Your Public Profile",
+  "book-online": "Online Booking from Your Public Profile",
+  "patient-booking": "Online Booking from Your Public Profile",
 };
 
 
@@ -2396,6 +2400,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "appointment-statuses" || slug === "appointment-status" || slug === "statuses" || slug === "status-workflow") {
     return <AppointmentStatusesArticle />;
+  }
+
+  if (slug === "online-booking" || slug === "public-booking" || slug === "book-online" || slug === "patient-booking") {
+    return <OnlineBookingArticle />;
   }
 
   // Placeholder for other articles
@@ -16624,6 +16632,511 @@ const AppointmentStatusesArticle = () => {
                 { title: "Booking Appointments", slug: "book-appointments" },
                 { title: "Managing Your Schedule", slug: "doctor-schedule" },
                 { title: "Managing Leaves (Full-Day & Half-Day)", slug: "manage-leaves" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const OnlineBookingArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Appointments</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Online Booking from Your Public Profile</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-rose-500/10 text-rose-600 hover:bg-rose-500/20">
+                <Calendar className="w-3 h-3 mr-1" />
+                Appointments
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Online Booking from Your Public Profile
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Let patients book appointments directly from your public doctor or clinic profile — 
+              no phone calls, no back-and-forth, just seamless 24/7 scheduling.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How patients find and book from your public profile",
+                  "The complete patient booking flow step-by-step",
+                  "What happens on your clinic dashboard after a booking",
+                  "How to manage and confirm online appointments",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Intro */}
+            <div className="mb-12">
+              <p className="mb-6">
+                Every doctor and clinic on the platform gets a <strong>public profile</strong> — a searchable, 
+                shareable page that patients can visit to learn about your practice and, most importantly, 
+                <strong> book appointments instantly</strong>. Online booking turns your profile into a 
+                24/7 receptionist that never sleeps.
+              </p>
+
+              <div className="grid sm:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: Globe, label: "Public Profile", desc: "Patients discover you online" },
+                  { icon: Calendar, label: "Real-Time Slots", desc: "Only available times shown" },
+                  { icon: CheckCircle2, label: "Instant Confirm", desc: "Booking appears in your dashboard" },
+                ].map((s, idx) => (
+                  <div key={idx} className="flex flex-col items-center gap-2 p-4 bg-muted/50 rounded-lg text-center">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <s.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <span className="font-semibold text-sm">{s.label}</span>
+                    <span className="text-xs text-muted-foreground">{s.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Your Public Profile Is Your Booking Gateway</h2>
+                  <p className="text-muted-foreground m-0">How patients discover and reach your booking page</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Patients can land on your public profile in several ways — and every path leads to the 
+                same <strong>Book Appointment</strong> button.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Search className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Public Search & Discovery</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Patients use the Zonoir public directory or the AI Doctor Finder to search by city, 
+                      specialty, or doctor name. Your profile appears in results with a "Book Now" action.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Smartphone className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Direct Link Sharing</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Share your unique public profile URL on WhatsApp, business cards, or social media. 
+                      Anyone with the link can view your schedule and book instantly.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Make sure your clinic profile and doctor profile are fully filled 
+                  out — patients are more likely to book when they see a professional photo, clear specialization, 
+                  and complete address.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The Patient Booking Flow</h2>
+                  <p className="text-muted-foreground m-0">What patients experience from click to confirmation</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The online booking process is designed to be frictionless. Patients go from discovery 
+                to confirmed appointment in under 60 seconds:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+
+                {[
+                  { title: "Select Doctor", desc: "Patient chooses a doctor from the clinic's public page or lands directly on a doctor profile." },
+                  { title: "Pick a Date", desc: "A clean calendar shows only dates when the doctor has available slots. No manual checking needed." },
+                  { title: "Choose a Time Slot", desc: "Available 15-minute slots are shown in a simple grid. Booked or blocked times are hidden automatically." },
+                  { title: "Enter Patient Details", desc: "Name, phone number, age, and a brief reason for the visit. Existing patients can be looked up by phone." },
+                  { title: "Confirm Booking", desc: "A final review screen shows the doctor, time, and clinic address. One tap confirms the appointment." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Real-Time Availability</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      The booking page reflects your live schedule. If you mark a half-day leave or a slot is taken by a walk-in, 
+                      it disappears from the public view instantly.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <Shield className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Duplicate Prevention</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      The system checks for existing patient records by phone number before creating a new profile. 
+                      Returning patients are linked to their history automatically.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Patients See on Your Profile</h2>
+                  <p className="text-muted-foreground m-0">Transparency builds trust and reduces no-shows</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Your public profile shows everything a patient needs to make an informed booking decision:
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: Stethoscope, label: "Specialization", desc: "Primary and secondary specialties" },
+                  { icon: Building2, label: "Clinic Info", desc: "Name, address, and city" },
+                  { icon: MapPin, label: "Location", desc: "Full address with landmarks" },
+                  { icon: Phone, label: "Contact", desc: "Clinic phone number" },
+                  { icon: Calendar, label: "Schedule", desc: "Weekly availability overview" },
+                  { icon: Star, label: "Reviews", desc: "Patient ratings and feedback" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-xs">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Lightbulb className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Tip:</strong> Doctors can add custom FAQs to their public profile to answer common 
+                  questions like "Do you accept walk-ins?" or "What should I bring?" This reduces repetitive 
+                  phone inquiries.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Happens on the Clinic Side</h2>
+                  <p className="text-muted-foreground m-0">How online bookings appear in your system</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When a patient books online, the appointment is created in your dashboard automatically 
+                with the status <strong>Scheduled</strong>. No manual entry required.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                        <LayoutDashboard className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Dashboard Notification</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      The appointment appears instantly in your Appointments list and Calendar view. 
+                      Receptionists see the patient name, time, and booking source ("Online").
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                        <Users className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Patient Record Created</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      If the patient is new, a patient record is created automatically with the details 
+                      they entered during booking. If they exist, the appointment is linked to their history.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                <AlertCircle className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Booking Source Tracking</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Appointments created online are tagged so you can measure how many patients come through 
+                    your public profile versus walk-ins or phone bookings.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Managing Online Bookings</h2>
+                  <p className="text-muted-foreground m-0">Confirm, reschedule, or cancel just like any other appointment</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Online bookings are treated exactly the same as appointments created internally. 
+                Your receptionist and doctor dashboards give you full control:
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: CheckCircle2, label: "Confirm", desc: "Mark as Started when patient arrives" },
+                  { icon: Calendar, label: "Reschedule", desc: "Move to a different slot if needed" },
+                  { icon: XCircle, label: "Cancel", desc: "Free the slot if patient no-shows" },
+                  { icon: Phone, label: "Follow Up", desc: "Call patient using the number provided" },
+                  { icon: Activity, label: "Track Status", desc: "Move through Scheduled → Started → Completed" },
+                  { icon: BarChart3, label: "Report", desc: "Included in all analytics and revenue reports" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-xs">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Double-Booking Is Impossible</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Because the same scheduling engine powers both internal and online bookings, a slot 
+                    reserved online is instantly blocked from walk-in or phone bookings — and vice versa.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Best Practices for Online Booking</h2>
+                  <p className="text-muted-foreground m-0">Maximize appointments and minimize no-shows</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  "Keep your weekly schedule updated — remove leave days and adjust hours so patients only see accurate availability.",
+                  "Fill out your public doctor profile completely. A photo, qualifications, and specialization build patient confidence.",
+                  "Respond to online bookings promptly. Even though the slot is reserved, a quick confirmation call improves show-up rates.",
+                  "Share your profile link widely — WhatsApp status, clinic signage, and social media bios are great places.",
+                  "Use custom FAQs to answer common questions upfront and reduce repetitive inquiries.",
+                  "Monitor your analytics dashboard to see how many bookings come from online vs. other sources.",
+                ].map((tip, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{tip}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Online bookings require an active clinic subscription</li>
+                      <li>• The doctor must have a published public profile and set weekly availability</li>
+                      <li>• Half-day and full-day leaves automatically hide affected slots from patients</li>
+                      <li>• All online bookings respect the 15-minute slot system</li>
+                      <li>• Patient phone numbers are required — they serve as the primary lookup key</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Your Public Doctor Profile — How Patients Find You", slug: "public-doctor-profile" },
+                { title: "Understanding 15-Minute Appointment Slots", slug: "appointment-slots" },
+                { title: "The 4 Appointment Statuses Explained", slug: "appointment-statuses" },
+                { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
