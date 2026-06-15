@@ -2208,6 +2208,10 @@ const slugTitleMap: Record<string, string> = {
   "public-booking": "Online Booking from Your Public Profile",
   "book-online": "Online Booking from Your Public Profile",
   "patient-booking": "Online Booking from Your Public Profile",
+  "net-profit": "Calculating Net Profit & Margin %",
+  "profit-margin": "Calculating Net Profit & Margin %",
+  "calculating-profit": "Calculating Net Profit & Margin %",
+  "net-revenue": "Calculating Net Profit & Margin %",
 };
 
 
