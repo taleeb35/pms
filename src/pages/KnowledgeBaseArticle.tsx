@@ -47,6 +47,7 @@ import {
   Receipt,
   Sparkles,
   RefreshCw,
+  RotateCcw,
   Gift,
   Wallet,
   TrendingDown,
