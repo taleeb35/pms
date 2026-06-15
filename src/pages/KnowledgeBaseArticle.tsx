@@ -2411,6 +2411,10 @@ const KnowledgeBaseArticle = () => {
     return <OnlineBookingArticle />;
   }
 
+  if (slug === "net-profit" || slug === "profit-margin" || slug === "calculating-profit" || slug === "net-revenue") {
+    return <NetProfitMarginArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
