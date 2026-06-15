@@ -47,6 +47,7 @@ import {
   Receipt,
   Sparkles,
   RefreshCw,
+  RotateCcw,
   Gift,
   Wallet,
   TrendingDown,
@@ -74,7 +75,8 @@ import {
   Sun,
   Moon,
   Heart,
-  Baby
+  Baby,
+  Calculator
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -2207,6 +2209,10 @@ const slugTitleMap: Record<string, string> = {
   "public-booking": "Online Booking from Your Public Profile",
   "book-online": "Online Booking from Your Public Profile",
   "patient-booking": "Online Booking from Your Public Profile",
+  "net-profit": "Calculating Net Profit & Margin %",
+  "profit-margin": "Calculating Net Profit & Margin %",
+  "calculating-profit": "Calculating Net Profit & Margin %",
+  "net-revenue": "Calculating Net Profit & Margin %",
 };
 
 
@@ -2404,6 +2410,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "online-booking" || slug === "public-booking" || slug === "book-online" || slug === "patient-booking") {
     return <OnlineBookingArticle />;
+  }
+
+  if (slug === "net-profit" || slug === "profit-margin" || slug === "calculating-profit" || slug === "net-revenue") {
+    return <NetProfitMarginArticle />;
   }
 
   // Placeholder for other articles
@@ -17137,6 +17147,519 @@ const OnlineBookingArticle = () => {
                 { title: "Understanding 15-Minute Appointment Slots", slug: "appointment-slots" },
                 { title: "The 4 Appointment Statuses Explained", slug: "appointment-statuses" },
                 { title: "Setting Weekly Availability & Break Times", slug: "weekly-availability" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const NetProfitMarginArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Finance & Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Calculating Net Profit & Margin %</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-violet-500/10 text-violet-600 hover:bg-violet-500/20">
+                <DollarSign className="w-3 h-3 mr-1" />
+                Finance & Reports
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Calculating Net Profit & Margin %
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand how Zonoir computes your clinic's true earnings and what margin percentage means for your business health.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How Net Profit is calculated in Zonoir",
+                  "The formula for Profit Margin %",
+                  "Which revenue and expense items are included",
+                  "How to read your clinic's financial health at a glance"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Is Net Profit?</h2>
+                  <p className="text-muted-foreground m-0">The money you actually keep after all deductions</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                <strong>Net Profit</strong> is the bottom-line earnings your clinic generates after subtracting every cost from your total revenue. It is the most honest measure of whether your practice is truly making money — or just turning over cash.
+              </p>
+
+              <Card className="mb-6 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-6 text-center">
+                    <div className="text-sm text-muted-foreground mb-2">Core Formula</div>
+                    <div className="text-xl md:text-2xl font-bold">
+                      Net Profit = Total Revenue − Total Expenses
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-2">
+                      (Includes refunds, operating costs, and inventory losses)
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <Wallet className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Total Revenue</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Sum of all consultation fees, procedure fees, and other charges collected from patients through completed appointments. Excludes cancelled appointments.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center shrink-0">
+                        <Receipt className="w-5 h-5 text-rose-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Total Expenses</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Includes refunds issued to patients, clinic operating expenses (rent, utilities, salaries), and inventory adjustments (damaged or expired stock).
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> In Zonoir, the Daily Summary dashboard shows your "Net Revenue" for the selected date. This is your <em>appointment revenue minus refunds only</em>. For true Net Profit, you must also subtract clinic expenses recorded in the Expenses module.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Is Profit Margin %?</h2>
+                  <p className="text-muted-foreground m-0">How much of every Rupee you keep as profit</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                <strong>Profit Margin %</strong> expresses your Net Profit as a percentage of your Total Revenue. It tells you, out of every Rs. 100 collected, how much is actual profit versus how much went to costs.
+              </p>
+
+              <Card className="mb-6 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-6 text-center">
+                    <div className="text-sm text-muted-foreground mb-2">Margin Formula</div>
+                    <div className="text-xl md:text-2xl font-bold">
+                      Margin % = (Net Profit &divide; Total Revenue) &times; 100
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid md:grid-cols-3 gap-4 mb-6">
+                {[
+                  { label: "High Margin (>40%)", desc: "Healthy clinic. Costs are well controlled.", color: "bg-emerald-500/10 text-emerald-600" },
+                  { label: "Moderate Margin (20–40%)", desc: "Typical for clinics. Room to optimize.", color: "bg-amber-500/10 text-amber-600" },
+                  { label: "Low Margin (<20%)", desc: "Review expenses and pricing urgently.", color: "bg-rose-500/10 text-rose-600" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium mb-2 ${item.color}`}>
+                        {item.label}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Calculator className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Example Calculation</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    If your clinic collects Rs. 50,000 in revenue and your total expenses (including refunds) are Rs. 30,000:
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-1 mt-2 list-none pl-0">
+                    <li>• Net Profit = 50,000 − 30,000 = <strong>Rs. 20,000</strong></li>
+                    <li>• Margin % = (20,000 &divide; 50,000) &times; 100 = <strong>40%</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where Zonoir Gets These Numbers</h2>
+                  <p className="text-muted-foreground m-0">How data flows into your profit calculation</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Zonoir tracks every financial event linked to your clinic. Here is how each component contributes to your Net Profit:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { icon: Wallet, title: "Appointment Revenue", desc: "Consultation fees + procedure fees + other charges from completed (not cancelled) appointments.", color: "text-emerald-600", bg: "bg-emerald-500/10" },
+                  { icon: RotateCcw, title: "Refunds", desc: "Any amount refunded to patients is subtracted from revenue before profit is calculated.", color: "text-orange-600", bg: "bg-orange-500/10" },
+                  { icon: Receipt, title: "Clinic Expenses", desc: "Operating expenses you log (rent, salaries, utilities, maintenance) under Clinic &rsaquo; Expenses.", color: "text-rose-600", bg: "bg-rose-500/10" },
+                  { icon: AlertTriangle, title: "Inventory Adjustments", desc: "Damaged, expired, or lost stock recorded in Inventory &rsaquo; Adjustments reduces profit.", color: "text-amber-600", bg: "bg-amber-500/10" },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-4 p-4 bg-muted/40 rounded-xl">
+                    <div className={`w-10 h-10 rounded-lg ${item.bg} flex items-center justify-center shrink-0`}>
+                      <item.icon className={`w-5 h-5 ${item.color}`} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm">{item.title}</h4>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                <AlertCircle className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Platform Subscription Is NOT Deducted</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    Your monthly Zonoir subscription fee is a separate business expense handled outside the platform's profit report. It is not auto-subtracted from your Net Profit figure inside the app.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reading the Dashboard Cards</h2>
+                  <p className="text-muted-foreground m-0">Where to find profit-related numbers in Zonoir</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Both the <strong>Doctor Daily Summary</strong> and the <strong>Clinic Reports & Analytics</strong> dashboards surface profit-related figures. Here is how to interpret them:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center shrink-0">
+                        <Wallet className="w-5 h-5 text-violet-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Revenue Collected</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Sum of all total fees from completed and in-progress appointments on the selected date. This is your gross revenue before any deductions.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+                        <RotateCcw className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Refunded</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Total refund amount issued on that date. Already subtracted from revenue in the "Net Revenue" card but shown separately for transparency.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <TrendingUp className="w-5 h-5 text-primary" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Net Revenue</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Revenue Collected minus Refunds. This is the net cash brought in from patients, before clinic operating expenses are considered.
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/50">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <PieChart className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h4 className="font-semibold text-sm">Revenue Breakdown</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Splits your revenue into Consultation, Procedures, and Other fees. Helps you identify which service categories drive the most income.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Remember:</strong> To get true Net Profit, export your Net Revenue from Reports and manually subtract clinic expenses (rent, salaries, inventory loss) that you track in the Expenses module.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Monthly & Yearly Profit Tracking</h2>
+                  <p className="text-muted-foreground m-0">Zoom out to see trends over time</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Daily numbers are useful for operations, but profit analysis requires a longer lens. Zonoir's analytics dashboards let you view revenue trends across weeks, months, and years.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  "Use the date-range picker in Clinic Reports to select a full month or quarter.",
+                  "Export the revenue report to CSV and import it into a spreadsheet.",
+                  "Add your monthly expense total (from the Expenses module) as a single line item.",
+                  "Apply the Net Profit and Margin % formulas to see your true clinic profitability.",
+                ].map((tip, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{tip}</span>
+                  </div>
+                ))}
+              </div>
+
+              <Card className="border-border/50">
+                <CardContent className="pt-6">
+                  <div className="bg-muted rounded-xl p-6">
+                    <h4 className="font-semibold text-sm mb-3">Quick Reference Table</h4>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2 pr-4 font-medium">Metric</th>
+                            <th className="text-left py-2 pr-4 font-medium">Formula</th>
+                            <th className="text-left py-2 font-medium">Where in Zonoir</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-muted">
+                            <td className="py-2 pr-4">Gross Revenue</td>
+                            <td className="py-2 pr-4">Sum of all completed appointment fees</td>
+                            <td className="py-2">Daily Summary &rsaquo; Revenue Collected</td>
+                          </tr>
+                          <tr className="border-b border-muted">
+                            <td className="py-2 pr-4">Net Revenue</td>
+                            <td className="py-2 pr-4">Gross Revenue − Refunds</td>
+                            <td className="py-2">Daily Summary &rsaquo; Net Revenue</td>
+                          </tr>
+                          <tr className="border-b border-muted">
+                            <td className="py-2 pr-4">Net Profit</td>
+                            <td className="py-2 pr-4">Net Revenue − Operating Expenses</td>
+                            <td className="py-2">Calculate manually (export + expenses)</td>
+                          </tr>
+                          <tr>
+                            <td className="py-2 pr-4">Profit Margin %</td>
+                            <td className="py-2 pr-4">(Net Profit &divide; Gross Revenue) &times; 100</td>
+                            <td className="py-2">Calculate manually or in spreadsheet</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  <Sparkles className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Best Practices to Improve Margin</h2>
+                  <p className="text-muted-foreground m-0">Practical steps to keep more of what you earn</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { title: "Track every expense", desc: "Log all operating costs in the Expenses module. Hidden costs kill margins." },
+                  { title: "Reduce no-shows", desc: "Use SMS reminders and the Wait List feature to fill cancelled slots quickly." },
+                  { title: "Review pricing quarterly", desc: "Check if your consultation and procedure fees still cover rising costs." },
+                  { title: "Minimize inventory waste", desc: "Monitor expiry dates in Inventory &rsaquo; Stock & Batches and adjust reorder levels." },
+                  { title: "Negotiate with suppliers", desc: "Better purchase-order terms directly improve your cost of goods sold." },
+                  { title: "Cross-sell procedures", desc: "Use visit records to recommend relevant procedures that add revenue without adding overhead." },
+                ].map((tip, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-sm font-medium">{tip.title}</span>
+                      <p className="text-sm text-muted-foreground m-0">{tip.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Notes</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• Net Revenue in Zonoir is NOT the same as Net Profit — it excludes clinic operating expenses</li>
+                      <li>• Always include refunds in your profit calculations; they are real cash outflows</li>
+                      <li>• Inventory adjustments affect profit but do not appear in the appointment revenue reports</li>
+                      <li>• Use the CSV export feature for spreadsheet-based profit analysis across custom date ranges</li>
+                      <li>• All figures are displayed in Pakistani Rupees (Rs.) — never converted to foreign currencies</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Payment Tracking", slug: "payment-tracking" },
+                { title: "Managing Expenses", slug: "expenses" },
+                { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
+                { title: "Doctor Reports & Patient Analytics", slug: "doctor-reports" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
