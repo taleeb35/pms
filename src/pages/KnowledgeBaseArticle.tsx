@@ -74,7 +74,8 @@ import {
   Sun,
   Moon,
   Heart,
-  Baby
+  Baby,
+  Calculator
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
