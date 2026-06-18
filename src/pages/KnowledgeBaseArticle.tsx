@@ -2213,6 +2213,10 @@ const slugTitleMap: Record<string, string> = {
   "profit-margin": "Calculating Net Profit & Margin %",
   "calculating-profit": "Calculating Net Profit & Margin %",
   "net-revenue": "Calculating Net Profit & Margin %",
+  "monthly-vs-yearly": "Monthly vs Yearly Plans — Which to Choose",
+  "yearly-plan": "Monthly vs Yearly Plans — Which to Choose",
+  "annual-billing": "Monthly vs Yearly Plans — Which to Choose",
+  "billing-cycles": "Monthly vs Yearly Plans — Which to Choose",
 };
 
 
@@ -2414,6 +2418,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "net-profit" || slug === "profit-margin" || slug === "calculating-profit" || slug === "net-revenue") {
     return <NetProfitMarginArticle />;
+  }
+
+  if (slug === "monthly-vs-yearly" || slug === "yearly-plan" || slug === "annual-billing" || slug === "billing-cycles") {
+    return <MonthlyVsYearlyArticle />;
   }
 
   // Placeholder for other articles
@@ -17660,6 +17668,495 @@ const NetProfitMarginArticle = () => {
                 { title: "Managing Expenses", slug: "expenses" },
                 { title: "Clinic Reports & Analytics Dashboard", slug: "clinic-reports" },
                 { title: "Doctor Reports & Patient Analytics", slug: "doctor-reports" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const MonthlyVsYearlyArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Billing & Plans</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Monthly vs Yearly Plans — Which to Choose</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-violet-500/10 text-violet-600 hover:bg-violet-500/20">
+                <CreditCard className="w-3 h-3 mr-1" />
+                Billing & Plans
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                5 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Monthly vs Yearly Plans — Which to Choose
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand the difference between monthly and yearly billing, how savings are calculated,
+              and which option best fits your clinic's cash flow and growth stage.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How monthly and yearly pricing works",
+                  "Exact savings with yearly billing (17% extra off)",
+                  "Total cost comparison for 1–10 doctors",
+                  "When to choose monthly vs. yearly",
+                  "How to switch billing cycles mid-subscription",
+                  "Impact on your 14-day free trial"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The Base Price — Before Any Commitment</h2>
+                  <p className="text-muted-foreground m-0">Every doctor on Zonoir starts with the same discounted rate</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Zonoir's standard rate is <strong>Rs. 23,999 per doctor per month</strong>. With our 75% launch discount,
+                every doctor — whether on monthly or yearly billing — pays only <strong>Rs. 5,999 per month</strong> as the base price.
+              </p>
+
+              <Card className="mb-6 border-border/50">
+                <CardContent className="pt-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Standard Rate</p>
+                      <p className="text-2xl font-bold text-muted-foreground line-through">Rs. 23,999</p>
+                      <p className="text-xs text-muted-foreground">per doctor / month</p>
+                    </div>
+                    <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <p className="text-sm text-primary mb-1">Launch Discounted Rate</p>
+                      <p className="text-2xl font-bold text-primary">Rs. 5,999</p>
+                      <p className="text-xs text-muted-foreground">per doctor / month</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> The 75% launch discount is applied before any yearly savings. This means
+                  the yearly discount is calculated on the already-discounted Rs. 5,999 rate — not the original Rs. 23,999.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How the Yearly Discount Works</h2>
+                  <p className="text-muted-foreground m-0">An additional 17% off when you commit to 12 months</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When you choose yearly billing, you receive an <strong>extra 17% discount</strong> on top of the launch price.
+                This brings the effective monthly cost down from Rs. 5,999 to approximately <strong>Rs. 4,979 per doctor per month</strong>.
+              </p>
+
+              <Card className="mb-6 border-primary/20">
+                <CardContent className="pt-6">
+                  <h4 className="font-semibold mb-4 flex items-center gap-2">
+                    <Calculator className="w-5 h-5 text-primary" />
+                    Yearly Billing Math (1 Doctor)
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Monthly rate after launch discount</span>
+                      <span>Rs. 5,999</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Yearly discount (17%)</span>
+                      <span className="text-green-600">− Rs. 1,020</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between font-semibold">
+                      <span>Effective monthly rate (yearly)</span>
+                      <span className="text-primary">Rs. 4,979</span>
+                    </div>
+                    <div className="flex justify-between font-semibold">
+                      <span>Total yearly cost</span>
+                      <span className="text-primary">Rs. 59,748</span>
+                    </div>
+                    <div className="flex justify-between text-green-600">
+                      <span>Your yearly savings vs. monthly</span>
+                      <span className="font-semibold">Rs. 12,228</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Key Takeaway</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    On yearly billing, you save Rs. 1,020 every single month. Over 12 months, that adds up to
+                    Rs. 12,228 saved per doctor — nearly enough to cover 2 extra months of service.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Side-by-Side Cost Comparison</h2>
+                  <p className="text-muted-foreground m-0">See total costs for clinics with multiple doctors</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                All figures below show the <strong>total annual cost</strong> — not a monthly rate — so you can compare
+                what you'll actually spend in a full year.
+              </p>
+
+              <div className="overflow-x-auto mb-6">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-3 px-4 font-semibold">Doctors</th>
+                      <th className="text-right py-3 px-4 font-semibold text-muted-foreground">Monthly Plan (Year Total)</th>
+                      <th className="text-right py-3 px-4 font-semibold text-primary">Yearly Plan (Year Total)</th>
+                      <th className="text-right py-3 px-4 font-semibold text-green-600">You Save</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { docs: 1, monthly: "71,988", yearly: "59,748", save: "12,228" },
+                      { docs: 2, monthly: "143,976", yearly: "119,496", save: "24,456" },
+                      { docs: 3, monthly: "215,964", yearly: "179,244", save: "36,684" },
+                      { docs: 5, monthly: "359,940", yearly: "298,740", save: "61,200" },
+                      { docs: 10, monthly: "719,880", yearly: "597,480", save: "122,400" },
+                    ].map((row, idx) => (
+                      <tr key={idx} className="border-b border-muted last:border-0">
+                        <td className="py-3 px-4 font-medium">{row.docs} Doctor{row.docs > 1 ? "s" : ""}</td>
+                        <td className="py-3 px-4 text-right text-muted-foreground">Rs. {row.monthly}</td>
+                        <td className="py-3 px-4 text-right font-semibold text-primary">Rs. {row.yearly}</td>
+                        <td className="py-3 px-4 text-right text-green-600 font-semibold">Rs. {row.save}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Note:</strong> All prices are displayed in Pakistani Rupees (Rs.) only. We do not quote in USD
+                  or any other currency on clinic-facing screens.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">When to Choose Monthly</h2>
+                  <p className="text-muted-foreground m-0">Ideal for flexibility and testing the platform</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { title: "New Clinics", desc: "You're just starting out and want to validate the system before a long-term commitment." },
+                  { title: "Seasonal Practices", desc: "Patient volume fluctuates significantly month-to-month." },
+                  { title: "Cash Flow Sensitivity", desc: "You prefer smaller, predictable monthly outflows rather than one upfront annual payment." },
+                  { title: "Trial Expansion", desc: "You're adding a temporary doctor and aren't sure if they'll stay long-term." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-sm">{item.title}</h4>
+                            <p className="text-xs text-muted-foreground">{item.desc}</p>
+                          </div>
+                        </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Calendar className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Remember:</strong> Every signup includes a 14-day free trial. Your billing cycle only begins
+                  after the trial ends, so you can fully evaluate the platform before either monthly or yearly charges apply.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">When to Choose Yearly</h2>
+                  <p className="text-muted-foreground m-0">Best for established clinics committed to growth</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { title: "Cost Consciousness", desc: "You want the absolute lowest per-doctor cost and are happy to prepay for it." },
+                  { title: "Stable Team Size", desc: "Your doctor count is unlikely to change significantly within the next 12 months." },
+                  { title: "Budgeting Simplicity", desc: "One invoice per year makes accounting and tax filing cleaner." },
+                  { title: "Multi-Doctor Clinics", desc: "With 3+ doctors, the annual savings (Rs. 36,684+) become substantial." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                          <Gift className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.title}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <Card className="border-green-500/20 bg-green-500/5">
+                <CardContent className="py-6">
+                  <div className="flex items-start gap-3">
+                    <TrendingUp className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold mb-2">Real-World Example</h4>
+                      <p className="text-sm text-muted-foreground m-0">
+                        A 5-doctor clinic in Lahore switched from monthly to yearly billing and saved
+                        <strong> Rs. 61,200</strong> in their first year alone — enough to cover a new receptionist's
+                        monthly salary for several months. The savings scale directly with every additional doctor added.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Switching Between Monthly & Yearly</h2>
+                  <p className="text-muted-foreground m-0">You're never locked in — change anytime</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Zonoir lets you switch your billing cycle at any time. Changes take effect at the start of your next billing period.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                {[
+                  { action: "Monthly → Yearly", result: "You receive the 17% yearly discount starting next billing cycle. Any remaining days in the current month are credited pro-rata." },
+                  { action: "Yearly → Monthly", result: "You switch to monthly billing at the next renewal. No refunds for the current prepaid year, but you can downgrade at the end of the term." },
+                  { action: "Adding Doctors", result: "New doctors are billed at your current plan's rate (monthly or yearly) from their activation date." },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+                    <RefreshCw className="w-4 h-4 text-primary shrink-0 mt-1" />
+                    <div>
+                      <span className="text-sm font-medium">{item.action}</span>
+                      <p className="text-sm text-muted-foreground m-0">{item.result}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Best Practice:</strong> Start with monthly billing during your first 1–2 months after the trial.
+                  Once you're confident in the platform and your doctor count is stable, switch to yearly to lock in the
+                  maximum savings.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Frequently Asked Questions</h2>
+                  <p className="text-muted-foreground m-0">Quick answers to common billing cycle questions</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { q: "Is there a penalty for switching from yearly to monthly?", a: "No penalty — you simply move to monthly billing at your next renewal. The current prepaid year runs its course." },
+                  { q: "Do I pay for all 12 months upfront on yearly?", a: "Yes. Yearly billing is a single upfront payment for the full 12-month term, which is why the 17% discount applies." },
+                  { q: "What happens to my free trial if I pick yearly?", a: "Your 14-day free trial remains exactly the same regardless of which billing cycle you select. Charges only begin after the trial ends." },
+                  { q: "Can different doctors in the same clinic be on different billing cycles?", a: "No. Billing cycles are set at the clinic level. All active doctors share the same monthly or yearly billing preference." },
+                  { q: "Are there hidden fees or setup charges?", a: "No. There are no setup fees, onboarding charges, or hidden costs. You only pay the per-doctor subscription rate." },
+                  { q: "What payment methods are accepted for yearly plans?", a: "All major bank transfers, JazzCash, and EasyPaisa are accepted for both monthly and yearly plans." },
+                ].map((faq, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <HelpCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">{faq.q}</h4>
+                          <p className="text-xs text-muted-foreground">{faq.a}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Summary */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Bottom Line</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Choose <strong>monthly</strong> if you need flexibility or are still evaluating the platform.
+                      Choose <strong>yearly</strong> if you want the lowest possible cost and your doctor count is stable.
+                      With a 14-day free trial on every plan, there's zero risk in trying either option.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Your 14-Day Free Trial Explained", slug: "free-trial" },
+                { title: "Payment Tracking", slug: "payment-tracking" },
+                { title: "Managing Doctor Limits & Capacity Increase", slug: "doctor-limits" },
+                { title: "Calculating Net Profit & Margin %", slug: "net-profit" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
