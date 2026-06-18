@@ -2420,6 +2420,10 @@ const KnowledgeBaseArticle = () => {
     return <NetProfitMarginArticle />;
   }
 
+  if (slug === "monthly-vs-yearly" || slug === "yearly-plan" || slug === "annual-billing" || slug === "billing-cycles") {
+    return <MonthlyVsYearlyArticle />;
+  }
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
