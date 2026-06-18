@@ -2213,6 +2213,10 @@ const slugTitleMap: Record<string, string> = {
   "profit-margin": "Calculating Net Profit & Margin %",
   "calculating-profit": "Calculating Net Profit & Margin %",
   "net-revenue": "Calculating Net Profit & Margin %",
+  "monthly-vs-yearly": "Monthly vs Yearly Plans — Which to Choose",
+  "yearly-plan": "Monthly vs Yearly Plans — Which to Choose",
+  "annual-billing": "Monthly vs Yearly Plans — Which to Choose",
+  "billing-cycles": "Monthly vs Yearly Plans — Which to Choose",
 };
 
 
