@@ -2217,6 +2217,10 @@ const slugTitleMap: Record<string, string> = {
   "yearly-plan": "Monthly vs Yearly Plans — Which to Choose",
   "annual-billing": "Monthly vs Yearly Plans — Which to Choose",
   "billing-cycles": "Monthly vs Yearly Plans — Which to Choose",
+  "financial-reports": "Monthly Financial Reports & Exports",
+  "monthly-reports": "Monthly Financial Reports & Exports",
+  "export-reports": "Monthly Financial Reports & Exports",
+  "csv-export": "Monthly Financial Reports & Exports",
 };
 
 
