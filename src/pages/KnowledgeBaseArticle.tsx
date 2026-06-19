@@ -2217,6 +2217,10 @@ const slugTitleMap: Record<string, string> = {
   "yearly-plan": "Monthly vs Yearly Plans — Which to Choose",
   "annual-billing": "Monthly vs Yearly Plans — Which to Choose",
   "billing-cycles": "Monthly vs Yearly Plans — Which to Choose",
+  "financial-reports": "Monthly Financial Reports & Exports",
+  "monthly-reports": "Monthly Financial Reports & Exports",
+  "export-reports": "Monthly Financial Reports & Exports",
+  "csv-export": "Monthly Financial Reports & Exports",
 };
 
 
@@ -2422,6 +2426,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "monthly-vs-yearly" || slug === "yearly-plan" || slug === "annual-billing" || slug === "billing-cycles") {
     return <MonthlyVsYearlyArticle />;
+  }
+
+  if (slug === "financial-reports" || slug === "monthly-reports" || slug === "export-reports" || slug === "csv-export") {
+    return <MonthlyFinancialReportsArticle />;
   }
 
   // Placeholder for other articles
@@ -18157,6 +18165,413 @@ const MonthlyVsYearlyArticle = () => {
                 { title: "Payment Tracking", slug: "payment-tracking" },
                 { title: "Managing Doctor Limits & Capacity Increase", slug: "doctor-limits" },
                 { title: "Calculating Net Profit & Margin %", slug: "net-profit" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const MonthlyFinancialReportsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Finance & Billing</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Monthly Financial Reports & Exports</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="mb-8">
+          <Badge variant="secondary" className="mb-4">Finance & Billing</Badge>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            Monthly Financial Reports & Exports
+          </h1>
+          <p className="text-xl text-muted-foreground leading-relaxed">
+            Learn how to view, filter, export, and reconcile your clinic's monthly financial data — from appointment revenue and inventory sales to expenses and net profit.
+          </p>
+        </div>
+
+        <div className="prose prose-lg max-w-none">
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 my-8">
+            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-primary" />
+              Quick Summary
+            </h3>
+            <ul className="space-y-2 text-foreground">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>Access consolidated revenue, expense, and profit reports from your Clinic Dashboard.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>Filter by month, date range, or individual doctor for granular insights.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>Export any report to CSV for Excel analysis, or print a PDF-ready summary.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>All figures use PKR (Rs) and include appointment revenue, inventory sales, refunds, and recorded expenses.</span>
+              </li>
+            </ul>
+          </div>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-primary" />
+            Accessing Monthly Financial Reports
+          </h2>
+          <p>
+            Clinic Owners and Admins can access financial reports from the main clinic dashboard. The reports aggregate all transactional data across your clinic — including every appointment fee collected, inventory medicine sale, refund issued, and expense logged.
+          </p>
+          <div className="bg-muted/50 rounded-lg p-5 my-6 border">
+            <p className="font-medium mb-3">Navigation path:</p>
+            <ol className="list-decimal list-inside space-y-2 text-foreground">
+              <li>Log in with your <strong>Clinic Owner</strong> or <strong>Admin</strong> account.</li>
+              <li>From the sidebar, select <strong>Dashboard</strong> or <strong>Analytics</strong>.</li>
+              <li>Scroll to the <strong>Financial Overview</strong> or <strong>Revenue Reports</strong> section.</li>
+              <li>Click <strong>View Full Report</strong> to open the detailed monthly breakdown.</li>
+            </ol>
+          </div>
+          <p>
+            <AlertCircle className="w-4 h-4 inline mr-1 text-amber-600" />
+            <strong>Note:</strong> Doctors with individual accounts and receptionists do <em>not</em> have access to clinic-wide financial reports. They can only view patient counts and their own appointment statistics.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <DollarSign className="w-6 h-6 text-primary" />
+            Report Sections Explained
+          </h2>
+          <p>
+            The monthly financial report is divided into four core sections. Each section updates in near-real-time as appointments are completed, invoices are issued, and expenses are recorded.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">1. Revenue Summary</h3>
+          <p>
+            This section shows the total money collected during the selected period. It includes:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li><strong>Appointment Revenue:</strong> Fees from completed appointments (marked as <em>Completed</em> or <em>Checked Out</em>).</li>
+            <li><strong>Inventory Sales:</strong> Revenue from medicine and product sales through the Inventory Invoices module.</li>
+            <li><strong>Membership & Package Sales:</strong> Any membership enrollments or prepaid packages sold.</li>
+            <li><strong>Refunds Deducted:</strong> Total refunds issued during the month are subtracted from gross revenue.</li>
+          </ul>
+          <div className="bg-muted/50 rounded-lg p-5 my-6 border">
+            <p className="text-sm text-muted-foreground mb-2 font-medium">Formula used:</p>
+            <code className="block bg-background p-3 rounded border text-sm">
+              Net Revenue = (Appointment Revenue + Inventory Sales + Membership Sales) − Total Refunds
+            </code>
+          </div>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">2. Expense Summary</h3>
+          <p>
+            All clinic expenses recorded through the <strong>Expenses</strong> module are aggregated here. Common expense categories include:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li>Rent and utilities</li>
+            <li>Staff salaries and contractor payments</li>
+            <li>Medical supplies and inventory restocking</li>
+            <li>Equipment maintenance and purchases</li>
+            <li>Marketing and advertising spend</li>
+            <li>Software subscriptions (including your Zonoir plan)</li>
+          </ul>
+          <p>
+            Expenses are grouped by category and displayed as both a table and a pie chart for quick visual analysis. You can drill down to see who recorded each expense and when.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">3. Net Profit & Margin %</h3>
+          <p>
+            This card displays the bottom-line profit for the month and the profit margin percentage.
+          </p>
+          <div className="bg-muted/50 rounded-lg p-5 my-6 border">
+            <p className="text-sm text-muted-foreground mb-2 font-medium">Formula used:</p>
+            <code className="block bg-background p-3 rounded border text-sm">
+              Net Profit = Net Revenue − Total Expenses<br/>
+              Margin % = (Net Profit / Net Revenue) × 100
+            </code>
+          </div>
+          <p>
+            A healthy clinic typically maintains a margin between <strong>25% and 45%</strong>. If your margin falls below 15%, review your expense categories and pricing strategy. If it exceeds 50%, you may be under-investing in supplies or staff.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">4. Doctor-wise Breakdown</h3>
+          <p>
+            For multi-doctor clinics, this section allocates revenue and patient volume to each doctor. It helps you understand:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li>Which doctors generate the most revenue</li>
+            <li>Average revenue per patient per doctor</li>
+            <li>Patient load distribution across the team</li>
+            <li>No-show and cancellation rates by doctor</li>
+          </ul>
+          <p>
+            This data is invaluable for performance reviews, incentive calculations, and capacity planning.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <CalendarDays className="w-6 h-6 text-primary" />
+            Filtering by Date Range
+          </h2>
+          <p>
+            By default, the dashboard shows the <strong>current month-to-date</strong>. You can adjust the date filter to analyze any period:
+          </p>
+          <div className="bg-muted/50 rounded-lg p-5 my-6 border">
+            <p className="font-medium mb-3">Available presets:</p>
+            <ul className="list-disc list-inside space-y-2 text-foreground">
+              <li><strong>Today</strong> — For daily cash-register reconciliation.</li>
+              <li><strong>This Week</strong> — For weekly team meetings.</li>
+              <li><strong>This Month</strong> — The default view for monthly P&L.</li>
+              <li><strong>Last Month</strong> — For month-over-month comparison.</li>
+              <li><strong>Custom Range</strong> — Pick any start and end date (up to 90 days at once).</li>
+            </ul>
+          </div>
+          <p>
+            <AlertCircle className="w-4 h-4 inline mr-1 text-amber-600" />
+            <strong>Tip:</strong> For year-end tax preparation, run a custom report from 1 July to 30 June (Pakistan's fiscal year) and export it for your accountant.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <FileSpreadsheet className="w-6 h-6 text-primary" />
+            Exporting Your Reports
+          </h2>
+          <p>
+            Every report table and chart in Zonoir supports export. This is useful for:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li>Sending monthly summaries to your accountant or tax consultant</li>
+            <li>Creating custom pivot tables in Excel or Google Sheets</li>
+            <li>Archiving records for compliance or audits</li>
+            <li>Presenting data to clinic investors or partners</li>
+          </ul>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">CSV Export</h3>
+          <p>
+            Click the <strong>Download CSV</strong> button next to any data table. The exported file contains:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li>All visible rows and columns (respecting your current filters)</li>
+            <li>Clean headers in English for easy sorting and filtering</li>
+            <li>Raw numbers without currency symbols (for formula compatibility)</li>
+            <li>ISO-formatted dates (yyyy-MM-dd) for consistent spreadsheet parsing</li>
+          </ul>
+          <p>
+            CSV exports are generated client-side and do <em>not</em> leave your browser — no data is uploaded to external servers.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-8 mb-4">Print & PDF</h3>
+          <p>
+            Click the <strong>Print</strong> icon on any report card to open a print-optimized layout. From your browser's print dialog, choose <strong>Save as PDF</strong> to generate a professional document with:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li>Your clinic name and logo (from your public profile settings)</li>
+            <li>The report title and generated date</li>
+            <li>Formatted tables and summary cards</li>
+            <li>Page numbers and clean pagination</li>
+          </ul>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <Calculator className="w-6 h-6 text-primary" />
+            How the Numbers Are Calculated
+          </h2>
+          <p>
+            Transparency in financial reporting is critical. Here is exactly how each metric is derived from your clinic's data:
+          </p>
+          <div className="overflow-x-auto my-6">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-muted border-b">
+                  <th className="text-left p-3 font-semibold">Metric</th>
+                  <th className="text-left p-3 font-semibold">Data Source</th>
+                  <th className="text-left p-3 font-semibold">Calculation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b">
+                  <td className="p-3">Gross Revenue</td>
+                  <td className="p-3">appointments + inventory_invoices</td>
+                  <td className="p-3">SUM of all appointment fees + inventory sale totals</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3">Refunds</td>
+                  <td className="p-3">appointment_refunds + inventory_returns</td>
+                  <td className="p-3">SUM of all refund and return amounts</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3">Net Revenue</td>
+                  <td className="p-3">Derived</td>
+                  <td className="p-3">Gross Revenue − Refunds</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3">Total Expenses</td>
+                  <td className="p-3">clinic_expenses</td>
+                  <td className="p-3">SUM of all recorded expenses in the period</td>
+                </tr>
+                <tr className="border-b">
+                  <td className="p-3">Net Profit</td>
+                  <td className="p-3">Derived</td>
+                  <td className="p-3">Net Revenue − Total Expenses</td>
+                </tr>
+                <tr>
+                  <td className="p-3">Profit Margin %</td>
+                  <td className="p-3">Derived</td>
+                  <td className="p-3">(Net Profit / Net Revenue) × 100</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            <AlertCircle className="w-4 h-4 inline mr-1 text-amber-600" />
+            <strong>Important:</strong> Only appointments with status <em>Completed</em> or <em>Checked Out</em> are counted toward revenue. Cancelled and No-Show appointments are excluded.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <TrendingUp className="w-6 h-6 text-primary" />
+            Month-over-Month Comparison
+          </h2>
+          <p>
+            The Analytics dashboard includes a comparison view that overlays last month's figures on the current month's data. This helps you spot trends quickly:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li><strong className="text-green-600">Green arrows</strong> indicate growth over the previous period.</li>
+            <li><strong className="text-red-600">Red arrows</strong> indicate a decline.</li>
+            <li>The percentage change is shown next to each metric for quick context.</li>
+          </ul>
+          <p>
+            Use this feature during monthly staff meetings to celebrate wins or identify areas needing attention — such as a spike in no-shows or an unusual jump in supply costs.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <HelpCircle className="w-6 h-6 text-primary" />
+            Frequently Asked Questions
+          </h2>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">Why doesn't my report match my bank statement?</h3>
+          <p className="text-muted-foreground">
+            Zonoir tracks <em>appointment and invoice revenue</em>, not bank deposits. If patients pay via bank transfer, cash, or JazzCash, the timing of the deposit may differ from the appointment date. Use the <strong>Payment Tracking</strong> module to reconcile individual payments against your bank statement.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">Can I export data for a full year?</h3>
+          <p className="text-muted-foreground">
+            The custom date range supports up to 90 days per export. For a full year, export four quarterly reports and merge them in Excel. We recommend this approach because very large exports can slow down your browser.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">Do exported CSVs include patient names or personal data?</h3>
+          <p className="text-muted-foreground">
+            Financial exports contain transactional data only — amounts, dates, categories, and doctor names. Patient identifiers are anonymized in financial reports to protect privacy. If you need patient-level detail, use the <strong>Visit History</strong> or <strong>Appointment Reports</strong> instead.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">Can I schedule automatic monthly report emails?</h3>
+          <p className="text-muted-foreground">
+            Scheduled email reports are on our roadmap. For now, set a monthly calendar reminder to log in on the 1st of each month, run the previous month's report, and export it to CSV or PDF.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <CheckCircle2 className="w-6 h-6 text-primary" />
+            Best Practices for Monthly Reconciliation
+          </h2>
+          <div className="bg-muted/50 rounded-lg p-6 my-6 border space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">1</span>
+              </div>
+              <div>
+                <p className="font-medium">Pick a fixed date</p>
+                <p className="text-muted-foreground text-sm">Reconcile on the 1st of every month. This ensures expenses and revenue from the previous month are fully recorded.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">2</span>
+              </div>
+              <div>
+                <p className="font-medium">Record all expenses immediately</p>
+                <p className="text-muted-foreground text-sm">Don't wait until month-end. Log rent, salaries, and supply purchases as they happen for accurate real-time margins.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">3</span>
+              </div>
+              <div>
+                <p className="font-medium">Mark appointments as Completed promptly</p>
+                <p className="text-muted-foreground text-sm">Revenue only counts for Completed/Checked Out appointments. Keep your calendar status up to date.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">4</span>
+              </div>
+              <div>
+                <p className="font-medium">Export and archive</p>
+                <p className="text-muted-foreground text-sm">Save a CSV and PDF of every month's report in a secure folder for tax filing and audit trails.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">5</span>
+              </div>
+              <div>
+                <p className="font-medium">Review doctor-wise breakdowns quarterly</p>
+                <p className="text-muted-foreground text-sm">Use the per-doctor data to adjust schedules, set performance targets, and plan capacity increases.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 my-10">
+            <h3 className="font-semibold text-lg mb-3">Need Help Understanding Your Numbers?</h3>
+            <p className="text-muted-foreground mb-4">
+              If a report figure looks incorrect or you need help reconciling with your bank, our support team can walk you through the data sources and formulas.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a href="https://wa.me/923004313139" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2">
+                  <Phone className="w-4 h-4" />
+                  WhatsApp Support
+                </Button>
+              </a>
+              <Link to={`${kbBase}/payment-tracking`}>
+                <Button variant="ghost" className="gap-2">
+                  <ChevronRight className="w-4 h-4" />
+                  Payment Tracking Guide
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Calculating Net Profit & Margin %", slug: "net-profit" },
+                { title: "Payment Tracking", slug: "payment-tracking" },
+                { title: "Managing Expenses", slug: "expenses" },
+                { title: "Monthly vs Yearly Plans — Which to Choose", slug: "monthly-vs-yearly" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
