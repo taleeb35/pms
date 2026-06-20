@@ -2221,6 +2221,10 @@ const slugTitleMap: Record<string, string> = {
   "monthly-reports": "Monthly Financial Reports & Exports",
   "export-reports": "Monthly Financial Reports & Exports",
   "csv-export": "Monthly Financial Reports & Exports",
+  "ai-prescription": "Using the AI Prescription Assistant",
+  "ai-prescription-assistant": "Using the AI Prescription Assistant",
+  "prescription-ai": "Using the AI Prescription Assistant",
+  "ai-suggestions": "Using the AI Prescription Assistant",
 };
 
 
@@ -2430,6 +2434,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "financial-reports" || slug === "monthly-reports" || slug === "export-reports" || slug === "csv-export") {
     return <MonthlyFinancialReportsArticle />;
+  }
+
+  if (slug === "ai-prescription" || slug === "ai-prescription-assistant" || slug === "prescription-ai" || slug === "ai-suggestions") {
+    return <AIPrescriptionAssistantArticle />;
   }
 
   // Placeholder for other articles
@@ -18572,6 +18580,412 @@ const MonthlyFinancialReportsArticle = () => {
                 { title: "Payment Tracking", slug: "payment-tracking" },
                 { title: "Managing Expenses", slug: "expenses" },
                 { title: "Monthly vs Yearly Plans — Which to Choose", slug: "monthly-vs-yearly" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const AIPrescriptionAssistantArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Clinical Tools</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Using the AI Prescription Assistant</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Badge className="bg-purple-500/10 text-purple-600 hover:bg-purple-500/20">
+              <Sparkles className="w-3 h-3 mr-1" />
+              AI-Powered
+            </Badge>
+            <Badge variant="outline" className="gap-1">
+              <Clock className="w-3 h-3" />
+              6 min read
+            </Badge>
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">
+            Using the AI Prescription Assistant
+          </h1>
+          <p className="text-xl text-muted-foreground leading-relaxed">
+            Learn how to use Zonoir's AI Prescription Assistant to generate medication suggestions
+            based on diagnosis, patient age, allergies, and existing conditions — reviewed and approved by you.
+          </p>
+        </div>
+
+        <div className="prose prose-lg max-w-none">
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 my-8">
+            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-primary" />
+              Quick Summary
+            </h3>
+            <ul className="space-y-2 text-foreground">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>Click <strong>AI Prescription Assistant</strong> inside the Prescription tab to generate suggestions instantly.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>The AI considers diagnosis, patient age, gender, allergies, and existing diseases before suggesting medications.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>Review, edit, copy, or apply AI suggestions directly into your prescription — you remain in full control.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
+                <span>All suggestions are labeled <em>For Review Only</em> and must be verified by the doctor before prescribing.</span>
+              </li>
+            </ul>
+          </div>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <Stethoscope className="w-6 h-6 text-primary" />
+            What Is the AI Prescription Assistant?
+          </h2>
+          <p>
+            The AI Prescription Assistant is a clinical decision-support tool built into Zonoir's prescription workflow.
+            It uses Lovable AI (powered by Gemini) to suggest appropriate medications, dosages, frequencies, and durations
+            based on the patient's profile and your stated diagnosis or chief complaint.
+          </p>
+          <p>
+            It does <strong>not</strong> replace your clinical judgment. It accelerates prescription writing by giving you a
+            starting point — especially useful for common conditions, first-line therapies, and when you need a quick
+            reminder of pediatric or geriatric dosing adjustments.
+          </p>
+
+          <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 my-6">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-sm m-0">
+              <strong>Important:</strong> AI suggestions are for reference only. Always verify medications, dosages,
+              and contraindications before prescribing. You are legally and clinically responsible for every prescription you issue.
+            </p>
+          </div>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <Zap className="w-6 h-6 text-primary" />
+            How to Generate a Prescription Suggestion
+          </h2>
+          <p>
+            The AI Prescription Assistant is available whenever you open the Prescription tab during a patient visit.
+            Follow these steps:
+          </p>
+
+          <div className="bg-muted/50 rounded-lg p-5 my-6 border">
+            <ol className="list-decimal list-inside space-y-3 text-foreground">
+              <li>
+                <strong>Open a patient's visit record</strong> and navigate to the <strong>Prescription</strong> tab.
+              </li>
+              <li>
+                Ensure a <strong>Chief Complaint</strong> or <strong>Diagnosis (ICD)</strong> is entered — the AI needs at least one to generate meaningful suggestions.
+              </li>
+              <li>
+                Click the <strong>AI Prescription Assistant</strong> button (purple outline with a Sparkles icon) below the prescription editor.
+              </li>
+              <li>
+                The AI panel opens and begins streaming a suggestion based on the patient's age, gender, allergies, diseases, and vitals.
+              </li>
+              <li>
+                Wait for the stream to complete, then <strong>review</strong> the generated suggestion carefully.
+              </li>
+              <li>
+                Click <strong>Apply to Prescription</strong> to insert the text, <strong>Copy</strong> to paste elsewhere, or <strong>Regenerate</strong> for a fresh suggestion.
+              </li>
+            </ol>
+          </div>
+
+          <p>
+            <AlertCircle className="w-4 h-4 inline mr-1 text-amber-600" />
+            <strong>Note:</strong> If no chief complaint or diagnosis is provided, the assistant will show a toast error
+            and ask you to fill in that information first.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <User className="w-6 h-6 text-primary" />
+            What Patient Data Does the AI Use?
+          </h2>
+          <p>
+            The AI Prescription Assistant reads the following fields from the current patient's record and visit:
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-4 my-6">
+            {[
+              { label: "Chief Complaint", desc: "Primary symptom or reason for visit" },
+              { label: "ICD Diagnosis", desc: "Selected diagnosis from the ICD catalog" },
+              { label: "Patient Age", desc: "Used for pediatric or geriatric dosing guidance" },
+              { label: "Gender", desc: "Considered for pregnancy-safe and gender-specific medications" },
+              { label: "Allergies", desc: "Cross-reactivity checks and contraindication flags" },
+              { label: "Existing Diseases", desc: "Comorbidities that affect drug selection" },
+              { label: "Vital Signs", desc: "BP, temperature, and other vitals for situational awareness" },
+            ].map((item, idx) => (
+              <Card key={idx} className="border-border/50">
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm">{item.label}</h4>
+                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p>
+            The more complete your patient record, the more accurate and safer the AI suggestions will be.
+            We strongly recommend filling in allergies and major diseases before using the assistant.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <Shield className="w-6 h-6 text-primary" />
+            Safety Features & Clinical Guardrails
+          </h2>
+          <p>
+            The AI Prescription Assistant is designed with multiple safety layers to protect both doctors and patients:
+          </p>
+
+          <div className="space-y-4 my-6">
+            {[
+              { title: "Allergy Cross-Reactivity Checks", desc: "If the patient has recorded allergies, the AI flags any medications with known cross-reactivity and suggests safer alternatives." },
+              { title: "Age-Based Dosing", desc: "Pediatric patients (under 12) receive weight-based dosing guidance. Elderly patients (over 65) get reduced-dose recommendations where appropriate." },
+              { title: "Contraindication Warnings", desc: "The AI explicitly marks (⚠️) any suggestion that may conflict with existing conditions or medications." },
+              { title: "Generic-First Naming", desc: "Suggestions use generic drug names with common Pakistan brand names in brackets, making them easy to verify and dispense." },
+              { title: "No Controlled Substances", desc: "The AI will not suggest controlled or scheduled substances without a clear, specific clinical indication." },
+              { title: "For Review Only Badge", desc: "Every suggestion is clearly labeled as non-final and requires your explicit approval before it enters the patient's record." },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+                <Shield className="w-4 h-4 text-primary shrink-0 mt-1" />
+                <div>
+                  <span className="text-sm font-medium">{item.title}</span>
+                  <p className="text-sm text-muted-foreground m-0">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <ClipboardList className="w-6 h-6 text-primary" />
+            Understanding the Output Format
+          </h2>
+          <p>
+            AI-generated suggestions follow a consistent, prescription-friendly format:
+          </p>
+
+          <div className="bg-muted/50 rounded-lg p-5 my-6 border">
+            <ul className="list-disc list-inside space-y-2 text-foreground">
+              <li><strong>Medication Name</strong> — Generic name (Brand Name)</li>
+              <li><strong>Dosage</strong> — e.g., 500 mg, 5 ml, or weight-based mg/kg</li>
+              <li><strong>Frequency</strong> — e.g., Twice daily (BD), Three times daily (TDS)</li>
+              <li><strong>Duration</strong> — e.g., 5 days, 1 week, 2 weeks</li>
+              <li><strong>Route</strong> — Oral, IV, IM, Topical, etc.</li>
+              <li><strong>Instructions / Warnings</strong> — Take with food, avoid alcohol, etc.</li>
+            </ul>
+          </div>
+
+          <p>
+            After the medication list, the AI often includes a short section with:
+          </p>
+          <ul className="list-disc list-inside space-y-2 my-4">
+            <li>Special instructions for this specific patient (e.g., "Reduce dose due to renal impairment")</li>
+            <li>Follow-up advice (e.g., "Recheck CBC after 1 week")</li>
+            <li>Red flags that warrant referral or further investigation</li>
+          </ul>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <RotateCcw className="w-6 h-6 text-primary" />
+            Regenerating, Copying & Applying Suggestions
+          </h2>
+          <p>
+            Once a suggestion is generated, you have three actions available:
+          </p>
+
+          <div className="grid md:grid-cols-3 gap-4 my-6">
+            {[
+              { title: "Apply to Prescription", desc: "Inserts the full suggestion directly into the prescription editor, where you can edit it further before saving.", icon: Sparkles },
+              { title: "Copy", desc: "Copies the suggestion to your clipboard so you can paste it into a note, message, or external document.", icon: FileText },
+              { title: "Regenerate", desc: "Requests a fresh suggestion from the AI. Useful if the first output is incomplete or you want alternative options.", icon: RotateCcw },
+            ].map((item, idx) => (
+              <Card key={idx} className="border-border/50">
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center shrink-0">
+                      <item.icon className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-sm">{item.title}</h4>
+                      <p className="text-xs text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20 my-6">
+            <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-sm m-0">
+              <strong>Pro Tip:</strong> Always click <em>Apply to Prescription</em> first, then review and edit the text
+              inside the prescription editor before finalizing the visit. This ensures the AI output is customized to your
+              exact clinical preference and patient context.
+            </p>
+          </div>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <AlertCircle className="w-6 h-6 text-primary" />
+            Common Issues & Troubleshooting
+          </h2>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">The button is disabled or nothing happens when I click it</h3>
+          <p className="text-muted-foreground">
+            The AI Prescription Assistant requires at least a Chief Complaint or a selected Diagnosis (ICD code).
+            Go back to the Visit Details tab, enter the complaint or pick a diagnosis, then return to the Prescription tab and try again.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">The AI panel shows "Analyzing patient profile..." for too long</h3>
+          <p className="text-muted-foreground">
+            The AI streams its response word-by-word. On slower connections, this can take 10–20 seconds.
+            If it stalls beyond 30 seconds, close the panel and click the button again. If the problem persists,
+            check your internet connection or contact support.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">I see an error: "Rate limit exceeded"</h3>
+          <p className="text-muted-foreground">
+            This means too many AI requests were made in a short window. Wait 30–60 seconds and try again.
+            If your clinic uses the assistant very heavily, consider staggering usage across shifts.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">I see an error: "AI credits exhausted"</h3>
+          <p className="text-muted-foreground">
+            Your workspace's AI credit pool has been depleted. Contact your clinic admin or Zonoir support
+            to add more credits. Prescription writing without AI remains fully functional.
+          </p>
+
+          <h3 className="text-lg font-semibold mt-6 mb-2">The suggestion includes a drug I'm not comfortable prescribing</h3>
+          <p className="text-muted-foreground">
+            Simply delete that line from the prescription editor after applying. The AI is a suggestion engine, not an authority.
+            Every medication decision is yours to make, modify, or reject.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-12 mb-6 flex items-center gap-2">
+            <CheckCircle2 className="w-6 h-6 text-primary" />
+            Best Practices for Safe AI-Assisted Prescribing
+          </h2>
+
+          <div className="bg-muted/50 rounded-lg p-6 my-6 border space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">1</span>
+              </div>
+              <div>
+                <p className="font-medium">Always verify against your own knowledge</p>
+                <p className="text-muted-foreground text-sm">The AI may miss rare drug interactions or recent recalls. Use it as a draft, not a final authority.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">2</span>
+              </div>
+              <div>
+                <p className="font-medium">Double-check pediatric and geriatric doses</p>
+                <p className="text-muted-foreground text-sm">The AI provides weight-based and age-adjusted guidance, but you must confirm the exact dose for the individual patient.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">3</span>
+              </div>
+              <div>
+                <p className="font-medium">Update patient allergies before every use</p>
+                <p className="text-muted-foreground text-sm">New allergies discovered during visits should be recorded immediately so the AI can factor them into future suggestions.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">4</span>
+              </div>
+              <div>
+                <p className="font-medium">Use for first-line and common conditions</p>
+                <p className="text-muted-foreground text-sm">The AI excels at common outpatient complaints. For complex, rare, or off-label cases, rely on specialist references.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="bg-primary/10 p-2 rounded-lg shrink-0">
+                <span className="font-bold text-primary">5</span>
+              </div>
+              <div>
+                <p className="font-medium">Document your final prescription clearly</p>
+                <p className="text-muted-foreground text-sm">After editing the AI output, ensure the final prescription is legible, complete, and saved before ending the visit.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-6 my-10">
+            <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              Privacy & Data Handling
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              The AI Prescription Assistant processes patient data through Lovable AI's secure gateway.
+              No patient data is used to train public AI models. All transmissions are encrypted,
+              and PHI (Protected Health Information) is handled in compliance with HIPAA-aware practices.
+              For full details, see our Privacy Policy.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <a href="https://wa.me/923004313139" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="gap-2">
+                  <Phone className="w-4 h-4" />
+                  WhatsApp Support
+                </Button>
+              </a>
+              <Link to={`${kbBase}/prescription-templates`}>
+                <Button variant="ghost" className="gap-2">
+                  <ChevronRight className="w-4 h-4" />
+                  Prescription Templates Guide
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Creating Prescription Templates", slug: "prescription-templates" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Managing Allergies, Diseases, ICD Codes & Procedures", slug: "allergies-diseases" },
+                { title: "Patient Visit Timeline — Reading the History", slug: "visit-timeline" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
