@@ -2221,6 +2221,10 @@ const slugTitleMap: Record<string, string> = {
   "monthly-reports": "Monthly Financial Reports & Exports",
   "export-reports": "Monthly Financial Reports & Exports",
   "csv-export": "Monthly Financial Reports & Exports",
+  "ai-prescription": "Using the AI Prescription Assistant",
+  "ai-prescription-assistant": "Using the AI Prescription Assistant",
+  "prescription-ai": "Using the AI Prescription Assistant",
+  "ai-suggestions": "Using the AI Prescription Assistant",
 };
 
 
@@ -2430,6 +2434,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "financial-reports" || slug === "monthly-reports" || slug === "export-reports" || slug === "csv-export") {
     return <MonthlyFinancialReportsArticle />;
+  }
+
+  if (slug === "ai-prescription" || slug === "ai-prescription-assistant" || slug === "prescription-ai" || slug === "ai-suggestions") {
+    return <AIPrescriptionAssistantArticle />;
   }
 
   // Placeholder for other articles
