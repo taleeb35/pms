@@ -2230,6 +2230,10 @@ const slugTitleMap: Record<string, string> = {
   "ai-prescription-assistant": "Using the AI Prescription Assistant",
   "prescription-ai": "Using the AI Prescription Assistant",
   "ai-suggestions": "Using the AI Prescription Assistant",
+  "ai-visit-summary": "AI Visit Summaries Explained",
+  "visit-summary": "AI Visit Summaries Explained",
+  "ai-summary": "AI Visit Summaries Explained",
+  "clinical-summary": "AI Visit Summaries Explained",
 };
 
 
@@ -2443,6 +2447,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "ai-prescription" || slug === "ai-prescription-assistant" || slug === "prescription-ai" || slug === "ai-suggestions") {
     return <AIPrescriptionAssistantArticle />;
+  }
+
+  if (slug === "ai-visit-summary" || slug === "visit-summary" || slug === "ai-summary" || slug === "clinical-summary") {
+    return <AIVisitSummaryArticle />;
   }
 
   // Placeholder for other articles
