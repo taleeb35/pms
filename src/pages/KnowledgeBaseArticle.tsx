@@ -76,7 +76,12 @@ import {
   Moon,
   Heart,
   Baby,
-  Calculator
+  Calculator,
+  Brain,
+  List,
+  MessageSquare,
+  Bot,
+  ClipboardCheck
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
