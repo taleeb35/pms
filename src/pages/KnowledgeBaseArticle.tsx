@@ -19018,3 +19018,628 @@ const AIPrescriptionAssistantArticle = () => {
     </div>
   );
 };
+
+const AIVisitSummaryArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+      
+      {/* Breadcrumb & Header */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">AI Features</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">AI Visit Summaries Explained</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button */}
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Article Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-fuchsia-500/10 text-fuchsia-600 hover:bg-fuchsia-500/20">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI Features
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              AI Visit Summaries Explained
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Learn how Zonoir's AI generates professional clinical visit summaries from your 
+              patient encounter data — saving time and improving documentation quality.
+            </p>
+          </div>
+
+          {/* Quick Overview */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How the AI visit summary works",
+                  "What patient data the AI uses",
+                  "How to generate a summary during a visit",
+                  "Safety guardrails and clinical oversight",
+                  "Editing, copying, and printing summaries",
+                  "Troubleshooting common issues"
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          {/* Article Content */}
+          <article className="prose prose-lg max-w-none">
+            
+            {/* Introduction */}
+            <div className="mb-12">
+              <div className="flex items-start gap-3 p-4 bg-fuchsia-500/10 rounded-lg border border-fuchsia-500/20 mb-6">
+                <Brain className="w-5 h-5 text-fuchsia-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">AI-Powered Clinical Documentation</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    The AI Visit Summary reads all recorded data from a patient visit — vitals, complaints, 
+                    diagnosis, prescription, allergies, and follow-up notes — and generates a structured, 
+                    professional clinical summary in seconds.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where to Find the AI Summary</h2>
+                  <p className="text-muted-foreground m-0">Access the summary generator inside any patient visit</p>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <p>
+                  During or after recording a patient visit, navigate to the <strong>"Visit Summary"</strong> tab 
+                  in the visit record dialog. You will see a <strong>"Generate AI Summary"</strong> button 
+                  at the top of the summary section.
+                </p>
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Stethoscope className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">Inside Visit Record</h4>
+                          <p className="text-xs text-muted-foreground">Open any patient visit and switch to the Summary tab</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Sparkles className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">One-Click Generate</h4>
+                          <p className="text-xs text-muted-foreground">Click the AI button and the summary streams in real time</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                  <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    <strong>Pro Tip:</strong> The more complete your visit data (vitals, chief complaint, 
+                    diagnosis, prescription), the richer and more accurate the AI summary will be.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Data the AI Reads</h2>
+                  <p className="text-muted-foreground m-0">The summary is built only from data you already entered</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The AI does not invent or assume anything. It synthesizes the following fields 
+                from the current visit and the patient's profile:
+              </p>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                {[
+                  { icon: User, label: "Patient Name", desc: "Full name from profile" },
+                  { icon: Calendar, label: "Age & Gender", desc: "Derived from date of birth" },
+                  { icon: Heart, label: "Blood Group", desc: "If recorded in profile" },
+                  { icon: AlertTriangle, label: "Allergies", desc: "Known drug/food allergies" },
+                  { icon: ClipboardList, label: "Chronic Diseases", desc: "Ongoing conditions listed" },
+                  { icon: Activity, label: "Vital Signs", desc: "BP, pulse, temp, SpO₂, weight" },
+                  { icon: MessageSquare, label: "Chief Complaint", desc: "Reason for visit" },
+                  { icon: Stethoscope, label: "Diagnosis", desc: "ICD-coded or free-text" },
+                  { icon: Syringe, label: "Prescription", desc: "Medicines, dosage, duration" },
+                  { icon: FileText, label: "Lab Tests", desc: "Tests ordered during visit" },
+                  { icon: CalendarDays, label: "Next Visit", desc: "Follow-up date and notes" },
+                  { icon: Eye, label: "Other Notes", desc: "Any additional visit remarks" },
+                ].map((feature, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <feature.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{feature.label}</h4>
+                          <p className="text-xs text-muted-foreground">{feature.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Important:</strong> If a field is empty (e.g., no vitals recorded), the AI 
+                  will note it as "Not recorded" rather than making something up.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How the Summary Is Generated</h2>
+                  <p className="text-muted-foreground m-0">Real-time streaming with professional formatting</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                When you click <strong>"Generate AI Summary"</strong>, the system sends your visit data 
+                to the AI gateway and streams the response back word-by-word:
+              </p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                
+                {[
+                  { title: "Data Sent Securely", desc: "Encrypted patient data is transmitted to the AI gateway" },
+                  { title: "AI Processes", desc: "Gemini AI analyzes all fields and structures a clinical narrative" },
+                  { title: "Streamed Response", desc: "The summary appears live on your screen, sentence by sentence" },
+                  { title: "Ready to Use", desc: "Copy, edit, or print the summary immediately" },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <Zap className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Speed:</strong> Most summaries are generated in under 10 seconds, even for 
+                  complex visits with multiple prescriptions and test orders.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Summary Format & Sections</h2>
+                  <p className="text-muted-foreground m-0">Structured output for medical records</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The AI generates a markdown-formatted clinical summary with the following standard sections:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <User className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Patient Demographics</h4>
+                        <p className="text-xs text-muted-foreground">Name, age, gender, blood group</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Chief Complaint</h4>
+                        <p className="text-xs text-muted-foreground">Presenting problem in clinical language</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Stethoscope className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Clinical Findings</h4>
+                        <p className="text-xs text-muted-foreground">Vitals, examination notes, diagnosis</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Syringe className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Treatment Plan</h4>
+                        <p className="text-xs text-muted-foreground">Prescribed medicines with context</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Investigations</h4>
+                        <p className="text-xs text-muted-foreground">Lab tests and imaging orders</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <CalendarDays className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Follow-Up</h4>
+                        <p className="text-xs text-muted-foreground">Next visit date and instructions</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>⚠️ Risk Flags:</strong> If the AI detects allergies relevant to prescribed 
+                  medicines, or notes missing critical information, it highlights these with a warning 
+                  symbol for your review.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Copy, Edit & Print</h2>
+                  <p className="text-muted-foreground m-0">Use the summary however you need</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                Once generated, the summary appears in a clean text box with action buttons:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: ClipboardCheck, label: "Copy to Clipboard", desc: "One-click copy for pasting into EMR or WhatsApp" },
+                  { icon: Pencil, label: "Edit Inline", desc: "Click into the text and modify before saving" },
+                  { icon: Printer, label: "Print Summary", desc: "Print-ready formatting for patient files" },
+                  { icon: Save, label: "Auto-Saved", desc: "Summary is attached to the visit record automatically" },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Permanent Record:</strong> The generated summary is saved with the visit 
+                  and can be retrieved any time from the patient's visit history.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  6
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Safety Guardrails</h2>
+                  <p className="text-muted-foreground m-0">Clinical oversight always required</p>
+                </div>
+              </div>
+
+              <p className="mb-6">
+                The AI Visit Summary is an assistant, not a replacement for clinical judgment. 
+                The following safeguards are built in:
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start gap-3 p-4 bg-destructive/5 rounded-lg border border-destructive/20">
+                  <Shield className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-sm">No Invented Data</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      The AI only summarizes what you entered. It never hallucinates vitals, 
+                      diagnoses, or medicines.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-amber-500/5 rounded-lg border border-amber-500/20">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-sm">Allergy Warnings</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      If patient allergies are recorded, the AI cross-references them against 
+                      prescribed medicines and flags potential issues.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-blue-500/5 rounded-lg border border-blue-500/20">
+                  <Lock className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-sm">Encrypted Transmission</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      All data is sent via secure, encrypted channels through the Lovable AI Gateway. 
+                      No patient data is stored by third-party AI providers.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-4 bg-emerald-500/5 rounded-lg border border-emerald-500/20">
+                  <Eye className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-sm">Doctor Review Required</h4>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Every AI-generated summary must be reviewed by the attending doctor before 
+                      it is considered part of the official medical record.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 7 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  7
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Troubleshooting</h2>
+                  <p className="text-muted-foreground m-0">Common issues and how to resolve them</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <Zap className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">"Rate limit exceeded" Error</h4>
+                        <p className="text-sm text-muted-foreground">
+                          The AI gateway has rate limits. Wait 10–15 seconds and try again. 
+                          If it persists, contact support.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center shrink-0">
+                        <Wallet className="w-4 h-4 text-rose-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">"AI credits exhausted" Error</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Your workspace has run out of AI credits. Contact your clinic administrator 
+                          or Zonoir support to add more credits.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                        <RefreshCw className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Summary Is Empty or Too Short</h4>
+                        <p className="text-sm text-muted-foreground">
+                          This happens when very little visit data is available. Fill in at least 
+                          the Chief Complaint or Diagnosis, then regenerate.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-slate-500/10 flex items-center justify-center shrink-0">
+                        <Clock className="w-4 h-4 text-slate-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Streaming Is Slow</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Network latency can affect streaming speed. The full summary will still 
+                          appear — just give it a few extra seconds.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important Disclaimer</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• AI-generated summaries are for documentation assistance only</li>
+                      <li>• The attending doctor is responsible for the accuracy of all clinical records</li>
+                      <li>• Always review and edit the summary before considering it final</li>
+                      <li>• Do not rely on the AI for diagnosis — it only formats what you already recorded</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback Section */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related Articles */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Using the AI Prescription Assistant", slug: "ai-prescription" },
+                { title: "Recording Patient Visits", slug: "visit-records" },
+                { title: "Patient Visit Timeline — Reading the History", slug: "visit-timeline" },
+                { title: "AI Patient Insights", slug: "ai-patient-insights" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
