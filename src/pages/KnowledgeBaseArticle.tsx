@@ -81,7 +81,8 @@ import {
   List,
   MessageSquare,
   Bot,
-  ClipboardCheck
+  ClipboardCheck,
+  Target
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
@@ -2234,6 +2235,10 @@ const slugTitleMap: Record<string, string> = {
   "visit-summary": "AI Visit Summaries Explained",
   "ai-summary": "AI Visit Summaries Explained",
   "clinical-summary": "AI Visit Summaries Explained",
+  "ai-revenue-forecast": "Reading AI Revenue Forecasts",
+  "revenue-forecast": "Reading AI Revenue Forecasts",
+  "ai-forecast": "Reading AI Revenue Forecasts",
+  "revenue-prediction": "Reading AI Revenue Forecasts",
 };
 
 
@@ -2452,6 +2457,11 @@ const KnowledgeBaseArticle = () => {
   if (slug === "ai-visit-summary" || slug === "visit-summary" || slug === "ai-summary" || slug === "clinical-summary") {
     return <AIVisitSummaryArticle />;
   }
+
+  if (slug === "ai-revenue-forecast" || slug === "revenue-forecast" || slug === "ai-forecast" || slug === "revenue-prediction") {
+    return <AIRevenueForecastArticle />;
+  }
+
 
   // Placeholder for other articles
   return (
@@ -19624,6 +19634,432 @@ const AIVisitSummaryArticle = () => {
                 { title: "Recording Patient Visits", slug: "visit-records" },
                 { title: "Patient Visit Timeline — Reading the History", slug: "visit-timeline" },
                 { title: "AI Patient Insights", slug: "ai-patient-insights" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const AIRevenueForecastArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">AI Features</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Reading AI Revenue Forecasts</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-fuchsia-500/10 text-fuchsia-600 hover:bg-fuchsia-500/20">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI Features
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Reading AI Revenue Forecasts
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Understand how Zonoir's AI predicts your next month's revenue, surfaces trends,
+              and turns 6 months of appointment and expense data into actionable recommendations.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where to find the AI Revenue Forecast",
+                  "What data the forecast uses",
+                  "How to read confidence levels",
+                  "Interpreting trend arrows and % change",
+                  "Insights, recommendations, and risk alerts",
+                  "Troubleshooting empty or low-confidence forecasts",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+            <div className="mb-12">
+              <div className="flex items-start gap-3 p-4 bg-fuchsia-500/10 rounded-lg border border-fuchsia-500/20 mb-6">
+                <Brain className="w-5 h-5 text-fuchsia-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">AI-Powered Revenue Predictions</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    The AI Revenue Forecast analyzes the last 6 months of your appointments
+                    (consultation, procedure, other fees, refunds) and clinic expenses to predict
+                    next month and next quarter revenue, flag trends, and recommend actions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 1 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">1</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where to Find the Forecast</h2>
+                  <p className="text-muted-foreground m-0">Available on Doctor and Clinic Reports</p>
+                </div>
+              </div>
+              <p>
+                Open <strong>Reports &amp; Analytics</strong> from the sidebar. At the top of the page
+                you will see a card labeled <strong>"AI Revenue Forecasting"</strong>. Click
+                <strong> "Generate Forecast"</strong> to run the analysis — it usually completes in under
+                15 seconds. Once generated, use <strong>Refresh</strong> to regenerate any time, or
+                collapse the card to hide it.
+              </p>
+              <div className="grid md:grid-cols-2 gap-4 mt-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Stethoscope className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Doctor View</h4>
+                        <p className="text-xs text-muted-foreground">Forecasts your personal appointment revenue</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Building2 className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-sm">Clinic View</h4>
+                        <p className="text-xs text-muted-foreground">Aggregates all approved doctors plus clinic expenses</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 2 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">2</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What Data the AI Uses</h2>
+                  <p className="text-muted-foreground m-0">Only your real, recorded transactions</p>
+                </div>
+              </div>
+              <p className="mb-6">
+                The forecast is built strictly from data you have already entered in Zonoir over the
+                last 6 months. No external benchmarks, no assumed values:
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: Calendar, label: "Appointments", desc: "Date, status (cancelled excluded), and fee breakdown" },
+                  { icon: DollarSign, label: "Fees", desc: "Consultation + procedure + other − refund" },
+                  { icon: Receipt, label: "Clinic Expenses", desc: "Clinic role only: amount, date, and category" },
+                  { icon: Users, label: "Patient Volume", desc: "Counted per month for growth trends" },
+                ].map((f, i) => (
+                  <Card key={i} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <f.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm">{f.label}</h4>
+                          <p className="text-xs text-muted-foreground">{f.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <Shield className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Privacy:</strong> Only aggregated monthly totals are sent to the AI gateway —
+                  no patient names, contact details, or visit notes are shared.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 3 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">3</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Reading the Forecast Cards</h2>
+                  <p className="text-muted-foreground m-0">Next Month and Next Quarter projections</p>
+                </div>
+              </div>
+              <p className="mb-6">
+                The top of the panel shows two prediction cards in Pakistani Rupees, each with an
+                estimated patient count. <strong>Next Month</strong> also displays a confidence badge:
+              </p>
+              <div className="grid sm:grid-cols-3 gap-3 mb-6">
+                <Card className="border-green-500/30 bg-green-500/5">
+                  <CardContent className="pt-4 pb-4">
+                    <Badge className="bg-green-500/10 text-green-600 mb-2">high confidence</Badge>
+                    <p className="text-xs text-muted-foreground m-0">Consistent 6 months of data with stable patterns. Treat the estimate as a reliable target.</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-yellow-500/30 bg-yellow-500/5">
+                  <CardContent className="pt-4 pb-4">
+                    <Badge className="bg-yellow-500/10 text-yellow-600 mb-2">medium confidence</Badge>
+                    <p className="text-xs text-muted-foreground m-0">Some variability or partial history. Use as a directional guide, not a hard number.</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-red-500/30 bg-red-500/5">
+                  <CardContent className="pt-4 pb-4">
+                    <Badge className="bg-red-500/10 text-red-600 mb-2">low confidence</Badge>
+                    <p className="text-xs text-muted-foreground m-0">Very little data or large swings. Keep recording appointments to improve future runs.</p>
+                  </CardContent>
+                </Card>
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro Tip:</strong> Cancelled appointments are excluded from revenue, but their
+                  patient demand still matters — review them to spot booking issues.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 4 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">4</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Trend Indicators</h2>
+                  <p className="text-muted-foreground m-0">Direction and % change at a glance</p>
+                </div>
+              </div>
+              <p className="mb-6">
+                Two trend cards compare the most recent month to the average of prior months:
+              </p>
+              <div className="grid sm:grid-cols-3 gap-3 mb-6">
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4 text-center">
+                    <TrendingUp className="w-6 h-6 text-green-600 mx-auto mb-2" />
+                    <h4 className="font-medium text-sm">Up</h4>
+                    <p className="text-xs text-muted-foreground m-0">Growth vs prior months</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4 text-center">
+                    <TrendingDown className="w-6 h-6 text-red-600 mx-auto mb-2" />
+                    <h4 className="font-medium text-sm">Down</h4>
+                    <p className="text-xs text-muted-foreground m-0">Decline — investigate causes</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-border/50">
+                  <CardContent className="pt-4 pb-4 text-center">
+                    <Activity className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
+                    <h4 className="font-medium text-sm">Stable</h4>
+                    <p className="text-xs text-muted-foreground m-0">Within normal variance</p>
+                  </CardContent>
+                </Card>
+              </div>
+              <p>
+                Below the trends, a simple bar chart shows the actual monthly revenue for each of the
+                last 6 months — useful to visually confirm what the AI is reacting to.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 5 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">5</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Insights, Recommendations & Risk Alerts</h2>
+                  <p className="text-muted-foreground m-0">The actionable part of the forecast</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <Card className="border-destructive/30 bg-destructive/5">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-sm">Risk Alerts</h4>
+                        <p className="text-xs text-muted-foreground m-0">Flags potential issues: declining patient volume, rising refunds, expense spikes outpacing revenue. Treat as priority items to investigate.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-yellow-500/30 bg-yellow-500/5">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <Lightbulb className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-sm">Key Insights</h4>
+                        <p className="text-xs text-muted-foreground m-0">Plain-language observations referencing real numbers — best month, weakest month, average revenue per patient, fee composition.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-primary/30 bg-primary/5">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-start gap-3">
+                      <Target className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-sm">Recommendations</h4>
+                        <p className="text-xs text-muted-foreground m-0">3 concrete next steps — e.g. open additional slots in peak hours, follow up on cancelled appointments, review procedure pricing.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Step 6 */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">6</div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Summary Footer Metrics</h2>
+                  <p className="text-muted-foreground m-0">Quick averages used as forecast baselines</p>
+                </div>
+              </div>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span><strong>Avg Monthly Revenue</strong> — total revenue ÷ number of months with data</span></li>
+                <li className="flex items-start gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span><strong>Avg Patients / month</strong> — total appointments ÷ months</span></li>
+                <li className="flex items-start gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" /><span><strong>Total Expenses</strong> — clinic role only, sum of all recorded expenses in the period</span></li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Troubleshooting */}
+            <Card className="border-amber-500/30 bg-amber-500/5 mb-12">
+              <CardContent className="pt-6 pb-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                  Troubleshooting
+                </h3>
+                <div className="space-y-4 text-sm">
+                  <div>
+                    <p className="font-medium m-0">"No doctors found"</p>
+                    <p className="text-muted-foreground m-0">Clinic role requires at least one <strong>approved</strong> doctor. Approve doctors from the Doctors page.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium m-0">Always shows "low confidence"</p>
+                    <p className="text-muted-foreground m-0">You likely have fewer than 2–3 months of consistent appointment data. Keep recording visits and try again next month.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium m-0">"Rate limit exceeded"</p>
+                    <p className="text-muted-foreground m-0">The shared AI gateway is busy. Wait a minute and click <strong>Refresh</strong>.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium m-0">"AI credits exhausted"</p>
+                    <p className="text-muted-foreground m-0">Your workspace AI quota is used up. Contact support to add credits.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium m-0">Expense totals look wrong</p>
+                    <p className="text-muted-foreground m-0">Only expenses recorded under <em>Managing Expenses</em> with a date in the last 6 months are included.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Best Practices */}
+            <Card className="border-emerald-500/30 bg-emerald-500/5 mb-12">
+              <CardContent className="pt-6 pb-6">
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <ClipboardCheck className="w-5 h-5 text-emerald-600" />
+                  Best Practices
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />Re-run the forecast on the 1st of every month for a fresh baseline.</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />Always enter consultation, procedure, and other fees separately — it improves trend accuracy.</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />Record refunds promptly so net revenue isn't overstated.</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />Treat recommendations as suggestions — always combine with clinical and business judgment.</li>
+                  <li className="flex items-start gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />Compare the AI estimate against your monthly financial report at month-end to calibrate trust.</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2"><ThumbsUp className="w-4 h-4" />Yes, it helped</Button>
+                <Button variant="outline" className="gap-2"><ThumbsDown className="w-4 h-4" />No, I need more help</Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Monthly Financial Reports & Exports", slug: "financial-reports" },
+                { title: "Calculating Net Profit & Margin %", slug: "net-profit" },
+                { title: "Clinic Reports & Analytics", slug: "clinic-reports" },
+                { title: "AI Visit Summaries Explained", slug: "ai-visit-summary" },
               ].map((article, idx) => (
                 <Link key={idx} to={`${kbBase}/${article.slug}`}>
                   <Card className="hover:shadow-md transition-shadow cursor-pointer">
