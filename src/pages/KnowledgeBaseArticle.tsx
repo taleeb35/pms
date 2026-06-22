@@ -2234,6 +2234,10 @@ const slugTitleMap: Record<string, string> = {
   "visit-summary": "AI Visit Summaries Explained",
   "ai-summary": "AI Visit Summaries Explained",
   "clinical-summary": "AI Visit Summaries Explained",
+  "ai-revenue-forecast": "Reading AI Revenue Forecasts",
+  "revenue-forecast": "Reading AI Revenue Forecasts",
+  "ai-forecast": "Reading AI Revenue Forecasts",
+  "revenue-prediction": "Reading AI Revenue Forecasts",
 };
 
 
