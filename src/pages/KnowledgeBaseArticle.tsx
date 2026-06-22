@@ -2457,6 +2457,11 @@ const KnowledgeBaseArticle = () => {
     return <AIVisitSummaryArticle />;
   }
 
+  if (slug === "ai-revenue-forecast" || slug === "revenue-forecast" || slug === "ai-forecast" || slug === "revenue-prediction") {
+    return <AIRevenueForecastArticle />;
+  }
+
+
   // Placeholder for other articles
   return (
     <div className="min-h-screen bg-background">
