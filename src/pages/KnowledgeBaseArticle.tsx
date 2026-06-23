@@ -20087,3 +20087,279 @@ const AIRevenueForecastArticle = () => {
     </div>
   );
 };
+
+const AIPatientInsightsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">AI Features</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">AI Patient Insights</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-fuchsia-500/10 text-fuchsia-600 hover:bg-fuchsia-500/20">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI Features
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              AI Patient Insights
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Generate an instant clinical analysis of any patient's full history — vitals trends, risk
+              alerts, visit patterns, medication review, and proactive recommendations — powered by
+              Zonoir's Gemini-based AI.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h3>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where to find AI Patient Insights",
+                  "What data the AI analyzes",
+                  "Reading the 5 insight sections",
+                  "Understanding risk alerts and ⚠️ flags",
+                  "Refreshing, copying, and sharing insights",
+                  "Privacy, safety, and troubleshooting",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Brain className="w-6 h-6 text-primary" />
+              What is AI Patient Insights?
+            </h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              AI Patient Insights is a one-click clinical analyst built into every patient profile.
+              Instead of scrolling through years of visits, prescriptions, and lab notes, you press
+              <strong> Generate Insights</strong> and the AI reads the patient's full record, then
+              returns a structured briefing covering health trends, risks, visit patterns, medication
+              review, and clinical recommendations — usually in under 15 seconds.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              It is designed for Pakistani clinical practice, respects the patient's age and gender,
+              and is strictly grounded in your own data — the AI will never invent vitals,
+              diagnoses, or drug names that are not in the record.
+            </p>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <LayoutDashboard className="w-6 h-6 text-primary" />
+              Where to find it
+            </h2>
+            <Card>
+              <CardContent className="py-6 space-y-3 text-sm">
+                <p><strong>1.</strong> Open any patient from <em>Patients</em> in the sidebar.</p>
+                <p><strong>2.</strong> On the patient profile, look for the <strong>AI Patient Insights</strong> card near the top — it has a purple brain icon and a gradient background.</p>
+                <p><strong>3.</strong> Click <strong>Generate Insights</strong>. The card expands and streams the analysis live as the AI writes it.</p>
+                <p><strong>4.</strong> Use <strong>Refresh</strong> to regenerate after adding new visits, or the <strong>Copy</strong> icon to paste the report into a referral letter or WhatsApp message.</p>
+              </CardContent>
+            </Card>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <ClipboardList className="w-6 h-6 text-primary" />
+              What data the AI reads
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Every time you click Generate, the system securely fetches and sends the following
+              from your clinic's database to the AI gateway:
+            </p>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Patient Profile", desc: "Name, age (auto-calculated from DOB), gender, blood group, allergies, chronic conditions, and recorded medical history." },
+                { title: "Visit History", desc: "Last 50 appointments — date, status, complaint, notes, doctor's specialization, and fee." },
+                { title: "Medical Records", desc: "Last 30 medical records — symptoms, diagnosis, vitals JSON (BP, weight, temperature, etc.), and test results." },
+                { title: "Prescriptions", desc: "Last 50 prescriptions — medication name, dosage, frequency, duration, and instructions." },
+              ].map((item, idx) => (
+                <Card key={idx}>
+                  <CardContent className="py-4">
+                    <h4 className="font-semibold mb-1 text-sm">{item.title}</h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Card className="mt-4 border-amber-500/30 bg-amber-500/5">
+              <CardContent className="py-4 flex gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  Only data the logged-in user already has permission to read is sent. Receptionists,
+                  doctors, and clinic owners each see insights scoped to their own access boundary
+                  via Row-Level Security.
+                </p>
+              </CardContent>
+            </Card>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Activity className="w-6 h-6 text-primary" />
+              The 5 sections of every insight
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Every report is formatted in the same predictable structure so you can scan it in
+              seconds. Emojis act as visual anchors.
+            </p>
+            <div className="space-y-3">
+              {[
+                { emoji: "📊", title: "Health Trends", desc: "Vital-sign direction over time, weight changes, recurring complaints, and how the patient's clinical picture is evolving." },
+                { emoji: "⚠️", title: "Risk Alerts", desc: "Drug-interaction concerns, missed follow-ups, deteriorating patterns, and any red flags that warrant attention this visit." },
+                { emoji: "🔄", title: "Visit Patterns", desc: "Appointment frequency, no-show rate, compliance with scheduled follow-ups, and gaps between visits." },
+                { emoji: "💊", title: "Medication Review", desc: "Active vs discontinued drugs, polypharmacy risk, repeated short-course antibiotics, and chronic-medication adherence cues." },
+                { emoji: "🩺", title: "Clinical Recommendations", desc: "Proactive next steps — labs to order, vaccinations due, lifestyle counselling topics, or specialist referrals worth considering." },
+              ].map((s, idx) => (
+                <Card key={idx}>
+                  <CardContent className="py-4 flex gap-4">
+                    <span className="text-2xl">{s.emoji}</span>
+                    <div>
+                      <h4 className="font-semibold text-sm mb-1">{s.title}</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Shield className="w-6 h-6 text-primary" />
+              Safety guardrails
+            </h2>
+            <Card>
+              <CardContent className="py-6 space-y-3 text-sm text-muted-foreground">
+                <p><CheckCircle2 className="w-4 h-4 text-primary inline mr-2" />The AI is instructed to <strong>never invent data</strong>. If a field is missing, it says so and tells you what would help.</p>
+                <p><CheckCircle2 className="w-4 h-4 text-primary inline mr-2" />Output is concise (typically 300–400 words) and uses ⚠️ to highlight anything risky — easy to spot on a busy day.</p>
+                <p><CheckCircle2 className="w-4 h-4 text-primary inline mr-2" />Insights are <strong>decision support, not a diagnosis</strong>. Always apply your own clinical judgement before acting.</p>
+                <p><CheckCircle2 className="w-4 h-4 text-primary inline mr-2" />Reports are <strong>not stored</strong> — every Generate call streams fresh content from the latest data and disappears when you close the card.</p>
+              </CardContent>
+            </Card>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-primary" />
+              Tips for getting the most value
+            </h2>
+            <Card>
+              <CardContent className="py-6 space-y-3 text-sm">
+                <p>• <strong>Record vitals as JSON</strong> (BP, weight, temp). The AI uses these to detect trends.</p>
+                <p>• <strong>Always fill complaint and diagnosis fields.</strong> Empty notes = thin insights.</p>
+                <p>• <strong>Re-generate before each follow-up visit</strong> — new data produces sharper risk alerts.</p>
+                <p>• <strong>Copy and paste</strong> into referral letters or share with the patient for transparency.</p>
+                <p>• For chronic patients (diabetes, hypertension, pregnancy), regenerate monthly to track trajectory.</p>
+              </CardContent>
+            </Card>
+          </section>
+
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <AlertCircle className="w-6 h-6 text-primary" />
+              Troubleshooting
+            </h2>
+            <div className="space-y-3">
+              {[
+                { q: "“Rate limit exceeded”", a: "You generated too many reports in a short window. Wait 30–60 seconds and try again." },
+                { q: "“AI credits exhausted”", a: "Your clinic's monthly AI allocation is used up. Contact admin or wait for next billing cycle." },
+                { q: "Insights say “insufficient data”", a: "The patient has very few visits, records, or prescriptions. Add at least 2–3 visits with vitals and diagnoses, then regenerate." },
+                { q: "Stream stops halfway", a: "Usually a network drop. Click Refresh to start a fresh stream — partial output is not saved." },
+                { q: "Output mentions a drug not in record", a: "Extremely rare. Report it via Support → AI Feedback so we can tighten the prompt." },
+              ].map((item, idx) => (
+                <Card key={idx}>
+                  <CardContent className="py-4">
+                    <h4 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                      <HelpCircle className="w-4 h-4 text-primary" />
+                      {item.q}
+                    </h4>
+                    <p className="text-xs text-muted-foreground leading-relaxed pl-6">{item.a}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+
+          <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-fuchsia-500/5">
+            <CardContent className="py-6">
+              <h3 className="font-semibold mb-2 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-primary" />
+                Pro tip
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Pair AI Patient Insights with the <strong>AI Visit Summary</strong> at the end of
+                each consultation. Insights give you the macro view of the patient's journey before
+                you walk in, and the Visit Summary captures what just happened — together they form
+                a complete, AI-assisted clinical record in seconds.
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "AI Visit Summaries Explained", slug: "ai-visit-summary" },
+                { title: "Using the AI Prescription Assistant", slug: "ai-prescription" },
+                { title: "Reading AI Revenue Forecasts", slug: "ai-revenue-forecast" },
+                { title: "Patient & Visit Management", slug: "patient-management" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
