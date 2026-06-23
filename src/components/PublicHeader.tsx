@@ -31,7 +31,7 @@ const PublicHeader = () => {
             className="flex items-center gap-2 sm:gap-3 animate-fade-in cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <img src={clinicLogo} alt="Clinic Logo" className="main_logo new_logo hover-scale" />
+            <img src={clinicLogo} alt="Zonoir Clinic Management Software" className="main_logo new_logo hover-scale" />
           </div>
 
           {/* Desktop Navigation */}
@@ -77,6 +77,7 @@ const PublicHeader = () => {
             <Button
               onClick={() => navigate("/login")}
               size="sm"
+              aria-label="Login to Zonoir"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <LogIn className="h-4 w-4" />
@@ -84,14 +85,14 @@ const PublicHeader = () => {
 
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="Open menu">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[280px] sm:w-[320px] z-[100]">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
-                    <img src={clinicLogo} alt="Clinic Logo" className="" />
+                    <img src={clinicLogo} alt="Zonoir Clinic Management Software" className="" />
                     <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"></span>
                   </SheetTitle>
                 </SheetHeader>
