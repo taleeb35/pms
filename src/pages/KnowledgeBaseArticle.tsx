@@ -2239,6 +2239,10 @@ const slugTitleMap: Record<string, string> = {
   "revenue-forecast": "Reading AI Revenue Forecasts",
   "ai-forecast": "Reading AI Revenue Forecasts",
   "revenue-prediction": "Reading AI Revenue Forecasts",
+  "ai-patient-insights": "AI Patient Insights",
+  "patient-insights": "AI Patient Insights",
+  "ai-insights": "AI Patient Insights",
+  "patient-ai": "AI Patient Insights",
 };
 
 
@@ -2460,6 +2464,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "ai-revenue-forecast" || slug === "revenue-forecast" || slug === "ai-forecast" || slug === "revenue-prediction") {
     return <AIRevenueForecastArticle />;
+  }
+
+  if (slug === "ai-patient-insights" || slug === "patient-insights" || slug === "ai-insights" || slug === "patient-ai") {
+    return <AIPatientInsightsArticle />;
   }
 
 
