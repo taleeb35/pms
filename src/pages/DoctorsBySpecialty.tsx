@@ -441,7 +441,25 @@ const DoctorsBySpecialty = () => {
             )}
           </div>
         </section>
+
+        {/* FAQ Section */}
+        <section className="py-10 md:py-14 bg-muted/30 border-t">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">
+              Frequently asked questions about {displayName}s in {locationLabel}
+            </h2>
+            <div className="space-y-5">
+              {faqItems.map((f, i) => (
+                <div key={i} className="bg-card border rounded-lg p-5">
+                  <h3 className="font-semibold text-base mb-2">{f.q}</h3>
+                  <p className="text-sm text-muted-foreground">{f.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
+
 
       <PublicFooter />
     </div>
