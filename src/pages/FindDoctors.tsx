@@ -558,9 +558,20 @@ const FindDoctors = () => {
     description: "Find the best doctors and specialists near you in Pakistan. Search by specialty, city, and get instant appointments with top-rated doctors.",
     keywords: "find doctors pakistan, best doctors near me, specialists pakistan, dermatologist, gynecologist, cardiologist",
     canonicalUrl: "https://zonoir.com/find-doctors",
-    ogTitle: "Find Doctors in Pakistan | Best Specialists Near You",
+    ogTitle: "Find Doctors in Pakistan | Best Specialists Near You - Zonoir",
     ogDescription: "Search and find the best doctors and specialists across Pakistan. Book appointments instantly.",
     ogUrl: "https://zonoir.com/find-doctors",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Find Doctors in Pakistan",
+      description: "Directory of verified doctors and specialists across Pakistan.",
+      url: "https://zonoir.com/find-doctors",
+    },
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Find Doctors", url: "https://zonoir.com/find-doctors" },
+    ],
   });
 
   const filteredSpecialties = specialties.filter(

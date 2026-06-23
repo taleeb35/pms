@@ -45,7 +45,28 @@ const Index = () => {
     description:
       "Zonoir is Pakistan's leading clinic management & EMR software. Manage patients, appointments, prescriptions, billing & medical records. Free trial for doctors & clinics.",
     canonicalUrl: "https://zonoir.com/",
+    ogTitle: "Clinic Practice & EMR Software for Doctors in Pakistan | Zonoir",
+    ogDescription:
+      "Zonoir is Pakistan's leading clinic management & EMR software. Free trial for doctors & clinics.",
     ogUrl: "https://zonoir.com/",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Zonoir",
+        applicationCategory: "HealthApplication",
+        operatingSystem: "Web Browser",
+        description:
+          "Complete clinic management and EMR software for doctors and clinics in Pakistan.",
+        url: "https://zonoir.com/",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "PKR",
+          description: "Free trial available",
+        },
+      },
+    ],
   });
 
   // Check for password recovery redirect from Supabase

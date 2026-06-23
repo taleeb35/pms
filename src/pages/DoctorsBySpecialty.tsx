@@ -113,14 +113,58 @@ const DoctorsBySpecialty = () => {
       ? `?city=${encodeURIComponent(selectedCity)}`
       : "";
 
+  const pageUrl = `https://zonoir.com/doctors/${specialty}${cityQuery}`;
+
+  const faqItems = [
+    {
+      q: `How do I find the best ${displayName} in ${locationLabel}?`,
+      a: `Browse our verified list of ${displayName}s practicing in ${locationLabel}. Each profile shows qualifications, experience, clinic location, and consultation fees so you can choose the right specialist.`,
+    },
+    {
+      q: `How can I book an appointment with a ${displayName}?`,
+      a: `Click the doctor's profile to view their full schedule and book an appointment online. Many ${displayName}s on Zonoir also offer same-day and next-day appointment slots.`,
+    },
+    {
+      q: `What does a ${displayName} typically treat?`,
+      a: `A ${displayName} specialises in conditions and treatments related to their field. Read each doctor's introduction and qualifications on their profile to confirm they handle your specific concern.`,
+    },
+    {
+      q: `Are these ${displayName}s verified?`,
+      a: `Doctors marked with a verification badge have been onboarded through Zonoir's clinic management platform and their credentials reviewed by our team.`,
+    },
+  ];
+
   useSEO({
     title: `Best ${displayName}s in ${locationLabel} | Zonoir`,
     description: `Find the best ${displayName}s in ${locationLabel}. Book appointments with top-rated ${displayName}s, read reviews, and get quality healthcare.`,
     keywords: `${displayName} ${locationLabel}, best ${displayName} in ${locationLabel}, ${displayName} appointment ${locationLabel}, ${displayName} consultation`,
-    canonicalUrl: `https://zonoir.com/doctors/${specialty}${cityQuery}`,
-    ogTitle: `Best ${displayName}s in ${locationLabel}`,
+    canonicalUrl: pageUrl,
+    ogTitle: `Best ${displayName}s in ${locationLabel} | Zonoir`,
     ogDescription: `Search and find the best ${displayName}s in ${locationLabel}. Book appointments instantly.`,
-    ogUrl: `https://zonoir.com/doctors/${specialty}${cityQuery}`,
+    ogUrl: pageUrl,
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: `Best ${displayName}s in ${locationLabel}`,
+        description: `Directory of ${displayName}s practicing in ${locationLabel}, Pakistan.`,
+        url: pageUrl,
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqItems.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Find Doctors", url: "https://zonoir.com/find-doctors" },
+      { name: `${displayName}s in ${locationLabel}`, url: pageUrl },
+    ],
   });
 
   useEffect(() => {
@@ -284,6 +328,21 @@ const DoctorsBySpecialty = () => {
         {/* Doctors List */}
         <section className="py-8 md:py-12">
           <div className="container mx-auto px-4">
+            {/* Intro copy for SEO and patient context */}
+            <div className="prose prose-sm max-w-3xl mb-6 text-muted-foreground">
+              <p>
+                Looking for the best <strong>{displayName}</strong> in {locationLabel}? Zonoir lists verified {displayName}s
+                practising across {locationLabel}, with full qualifications, years of experience, clinic location and
+                consultation fee on each profile. Compare specialists, read their introductions and book an appointment
+                online in minutes — no phone tag, no waiting in queues.
+              </p>
+              <p>
+                Every {displayName} listed has been reviewed by our team, and many are active users of Zonoir's clinic
+                management platform — which means their schedules and availability stay up to date in real time. Use the
+                filters above to narrow your search by city or doctor name.
+              </p>
+            </div>
+
             <p className="text-muted-foreground mb-6">
               {loading ? "Loading..." : `${filteredDoctors.length} ${displayName}(s) found`}
             </p>
@@ -382,7 +441,25 @@ const DoctorsBySpecialty = () => {
             )}
           </div>
         </section>
+
+        {/* FAQ Section */}
+        <section className="py-10 md:py-14 bg-muted/30 border-t">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">
+              Frequently asked questions about {displayName}s in {locationLabel}
+            </h2>
+            <div className="space-y-5">
+              {faqItems.map((f, i) => (
+                <div key={i} className="bg-card border rounded-lg p-5">
+                  <h3 className="font-semibold text-base mb-2">{f.q}</h3>
+                  <p className="text-sm text-muted-foreground">{f.a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
+
 
       <PublicFooter />
     </div>
