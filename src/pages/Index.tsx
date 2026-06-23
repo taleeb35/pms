@@ -284,7 +284,7 @@ const Index = () => {
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
               Everything a Clinic Owner Needs
             </span>
-          </h3>
+          </h2>
           <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
             From doctor management to financial tracking, get complete control over your clinic operations
           </p>
@@ -343,7 +343,7 @@ const Index = () => {
                 <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
                   everywhere
                 </span>
-              </h3>
+              </h2>
               <p className="text-base md:text-lg text-slate-400 leading-relaxed">
                 Show doctor profiles across search, maps, social, and your website — so patients can discover clinics and book appointments faster with{" "}
                 <span className="text-purple-400 font-semibold">Zonoir</span>.
@@ -575,7 +575,7 @@ const Index = () => {
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-5">
                 Give every doctor their{" "}
                 <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">own profile page</span>
-              </h3>
+              </h2>
               <p className="text-base md:text-lg text-slate-300 leading-relaxed mb-8">
                 Show doctor info, clinic times, location, and let visitors book appointments online — all in one beautiful, shareable page powered by{" "}
                 <span className="text-emerald-300 font-semibold">Zonoir</span>.
@@ -612,7 +612,7 @@ const Index = () => {
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Why Clinic Owners Choose Us
               </span>
-            </h3>
+            </h2>
             <p className="text-muted-foreground text-lg">The complete solution for modern clinic management</p>
           </div>
 
@@ -762,7 +762,7 @@ const Index = () => {
 
             <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 leading-tight">
               Ready to Transform Your Clinic?
-            </h3>
+            </h2>
 
             <p className="text-white/95 text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
               Start managing doctors, tracking patients, and monitoring finances—all from one powerful dashboard. No
