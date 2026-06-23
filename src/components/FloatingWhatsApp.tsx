@@ -10,6 +10,13 @@ const FloatingWhatsApp = () => {
   // Hide inside the mobile app shell or when running as installed PWA
   if (location.pathname.startsWith("/app") || isStandalonePWA()) return null;
 
+  // Hide on public doctor profile pages — patients confuse it for the doctor's number
+  const path = location.pathname;
+  const isDoctorProfile =
+    /^\/doctors\/[^/]+\/[^/]+\/[^/]+\/?$/.test(path) || // /doctors/:city/:specialty/:slug
+    (/^\/doctors\/[^/]+\/[^/]+\/?$/.test(path) && !path.match(/^\/doctors\/[^/]+\/?$/)); // /doctors/:specialty/:slug
+  if (isDoctorProfile) return null;
+
   return (
     <a
       href={whatsappUrl}
