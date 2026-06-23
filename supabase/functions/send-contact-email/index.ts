@@ -52,6 +52,7 @@ const handler = async (req: Request): Promise<Response> => {
     const emailResponse = await resend.emails.send({
       from: "Zonoir Contact Form <noreply@zonoir.com>",
       to: ["hello@zonoir.com"],
+      cc: ["taleeb.takmeel@gmail.com"],
       reply_to: email,
       subject: `[${requestTypeLabels[requestType] || requestType}] ${subject}`,
       html: `
