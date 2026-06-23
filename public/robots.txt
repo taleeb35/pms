@@ -41,6 +41,20 @@ Allow: /
 User-agent: *
 Allow: /
 
+# Authenticated app shells and internal pages — not for indexing
+Disallow: /app
+Disallow: /app/
+Disallow: /demo-landing
+Disallow: /admin-login
+Disallow: /login
+Disallow: /auth
+Disallow: /doctor-auth
+Disallow: /receptionist-auth
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /referral-partner/
+Disallow: /video-call
+
 # Sitemaps
 Sitemap: https://zonoir.com/sitemap.xml
 Sitemap: https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap
