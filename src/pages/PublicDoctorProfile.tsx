@@ -448,6 +448,8 @@ const PublicDoctorProfile = () => {
     }))
   } : undefined;
 
+  const combinedJsonLd = [jsonLd, faqJsonLd].filter(Boolean) as object[];
+
   useSEO({
     title: pageTitle,
     description: pageDescription,
@@ -463,7 +465,13 @@ const PublicDoctorProfile = () => {
     twitterTitle: pageTitle,
     twitterDescription: pageDescription,
     twitterImage: doctor?.avatar_url || "https://zonoir.com/og-image.png",
-    jsonLd
+    jsonLd: combinedJsonLd.length > 0 ? combinedJsonLd : undefined,
+    breadcrumbs: [
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Find Doctors", url: "https://zonoir.com/find-doctors" },
+      { name: specialtyDisplay, url: `https://zonoir.com/doctors/${specialty}` },
+      { name: doctor?.full_name || doctorSlug || "Profile", url: canonicalUrl },
+    ],
   });
 
   // Build clinic data for tabs
