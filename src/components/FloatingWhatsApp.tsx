@@ -11,11 +11,8 @@ const FloatingWhatsApp = () => {
   if (location.pathname.startsWith("/app") || isStandalonePWA()) return null;
 
   // Hide on public doctor profile pages — patients confuse it for the doctor's number
-  const path = location.pathname;
-  const isDoctorProfile =
-    /^\/doctors\/[^/]+\/[^/]+\/[^/]+\/?$/.test(path) || // /doctors/:city/:specialty/:slug
-    (/^\/doctors\/[^/]+\/[^/]+\/?$/.test(path) && !path.match(/^\/doctors\/[^/]+\/?$/)); // /doctors/:specialty/:slug
-  if (isDoctorProfile) return null;
+  const segs = location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);
+  if (segs[0] === "doctors" && (segs.length === 3 || segs.length === 4)) return null;
 
   return (
     <a
