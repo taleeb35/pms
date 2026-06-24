@@ -2897,6 +2897,505 @@ const ManageReceptionistsArticle = () => {
   );
 };
 
+const AIDoctorFinderArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">AI Features</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Public AI Doctor Finder Chatbot</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-violet-500/10 text-violet-600 hover:bg-violet-500/20">
+                <Sparkles className="w-3 h-3 mr-1" />
+                AI Features
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Globe className="w-3 h-3" />
+                Public — for patients
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Public AI Doctor Finder Chatbot
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A natural-language assistant on every public page of Zonoir that helps patients find the
+              right doctor by city, specialty, budget, and gender — and books an appointment without
+              ever leaving the chat.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where the chatbot appears and who can use it",
+                  "How the guided search flow works",
+                  "Searching by city, specialty, budget & gender",
+                  "Free-text questions and natural language",
+                  "How results are ranked and displayed",
+                  "Booking directly from a result card",
+                  "Privacy: what gets stored, what doesn't",
+                  "Tips for clinics to rank well in the chatbot",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1: What it is */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center text-white shadow-lg">
+                  <Bot className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">What is the Doctor Finder Chatbot?</h2>
+                  <p className="text-muted-foreground m-0">A floating, always-on assistant on Zonoir's public site</p>
+                </div>
+              </div>
+
+              <p>
+                The Doctor Finder Chatbot is a floating chat bubble that appears in the bottom-right
+                corner of every <strong>public</strong> page on Zonoir — the homepage, city landing pages,
+                doctor profiles, specialty pages, blog posts, the Find Doctors directory, and more.
+                It is <strong>not</strong> shown inside the clinic, doctor, receptionist, admin, or
+                content-writer dashboards, where staff have their own dedicated AI assistants.
+              </p>
+
+              <div className="flex items-start gap-3 p-4 bg-violet-500/10 rounded-lg border border-violet-500/20 my-6">
+                <MessageSquare className="w-5 h-5 text-violet-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm m-0 font-medium">Built for patients, not staff</p>
+                  <p className="text-sm m-0 text-muted-foreground">
+                    The chatbot's only goal is to help a visitor land on the right doctor's profile and
+                    book an appointment. It does not answer billing, account, or clinical questions.
+                  </p>
+                </div>
+              </div>
+
+              <p>
+                It is powered by Google Gemini through the Lovable AI gateway and runs against the same
+                live database that powers the public Find Doctors directory. That means every doctor,
+                clinic, fee, and timing it returns is <strong>real-time</strong> — there is no separate
+                index to keep in sync.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 2: How the flow works */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  1
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">The guided conversation flow</h2>
+                  <p className="text-muted-foreground m-0">A short intake, then a search-or-chat choice</p>
+                </div>
+              </div>
+
+              <p>When a visitor opens the chat for the first time, they are walked through a short, friendly intake:</p>
+
+              <div className="relative pl-8 space-y-6 my-6">
+                <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+                {[
+                  { title: "Name", desc: "So the bot can address them personally throughout the chat." },
+                  { title: "Phone number", desc: "Used only if they choose to book an appointment later." },
+                  { title: "Email (optional)", desc: "Patients can skip this — the chat continues either way." },
+                  { title: "Choose a path", desc: "Browse by city, search a doctor by name, search by budget, or just ask a free-text question." },
+                ].map((step, idx) => (
+                  <div key={idx} className="relative">
+                    <div className="absolute -left-5 w-4 h-4 rounded-full bg-primary border-4 border-background" />
+                    <h4 className="font-semibold">{step.title}</h4>
+                    <p className="text-sm text-muted-foreground">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <p>
+                Once the intake is complete, the chat remembers the visitor for the rest of the session,
+                so they never have to re-enter their details when starting a new search.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 3: Search paths */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  2
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Four ways to search</h2>
+                  <p className="text-muted-foreground m-0">Tap a chip or type — whichever is faster</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {[
+                  { icon: MapPin, label: "Browse by city", desc: "Pick from popular Pakistani cities (Lahore, Karachi, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, and more), then narrow by specialty." },
+                  { icon: Stethoscope, label: "Browse by specialty", desc: "Choose from 12+ popular specialties — General Physician, Dermatologist, Gynecologist, Cardiologist, Pediatrician, Dentist, and more." },
+                  { icon: Search, label: "Search by doctor name", desc: "Type any part of a doctor's name and the bot pulls matching profiles from across all cities." },
+                  { icon: DollarSign, label: "Search by budget", desc: "Filter doctors by maximum consultation fee, and optionally by gender (e.g. female gynecologist under PKR 1,500 in Lahore)." },
+                ].map((item, idx) => (
+                  <Card key={idx} className="border-border/50">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">{item.label}</h4>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Pro tip:</strong> Visitors can mix and match. For example, after browsing by
+                  city they can ask "show me only female doctors under 2000 rupees" and the AI re-runs
+                  the search with those filters applied.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 4: Free-text questions */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  3
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Asking in plain English (or Urdu)</h2>
+                  <p className="text-muted-foreground m-0">Natural-language understanding via Gemini</p>
+                </div>
+              </div>
+
+              <p>
+                Most visitors skip the chips entirely and just type what they need. The chatbot parses
+                their intent — city, specialty, gender preference, budget — and runs the same
+                live database query under the hood. A few examples that all work:
+              </p>
+
+              <ul className="space-y-2 my-6">
+                <li className="flex items-start gap-2">
+                  <MessageSquare className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><em>"I need a good skin doctor in Lahore"</em> → Dermatologists in Lahore, sorted by rating.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageSquare className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><em>"Female gynecologist in Karachi under 2000"</em> → Filtered by gender, city, and max fee in one query.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageSquare className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><em>"Mere bachay ko bukhar hai"</em> (Urdu: "my child has a fever") → Pediatricians near the visitor.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <MessageSquare className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><em>"Dr. Ahmed"</em> → Name-search across all cities and specialties.</span>
+                </li>
+              </ul>
+
+              <p>
+                If the request is ambiguous (e.g. "a doctor near me" without a city), the bot asks one
+                follow-up question instead of guessing.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 5: Results */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  4
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How results are shown</h2>
+                  <p className="text-muted-foreground m-0">Rich doctor cards with the info patients actually need</p>
+                </div>
+              </div>
+
+              <p>Each result card shows:</p>
+
+              <div className="grid sm:grid-cols-2 gap-3 my-6">
+                {[
+                  { icon: User, label: "Photo, name, specialization" },
+                  { icon: Briefcase, label: "Qualification & years of experience" },
+                  { icon: Building2, label: "Clinic name and location" },
+                  { icon: DollarSign, label: "Consultation fee (in PKR)" },
+                  { icon: Clock, label: "Today's timing if available" },
+                  { icon: Star, label: "Patient rating & verified badge" },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                    <item.icon className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              <p>
+                Results are ordered to favour <strong>verified doctors</strong>, those with{" "}
+                <strong>complete public profiles</strong>, higher patient ratings, and doctors with
+                availability today. Up to 5 doctors are shown per response, with a "Show more" option
+                to expand the list.
+              </p>
+
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20 my-6">
+                <Eye className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm m-0">
+                  <strong>Multi-clinic support:</strong> if a doctor practises at more than one clinic,
+                  each location is listed with its own fee and timing so the patient can pick what
+                  suits them.
+                </p>
+              </div>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 6: Booking */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground font-bold text-xl shadow-lg">
+                  5
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Booking from the chat</h2>
+                  <p className="text-muted-foreground m-0">Two ways forward, both one tap away</p>
+                </div>
+              </div>
+
+              <p>Every result card has two clear actions:</p>
+
+              <div className="grid md:grid-cols-2 gap-4 my-6">
+                <Card className="border-primary/30 bg-primary/5">
+                  <CardContent className="pt-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">Book Appointment</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Opens the booking dialog with the doctor, clinic, and patient details (name,
+                      phone) pre-filled from the chat intake. The patient just picks a slot and
+                      confirms.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-5">
+                    <div className="flex items-center gap-2 mb-2">
+                      <ExternalLink className="w-5 h-5 text-primary" />
+                      <h4 className="font-semibold m-0">View Full Profile</h4>
+                    </div>
+                    <p className="text-sm text-muted-foreground m-0">
+                      Takes the visitor to the doctor's full public profile page — qualifications,
+                      reviews, weekly schedule, location map, FAQs, and related doctors.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <p>
+                Because the intake captured the patient's name and phone up front, booking from the
+                chat is typically a 2-tap experience — pick a doctor, pick a time.
+              </p>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 7: Privacy */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Privacy & data handling</h2>
+                  <p className="text-muted-foreground m-0">What gets stored, and what stays in the session</p>
+                </div>
+              </div>
+
+              <ul className="space-y-2 my-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-1 shrink-0" />
+                  <span>The chatbot does <strong>not</strong> require login. Anyone can use it.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-1 shrink-0" />
+                  <span>Intake details (name, phone, optional email) are saved as a <strong>lead record</strong> so clinics can follow up on serious enquiries.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-1 shrink-0" />
+                  <span>Chat messages are processed by Gemini for intent extraction and are not used to train any third-party model.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-1 shrink-0" />
+                  <span>No medical history, prescriptions, or clinical records are shared with the chatbot — it only sees the visitor's text and the public doctor directory.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-1 shrink-0" />
+                  <span>Zonoir is the Data Processor; clinics remain the Data Controllers for any lead they choose to contact.</span>
+                </li>
+              </ul>
+            </div>
+
+            <Separator className="my-10" />
+
+            {/* Section 8: Tips for clinics & doctors */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white shadow-lg">
+                  <Target className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">How to rank well in the chatbot</h2>
+                  <p className="text-muted-foreground m-0">Practical tips for clinics and doctors</p>
+                </div>
+              </div>
+
+              <p>
+                The chatbot pulls from the exact same data as the public directory. To appear higher
+                in results:
+              </p>
+
+              <ul className="space-y-2 my-4">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Complete the public profile</strong> — photo, qualification, experience, introduction, FAQs, and consultation fee all influence ranking.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Keep weekly schedules up to date.</strong> Doctors with availability today are surfaced first.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Get verified</strong> — verified doctors are explicitly preferred by the ranking logic.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Encourage real patient reviews.</strong> Average rating is a tiebreaker.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
+                  <span><strong>Use the correct specialty tag.</strong> "Skin specialist" should be tagged as <em>Dermatologist</em>, not free text — the AI matches against canonical specialties.</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Important note */}
+            <Card className="border-destructive/20 bg-destructive/5">
+              <CardContent className="py-6">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold mb-2">Important</h4>
+                    <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
+                      <li>• The chatbot is for discovery and booking only — it does not give medical advice.</li>
+                      <li>• Emergency cases should be directed to the nearest hospital, not to the chat.</li>
+                      <li>• If a visitor asks something outside its scope (account, billing, technical support), the bot directs them to the Contact page or WhatsApp support at +92 300 4313139.</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </article>
+
+          {/* Feedback */}
+          <div className="mt-12 pt-8 border-t">
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">Was this article helpful?</p>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2">
+                  <ThumbsUp className="w-4 h-4" />
+                  Yes, it helped
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <ThumbsDown className="w-4 h-4" />
+                  No, I need more help
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Related */}
+          <div className="mt-12 pt-8 border-t">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+              <BookOpen className="w-5 h-5" />
+              Related Articles
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {[
+                { title: "Using the AI Prescription Assistant", slug: "ai-prescription" },
+                { title: "AI Visit Summaries Explained", slug: "ai-visit-summary" },
+                { title: "AI Patient Insights", slug: "ai-patient-insights" },
+                { title: "Online Booking from Your Public Profile", slug: "online-booking" },
+              ].map((article, idx) => (
+                <Link key={idx} to={`${kbBase}/${article.slug}`}>
+                  <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <span className="text-sm font-medium">{article.title}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 export default KnowledgeBaseArticle;
 
 const PublicDoctorProfileArticle = () => {
