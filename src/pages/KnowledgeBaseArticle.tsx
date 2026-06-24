@@ -2243,6 +2243,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-insights": "AI Patient Insights",
   "ai-insights": "AI Patient Insights",
   "patient-ai": "AI Patient Insights",
+  "ai-doctor-finder": "Public AI Doctor Finder Chatbot",
+  "doctor-finder": "Public AI Doctor Finder Chatbot",
+  "find-doctor-chatbot": "Public AI Doctor Finder Chatbot",
+  "public-chatbot": "Public AI Doctor Finder Chatbot",
 };
 
 
