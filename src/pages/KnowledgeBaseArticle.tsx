@@ -2474,6 +2474,12 @@ const KnowledgeBaseArticle = () => {
     return <AIPatientInsightsArticle />;
   }
 
+  if (slug === "ai-doctor-finder" || slug === "doctor-finder" || slug === "find-doctor-chatbot" || slug === "public-chatbot") {
+    return <AIDoctorFinderArticle />;
+  }
+
+
+
 
   // Placeholder for other articles
   return (
