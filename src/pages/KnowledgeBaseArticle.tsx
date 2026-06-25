@@ -83,7 +83,15 @@ import {
   Bot,
   ClipboardCheck,
   Target,
-  ExternalLink
+  ExternalLink,
+  Video,
+  Mic,
+  MonitorPlay,
+  Wifi,
+  ShieldCheck,
+  Link2
+
+
 
 } from "lucide-react";
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
@@ -2249,6 +2257,10 @@ const slugTitleMap: Record<string, string> = {
   "doctor-finder": "Public AI Doctor Finder Chatbot",
   "find-doctor-chatbot": "Public AI Doctor Finder Chatbot",
   "public-chatbot": "Public AI Doctor Finder Chatbot",
+  "video-setup": "Setting Up Video Consultations",
+  "video-consultations-setup": "Setting Up Video Consultations",
+  "setup-video-calls": "Setting Up Video Consultations",
+  "telemedicine-setup": "Setting Up Video Consultations",
 };
 
 
@@ -2478,6 +2490,10 @@ const KnowledgeBaseArticle = () => {
 
   if (slug === "ai-doctor-finder" || slug === "doctor-finder" || slug === "find-doctor-chatbot" || slug === "public-chatbot") {
     return <AIDoctorFinderArticle />;
+  }
+
+  if (slug === "video-setup" || slug === "video-consultations-setup" || slug === "setup-video-calls" || slug === "telemedicine-setup") {
+    return <VideoSetupArticle />;
   }
 
 
