@@ -2500,6 +2500,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "video-setup" || slug === "video-consultations-setup" || slug === "setup-video-calls" || slug === "telemedicine-setup") {
     return <VideoSetupArticle />;
   }
+  if (slug === "doctor-video-join" || slug === "joining-video-doctor" || slug === "doctor-join-call" || slug === "video-doctor") {
+    return <DoctorVideoJoinArticle />;
+  }
+
 
 
 
