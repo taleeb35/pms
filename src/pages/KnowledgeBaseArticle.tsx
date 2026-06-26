@@ -89,11 +89,11 @@ import {
   MonitorPlay,
   Wifi,
   ShieldCheck,
-  Link2
-
-
+  Link2,
+  Copy, Info, VideoOff, Monitor, Maximize, PhoneOff,
 
 } from "lucide-react";
+
 import { KBHeader as PublicHeader, KBFooter as PublicFooter, useKBBase } from "@/contexts/KnowledgeBaseContext";
 import { useSEO } from "@/hooks/useSEO";
 
@@ -2261,7 +2261,12 @@ const slugTitleMap: Record<string, string> = {
   "video-consultations-setup": "Setting Up Video Consultations",
   "setup-video-calls": "Setting Up Video Consultations",
   "telemedicine-setup": "Setting Up Video Consultations",
+  "doctor-video-join": "Joining a Video Call as a Doctor",
+  "joining-video-doctor": "Joining a Video Call as a Doctor",
+  "doctor-join-call": "Joining a Video Call as a Doctor",
+  "video-doctor": "Joining a Video Call as a Doctor",
 };
+
 
 
 const KnowledgeBaseArticle = () => {
@@ -2495,6 +2500,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "video-setup" || slug === "video-consultations-setup" || slug === "setup-video-calls" || slug === "telemedicine-setup") {
     return <VideoSetupArticle />;
   }
+  if (slug === "doctor-video-join" || slug === "joining-video-doctor" || slug === "doctor-join-call" || slug === "video-doctor") {
+    return <DoctorVideoJoinArticle />;
+  }
+
 
 
 
@@ -21280,6 +21289,391 @@ const VideoSetupArticle = () => {
                   { title: "Joining a Video Call as a Patient", slug: "video-patient" },
                   { title: "Video Call Best Practices", slug: "video-best-practices" },
                   { title: "Booking Appointments", slug: "book-appointments" },
+                ].map((r, idx) => (
+                  <Link key={idx} to={`${kbBase}/${r.slug}`}>
+                    <Card className="hover:shadow-md transition-all hover:-translate-y-0.5">
+                      <CardContent className="py-4 flex items-center justify-between">
+                        <span className="font-medium text-sm">{r.title}</span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const DoctorVideoJoinArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Video Consultations</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Joining a Video Call as a Doctor</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20">
+                <Video className="w-3 h-3 mr-1" />
+                Video Consultations
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                7 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Stethoscope className="w-3 h-3" />
+                For Doctors
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Joining a Video Call as a Doctor
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A step-by-step walkthrough of how to start, join, and run a telemedicine consultation
+              from your Zonoir dashboard — including in-call controls, recording, screen sharing,
+              and what to do when something goes wrong.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Where the Video Call button appears",
+                  "Pre-call checklist (camera, mic, network)",
+                  "Creating the room and sending the patient link",
+                  "Joining the call as the doctor (owner)",
+                  "In-call controls: mute, video, screen share, chat",
+                  "Cloud recording — when and how to use it",
+                  "Leaving the call and ending the appointment",
+                  "Troubleshooting black screens and audio issues",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg max-w-none">
+
+            {/* Section 1: Where to start */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                  <Video className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Where to find the Video Call button</h2>
+                  <p className="text-muted-foreground m-0">It lives on every appointment card</p>
+                </div>
+              </div>
+
+              <p>
+                As a doctor, you can launch a video consultation directly from any appointment in
+                your dashboard. The blue <strong>“Video Call”</strong> button (with a camera icon)
+                appears on every appointment row in:
+              </p>
+
+              <ul>
+                <li><strong>Today's Schedule</strong> — your default doctor home screen</li>
+                <li><strong>Appointments</strong> — list and calendar views</li>
+                <li><strong>Patient timeline</strong> — when opening a specific patient</li>
+              </ul>
+
+              <p>
+                The button is always visible — there is no special “telemedicine” appointment type
+                to create in advance. You decide call vs. in-person at the moment you start the
+                visit.
+              </p>
+            </div>
+
+            {/* Section 2: Pre-call checklist */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-lg">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">60-second pre-call checklist</h2>
+                  <p className="text-muted-foreground m-0">Avoid the most common issues</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 not-prose">
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><Wifi className="w-5 h-5 text-blue-600" /><strong>Stable internet</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">At least 2 Mbps up/down. Prefer Wi-Fi or wired over mobile data.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><Video className="w-5 h-5 text-indigo-600" /><strong>Camera permission</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">When the browser asks, choose <em>Allow</em>. Chrome, Edge, or Safari (latest) work best.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><Mic className="w-5 h-5 text-rose-600" /><strong>Microphone access</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Use a headset if possible — eliminates echo and improves clarity.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><ShieldCheck className="w-5 h-5 text-green-600" /><strong>Quiet, private room</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Required for confidentiality. Close other tabs that use camera/mic.</p>
+                </CardContent></Card>
+              </div>
+            </div>
+
+            {/* Section 3: Create room & send link */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                  <Link2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Step 1 — Create the room & invite the patient</h2>
+                  <p className="text-muted-foreground m-0">Two clicks from appointment to WhatsApp invite</p>
+                </div>
+              </div>
+
+              <ol>
+                <li>
+                  Open the patient's appointment and click the blue <strong>Video Call</strong> button.
+                </li>
+                <li>
+                  A dialog opens with a <strong>“Enable Recording”</strong> toggle. Leave it on if
+                  you want the visit archived to the cloud for medico-legal record; turn it off for
+                  sensitive consultations.
+                </li>
+                <li>
+                  Click <strong>Create Video Room</strong>. Zonoir provisions a private Daily.co
+                  room and generates two unique tokens — one for you (owner), one for the patient.
+                </li>
+                <li>
+                  A green <em>Room Ready</em> badge appears with the patient's join URL.
+                </li>
+                <li>
+                  Click <strong>Send via WhatsApp</strong> — Zonoir opens WhatsApp Web/app with a
+                  pre-filled message containing the link, ready to send to the patient's saved
+                  number. You can also copy the link with the <Copy className="w-4 h-4 inline" /> icon
+                  and paste it anywhere (SMS, email, etc.).
+                </li>
+              </ol>
+
+              <Card className="bg-blue-500/5 border-blue-500/30 not-prose mb-4">
+                <CardContent className="py-4 flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    Each room is valid for <strong>2 hours</strong> from the moment it's created and
+                    expires automatically. Create the room only when you're ready to consult.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Section 4: Join the call */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg">
+                  <Video className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Step 2 — Join as Doctor</h2>
+                  <p className="text-muted-foreground m-0">You enter as the owner with full controls</p>
+                </div>
+              </div>
+
+              <p>
+                Click <strong>Join Call as Doctor</strong>. The video room opens fullscreen inside
+                Zonoir — no new tab, no plugin. Because you joined with the owner token:
+              </p>
+
+              <ul>
+                <li>You can <strong>admit or reject</strong> the patient when they knock</li>
+                <li>You can <strong>start/stop cloud recording</strong> mid-call</li>
+                <li>You can <strong>mute participants</strong> or remove them</li>
+                <li>You'll see a green <em>Doctor • Live</em> badge in the corner</li>
+              </ul>
+
+              <p>
+                If the patient hasn't joined yet, you'll see a “Waiting for others” screen — keep
+                the tab open; the moment they click their link, they'll appear.
+              </p>
+            </div>
+
+            {/* Section 5: In-call controls */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-white shadow-lg">
+                  <MonitorPlay className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">In-call controls</h2>
+                  <p className="text-muted-foreground m-0">Everything you need during the consultation</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 not-prose">
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><Mic className="w-5 h-5 text-rose-600" /><strong>Mute / unmute</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Toggle your microphone. Mute when typing notes to avoid keyboard noise.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><VideoOff className="w-5 h-5 text-slate-600" /><strong>Camera on/off</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Turn off video when bandwidth drops — audio stays clear.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><Monitor className="w-5 h-5 text-blue-600" /><strong>Screen share</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Share lab reports, X-rays, or a prescription preview with the patient.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><MessageSquare className="w-5 h-5 text-purple-600" /><strong>In-call chat</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Send links, dosage instructions, or follow-up details in text form.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><Maximize className="w-5 h-5 text-indigo-600" /><strong>Fullscreen</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Maximize the call to your entire screen for a clearer view.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-5">
+                  <div className="flex items-center gap-2 mb-2"><PhoneOff className="w-5 h-5 text-red-600" /><strong>Leave call</strong></div>
+                  <p className="text-sm text-muted-foreground m-0">Ends your session. The room remains open for the rest of its 2-hour window.</p>
+                </CardContent></Card>
+              </div>
+            </div>
+
+            {/* Section 6: Recording */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white shadow-lg">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Cloud recording — best practices</h2>
+                  <p className="text-muted-foreground m-0">Documented, encrypted, retrievable</p>
+                </div>
+              </div>
+
+              <ul>
+                <li><strong>Always inform the patient</strong> verbally before starting a recording — it's both a legal requirement and a trust-building habit.</li>
+                <li>Recordings are stored encrypted in the cloud and linked to the appointment record.</li>
+                <li>Disable recording for sensitive topics (mental health, sexual health, abuse disclosure) unless the patient explicitly consents.</li>
+                <li>Only the clinic owner and the treating doctor can access recordings — RLS prevents other doctors in the same clinic from viewing them.</li>
+              </ul>
+            </div>
+
+            {/* Section 7: After the call */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center text-white shadow-lg">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">After the call — finishing the visit</h2>
+                  <p className="text-muted-foreground m-0">The same visit workflow as an in-person consult</p>
+                </div>
+              </div>
+
+              <p>
+                Once you click <strong>Leave Call</strong>, Zonoir returns you to the appointment.
+                From there, finish the consultation exactly as you would for a clinic visit:
+              </p>
+
+              <ol>
+                <li>Open the appointment and click <strong>Record Visit</strong>.</li>
+                <li>Add chief complaint, diagnoses (ICD), vitals, prescription, and any notes.</li>
+                <li>Use the <strong>AI Visit Summary</strong> button to generate a clinical narrative in seconds.</li>
+                <li>Click <strong>Complete Appointment</strong> — the status flips from <em>Started</em> to <em>Completed</em> and the visit is saved to the patient timeline.</li>
+              </ol>
+
+              <Card className="bg-amber-500/5 border-amber-500/30 not-prose">
+                <CardContent className="py-4 flex items-start gap-3">
+                  <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-sm m-0">
+                    Tip: send the prescription PDF on WhatsApp from the completed visit screen — the
+                    patient receives it on the same chat thread as the video link.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Section 8: Troubleshooting */}
+            <div className="mb-12">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-white shadow-lg">
+                  <AlertCircle className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold m-0">Troubleshooting</h2>
+                  <p className="text-muted-foreground m-0">Quick fixes for the 90% of issues</p>
+                </div>
+              </div>
+
+              <div className="space-y-4 not-prose">
+                <Card><CardContent className="py-4">
+                  <strong>Black screen / no camera</strong>
+                  <p className="text-sm text-muted-foreground mb-0 mt-1">Check the browser's address bar for a blocked camera icon. Click it → Allow → reload the page. Close Zoom, Meet, or any other app that may be holding the camera.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-4">
+                  <strong>Patient can't hear you</strong>
+                  <p className="text-sm text-muted-foreground mb-0 mt-1">Click the mic icon — if it's red, you're muted. If green, check your system input device (Settings → Sound).</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-4">
+                  <strong>Patient link expired</strong>
+                  <p className="text-sm text-muted-foreground mb-0 mt-1">Rooms auto-expire after 2 hours. Click Video Call again on the same appointment to create a fresh room and re-send the link.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-4">
+                  <strong>Choppy / freezing video</strong>
+                  <p className="text-sm text-muted-foreground mb-0 mt-1">Turn your camera off temporarily — audio will stabilize immediately. Ask the patient to do the same if bandwidth is the problem on their side.</p>
+                </CardContent></Card>
+                <Card><CardContent className="py-4">
+                  <strong>Echo or feedback</strong>
+                  <p className="text-sm text-muted-foreground mb-0 mt-1">Use earphones / headset. Echo happens when speakers play audio back into the microphone.</p>
+                </CardContent></Card>
+              </div>
+            </div>
+
+            {/* Related */}
+            <div className="border-t pt-8">
+              <h2 className="text-xl font-bold mb-4">Related articles</h2>
+              <div className="grid sm:grid-cols-2 gap-3 not-prose">
+                {[
+                  { title: "Setting Up Video Consultations", slug: "video-setup" },
+                  { title: "Joining a Video Call as a Patient", slug: "video-patient" },
+                  { title: "Recording Patient Visits", slug: "visit-records" },
+                  { title: "AI Visit Summaries Explained", slug: "ai-visit-summary" },
                 ].map((r, idx) => (
                   <Link key={idx} to={`${kbBase}/${r.slug}`}>
                     <Card className="hover:shadow-md transition-all hover:-translate-y-0.5">
