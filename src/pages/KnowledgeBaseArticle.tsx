@@ -90,7 +90,7 @@ import {
   Wifi,
   ShieldCheck,
   Link2,
-  Copy, Info, VideoOff, Monitor, Maximize, PhoneOff, MessageSquare,
+  Copy, Info, VideoOff, Monitor, Maximize, PhoneOff,
 
 } from "lucide-react";
 
