@@ -2261,7 +2261,12 @@ const slugTitleMap: Record<string, string> = {
   "video-consultations-setup": "Setting Up Video Consultations",
   "setup-video-calls": "Setting Up Video Consultations",
   "telemedicine-setup": "Setting Up Video Consultations",
+  "doctor-video-join": "Joining a Video Call as a Doctor",
+  "joining-video-doctor": "Joining a Video Call as a Doctor",
+  "doctor-join-call": "Joining a Video Call as a Doctor",
+  "video-doctor": "Joining a Video Call as a Doctor",
 };
+
 
 
 const KnowledgeBaseArticle = () => {
