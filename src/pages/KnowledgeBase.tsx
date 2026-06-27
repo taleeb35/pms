@@ -151,18 +151,6 @@ const categories = [
     ]
   },
   {
-    id: "mobile-app",
-    title: "Mobile App",
-    description: "Use Zonoir on your phone",
-    icon: Smartphone,
-    color: "from-teal-500 to-teal-600",
-    articles: [
-      { title: "Installing Zonoir on Your Phone (PWA)", slug: "install-pwa" },
-      { title: "Mobile Features Overview", slug: "mobile-overview" },
-      { title: "Mobile Tips for Doctors on the Go", slug: "mobile-doctor-tips" },
-    ]
-  },
-  {
     id: "reports-analytics",
     title: "Reports & Analytics",
     description: "Understand your performance data",
