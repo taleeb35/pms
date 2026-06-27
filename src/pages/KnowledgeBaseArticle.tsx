@@ -2265,6 +2265,10 @@ const slugTitleMap: Record<string, string> = {
   "joining-video-doctor": "Joining a Video Call as a Doctor",
   "doctor-join-call": "Joining a Video Call as a Doctor",
   "video-doctor": "Joining a Video Call as a Doctor",
+  "video-patient": "Joining a Video Call as a Patient",
+  "patient-video-join": "Joining a Video Call as a Patient",
+  "joining-video-patient": "Joining a Video Call as a Patient",
+  "patient-join-call": "Joining a Video Call as a Patient",
 };
 
 
@@ -2502,6 +2506,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "doctor-video-join" || slug === "joining-video-doctor" || slug === "doctor-join-call" || slug === "video-doctor") {
     return <DoctorVideoJoinArticle />;
+  }
+  if (slug === "video-patient" || slug === "patient-video-join" || slug === "joining-video-patient" || slug === "patient-join-call") {
+    return <PatientVideoJoinArticle />;
   }
 
 
@@ -21696,3 +21703,376 @@ const DoctorVideoJoinArticle = () => {
   );
 };
 
+
+const PatientVideoJoinArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      {/* Breadcrumb */}
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Video Consultations</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Joining a Video Call as a Patient</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          {/* Header */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20">
+                <Video className="w-3 h-3 mr-1" />
+                Video Consultations
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                6 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Users className="w-3 h-3" />
+                For Patients
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Joining a Video Call as a Patient
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              How to join your online doctor consultation from a phone, tablet, or laptop —
+              no app install, no account creation, no special software. Just tap the link your
+              clinic sends you on WhatsApp or SMS and you're in.
+            </p>
+          </div>
+
+          {/* What you'll learn */}
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "What link your clinic will send and where",
+                  "Device and browser requirements",
+                  "Granting camera and microphone permissions",
+                  "Joining the waiting lobby and being admitted",
+                  "In-call controls (mute, camera, chat)",
+                  "What to do if the link doesn't work",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-lg dark:prose-invert max-w-none">
+
+            {/* Section 1 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-10 mb-4">
+              <Link2 className="w-6 h-6 text-indigo-600" />
+              1. The link your clinic sends you
+            </h2>
+            <p>
+              When your doctor is ready to start your online consultation, the clinic sends
+              you a personal join link through one of the following channels:
+            </p>
+            <ul>
+              <li><strong>WhatsApp</strong> — most common in Pakistan. The message comes from the clinic's WhatsApp number.</li>
+              <li><strong>SMS</strong> — if WhatsApp isn't available on your number.</li>
+              <li><strong>Email</strong> — if your clinic has your email on file.</li>
+            </ul>
+            <p>
+              The link looks something like this:
+            </p>
+            <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>https://zonoir.com/video-call?room=abc123&t=...</code></pre>
+            <Card className="my-6 border-amber-500/40 bg-amber-50 dark:bg-amber-950/20">
+              <CardContent className="py-4 flex gap-3">
+                <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <strong>This link is personal.</strong> Don't share it with anyone — it's tied to
+                  your specific appointment and can only be used by one person at a time.
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Section 2 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <Smartphone className="w-6 h-6 text-indigo-600" />
+              2. What device do you need?
+            </h2>
+            <p>
+              You can join from almost any modern device. There is <strong>no app to install</strong> —
+              everything runs inside your browser.
+            </p>
+            <div className="grid md:grid-cols-3 gap-4 not-prose my-6">
+              <Card>
+                <CardContent className="py-5">
+                  <Smartphone className="w-6 h-6 text-indigo-600 mb-2" />
+                  <h3 className="font-semibold mb-1">Phone</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Android (Chrome) or iPhone (Safari). Most popular choice for patients.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="py-5">
+                  <Monitor className="w-6 h-6 text-indigo-600 mb-2" />
+                  <h3 className="font-semibold mb-1">Laptop / Desktop</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Chrome, Edge, Safari, or Firefox. Built-in webcam and mic required.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="py-5">
+                  <MonitorPlay className="w-6 h-6 text-indigo-600 mb-2" />
+                  <h3 className="font-semibold mb-1">Tablet</h3>
+                  <p className="text-sm text-muted-foreground">
+                    iPad or Android tablet — great for elderly patients with limited mobility.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <p>
+              You also need a stable internet connection — about <strong>1 Mbps upload and download</strong> is
+              enough. Wi-Fi is preferred, but 4G/LTE works fine too.
+            </p>
+
+            {/* Section 3 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <Wifi className="w-6 h-6 text-indigo-600" />
+              3. Before you tap the link — a 30-second checklist
+            </h2>
+            <ol>
+              <li><strong>Find a quiet, well-lit room.</strong> Sit facing a window or lamp so the doctor can see your face clearly.</li>
+              <li><strong>Charge your phone or plug in your laptop.</strong> Video calls drain battery quickly.</li>
+              <li><strong>Use earphones</strong> if you have them — they reduce echo and improve audio.</li>
+              <li><strong>Keep your medicines, reports, and prescriptions nearby</strong> in case the doctor asks.</li>
+              <li><strong>Close other heavy apps</strong> (YouTube, downloads) so the call gets full bandwidth.</li>
+            </ol>
+
+            {/* Section 4 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <Video className="w-6 h-6 text-indigo-600" />
+              4. Joining the call — step by step
+            </h2>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">Step 1: Tap the link</h3>
+            <p>
+              Open the WhatsApp / SMS message from your clinic and tap the link. It will open
+              in your default browser.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">Step 2: Review the welcome screen</h3>
+            <p>
+              You'll see a screen titled <strong>"Video Consultation"</strong> with a short
+              checklist:
+            </p>
+            <ul>
+              <li>✓ Make sure your camera and microphone are enabled</li>
+              <li>✓ Use a stable internet connection</li>
+              <li>✓ Find a quiet, well-lit space</li>
+            </ul>
+            <p>
+              Tap the big blue <strong>"Join Consultation"</strong> button.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">Step 3: Allow camera & microphone access</h3>
+            <p>
+              Your browser will pop up a small message:
+              <em> "zonoir.com wants to use your camera and microphone."</em>
+            </p>
+            <p>
+              Tap <strong>Allow</strong>. This is required — without it, the doctor cannot see
+              or hear you. This permission is only used during this call and never recorded
+              without your knowledge.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">Step 4: Wait in the lobby (if needed)</h3>
+            <p>
+              If the doctor hasn't started the call yet, you'll see a short "Waiting for the
+              doctor to join" message. Don't close the page — as soon as the doctor admits you,
+              you'll be connected automatically.
+            </p>
+
+            <h3 className="text-xl font-semibold mt-6 mb-3">Step 5: You're in!</h3>
+            <p>
+              You'll see the doctor's video on the main screen and your own video in a small
+              corner. The call has started.
+            </p>
+
+            {/* Section 5 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <Mic className="w-6 h-6 text-indigo-600" />
+              5. Controls during the call
+            </h2>
+            <p>
+              At the bottom of your screen you'll see a row of buttons:
+            </p>
+            <div className="not-prose my-6 grid sm:grid-cols-2 gap-3">
+              {[
+                { icon: Mic, label: "Mute / Unmute", desc: "Turn your microphone on or off." },
+                { icon: Video, label: "Camera On / Off", desc: "Hide or show your video feed." },
+                { icon: MessageSquare, label: "Chat", desc: "Type messages — useful if audio is poor." },
+                { icon: Maximize, label: "Fullscreen", desc: "Expand video to cover the whole screen." },
+                { icon: PhoneOff, label: "Leave Call", desc: "Red button — ends the consultation." },
+              ].map((c, idx) => (
+                <Card key={idx}>
+                  <CardContent className="py-4 flex items-start gap-3">
+                    <c.icon className="w-5 h-5 text-indigo-600 mt-0.5" />
+                    <div>
+                      <div className="font-semibold text-sm">{c.label}</div>
+                      <div className="text-xs text-muted-foreground">{c.desc}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Card className="my-6 border-blue-500/40 bg-blue-50 dark:bg-blue-950/20">
+              <CardContent className="py-4 flex gap-3">
+                <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <strong>Tip:</strong> If you need a moment of privacy (e.g. to call a family
+                  member into the room), tap the camera or mic button briefly — the doctor will
+                  see a "muted" indicator and wait.
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Section 6 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <ShieldCheck className="w-6 h-6 text-indigo-600" />
+              6. Your privacy during the call
+            </h2>
+            <ul>
+              <li><strong>End-to-end encrypted.</strong> Your video and audio cannot be intercepted by anyone in the middle.</li>
+              <li><strong>No recordings by default.</strong> If the doctor wants to record the session for your medical file, they must ask your permission first and you'll see a red "Recording" badge.</li>
+              <li><strong>The link expires</strong> after the appointment ends, so it can't be reused.</li>
+              <li><strong>You can leave anytime</strong> by tapping the red "Leave Call" button — no follow-up required.</li>
+            </ul>
+
+            {/* Section 7 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <RotateCcw className="w-6 h-6 text-indigo-600" />
+              7. After the call
+            </h2>
+            <p>
+              Once the doctor ends the consultation, the video closes. Within a few minutes you'll
+              typically receive:
+            </p>
+            <ul>
+              <li>📄 Your <strong>prescription</strong> on WhatsApp (PDF or text).</li>
+              <li>🧾 Your <strong>invoice / receipt</strong> if payment was processed online.</li>
+              <li>📅 A <strong>follow-up appointment</strong> link, if the doctor recommended one.</li>
+            </ul>
+            <p>
+              You don't need to take notes — everything important from the visit is saved in your
+              medical record at the clinic and shared with you in writing.
+            </p>
+
+            {/* Section 8 */}
+            <h2 className="flex items-center gap-2 text-2xl font-bold mt-12 mb-4">
+              <Info className="w-6 h-6 text-indigo-600" />
+              8. Troubleshooting — common issues
+            </h2>
+            <div className="not-prose my-6 space-y-3">
+              {[
+                {
+                  problem: "Link says 'Invalid or expired'",
+                  fix: "The clinic may have generated a new link. Call your clinic and ask them to resend it.",
+                },
+                {
+                  problem: "Browser won't ask for camera permission",
+                  fix: "Go to browser Settings → Site Settings → Camera & Microphone, and allow zonoir.com. Then refresh.",
+                },
+                {
+                  problem: "Doctor can't hear me",
+                  fix: "Check the mic button at the bottom — make sure it's not red. Also check your phone's silent / volume buttons.",
+                },
+                {
+                  problem: "Video is freezing or laggy",
+                  fix: "Move closer to your Wi-Fi router, or switch off video temporarily (audio-only uses much less data).",
+                },
+                {
+                  problem: "I accidentally closed the browser",
+                  fix: "Open the link again from your WhatsApp message — you'll rejoin the same call.",
+                },
+                {
+                  problem: "On iPhone — call won't open",
+                  fix: "Make sure you're using Safari (not Chrome on iPhone). Apple restricts camera/mic access in non-Safari browsers on iOS.",
+                },
+              ].map((t, idx) => (
+                <Card key={idx} className="border-l-4 border-l-indigo-500">
+                  <CardContent className="py-4">
+                    <div className="font-semibold text-sm mb-1 flex items-center gap-2">
+                      <VideoOff className="w-4 h-4 text-indigo-600" />
+                      {t.problem}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{t.fix}</div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <Card className="my-8 border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/20">
+              <CardContent className="py-5 flex gap-3">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold mb-1">That's it — you're ready</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Joining a video consultation on Zonoir is meant to feel as simple as making
+                    a WhatsApp video call. If you ever get stuck, your clinic's reception is just
+                    a phone call away — they can resend the link or walk you through it.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Related */}
+            <div className="mt-12 pt-8 border-t">
+              <h2 className="text-xl font-bold mb-4">Related articles</h2>
+              <div className="grid sm:grid-cols-2 gap-3 not-prose">
+                {[
+                  { title: "Setting Up Video Consultations", slug: "video-setup" },
+                  { title: "Joining a Video Call as a Doctor", slug: "video-doctor" },
+                  { title: "Video Call Best Practices", slug: "video-best-practices" },
+                  { title: "Online Booking from Your Public Profile", slug: "online-booking" },
+                ].map((r, idx) => (
+                  <Link key={idx} to={`${kbBase}/${r.slug}`}>
+                    <Card className="hover:shadow-md transition-all hover:-translate-y-0.5">
+                      <CardContent className="py-4 flex items-center justify-between">
+                        <span className="font-medium text-sm">{r.title}</span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
