@@ -15,15 +15,33 @@ interface ContactEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
+  const corsHeaders = buildCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { name, email, phone, organization, subject, message, requestType }: ContactEmailRequest = await req.json();
+  // Rate limit: 3 submissions / 10 minutes / IP (stops contact-form spam)
+  const rl = checkRateLimit(req, "send-contact-email", 3, 10 * 60_000);
+  if (!rl.ok) return rateLimitResponse(rl, corsHeaders);
 
-    // Validate required fields
+  try {
+    const { name, email, phone, organization, subject, message, requestType, captchaA, captchaB, captchaAnswer }:
+      ContactEmailRequest & { captchaA?: number; captchaB?: number; captchaAnswer?: string } = await req.json();
+
+    // Server-side captcha verification (anti-bot)
+    if (
+      typeof captchaA !== "number" || typeof captchaB !== "number" ||
+      typeof captchaAnswer !== "string" ||
+      parseInt(captchaAnswer.trim(), 10) !== captchaA + captchaB
+    ) {
+      return new Response(
+        JSON.stringify({ error: "Captcha verification failed" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate required fields + length caps to prevent abuse
     if (!name || !email || !subject || !message) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
@@ -31,6 +49,12 @@ const handler = async (req: Request): Promise<Response> => {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
+      );
+    }
+    if (name.length > 200 || email.length > 200 || subject.length > 300 || message.length > 5000) {
+      return new Response(
+        JSON.stringify({ error: "Field length exceeds maximum allowed" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
