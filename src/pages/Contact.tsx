@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,17 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [captcha, setCaptcha] = useState<{ a: number; b: number }>({ a: 0, b: 0 });
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+
+  const regenerateCaptcha = () => {
+    setCaptcha({ a: Math.floor(Math.random() * 9) + 1, b: Math.floor(Math.random() * 9) + 1 });
+    setCaptchaAnswer("");
+  };
+
+  useEffect(() => {
+    regenerateCaptcha();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,11 +59,18 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (parseInt(captchaAnswer.trim(), 10) !== captcha.a + captcha.b) {
+      toast.error("Incorrect captcha answer. Please try again.");
+      regenerateCaptcha();
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const { data, error } = await supabase.functions.invoke("send-contact-email", {
-        body: formData,
+        body: { ...formData, captchaA: captcha.a, captchaB: captcha.b, captchaAnswer },
       });
 
       if (error) {
@@ -64,6 +82,7 @@ const Contact = () => {
     } catch (error: any) {
       console.error("Error sending message:", error);
       toast.error("Failed to send message. Please try again or email us directly at hello@zonoir.com");
+      regenerateCaptcha();
     } finally {
       setIsSubmitting(false);
     }
