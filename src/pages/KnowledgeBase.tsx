@@ -165,6 +165,49 @@ const categories = [
       { title: "HIPAA & GDPR Awareness for Clinics", slug: "hipaa-gdpr" },
     ]
   },
+  {
+    id: "reports-financial",
+    title: "Financial & Performance Reports",
+    description: "Track revenue, expenses, and doctor performance",
+    icon: BarChart3,
+    color: "from-orange-500 to-orange-600",
+    articles: [
+      { title: "Reading Your Analytics Dashboard", slug: "analytics-dashboard" },
+      { title: "Profit & Loss Trend Report", slug: "profit-loss-trend" },
+      { title: "Revenue Trend Reports", slug: "revenue-trend" },
+      { title: "Expense Category Breakdown", slug: "expense-categories" },
+      { title: "Doctor Performance Scorecard", slug: "doctor-performance-scorecard" },
+      { title: "AI Revenue Forecast in Reports", slug: "ai-forecast-reports" },
+    ]
+  },
+  {
+    id: "reports-patients",
+    title: "Patient & Appointment Reports",
+    description: "Understand patient behavior and visit patterns",
+    icon: TrendingUp,
+    color: "from-amber-500 to-orange-500",
+    articles: [
+      { title: "Peak Hours Heatmap Explained", slug: "peak-hour-heatmaps" },
+      { title: "Patient Demographics — Gender, Age & City", slug: "patient-demographics" },
+      { title: "New vs Returning Patients Report", slug: "new-vs-returning" },
+      { title: "Appointment Status Breakdown", slug: "appointment-status-breakdown" },
+      { title: "New vs Follow-up Appointments", slug: "new-vs-followup" },
+      { title: "Patient Drop-Off Reports", slug: "patient-dropoff" },
+      { title: "Top Cities & Patient Geography", slug: "top-cities" },
+    ]
+  },
+  {
+    id: "reports-tools",
+    title: "Report Tools & Exports",
+    description: "Filter, print, and export your reports",
+    icon: PieChart,
+    color: "from-rose-500 to-orange-500",
+    articles: [
+      { title: "Quick Stats Overview", slug: "quick-stats" },
+      { title: "Filtering Reports by Date Range", slug: "report-date-filters" },
+      { title: "Printing & Exporting Reports", slug: "print-export-reports" },
+    ]
+  },
 ];
 
 const KnowledgeBase = () => {
