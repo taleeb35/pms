@@ -287,7 +287,11 @@ async function searchAllDoctors(supabase: any, filters: SearchFilters) {
 }
 
 serve(async (req) => {
+  const corsHeaders = buildCorsHeaders(req);
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  const rl = checkRateLimit(req, "find-doctor-chatbot", 30, 60_000);
+  if (!rl.ok) return rateLimitResponse(rl, corsHeaders);
 
   try {
     const body = await req.json();
