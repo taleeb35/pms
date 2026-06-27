@@ -418,6 +418,24 @@ const Contact = () => {
                     />
                   </div>
 
+                  {/* Captcha */}
+                  <div>
+                    <Label htmlFor="contact-captcha" className="text-foreground font-medium">
+                      Verify you're human: what is {captcha.a} + {captcha.b}? *
+                    </Label>
+                    <Input
+                      id="contact-captcha"
+                      name="captcha"
+                      type="number"
+                      inputMode="numeric"
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      placeholder="Enter the sum"
+                      required
+                      className="mt-2 max-w-[200px]"
+                    />
+                  </div>
+
                   {/* Submit Button */}
                   <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
                     {isSubmitting ? (
