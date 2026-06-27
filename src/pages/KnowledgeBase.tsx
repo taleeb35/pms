@@ -153,31 +153,6 @@ const categories = [
     ]
   },
   {
-    id: "reports-analytics",
-    title: "Reports & Analytics",
-    description: "Understand your performance data",
-    icon: BarChart3,
-    color: "from-orange-500 to-orange-600",
-    articles: [
-      { title: "Reading Your Analytics Dashboard", slug: "analytics-dashboard" },
-      { title: "Peak Hours Heatmap Explained", slug: "peak-hour-heatmaps" },
-      { title: "Profit & Loss Trend Report", slug: "profit-loss-trend" },
-      { title: "Doctor Performance Scorecard", slug: "doctor-performance-scorecard" },
-      { title: "Revenue Trend Reports", slug: "revenue-trend" },
-      { title: "Expense Category Breakdown", slug: "expense-categories" },
-      { title: "Patient Demographics — Gender, Age & City", slug: "patient-demographics" },
-      { title: "New vs Returning Patients Report", slug: "new-vs-returning" },
-      { title: "Appointment Status Breakdown", slug: "appointment-status-breakdown" },
-      { title: "New vs Follow-up Appointments", slug: "new-vs-followup" },
-      { title: "Patient Drop-Off Reports", slug: "patient-dropoff" },
-      { title: "Top Cities & Patient Geography", slug: "top-cities" },
-      { title: "Quick Stats Overview", slug: "quick-stats" },
-      { title: "AI Revenue Forecast in Reports", slug: "ai-forecast-reports" },
-      { title: "Filtering Reports by Date Range", slug: "report-date-filters" },
-      { title: "Printing & Exporting Reports", slug: "print-export-reports" },
-    ]
-  },
-  {
     id: "security-compliance",
     title: "Security & Compliance",
     description: "How your data stays safe",
