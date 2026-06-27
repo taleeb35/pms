@@ -20,6 +20,8 @@ import {
   Smartphone,
   ShieldCheck,
   BarChart3,
+  TrendingUp,
+  PieChart,
   Video,
 } from "lucide-react";
 import { Link } from "react-router-dom";
