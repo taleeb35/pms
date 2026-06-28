@@ -2274,6 +2274,11 @@ const slugTitleMap: Record<string, string> = {
   "video-call-best-practices": "Video Call Best Practices",
   "telemedicine-best-practices": "Video Call Best Practices",
   "video-etiquette": "Video Call Best Practices",
+  "data-security": "How Zonoir Protects Patient Data",
+  "patient-data-security": "How Zonoir Protects Patient Data",
+  "data-protection": "How Zonoir Protects Patient Data",
+  "security-overview": "How Zonoir Protects Patient Data",
+  "how-zonoir-protects-data": "How Zonoir Protects Patient Data",
 };
 
 
