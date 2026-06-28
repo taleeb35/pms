@@ -2511,9 +2511,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "doctor-video-join" || slug === "joining-video-doctor" || slug === "doctor-join-call" || slug === "video-doctor") {
     return <DoctorVideoJoinArticle />;
   }
-  if (slug === "video-patient" || slug === "patient-video-join" || slug === "joining-video-patient" || slug === "patient-join-call") {
-    return <PatientVideoJoinArticle />;
+  if (slug === "video-best-practices" || slug === "video-call-best-practices" || slug === "telemedicine-best-practices" || slug === "video-etiquette") {
+    return <VideoBestPracticesArticle />;
   }
+
 
 
 
