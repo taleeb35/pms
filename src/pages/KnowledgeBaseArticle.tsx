@@ -2523,6 +2523,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "video-best-practices" || slug === "video-call-best-practices" || slug === "telemedicine-best-practices" || slug === "video-etiquette") {
     return <VideoBestPracticesArticle />;
   }
+  if (slug === "data-security" || slug === "patient-data-security" || slug === "data-protection" || slug === "security-overview" || slug === "how-zonoir-protects-data") {
+    return <DataSecurityArticle />;
+  }
 
 
 
