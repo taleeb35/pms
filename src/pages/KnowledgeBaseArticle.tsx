@@ -2269,6 +2269,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-video-join": "Joining a Video Call as a Patient",
   "joining-video-patient": "Joining a Video Call as a Patient",
   "patient-join-call": "Joining a Video Call as a Patient",
+  "video-best-practices": "Video Call Best Practices",
+  "video-call-best-practices": "Video Call Best Practices",
+  "telemedicine-best-practices": "Video Call Best Practices",
+  "video-etiquette": "Video Call Best Practices",
 };
 
 
