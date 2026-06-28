@@ -2269,6 +2269,10 @@ const slugTitleMap: Record<string, string> = {
   "patient-video-join": "Joining a Video Call as a Patient",
   "joining-video-patient": "Joining a Video Call as a Patient",
   "patient-join-call": "Joining a Video Call as a Patient",
+  "video-best-practices": "Video Call Best Practices",
+  "video-call-best-practices": "Video Call Best Practices",
+  "telemedicine-best-practices": "Video Call Best Practices",
+  "video-etiquette": "Video Call Best Practices",
 };
 
 
@@ -2510,6 +2514,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "video-patient" || slug === "patient-video-join" || slug === "joining-video-patient" || slug === "patient-join-call") {
     return <PatientVideoJoinArticle />;
   }
+  if (slug === "video-best-practices" || slug === "video-call-best-practices" || slug === "telemedicine-best-practices" || slug === "video-etiquette") {
+    return <VideoBestPracticesArticle />;
+  }
+
 
 
 
@@ -22076,3 +22084,297 @@ const PatientVideoJoinArticle = () => {
     </div>
   );
 };
+
+const VideoBestPracticesArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Video Consultations</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Video Call Best Practices</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Badge className="bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20">
+                <Video className="w-3 h-3 mr-1" />
+                Video Consultations
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Stethoscope className="w-3 h-3" />
+                For Doctors & Clinics
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Video Call Best Practices
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A practical playbook to make every Zonoir video consultation look professional,
+              sound clear, run on time, and stay clinically safe — covering setup, etiquette,
+              clinical workflow, privacy, and recovery when things go wrong.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Pre-call setup: camera, mic, lighting, network",
+                  "Professional appearance and background",
+                  "Opening the call and verifying patient identity",
+                  "Structured clinical workflow on video",
+                  "Privacy, consent, and recording rules",
+                  "Handling drop-offs, no-shows, and emergencies",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-20 prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3 prose-p:text-base prose-p:leading-relaxed prose-li:text-base">
+
+            <h2>Why best practices matter</h2>
+            <p>
+              A video consultation is not just a phone call with a face. Patients judge your
+              clinic on the first 10 seconds: how you look, how you sound, whether you make eye
+              contact, and whether the call feels as safe as sitting in your chamber. Following
+              these best practices turns Zonoir's video tool from a basic Daily.co room into a
+              proper telemedicine experience that patients trust enough to pay for, recommend,
+              and come back to.
+            </p>
+
+            <h2>1. Pre-call setup (do this once, benefit forever)</h2>
+
+            <h3>Camera</h3>
+            <ul>
+              <li><strong>Position at eye level.</strong> Stack books under a laptop or use a tripod for your phone. A camera looking up at you under-chin is the #1 unprofessional mistake.</li>
+              <li><strong>Frame from chest up.</strong> Leave a small gap above your head. Don't fill the entire frame with your face.</li>
+              <li><strong>Look at the camera, not the screen,</strong> when you want to make "eye contact" with the patient — especially when delivering important news or reassurance.</li>
+            </ul>
+
+            <h3>Microphone</h3>
+            <ul>
+              <li>Use <strong>wired earphones with a mic</strong> (even basic Rs. 500 ones) instead of laptop speakers — eliminates echo and feedback.</li>
+              <li>If you have a Bluetooth headset, charge it fully before the day starts. A dying headset mid-consult is jarring.</li>
+              <li>Test by joining the test room before your first patient of the day.</li>
+            </ul>
+
+            <h3>Lighting</h3>
+            <ul>
+              <li><strong>Light should come from in front of you,</strong> not behind. Sitting with a window behind you turns you into a silhouette.</li>
+              <li>A simple desk lamp pointed at the wall behind your monitor (bounced light) is flattering and free.</li>
+              <li>Avoid harsh overhead tube lights directly above — they create dark eye shadows.</li>
+            </ul>
+
+            <h3>Network</h3>
+            <ul>
+              <li><strong>Wired ethernet &gt; 5 GHz Wi-Fi &gt; 2.4 GHz Wi-Fi &gt; 4G hotspot.</strong> In that order.</li>
+              <li>Minimum recommended: 5 Mbps up and down. Test at <em>fast.com</em> before clinic hours.</li>
+              <li>Keep a 4G hotspot ready as backup. If Wi-Fi drops mid-call, you can switch in 15 seconds without losing the room.</li>
+              <li>Close heavy apps: YouTube, downloads, Zoom in background, large WhatsApp Web video previews.</li>
+            </ul>
+
+            <h3>Background</h3>
+            <ul>
+              <li>Plain wall, a bookshelf, or your clinic banner — anything tidy and professional.</li>
+              <li>Avoid bedrooms, kitchens, unmade beds, family members walking behind you.</li>
+              <li>Put a "Recording in progress — Do Not Disturb" sign on your door during clinic hours.</li>
+            </ul>
+
+            <h2>2. Personal appearance</h2>
+            <ul>
+              <li><strong>Wear your white coat or formal shirt,</strong> exactly as you would in person. Patients are paying a consultation fee — dressing the part doubles perceived value.</li>
+              <li>Visible stethoscope around the neck reinforces "this is a real doctor visit."</li>
+              <li>Display name tag or have your clinic logo visible behind you.</li>
+              <li>Avoid loud patterns, bright stripes, or pure white shirts — they flicker on camera.</li>
+            </ul>
+
+            <h2>3. Opening the call — the first 30 seconds</h2>
+            <p>
+              How you open sets the entire tone. Use this script every time:
+            </p>
+            <Card className="not-prose my-6 border-l-4 border-l-primary bg-primary/5">
+              <CardContent className="py-5 text-sm space-y-2">
+                <p><strong>Doctor:</strong> "Assalam-o-Alaikum, [Patient Name]. Can you see and hear me clearly?"</p>
+                <p><strong>(Wait for confirmation.)</strong></p>
+                <p><strong>Doctor:</strong> "I am Dr. [Your Name]. To confirm I'm speaking with the right person — could you please tell me your full name and date of birth?"</p>
+                <p><strong>(Patient confirms.)</strong></p>
+                <p><strong>Doctor:</strong> "Thank you. This consultation is private and confidential. Are you in a place where you can speak freely? Is anyone else in the room with you?"</p>
+              </CardContent>
+            </Card>
+            <p>
+              This three-step opener handles <strong>identity verification, privacy check, and consent</strong>
+              in under 30 seconds — and it's defensible medico-legally if the call is ever reviewed.
+            </p>
+
+            <h2>4. Structured clinical workflow on video</h2>
+            <p>
+              Don't free-style. Follow the same SOAP structure as an in-person visit, just adapted for the medium:
+            </p>
+            <ul>
+              <li><strong>Subjective:</strong> Open-ended question first. "Tell me what's been happening since we last spoke / what's brought you in today."</li>
+              <li><strong>Objective:</strong> Ask the patient to <em>show</em> you. Rashes, swelling, injection sites, posture, gait, throat (with phone torch on). Have them measure their own BP, sugar, temperature if equipped — many patients have these at home.</li>
+              <li><strong>Assessment:</strong> Verbalize your thinking. "From what you're describing and what I can see, this looks like…" Patients on video need more verbal reassurance because they can't read your body language as well.</li>
+              <li><strong>Plan:</strong> Open the Zonoir visit screen in another tab, write the prescription live, and tell them: "I've just generated your prescription — it will reach you on WhatsApp before this call ends."</li>
+            </ul>
+
+            <Card className="not-prose my-6 border-amber-500/30 bg-amber-50/50 dark:bg-amber-950/20">
+              <CardContent className="py-5">
+                <h3 className="font-semibold text-base mb-2 flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                  Clinical safety
+                </h3>
+                <ul className="text-sm space-y-1.5 list-disc ml-5">
+                  <li>If you cannot adequately examine (e.g. acute abdomen, chest pain, suspected fracture, suicidal ideation) — <strong>stop and refer for in-person care</strong>. Document this clearly in the visit notes.</li>
+                  <li>Never prescribe controlled drugs, narcotics, or high-risk medications (e.g. isotretinoin first-cycle, methotrexate initiation) on a first-time video consult.</li>
+                  <li>For any red-flag symptom, instruct the patient verbally <em>and</em> in writing on the prescription to seek emergency care.</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <h2>5. Communication etiquette on video</h2>
+            <ul>
+              <li><strong>Speak slightly slower</strong> than in person. Network jitter swallows fast speech.</li>
+              <li><strong>Pause 1 second longer</strong> after asking a question — there's always a tiny lag, and patients often start to answer just as you start to speak again.</li>
+              <li><strong>Mute yourself</strong> only when absolutely necessary (a colleague enters). Long silent muted gaps make patients think the call has frozen.</li>
+              <li><strong>Don't multitask visibly.</strong> Patients can see your eyes flicking to another screen. If you must check records, say "Give me one moment — I'm pulling up your last visit."</li>
+              <li><strong>Smile and nod more than you would in person.</strong> Video flattens emotion by about 40%. Compensate consciously.</li>
+            </ul>
+
+            <h2>6. Privacy, consent, and recording</h2>
+            <ul>
+              <li><strong>Verbal consent</strong> for the consultation itself is captured in your opening script. Recording requires <strong>explicit additional consent</strong>: "For our medical records, I'd like to record this call. Is that okay with you?" Wait for a clear yes. If the patient says no, do not record.</li>
+              <li>Recordings are stored securely in Zonoir and bound by the same RLS rules as the rest of the patient's chart — only the treating doctor, clinic owner, and approved clinic staff can access them.</li>
+              <li><strong>Never screenshot</strong> a patient's face or share clips on WhatsApp, social media, or training groups without written consent.</li>
+              <li>If a family member or attendant is on the patient's side, note their name and relationship in the visit notes.</li>
+              <li>End the call with the door still closed; don't discuss the case with a colleague while the patient may still be on the line.</li>
+            </ul>
+
+            <h2>7. Handling things going wrong</h2>
+
+            <h3>Patient doesn't show up</h3>
+            <ul>
+              <li>Wait 5 minutes. Send a WhatsApp: "Hello, your video consultation is ready — please tap the link I sent earlier."</li>
+              <li>If no response after 10 minutes, mark the appointment <strong>Cancelled (No-show)</strong> in Zonoir and free up the slot. The status drives accurate financial reports.</li>
+            </ul>
+
+            <h3>Patient can't connect</h3>
+            <ul>
+              <li>Switch to a voice call on WhatsApp to triage. Most issues are: link tapped in WhatsApp's in-app browser (ask them to open in Chrome/Safari), camera/mic permission denied, or weak signal.</li>
+              <li>If unfixable, offer a phone consultation at a reduced or same fee, and document why video was abandoned.</li>
+            </ul>
+
+            <h3>Your network drops</h3>
+            <ul>
+              <li>Switch to your 4G hotspot. Re-open the room link from the Zonoir appointment — you'll rejoin in seconds and the patient will still be there.</li>
+              <li>If reconnection fails twice, switch to a WhatsApp voice call and finish the consult by voice. Reschedule for free if the patient is unhappy.</li>
+            </ul>
+
+            <h3>Medical emergency during the call</h3>
+            <ul>
+              <li>Get the patient's exact location and a family member's phone number <em>before</em> doing anything else.</li>
+              <li>Stay on the call. Instruct them to call 1122 / Rescue / nearest ER. Send the family member's number a WhatsApp with hospital directions.</li>
+              <li>Document everything in the visit notes immediately after.</li>
+            </ul>
+
+            <h2>8. Ending the call professionally</h2>
+            <ul>
+              <li>Summarize: "So to recap — you'll start the new medicine tonight, continue the old one in the morning, and we'll review in 7 days."</li>
+              <li>Confirm prescription delivery: "Your prescription has been sent. You'll get it on WhatsApp within a minute."</li>
+              <li>Book the follow-up <em>before</em> hanging up. "Shall I block next Thursday at the same time?"</li>
+              <li>Say goodbye warmly. Then hit <strong>Leave Call</strong> — never just close the browser tab; the room can stay open and bill extra minutes.</li>
+            </ul>
+
+            <h2>9. After the call (within 5 minutes)</h2>
+            <ul>
+              <li>Complete the visit notes while the conversation is fresh. Use the <strong>AI Visit Summary</strong> button to auto-draft, then edit.</li>
+              <li>Mark the appointment <strong>Completed</strong> so finance & analytics update.</li>
+              <li>If you promised lab orders or referrals, generate them now — not "later today."</li>
+              <li>Send the patient a short WhatsApp thank-you: "Thanks for the consult, Mr. Ahmed. Your prescription is sent. Take care."</li>
+            </ul>
+
+            <h2>10. Daily and weekly habits</h2>
+            <ul>
+              <li><strong>Every morning:</strong> 30-second test in Zonoir's preview room — camera, mic, lighting, internet speed.</li>
+              <li><strong>Every Friday:</strong> Review the week's video appointments. Were any drop-offs, no-shows, or rescheduled? Spot the pattern (bad time slot? particular city with weak network?) and adjust your availability.</li>
+              <li><strong>Every month:</strong> Re-watch one of your own recorded calls (with patient consent). It's the fastest way to spot your own bad habits — saying "um" too much, looking down at notes, interrupting.</li>
+            </ul>
+
+            <h2>Quick checklist — print and stick on your monitor</h2>
+            <Card className="not-prose my-6 bg-muted/30">
+              <CardContent className="py-5">
+                <ul className="text-sm space-y-1.5">
+                  <li>☐ Camera at eye level, chest-up framing</li>
+                  <li>☐ Earphones in, mic tested</li>
+                  <li>☐ Light in front, not behind</li>
+                  <li>☐ Internet ≥ 5 Mbps, hotspot ready</li>
+                  <li>☐ White coat / formal attire, name tag visible</li>
+                  <li>☐ Tidy background, "Do Not Disturb" on door</li>
+                  <li>☐ Patient chart open in another tab</li>
+                  <li>☐ Identity + privacy + consent script ready</li>
+                  <li>☐ AI Visit Summary planned, not skipped</li>
+                  <li>☐ Follow-up booked before hang-up</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <div className="mt-12 pt-8 border-t">
+              <h2 className="text-xl font-bold mb-4">Related articles</h2>
+              <div className="grid sm:grid-cols-2 gap-3 not-prose">
+                {[
+                  { title: "Setting Up Video Consultations", slug: "video-setup" },
+                  { title: "Joining a Video Call as a Doctor", slug: "video-doctor" },
+                  { title: "Joining a Video Call as a Patient", slug: "video-patient" },
+                  { title: "AI Visit Summaries Explained", slug: "ai-visit-summary" },
+                ].map((r, idx) => (
+                  <Link key={idx} to={`${kbBase}/${r.slug}`}>
+                    <Card className="hover:shadow-md transition-all hover:-translate-y-0.5">
+                      <CardContent className="py-4 flex items-center justify-between">
+                        <span className="font-medium text-sm">{r.title}</span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
