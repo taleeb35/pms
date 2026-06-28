@@ -91,6 +91,7 @@ import {
   ShieldCheck,
   Link2,
   Copy, Info, VideoOff, Monitor, Maximize, PhoneOff,
+  Server, Database, EyeOff, FileLock2, ShieldAlert,
 
 } from "lucide-react";
 
@@ -2273,6 +2274,11 @@ const slugTitleMap: Record<string, string> = {
   "video-call-best-practices": "Video Call Best Practices",
   "telemedicine-best-practices": "Video Call Best Practices",
   "video-etiquette": "Video Call Best Practices",
+  "data-security": "How Zonoir Protects Patient Data",
+  "patient-data-security": "How Zonoir Protects Patient Data",
+  "data-protection": "How Zonoir Protects Patient Data",
+  "security-overview": "How Zonoir Protects Patient Data",
+  "how-zonoir-protects-data": "How Zonoir Protects Patient Data",
 };
 
 
@@ -2516,6 +2522,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "video-best-practices" || slug === "video-call-best-practices" || slug === "telemedicine-best-practices" || slug === "video-etiquette") {
     return <VideoBestPracticesArticle />;
+  }
+  if (slug === "data-security" || slug === "patient-data-security" || slug === "data-protection" || slug === "security-overview" || slug === "how-zonoir-protects-data") {
+    return <DataSecurityArticle />;
   }
 
 
@@ -22378,3 +22387,325 @@ const VideoBestPracticesArticle = () => {
   );
 };
 
+
+const DataSecurityArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Security & Privacy</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">How Zonoir Protects Patient Data</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <ShieldCheck className="w-3 h-3 mr-1" />
+                Security & Privacy
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                10 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Building2 className="w-3 h-3" />
+                For Clinics, Doctors & Patients
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              How Zonoir Protects Patient Data
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              A plain-English tour of every layer of security and privacy built into Zonoir —
+              from encryption and row-level access control to audit logs, backups, and the
+              human policies that keep your clinic's most sensitive records safe.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "Encryption at rest and in transit",
+                  "Row-Level Security (RLS) per clinic",
+                  "Role-based access: Clinic, Doctor, Receptionist",
+                  "Authentication, sessions, and password rules",
+                  "Daily backups and disaster recovery",
+                  "Audit logs and activity tracking",
+                  "Edge function protection and rate limiting",
+                  "Your rights as a Data Controller",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-20 prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3 prose-p:text-base prose-p:leading-relaxed prose-li:text-base">
+
+            <h2>Why this matters</h2>
+            <p>
+              Patient records are some of the most sensitive data your clinic will ever
+              handle — names, phone numbers, CNICs, diagnoses, prescriptions, lab results,
+              pregnancy histories. A single leak can destroy years of trust and expose your
+              clinic to legal action. Zonoir is built from the ground up assuming that
+              <strong> every record is confidential by default</strong>, and that no doctor,
+              no receptionist, and no other clinic should ever see data that doesn't belong
+              to them.
+            </p>
+            <p>
+              This article explains, layer by layer, exactly how that protection works — so
+              you can confidently answer the question every serious patient eventually asks:
+              <em> "Is my information safe with you?"</em>
+            </p>
+
+            <h2>1. Encryption — your data is unreadable to outsiders</h2>
+
+            <h3>In transit (between your browser and our servers)</h3>
+            <ul>
+              <li>Every page on Zonoir is served over <strong>HTTPS with TLS 1.2+</strong>. The padlock in your browser is not decorative — it means data travelling between your device and our servers is encrypted and cannot be read by anyone sitting on the same Wi-Fi network.</li>
+              <li>HSTS is enforced on the production domain, so browsers refuse to fall back to insecure HTTP even if someone tries to trick them.</li>
+              <li>Video consultations use Daily.co's SRTP-encrypted media streams — the call itself is encrypted end-to-end between participants.</li>
+            </ul>
+
+            <h3>At rest (on our database servers)</h3>
+            <ul>
+              <li>The underlying PostgreSQL database is encrypted at rest using <strong>AES-256</strong>, the same standard used by banks and governments.</li>
+              <li>File uploads (lab reports, scans, prescription PDFs) live in encrypted object storage with signed, time-limited URLs — links you share expire automatically.</li>
+              <li>Database backups are also encrypted before they're written to disk and replicated across regions.</li>
+            </ul>
+
+            <Card className="my-6 border-emerald-500/20 bg-emerald-500/5">
+              <CardContent className="py-4">
+                <p className="m-0 text-sm flex items-start gap-2">
+                  <Lock className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>Plain English:</strong> Even if someone physically stole a hard drive from our datacenter, the contents would look like random gibberish without the encryption keys.</span>
+                </p>
+              </CardContent>
+            </Card>
+
+            <h2>2. Row-Level Security — every clinic is an island</h2>
+            <p>
+              This is the single most important technical safeguard in Zonoir. Every table
+              that contains patient data has <strong>Row-Level Security (RLS) policies</strong>
+              enforced directly inside the database. This means access rules are not just
+              checked by our application code — they are checked by PostgreSQL itself on
+              every single query.
+            </p>
+
+            <h3>What RLS guarantees</h3>
+            <ul>
+              <li>A doctor logged into Clinic A <strong>cannot</strong> read, write, or even know about patients belonging to Clinic B. The database itself refuses to return those rows.</li>
+              <li>A receptionist at Clinic A can only see appointments and patients for the doctors and locations they are assigned to.</li>
+              <li>A single-doctor account (no clinic) is fully isolated — their patients are tied to <code>created_by = doctor_id</code> and no other account can query them.</li>
+              <li>Even if a bug in our application accidentally tried to fetch the wrong data, the database would return <em>zero rows</em> instead of leaking anything.</li>
+            </ul>
+
+            <h3>How permissions are structured</h3>
+            <table>
+              <thead>
+                <tr><th>Role</th><th>Can see</th><th>Cannot see</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Clinic Owner</td><td>All doctors, patients, finance, reports for their clinic</td><td>Any data from another clinic</td></tr>
+                <tr><td>Doctor (in a clinic)</td><td>Their own appointments, their patients, their prescriptions</td><td>Other doctors' private notes; clinic financials (unless granted)</td></tr>
+                <tr><td>Receptionist</td><td>Appointments, basic patient info, billing for assigned doctors</td><td>Clinical notes the doctor marks private; admin settings</td></tr>
+                <tr><td>Patient (public booking)</td><td>Only their own appointment confirmation</td><td>Everything else — no login required, no data exposed</td></tr>
+              </tbody>
+            </table>
+
+            <h2>3. Authentication — only the right humans get in</h2>
+
+            <h3>Login security</h3>
+            <ul>
+              <li>Passwords are <strong>never stored in plain text</strong>. They are hashed using bcrypt before they ever touch our database — even Zonoir engineers cannot read your password.</li>
+              <li>Zonoir has <strong>Have I Been Pwned (HIBP) checks</strong> enabled at signup and password change. If you try to use a password that has appeared in a known data breach, the system refuses and asks you to pick a stronger one.</li>
+              <li>Sessions use signed, short-lived JWT tokens that refresh automatically. Logging out on one device invalidates that session immediately.</li>
+              <li>Password reset links are <strong>single-use and time-limited</strong>. Inactive or unapproved accounts cannot trigger resets — preventing pre-approval account takeover.</li>
+            </ul>
+
+            <h3>Account lifecycle controls</h3>
+            <ul>
+              <li>New doctors added by a clinic stay in a <strong>pending / unapproved</strong> state until the clinic owner explicitly approves them. An unapproved doctor cannot access any patient data.</li>
+              <li>Receptionists can be set to <code>active</code> or <code>draft</code> at any time — toggling to draft instantly cuts off their access without deleting their history.</li>
+              <li>Clinics that fall behind on payments move to an <code>inactive</code> status, which is checked on every login.</li>
+            </ul>
+
+            <h2>4. Audit logs — every important action is recorded</h2>
+            <p>
+              Trust requires accountability. Zonoir maintains an <strong>Activity Log</strong>
+              that records who did what and when — so if a record changes, you always know
+              which user made the change from which session.
+            </p>
+            <ul>
+              <li>Patient creation, edits, and deletions</li>
+              <li>Appointment status changes (started, completed, cancelled)</li>
+              <li>Prescription creation and edits</li>
+              <li>Login events and password resets</li>
+              <li>Doctor approvals, receptionist additions, role changes</li>
+              <li>Inventory adjustments and financial transactions</li>
+            </ul>
+            <p>
+              Clinic owners can view activity logs from the dashboard at any time. Logs are
+              append-only — even an admin cannot quietly rewrite history.
+            </p>
+
+            <h2>5. Backups & disaster recovery</h2>
+            <ul>
+              <li><strong>Automatic daily backups</strong> of the entire database, encrypted and stored separately from the production database.</li>
+              <li><strong>Point-in-time recovery</strong> available for the last 7 days — we can restore your clinic's data to any specific moment if something goes catastrophically wrong.</li>
+              <li>Backups are tested regularly. A backup you can't restore is just expensive disk space.</li>
+              <li>File uploads are stored on redundant object storage with versioning, so accidental deletions can be recovered.</li>
+            </ul>
+
+            <Card className="my-6 border-blue-500/20 bg-blue-500/5">
+              <CardContent className="py-4">
+                <p className="m-0 text-sm flex items-start gap-2">
+                  <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>What this means for you:</strong> If a doctor accidentally deletes a year of visit notes, or a hard drive fails on our side, your data is recoverable — usually within hours, not days.</span>
+                </p>
+              </CardContent>
+            </Card>
+
+            <h2>6. Edge function security — protecting the moving parts</h2>
+            <p>
+              Some features — sending contact emails, generating AI summaries, running AI
+              prescription suggestions — run inside isolated <strong>edge functions</strong>.
+              These are hardened with several layers of protection:
+            </p>
+            <ul>
+              <li><strong>CORS allowlist</strong>: only requests from <code>zonoir.com</code> and approved preview domains are accepted. Random websites cannot call our APIs.</li>
+              <li><strong>Sliding-window rate limiting</strong>: prevents abuse, bot floods, and runaway costs.</li>
+              <li><strong>CAPTCHA verification</strong> on public forms (contact form, public booking) to block automated submissions.</li>
+              <li><strong>Server-side API keys</strong>: Gemini, Resend, Daily.co, and Stripe keys live only in secure server environments — they are never shipped to your browser, never visible in network tabs, never leakable through "View Source".</li>
+              <li><strong>Generic error messages</strong>: when something fails, users see "Something went wrong" instead of database internals that could help an attacker.</li>
+            </ul>
+
+            <h2>7. AI features — privacy by design</h2>
+            <p>
+              Zonoir's AI tools (Prescription Assistant, Visit Summaries, Patient Insights,
+              Revenue Forecasts, Doctor Finder) are built with strict guardrails:
+            </p>
+            <ul>
+              <li>AI requests are <strong>scoped to the calling user's clinic</strong> — the model never receives data from clinics outside your account.</li>
+              <li>The AI provider (Gemini via Lovable AI Gateway) operates under a <strong>no-training agreement</strong>: your patient data is not used to train public models.</li>
+              <li>AI suggestions are clearly labelled and require <strong>doctor review</strong> before they become part of the medical record. The AI never auto-prescribes or auto-diagnoses.</li>
+              <li>AI calls are logged so clinics can audit what was sent and what was returned.</li>
+            </ul>
+
+            <h2>8. The "principle of least privilege" — at every layer</h2>
+            <p>
+              Zonoir is designed so that <em>every part of the system has the minimum access
+              it needs to do its job, and nothing more</em>:
+            </p>
+            <ul>
+              <li>Frontend code uses an <strong>anon key</strong> that has zero direct table access without an authenticated user session.</li>
+              <li>RLS policies use <code>SECURITY DEFINER</code> helper functions to safely check roles without exposing the underlying tables.</li>
+              <li>The <code>service_role</code> key (full admin) is only used by trusted edge functions, never sent to browsers.</li>
+              <li>Database functions explicitly set <code>search_path = public</code> to prevent search-path hijacking attacks.</li>
+              <li>Roles are stored in a separate <code>user_roles</code> table — never on the user/profile row — to prevent privilege-escalation bugs.</li>
+            </ul>
+
+            <h2>9. Your responsibilities — the clinic side</h2>
+            <p>
+              Zonoir handles infrastructure security, but a few things are in your hands.
+              These are the small habits that prevent the most common real-world breaches:
+            </p>
+            <ul>
+              <li><strong>Use strong, unique passwords</strong> for each user. Never share login credentials between doctors and receptionists.</li>
+              <li><strong>Remove staff immediately when they leave.</strong> Use the receptionist <em>draft</em> toggle or doctor approval revocation — don't just "promise to deal with it later".</li>
+              <li><strong>Lock your computer</strong> when stepping away from the consultation room.</li>
+              <li><strong>Don't email patient data</strong> from outside Zonoir. The platform's built-in sharing tools use signed, expiring links.</li>
+              <li><strong>Review the Activity Log weekly</strong> for anything that looks unusual — unexpected logins, mass deletions, off-hours access.</li>
+            </ul>
+
+            <h2>10. Data ownership & your rights</h2>
+            <p>
+              Zonoir operates as a <strong>Data Processor</strong>; your clinic is the
+              <strong> Data Controller</strong>. In plain terms:
+            </p>
+            <ul>
+              <li><strong>You own your patient data.</strong> We hold it on your behalf — we never sell it, never share it with third parties for marketing, and never use it to train AI models.</li>
+              <li><strong>You can export everything.</strong> Patient lists, appointments, prescriptions, and financial reports are all exportable to CSV/PDF whenever you want.</li>
+              <li><strong>You can request deletion.</strong> If you ever leave Zonoir, your data is deleted from active systems on request, and purged from backups within the documented retention window.</li>
+              <li><strong>Patients can request their own records.</strong> Under privacy norms (and good clinical practice), patients can ask you for copies of their data — Zonoir's export tools make this a one-click action.</li>
+            </ul>
+
+            <h2>11. What to do if you suspect a problem</h2>
+            <Card className="my-6 border-amber-500/20 bg-amber-500/5">
+              <CardContent className="py-4">
+                <div className="flex items-start gap-3">
+                  <ShieldAlert className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm space-y-2">
+                    <p className="m-0"><strong>If you see suspicious activity, unexpected logins, or anything that looks like a security issue:</strong></p>
+                    <ol className="m-0 pl-5">
+                      <li>Change the affected password immediately.</li>
+                      <li>Toggle the suspected account to draft / revoke approval.</li>
+                      <li>Email <a href="mailto:hello@zonoir.com" className="text-primary font-medium">hello@zonoir.com</a> with the user, time, and what you observed.</li>
+                      <li>Do not delete the user — we need their record to investigate.</li>
+                    </ol>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <h2>Quick reference — the security stack at a glance</h2>
+            <ul>
+              <li><strong>Transport:</strong> TLS 1.2+, HSTS, encrypted video (SRTP)</li>
+              <li><strong>Storage:</strong> AES-256 at rest, encrypted backups, signed file URLs</li>
+              <li><strong>Database:</strong> Row-Level Security on every patient table</li>
+              <li><strong>Identity:</strong> Bcrypt passwords, HIBP checks, short-lived JWTs</li>
+              <li><strong>Access:</strong> Role separation (Clinic / Doctor / Receptionist), least privilege</li>
+              <li><strong>APIs:</strong> CORS allowlist, rate limiting, CAPTCHA, server-side keys</li>
+              <li><strong>AI:</strong> Scoped requests, no-training agreement, doctor review required</li>
+              <li><strong>Recovery:</strong> Daily backups, point-in-time restore</li>
+              <li><strong>Accountability:</strong> Activity logs for every important action</li>
+            </ul>
+
+            <h2>The bottom line</h2>
+            <p>
+              Security in healthcare is never a single feature — it's a stack of overlapping
+              defenses, each one designed so that if any other layer fails, your patients are
+              still protected. Zonoir is built on that principle: encrypted transport,
+              encrypted storage, database-level isolation, role-based access, audited
+              activity, recoverable backups, and a strict no-sharing policy on the data
+              itself.
+            </p>
+            <p>
+              When a patient asks <em>"Is my information safe?"</em>, the honest answer is:
+              <strong> Yes — and here is exactly why.</strong>
+            </p>
+
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
