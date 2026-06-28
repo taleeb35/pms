@@ -91,6 +91,7 @@ import {
   ShieldCheck,
   Link2,
   Copy, Info, VideoOff, Monitor, Maximize, PhoneOff,
+  Server, Database, EyeOff, FileLock2, ShieldAlert,
 
 } from "lucide-react";
 
