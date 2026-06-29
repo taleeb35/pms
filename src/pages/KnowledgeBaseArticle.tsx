@@ -2279,6 +2279,7 @@ const slugTitleMap: Record<string, string> = {
   "data-protection": "How Zonoir Protects Patient Data",
   "security-overview": "How Zonoir Protects Patient Data",
   "how-zonoir-protects-data": "How Zonoir Protects Patient Data",
+  "roles-permissions": "User Roles & Permissions Explained",
   "user-roles": "User Roles & Permissions Explained",
   "roles-and-permissions": "User Roles & Permissions Explained",
   "user-roles-permissions": "User Roles & Permissions Explained",
@@ -2531,7 +2532,7 @@ const KnowledgeBaseArticle = () => {
   if (slug === "data-security" || slug === "patient-data-security" || slug === "data-protection" || slug === "security-overview" || slug === "how-zonoir-protects-data") {
     return <DataSecurityArticle />;
   }
-  if (slug === "user-roles" || slug === "roles-and-permissions" || slug === "user-roles-permissions" || slug === "permissions" || slug === "role-based-access") {
+  if (slug === "roles-permissions" || slug === "user-roles" || slug === "roles-and-permissions" || slug === "user-roles-permissions" || slug === "permissions" || slug === "role-based-access") {
     return <UserRolesArticle />;
   }
 
