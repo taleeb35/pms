@@ -2279,6 +2279,11 @@ const slugTitleMap: Record<string, string> = {
   "data-protection": "How Zonoir Protects Patient Data",
   "security-overview": "How Zonoir Protects Patient Data",
   "how-zonoir-protects-data": "How Zonoir Protects Patient Data",
+  "user-roles": "User Roles & Permissions Explained",
+  "roles-and-permissions": "User Roles & Permissions Explained",
+  "user-roles-permissions": "User Roles & Permissions Explained",
+  "permissions": "User Roles & Permissions Explained",
+  "role-based-access": "User Roles & Permissions Explained",
 };
 
 
@@ -2525,6 +2530,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "data-security" || slug === "patient-data-security" || slug === "data-protection" || slug === "security-overview" || slug === "how-zonoir-protects-data") {
     return <DataSecurityArticle />;
+  }
+  if (slug === "user-roles" || slug === "roles-and-permissions" || slug === "user-roles-permissions" || slug === "permissions" || slug === "role-based-access") {
+    return <UserRolesArticle />;
   }
 
 
@@ -22709,3 +22717,321 @@ const DataSecurityArticle = () => {
     </div>
   );
 };
+
+const UserRolesArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Account & Security</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">User Roles & Permissions Explained</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
+              <Badge className="bg-blue-500/10 text-blue-600 hover:bg-blue-500/20">
+                <ShieldCheck className="w-3 h-3 mr-1" />
+                Account & Security
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                9 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Building2 className="w-3 h-3" />
+                For Clinic Owners & Admins
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              User Roles & Permissions Explained
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Zonoir uses a strict role-based access control (RBAC) model so every staff
+              member sees exactly what they need — and nothing they don't. This guide walks
+              through every role, what they can do, and how to choose the right one.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "The 5 roles in Zonoir",
+                  "What each role can and cannot do",
+                  "How permissions are enforced (RLS)",
+                  "Inviting and removing staff",
+                  "Receptionist scope: clinic vs. doctor",
+                  "Common scenarios and best practices",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-20 prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3 prose-p:text-base prose-p:leading-relaxed prose-li:text-base">
+
+            <h2>Why roles matter</h2>
+            <p>
+              In a real clinic, a receptionist doesn't sign prescriptions, a junior doctor
+              doesn't see another doctor's financials, and a visiting consultant shouldn't
+              be able to delete patient records. Zonoir mirrors that reality in software.
+              Every account is assigned exactly one role, and every database query is
+              filtered against that role using <strong>Row-Level Security (RLS)</strong> at
+              the backend — meaning permissions cannot be bypassed even from a custom
+              browser or modified app.
+            </p>
+
+            <h2>The 5 roles in Zonoir</h2>
+            <p>
+              Roles are organised in a clear hierarchy. Each role inherits visibility only
+              within its own scope — never across clinics.
+            </p>
+
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Role</th>
+                    <th className="text-left p-3 border-b">Who it's for</th>
+                    <th className="text-left p-3 border-b">Scope</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-3 font-semibold">Admin</td>
+                    <td className="p-3">Zonoir platform team (us)</td>
+                    <td className="p-3">Entire platform</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 font-semibold">Clinic Owner</td>
+                    <td className="p-3">The person/business that signed up the clinic</td>
+                    <td className="p-3">All doctors, staff & records inside that clinic</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 font-semibold">Doctor</td>
+                    <td className="p-3">Practising physicians in the clinic</td>
+                    <td className="p-3">Their own patients, visits, prescriptions</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 font-semibold">Clinic Receptionist</td>
+                    <td className="p-3">Front-desk staff for the whole clinic</td>
+                    <td className="p-3">All doctors in the clinic (operational only)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-semibold">Doctor Receptionist</td>
+                    <td className="p-3">A receptionist tied to one specific doctor</td>
+                    <td className="p-3">Only that doctor's patients & schedule</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>1. Admin</h2>
+            <p>
+              The Admin role is reserved for the Zonoir platform team. Admins manage the
+              public directory, approve new clinic and doctor signups, publish blog and
+              SEO content, and handle billing escalations. <strong>You will never need to
+              create an Admin account</strong> — this role is not available from inside
+              your clinic dashboard, and Zonoir Admins never see patient medical data
+              unless you explicitly grant access for support purposes.
+            </p>
+
+            <h2>2. Clinic Owner</h2>
+            <p>
+              This is the most powerful role <em>inside your clinic</em>. The Clinic Owner
+              is the account created at signup and is the legal Data Controller for every
+              patient record stored under the clinic.
+            </p>
+            <h3>Clinic Owners can:</h3>
+            <ul>
+              <li>Add, edit, suspend, or delete <strong>Doctor</strong> accounts.</li>
+              <li>Add, edit, or remove <strong>Receptionist</strong> accounts.</li>
+              <li>View every patient record, visit, prescription, and invoice across all doctors in the clinic.</li>
+              <li>See the full <strong>Finance dashboard</strong> — revenue, expenses, net profit, doctor-wise breakdowns.</li>
+              <li>Manage the clinic's public profile, specialisations, schedules, and online booking settings.</li>
+              <li>Manage the subscription plan, billing, and trial status.</li>
+              <li>Export patient and financial data (CSV/PDF).</li>
+            </ul>
+            <h3>Clinic Owners cannot:</h3>
+            <ul>
+              <li>See data from <strong>other</strong> clinics on Zonoir — RLS blocks every cross-clinic query.</li>
+              <li>Sign prescriptions on a doctor's behalf (audit logs record the actual signer).</li>
+            </ul>
+
+            <h2>3. Doctor</h2>
+            <p>
+              Doctors are the clinical heart of the system. Each Doctor account is
+              attached to one clinic (or operates as a solo practitioner with their own
+              clinic shell auto-created at signup).
+            </p>
+            <h3>Doctors can:</h3>
+            <ul>
+              <li>View and manage <strong>their own</strong> patient list, appointments, and visit history.</li>
+              <li>Write prescriptions, record vitals, attach lab reports, and use the AI Prescription Assistant.</li>
+              <li>Manage their own weekly schedule, breaks, and leave days.</li>
+              <li>Edit their public doctor profile (bio, photo, fees, specialisations).</li>
+              <li>Add medicines, allergies, diseases, ICD codes, and templates to the shared clinic library.</li>
+              <li>Conduct video consultations and review their personal performance analytics.</li>
+            </ul>
+            <h3>Doctors cannot:</h3>
+            <ul>
+              <li>See another doctor's patients, visits, or prescriptions — even within the same clinic.</li>
+              <li>Access the clinic-wide Finance dashboard (they only see their own earnings).</li>
+              <li>Create, modify, or delete other Doctor or Receptionist accounts.</li>
+              <li>Change the clinic's subscription or billing details.</li>
+            </ul>
+
+            <h2>4. Clinic Receptionist</h2>
+            <p>
+              A Clinic Receptionist is front-desk staff who works for the <strong>whole
+              clinic</strong>. They act as an operational deputy to the Clinic Owner for
+              day-to-day patient handling — but with no financial or destructive powers.
+            </p>
+            <h3>Clinic Receptionists can:</h3>
+            <ul>
+              <li>Register new patients and update existing patient details.</li>
+              <li>Book, reschedule, or cancel appointments for any doctor in the clinic.</li>
+              <li>Mark walk-ins, check patients in, and collect consultation fees.</li>
+              <li>Generate invoices and print prescriptions / reports prepared by doctors.</li>
+              <li>View the clinic-wide appointment calendar.</li>
+            </ul>
+            <h3>Clinic Receptionists cannot:</h3>
+            <ul>
+              <li>Write or edit clinical notes, diagnoses, or prescriptions.</li>
+              <li>See the Finance dashboard, expenses, or net profit reports.</li>
+              <li>Create or remove staff accounts.</li>
+              <li>Delete patient records or visits.</li>
+            </ul>
+
+            <h2>5. Doctor Receptionist</h2>
+            <p>
+              A Doctor Receptionist is tied to one specific doctor — common in setups where
+              a senior consultant has their own dedicated assistant. Permissions are
+              identical to a Clinic Receptionist, but <strong>scoped only to that
+              doctor's patients and schedule</strong>. They will not see other doctors'
+              calendars, patients, or appointments in the system at all.
+            </p>
+            <p>
+              This role is ideal for visiting consultants, partner doctors who share a
+              clinic but operate independently, or hospitals where each specialist has a
+              private secretary.
+            </p>
+
+            <h2>How permissions are enforced</h2>
+            <p>
+              Roles are not just UI hints — they are enforced at the database level. Every
+              table in Zonoir has Row-Level Security (RLS) policies that check three
+              things on every query:
+            </p>
+            <ol>
+              <li><strong>Who are you?</strong> (your authenticated user ID)</li>
+              <li><strong>What role do you have?</strong> (looked up from the secure <code>user_roles</code> table)</li>
+              <li><strong>Which clinic/doctor do you belong to?</strong> (your scope)</li>
+            </ol>
+            <p>
+              If any of those three checks fails, the database returns zero rows — even if
+              someone tries to bypass the app and call the API directly. This is the same
+              defence-in-depth model used by major banking platforms.
+            </p>
+
+            <h2>Inviting and managing staff</h2>
+            <h3>Adding a Doctor</h3>
+            <ol>
+              <li>Log in as <strong>Clinic Owner</strong>.</li>
+              <li>Go to <strong>Doctors → Add Doctor</strong>.</li>
+              <li>Enter name, email, specialisations, fee, and schedule.</li>
+              <li>Zonoir sends the doctor a welcome email with login credentials.</li>
+              <li>The doctor signs in and completes their public profile.</li>
+            </ol>
+
+            <h3>Adding a Receptionist</h3>
+            <ol>
+              <li>Go to <strong>Receptionists → Add Receptionist</strong>.</li>
+              <li>Choose the scope: <strong>Clinic-wide</strong> or <strong>tied to a specific Doctor</strong>.</li>
+              <li>Toggle status between <em>Active</em> and <em>Draft</em> any time — Draft accounts cannot log in.</li>
+            </ol>
+
+            <h3>Removing access</h3>
+            <p>
+              When a staff member leaves, deactivate their account from the same screen.
+              Their historical actions (prescriptions, invoices, audit log entries) are
+              preserved for compliance, but they immediately lose all access to patient
+              data. <strong>Never share login credentials</strong> — always create a
+              dedicated account so audit logs remain meaningful.
+            </p>
+
+            <h2>Common scenarios</h2>
+            <h3>"I'm a solo doctor — do I need a clinic account?"</h3>
+            <p>
+              Yes, but it's invisible to you. Every doctor signup automatically creates a
+              one-doctor clinic shell behind the scenes so the same RLS model works
+              consistently. You only see the Doctor dashboard.
+            </p>
+
+            <h3>"Can I let one doctor see another doctor's patient just this once?"</h3>
+            <p>
+              Not directly — and that's by design. Instead, have the patient's doctor
+              <strong> transfer the patient</strong> or invite the second doctor as a
+              co-consultant on a specific visit. This keeps the audit trail honest.
+            </p>
+
+            <h3>"My receptionist needs to see the day's earnings."</h3>
+            <p>
+              Clinic Receptionists can see <em>collected fees per appointment</em> (since
+              they handle payments at the desk), but not the full P&amp;L. If you need a
+              receptionist to manage expenses, upgrade them to a Clinic Owner — or better,
+              keep finance access limited to ownership.
+            </p>
+
+            <h2>Best practices</h2>
+            <ul>
+              <li><strong>One account per person.</strong> Never share logins — audit logs depend on it.</li>
+              <li><strong>Match role to job.</strong> Don't promote a receptionist to Doctor just for convenience.</li>
+              <li><strong>Review staff quarterly.</strong> Deactivate accounts of staff who left.</li>
+              <li><strong>Use Doctor Receptionists</strong> for visiting consultants — it keeps schedules clean.</li>
+              <li><strong>Owners: enable two-factor</strong> on your account — it holds the keys to the whole clinic.</li>
+            </ul>
+
+            <h2>Summary</h2>
+            <p>
+              Zonoir's 5-role model gives you the flexibility of a multi-doctor clinic with
+              the safety of bank-grade access control. Set roles correctly once at signup,
+              and every prescription, invoice, and patient record will automatically land
+              in the right hands — and stay out of the wrong ones.
+            </p>
+
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
