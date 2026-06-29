@@ -172,53 +172,31 @@ export async function printAppointmentPrescription(opts: {
   const iopFilled = iopFields.some((k) => v(k));
 
   const vaHTML = vaFilled ? `
-    <div class="content-box" style="padding:8px 12px;">
-      <div style="font-weight:600;color:#1d4ed8;margin-bottom:4px;">VA</div>
-      ${vaRight ? `<div><strong>(R)</strong> ${escapeHtml(vaRight)}</div>` : ""}
-      ${vaLeft ? `<div><strong>(L)</strong> ${escapeHtml(vaLeft)}</div>` : ""}
+    <div class="kv"><span class="kv-label">VA:</span>
+      ${vaRight ? `<strong>(R)</strong> ${escapeHtml(vaRight)}` : ""}
+      ${vaLeft ? `<span style="margin-left:14px;"><strong>(L)</strong> ${escapeHtml(vaLeft)}</span>` : ""}
     </div>` : "";
 
   const iopHTML = iopFilled ? `
-    <table class="vitals" style="margin-top:8px;margin-bottom:6px;">
-      <thead>
-        <tr>
-          <td class="lab" style="width:12%;">For</td>
-          <td class="lab" style="width:22%;">IOP (mmHg)</td>
-          <td class="lab" style="width:22%;">Pachymetry</td>
-          <td class="lab" style="width:22%;">CF</td>
-          <td class="lab" style="width:22%;">Final</td>
-        </tr>
-      </thead>
+    <table class="data-table">
+      <thead><tr>
+        <th style="width:10%;">For</th><th>IOP (mmHg)</th><th>Pachymetry</th><th>CF</th><th>Final</th>
+      </tr></thead>
       <tbody>
-        <tr>
-          <td class="lab">(R)</td>
-          <td>${escapeHtml(v("iop_right"))}</td>
-          <td>${escapeHtml(v("pachymetry_right"))}</td>
-          <td>${escapeHtml(v("cf_right"))}</td>
-          <td>${escapeHtml(v("iop_final_right"))}</td>
-        </tr>
-        <tr>
-          <td class="lab">(L)</td>
-          <td>${escapeHtml(v("iop_left"))}</td>
-          <td>${escapeHtml(v("pachymetry_left"))}</td>
-          <td>${escapeHtml(v("cf_left"))}</td>
-          <td>${escapeHtml(v("iop_final_left"))}</td>
-        </tr>
+        <tr><td><strong>(R)</strong></td><td>${escapeHtml(v("iop_right"))}</td><td>${escapeHtml(v("pachymetry_right"))}</td><td>${escapeHtml(v("cf_right"))}</td><td>${escapeHtml(v("iop_final_right"))}</td></tr>
+        <tr><td><strong>(L)</strong></td><td>${escapeHtml(v("iop_left"))}</td><td>${escapeHtml(v("pachymetry_left"))}</td><td>${escapeHtml(v("cf_left"))}</td><td>${escapeHtml(v("iop_final_left"))}</td></tr>
       </tbody>
     </table>
-    ${v("iop_method") || v("iop") ? `<div style="font-size:10pt;margin-top:2px;">
+    ${v("iop_method") || v("iop") ? `<div class="muted-line">
       ${v("iop_method") ? `<strong>Method:</strong> ${escapeHtml(v("iop_method"))}` : ""}
-      ${v("iop") ? `${v("iop_method") ? " &nbsp;|&nbsp; " : ""}<strong>Notes:</strong> ${escapeHtml(v("iop"))}` : ""}
+      ${v("iop") ? `${v("iop_method") ? " · " : ""}<strong>Notes:</strong> ${escapeHtml(v("iop"))}` : ""}
     </div>` : ""}` : "";
 
-  // History block for eye specialist: only Presenting Complaints + Ocular History
   const presenting = v("presenting_complaints");
   const ocular = v("ocular_history");
   const eyeHistoryHTML = (presenting || ocular) ? `
-    <div class="content-box" style="padding:10px 12px;">
-      ${presenting ? `<div style="margin-bottom:6px;"><strong>Presenting Complaints:</strong><br/>${escapeHtml(presenting)}</div>` : ""}
-      ${ocular ? `<div><strong>Ocular History:</strong><br/>${escapeHtml(ocular)}</div>` : ""}
-    </div>` : "";
+    ${presenting ? `<div class="kv"><span class="kv-label">Presenting Complaints:</span> ${escapeHtml(presenting)}</div>` : ""}
+    ${ocular ? `<div class="kv"><span class="kv-label">Ocular History:</span> ${escapeHtml(ocular)}</div>` : ""}` : "";
 
   const ophthalmologySections = (vaHTML || iopHTML)
     ? `<h3 class="section">Vision &amp; IOP</h3>${vaHTML}${iopHTML}`
@@ -227,69 +205,71 @@ export async function printAppointmentPrescription(opts: {
     ? `<h3 class="section">History &amp; Presenting Complaints</h3>${eyeHistoryHTML}`
     : "";
 
-
-
-
-
-
   const html = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8" />
 <title>Prescription ${escapeHtml(rxNo)} — ${escapeHtml(patient.full_name)}</title>
 <style>
-  @page { margin: 1cm; size: A4; }
+  @page { margin: 1.2cm 1.2cm; size: A4; }
   * { box-sizing: border-box; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #1a1a1a; margin: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; color: #000; margin: 0; line-height: 1.4; }
   .doc { max-width: 800px; margin: 0 auto; }
 
-  /* ===== Header ===== */
-  .top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px double #1d4ed8; padding-bottom: 14px; margin-bottom: 16px; gap: 24px; }
-  .clinic-side { flex: 1; }
-  .clinic-name { font-size: 22pt; font-weight: 800; color: #1d4ed8; margin: 0; letter-spacing: 0.3px; }
-  .clinic-meta { font-size: 9.5pt; color: #475569; margin-top: 4px; line-height: 1.5; }
-  .doctor-side { text-align: right; flex: 1; }
-  .doctor-name { font-size: 14pt; font-weight: 700; color: #0f172a; margin: 0; }
-  .doctor-quals { font-size: 9.5pt; color: #334155; margin-top: 3px; line-height: 1.5; font-weight: 600; }
-  .doctor-spec { font-size: 10pt; color: #1d4ed8; margin-top: 2px; font-weight: 600; }
-  .doctor-extra { font-size: 9pt; color: #64748b; margin-top: 3px; }
+  /* Header */
+  .top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px; gap: 20px; }
+  .clinic-name { font-size: 18pt; font-weight: 700; margin: 0; color: #000; }
+  .clinic-meta { font-size: 9pt; margin-top: 2px; line-height: 1.35; color: #000; }
+  .doctor-side { text-align: right; }
+  .doctor-name { font-size: 12.5pt; font-weight: 700; margin: 0; color: #000; }
+  .doctor-quals, .doctor-spec, .doctor-extra { font-size: 9pt; margin-top: 1px; color: #000; line-height: 1.35; }
+  .doctor-spec { font-weight: 600; }
 
-  /* ===== Patient strip ===== */
-  .pat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #cbd5e1; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
-  .pat-cell { background: #f8fafc; padding: 8px 12px; }
-  .pat-cell .label { font-size: 8pt; color: #64748b; text-transform: uppercase; letter-spacing: .5px; }
-  .pat-cell .val { font-weight: 700; color: #0f172a; font-size: 10.5pt; margin-top: 2px; }
-  .pat-cell .sub { font-size: 8.5pt; color: #64748b; margin-top: 1px; }
+  /* Patient strip */
+  .pat-strip { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #000; margin-bottom: 10px; }
+  .pat-cell { padding: 5px 8px; border-right: 1px solid #000; }
+  .pat-cell:last-child { border-right: none; }
+  .pat-cell .label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: .4px; color: #000; }
+  .pat-cell .val { font-weight: 700; font-size: 10pt; color: #000; }
+  .pat-cell .sub { font-size: 8.5pt; color: #000; }
 
-  /* ===== Sections ===== */
-  h3.section { font-size: 10pt; text-transform: uppercase; letter-spacing: .8px; color: #1d4ed8; margin: 14px 0 8px; padding-bottom: 3px; border-bottom: 1.5px solid #1d4ed8; }
+  /* Section headings */
+  h3.section { font-size: 9.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #000; margin: 10px 0 4px; padding-bottom: 2px; border-bottom: 1px solid #000; }
 
-  /* ===== Vitals tiles ===== */
-  .vitals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-  .vital-tile { padding: 8px 10px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 6px; text-align: center; }
-  .vital-tile .v-label { font-size: 8pt; color: #1e40af; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
-  .vital-tile .v-value { font-size: 12pt; color: #0f172a; font-weight: 700; margin-top: 3px; }
+  /* Inline key/value & generic */
+  .kv { font-size: 10pt; margin: 2px 0; color: #000; }
+  .kv-label { font-weight: 700; }
+  .muted-line { font-size: 9.5pt; margin-top: 3px; color: #000; }
 
-  /* ===== Content boxes ===== */
-  table { width: 100%; border-collapse: collapse; }
-  table.vitals td { padding: 6px 10px; border: 1px solid #e2e8f0; font-size: 10pt; }
-  table.vitals td.lab { background: #f8fafc; color: #475569; width: 25%; font-weight: 600; }
-  .content-box { padding: 10px 12px; background: #fafafa; border-left: 3px solid #475569; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.55; border-radius: 0 4px 4px 0; }
-  .test-box { padding: 10px 12px; background: #fefce8; border-left: 3px solid #eab308; white-space: pre-wrap; font-size: 10.5pt; border-radius: 0 4px 4px 0; }
-  .nv-box { padding: 10px 12px; background: #f0fdf4; border-left: 3px solid #16a34a; font-size: 10.5pt; border-radius: 0 4px 4px 0; }
-  .icd { display: inline-block; padding: 4px 10px; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 4px; font-size: 10pt; font-weight: 600; }
+  /* Vitals inline list */
+  .vitals-line { font-size: 10pt; color: #000; margin: 2px 0 0; }
+  .vitals-line .vi { display: inline-block; margin-right: 16px; }
+  .vitals-line .vi-label { font-weight: 700; }
 
-  /* ===== Rx block ===== */
-  .rx-wrap { border: 1.5px solid #1d4ed8; border-radius: 8px; overflow: hidden; background: #fff; }
-  .rx-head { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%); color: #fff; }
-  .rx-head .rx-symbol { font-size: 18pt; font-weight: 800; }
-  .rx-head .rx-title { font-size: 11pt; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .rx-body { padding: 12px 16px; white-space: pre-wrap; font-size: 11pt; line-height: 1.7; color: #0f172a; }
+  /* Content paragraphs */
+  .para { font-size: 10pt; white-space: pre-wrap; margin: 2px 0; color: #000; }
 
-  /* ===== Footer ===== */
-  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 9pt; color: #64748b; display: flex; justify-content: space-between; }
-  .stamp { margin-top: 30px; text-align: right; font-size: 9.5pt; color: #475569; }
-  .stamp .line { display: inline-block; border-top: 1px solid #94a3b8; padding-top: 4px; min-width: 220px; font-weight: 600; }
+  /* Data tables */
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 3px; font-size: 9.5pt; }
+  table.data-table th, table.data-table td { border: 1px solid #000; padding: 3px 6px; text-align: left; color: #000; }
+  table.data-table th { font-weight: 700; }
+
+  /* Diagnosis */
+  .dx { font-size: 10pt; margin: 3px 0; color: #000; }
+  .dx-code { display: inline-block; padding: 1px 6px; border: 1px solid #000; font-weight: 700; margin-right: 6px; font-size: 9.5pt; }
+
+  /* Rx block */
+  .rx-wrap { border: 1px solid #000; margin-top: 4px; }
+  .rx-head { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #000; color: #fff; }
+  .rx-symbol { font-size: 14pt; font-weight: 800; }
+  .rx-title { font-size: 10pt; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+  .rx-body { padding: 8px 12px; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.5; color: #000; }
+
+  /* Footer */
+  .stamp { margin-top: 28px; text-align: right; font-size: 9pt; color: #000; }
+  .stamp .line { display: inline-block; border-top: 1px solid #000; padding-top: 3px; min-width: 200px; font-weight: 700; }
+  .footer { margin-top: 14px; padding-top: 6px; border-top: 1px solid #000; font-size: 8.5pt; color: #000; display: flex; justify-content: space-between; }
+
   @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
@@ -300,7 +280,7 @@ export async function printAppointmentPrescription(opts: {
       <h1 class="clinic-name">${escapeHtml(clinicInfo?.clinic_name || "Medical Prescription")}</h1>
       <div class="clinic-meta">
         ${clinicInfo?.address ? escapeHtml(clinicInfo.address) + (clinicInfo.city ? ", " + escapeHtml(clinicInfo.city) : "") : ""}
-        ${clinicInfo?.phone_number ? `<br/>📞 ${escapeHtml(clinicInfo.phone_number)}` : ""}
+        ${clinicInfo?.phone_number ? `<br/>Tel: ${escapeHtml(clinicInfo.phone_number)}` : ""}
       </div>
     </div>
     <div class="doctor-side">
@@ -330,31 +310,27 @@ export async function printAppointmentPrescription(opts: {
     </div>
     <div class="pat-cell">
       <div class="label">Rx No.</div>
-      <div class="val" style="color:#1d4ed8;">${escapeHtml(rxNo)}</div>
+      <div class="val">${escapeHtml(rxNo)}</div>
       <div class="sub">Issued: ${escapeHtml(issuedOn)}</div>
     </div>
   </div>
 
   ${vitalsRows.length > 0 ? `<h3 class="section">Vitals</h3>
-  <div class="vitals-grid">
-    ${vitalsRows.map(r => `
-      <div class="vital-tile">
-        <div class="v-label">${escapeHtml(r.label)}</div>
-        <div class="v-value">${escapeHtml(r.value || "")}</div>
-      </div>`).join("")}
+  <div class="vitals-line">
+    ${vitalsRows.map(r => `<span class="vi"><span class="vi-label">${escapeHtml(r.label)}:</span> ${escapeHtml(r.value || "")}</span>`).join("")}
   </div>` : ""}
 
-  ${effChiefComplaint ? `<h3 class="section">Chief Complaint</h3><div class="content-box">${escapeHtml(effChiefComplaint)}</div>` : ""}
+  ${effChiefComplaint ? `<h3 class="section">Chief Complaint</h3><div class="para">${escapeHtml(effChiefComplaint)}</div>` : ""}
 
-  ${effPatientHistory ? `<h3 class="section">History</h3><div class="content-box">${escapeHtml(effPatientHistory)}</div>` : ""}
+  ${effPatientHistory ? `<h3 class="section">History</h3><div class="para">${escapeHtml(effPatientHistory)}</div>` : ""}
 
   ${ophthalmologySections}
 
   ${eyeHistorySection}
 
   ${(clinical.icd_code || effDiagnosisText) ? `<h3 class="section">Diagnosis</h3>
-    <div style="font-size:10.5pt;padding:4px 0;">
-      ${clinical.icd_code ? `<span class="icd">${escapeHtml(clinical.icd_code)}</span> ` : ""}
+    <div class="dx">
+      ${clinical.icd_code ? `<span class="dx-code">${escapeHtml(clinical.icd_code)}</span>` : ""}
       ${effDiagnosisText ? escapeHtml(effDiagnosisText) : ""}
     </div>` : ""}
 
@@ -364,26 +340,22 @@ export async function printAppointmentPrescription(opts: {
       <div class="rx-body">${escapeHtml(effPrescription)}</div>
     </div>` : ""}
 
-  ${clinical.test_reports ? `<h3 class="section">Recommended Tests</h3>
-    <div class="test-box">${escapeHtml(clinical.test_reports)}</div>` : ""}
-
+  ${clinical.test_reports ? `<h3 class="section">Recommended Tests</h3><div class="para">${escapeHtml(clinical.test_reports)}</div>` : ""}
 
   ${(nextVisitFormatted || clinical.next_visit_notes) ? `<h3 class="section">Next Visit</h3>
-    <div class="nv-box">
-      ${nextVisitFormatted ? `<div><strong>Date:</strong> ${escapeHtml(nextVisitFormatted)}</div>` : ""}
-      ${clinical.next_visit_notes ? `<div style="margin-top:4px;white-space:pre-wrap;">${escapeHtml(clinical.next_visit_notes)}</div>` : ""}
-    </div>` : ""}
+    <div class="para">${nextVisitFormatted ? `<strong>Date:</strong> ${escapeHtml(nextVisitFormatted)}` : ""}${clinical.next_visit_notes ? (nextVisitFormatted ? "\n" : "") + escapeHtml(clinical.next_visit_notes) : ""}</div>` : ""}
 
   <div class="stamp"><span class="line">${escapeHtml(doctorName || "Doctor's Signature")}</span></div>
 
   <div class="footer">
     <div>${clinicInfo?.clinic_name ? escapeHtml(clinicInfo.clinic_name) : ""}</div>
-    <div>This is a computer-generated prescription.</div>
+    <div>Computer-generated prescription.</div>
   </div>
 </div>
 <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 300); };</script>
 </body>
 </html>`;
+
 
   w.document.write(html);
   w.document.close();
