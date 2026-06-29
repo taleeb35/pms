@@ -75,17 +75,23 @@ export async function printAppointmentPrescription(opts: {
 
   let doctorName = opts.doctorName || "";
   let doctorSpecialization = opts.doctorSpecialization || "";
+  let doctorQualification = "";
+  let doctorPmdc = "";
+  let doctorContact = "";
   let clinicInfo: { clinic_name?: string; address?: string; city?: string; phone_number?: string } | null = null;
 
   try {
     const { data: doc } = await supabase
       .from("doctors")
-      .select("specialization, clinic_id, profiles(full_name)")
+      .select("specialization, qualification, pmdc_number, contact_number, clinic_id, profiles(full_name)")
       .eq("id", appointment.doctor_id)
       .maybeSingle();
     if (doc) {
       doctorName = doctorName || (doc as any)?.profiles?.full_name || "";
       doctorSpecialization = doctorSpecialization || doc.specialization || "";
+      doctorQualification = (doc as any).qualification || "";
+      doctorPmdc = (doc as any).pmdc_number || "";
+      doctorContact = (doc as any).contact_number || "";
       if (doc.clinic_id) {
         const { data: c } = await supabase
           .from("clinics")
