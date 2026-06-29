@@ -2531,6 +2531,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "data-security" || slug === "patient-data-security" || slug === "data-protection" || slug === "security-overview" || slug === "how-zonoir-protects-data") {
     return <DataSecurityArticle />;
   }
+  if (slug === "user-roles" || slug === "roles-and-permissions" || slug === "user-roles-permissions" || slug === "permissions" || slug === "role-based-access") {
+    return <UserRolesArticle />;
+  }
 
 
 
