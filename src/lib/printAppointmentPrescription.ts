@@ -238,91 +238,111 @@ export async function printAppointmentPrescription(opts: {
 <meta charset="utf-8" />
 <title>Prescription ${escapeHtml(rxNo)} — ${escapeHtml(patient.full_name)}</title>
 <style>
-  @page { margin: 1.2cm; size: A4; }
+  @page { margin: 1cm; size: A4; }
   * { box-sizing: border-box; }
   body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #1a1a1a; margin: 0; }
-  .doc { max-width: 780px; margin: 0 auto; }
-  .top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #1d4ed8; padding-bottom: 14px; margin-bottom: 18px; }
-  .clinic-name { font-size: 20pt; font-weight: 700; color: #1d4ed8; margin: 0; }
-  .clinic-meta { font-size: 9.5pt; color: #555; margin-top: 4px; line-height: 1.5; }
-  .doc-meta { font-size: 9.5pt; color: #444; margin-top: 6px; }
-  .rx-block { text-align: right; }
-  .rx-block h2 { margin: 0; font-size: 22pt; color: #1d4ed8; letter-spacing: 1px; }
-  .rx-block .meta { font-size: 9.5pt; color: #555; margin-top: 4px; line-height: 1.5; }
-  .pat { display: flex; justify-content: space-between; gap: 24px; padding: 12px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 16px; font-size: 10pt; }
-  .pat .col { flex: 1; }
-  .pat .label { font-size: 8.5pt; color: #64748b; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 2px; }
-  .pat .val { font-weight: 600; color: #0f172a; }
-  h3.section { font-size: 10.5pt; text-transform: uppercase; letter-spacing: .6px; color: #1d4ed8; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin: 16px 0 10px; }
+  .doc { max-width: 800px; margin: 0 auto; }
+
+  /* ===== Header ===== */
+  .top { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px double #1d4ed8; padding-bottom: 14px; margin-bottom: 16px; gap: 24px; }
+  .clinic-side { flex: 1; }
+  .clinic-name { font-size: 22pt; font-weight: 800; color: #1d4ed8; margin: 0; letter-spacing: 0.3px; }
+  .clinic-meta { font-size: 9.5pt; color: #475569; margin-top: 4px; line-height: 1.5; }
+  .doctor-side { text-align: right; flex: 1; }
+  .doctor-name { font-size: 14pt; font-weight: 700; color: #0f172a; margin: 0; }
+  .doctor-quals { font-size: 9.5pt; color: #334155; margin-top: 3px; line-height: 1.5; font-weight: 600; }
+  .doctor-spec { font-size: 10pt; color: #1d4ed8; margin-top: 2px; font-weight: 600; }
+  .doctor-extra { font-size: 9pt; color: #64748b; margin-top: 3px; }
+
+  /* ===== Patient strip ===== */
+  .pat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #cbd5e1; border: 1px solid #cbd5e1; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+  .pat-cell { background: #f8fafc; padding: 8px 12px; }
+  .pat-cell .label { font-size: 8pt; color: #64748b; text-transform: uppercase; letter-spacing: .5px; }
+  .pat-cell .val { font-weight: 700; color: #0f172a; font-size: 10.5pt; margin-top: 2px; }
+  .pat-cell .sub { font-size: 8.5pt; color: #64748b; margin-top: 1px; }
+
+  /* ===== Sections ===== */
+  h3.section { font-size: 10pt; text-transform: uppercase; letter-spacing: .8px; color: #1d4ed8; margin: 14px 0 8px; padding-bottom: 3px; border-bottom: 1.5px solid #1d4ed8; }
+
+  /* ===== Vitals tiles ===== */
+  .vitals-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .vital-tile { padding: 8px 10px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 6px; text-align: center; }
+  .vital-tile .v-label { font-size: 8pt; color: #1e40af; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
+  .vital-tile .v-value { font-size: 12pt; color: #0f172a; font-weight: 700; margin-top: 3px; }
+
+  /* ===== Content boxes ===== */
   table { width: 100%; border-collapse: collapse; }
   table.vitals td { padding: 6px 10px; border: 1px solid #e2e8f0; font-size: 10pt; }
   table.vitals td.lab { background: #f8fafc; color: #475569; width: 25%; font-weight: 600; }
-  .content-box { padding: 10px 12px; background: #fafafa; border-left: 3px solid #475569; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.55; }
-  .rx-box { padding: 12px 14px; background: #eff6ff; border-left: 4px solid #1d4ed8; white-space: pre-wrap; font-size: 11pt; line-height: 1.6; }
-  .test-box { padding: 10px 12px; background: #fefce8; border-left: 3px solid #eab308; white-space: pre-wrap; font-size: 10.5pt; }
-  .nv-box { padding: 10px 12px; background: #f0fdf4; border-left: 3px solid #16a34a; font-size: 10.5pt; }
+  .content-box { padding: 10px 12px; background: #fafafa; border-left: 3px solid #475569; white-space: pre-wrap; font-size: 10.5pt; line-height: 1.55; border-radius: 0 4px 4px 0; }
+  .test-box { padding: 10px 12px; background: #fefce8; border-left: 3px solid #eab308; white-space: pre-wrap; font-size: 10.5pt; border-radius: 0 4px 4px 0; }
+  .nv-box { padding: 10px 12px; background: #f0fdf4; border-left: 3px solid #16a34a; font-size: 10.5pt; border-radius: 0 4px 4px 0; }
   .icd { display: inline-block; padding: 4px 10px; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 4px; font-size: 10pt; font-weight: 600; }
-  .footer { margin-top: 28px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 9pt; color: #64748b; display: flex; justify-content: space-between; }
+
+  /* ===== Rx block ===== */
+  .rx-wrap { border: 1.5px solid #1d4ed8; border-radius: 8px; overflow: hidden; background: #fff; }
+  .rx-head { display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: linear-gradient(90deg, #1d4ed8 0%, #2563eb 100%); color: #fff; }
+  .rx-head .rx-symbol { font-size: 18pt; font-weight: 800; }
+  .rx-head .rx-title { font-size: 11pt; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .rx-body { padding: 12px 16px; white-space: pre-wrap; font-size: 11pt; line-height: 1.7; color: #0f172a; }
+
+  /* ===== Footer ===== */
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 9pt; color: #64748b; display: flex; justify-content: space-between; }
   .stamp { margin-top: 30px; text-align: right; font-size: 9.5pt; color: #475569; }
-  .stamp .line { display: inline-block; border-top: 1px solid #94a3b8; padding-top: 4px; min-width: 200px; }
-  .rx-symbol { font-size: 16pt; color: #1d4ed8; font-weight: 700; margin-right: 6px; }
+  .stamp .line { display: inline-block; border-top: 1px solid #94a3b8; padding-top: 4px; min-width: 220px; font-weight: 600; }
   @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
 <body>
 <div class="doc">
   <div class="top">
-    <div>
-      <h1 class="clinic-name">${escapeHtml(clinicInfo?.clinic_name || doctorName || "Medical Prescription")}</h1>
+    <div class="clinic-side">
+      <h1 class="clinic-name">${escapeHtml(clinicInfo?.clinic_name || "Medical Prescription")}</h1>
       <div class="clinic-meta">
         ${clinicInfo?.address ? escapeHtml(clinicInfo.address) + (clinicInfo.city ? ", " + escapeHtml(clinicInfo.city) : "") : ""}
-        ${clinicInfo?.phone_number ? `<br/>Phone: ${escapeHtml(clinicInfo.phone_number)}` : ""}
+        ${clinicInfo?.phone_number ? `<br/>📞 ${escapeHtml(clinicInfo.phone_number)}` : ""}
       </div>
-      ${doctorName ? `<div class="doc-meta"><strong>${escapeHtml(doctorName)}</strong>${doctorSpecialization ? " — " + escapeHtml(doctorSpecialization) : ""}</div>` : ""}
     </div>
-    <div class="rx-block">
-      <h2>PRESCRIPTION</h2>
-      <div class="meta">
-        <div><strong>${escapeHtml(rxNo)}</strong></div>
-        <div>Issued: ${escapeHtml(issuedOn)}</div>
-      </div>
+    <div class="doctor-side">
+      ${doctorName ? `<div class="doctor-name">${escapeHtml(doctorName)}</div>` : ""}
+      ${doctorQualification ? `<div class="doctor-quals">${escapeHtml(doctorQualification)}</div>` : ""}
+      ${doctorSpecialization ? `<div class="doctor-spec">${escapeHtml(doctorSpecialization)}</div>` : ""}
+      ${doctorPmdc ? `<div class="doctor-extra">PMDC #: ${escapeHtml(doctorPmdc)}</div>` : ""}
+      ${doctorContact ? `<div class="doctor-extra">${escapeHtml(doctorContact)}</div>` : ""}
     </div>
   </div>
 
-  <div class="pat">
-    <div class="col">
+  <div class="pat-strip">
+    <div class="pat-cell">
       <div class="label">Patient</div>
       <div class="val">${escapeHtml(patient.full_name)}</div>
-      <div style="font-size:9pt;color:#64748b;margin-top:2px;">ID: ${escapeHtml(patient.patient_id)}</div>
+      <div class="sub">ID: ${escapeHtml(patient.patient_id)}</div>
     </div>
-    <div class="col">
+    <div class="pat-cell">
       <div class="label">Age / Gender</div>
-      <div class="val">${age != null ? age + " yrs" : "—"} ${patient.gender ? "/ " + escapeHtml(patient.gender) : ""}</div>
-      ${patient.phone ? `<div style="font-size:9pt;color:#64748b;margin-top:2px;">${escapeHtml(patient.phone)}</div>` : ""}
+      <div class="val">${age != null ? age + " yrs" : "—"}${patient.gender ? " / " + escapeHtml(patient.gender) : ""}</div>
+      ${patient.phone ? `<div class="sub">${escapeHtml(patient.phone)}</div>` : ""}
     </div>
-    <div class="col">
+    <div class="pat-cell">
       <div class="label">Visit Date</div>
-      <div class="val">${escapeHtml(visitDate)}${visitTime ? " · " + escapeHtml(visitTime) : ""}</div>
-      ${appointment.appointment_type ? `<div style="font-size:9pt;color:#64748b;margin-top:2px;text-transform:capitalize;">${escapeHtml(String(appointment.appointment_type).replace(/_/g, " "))}</div>` : ""}
+      <div class="val">${escapeHtml(visitDate)}</div>
+      ${visitTime ? `<div class="sub">${escapeHtml(visitTime)}</div>` : ""}
+    </div>
+    <div class="pat-cell">
+      <div class="label">Rx No.</div>
+      <div class="val" style="color:#1d4ed8;">${escapeHtml(rxNo)}</div>
+      <div class="sub">Issued: ${escapeHtml(issuedOn)}</div>
     </div>
   </div>
 
   ${vitalsRows.length > 0 ? `<h3 class="section">Vitals</h3>
-  <table class="vitals">
-    <tbody>
-      ${(() => {
-        const rows: string[] = [];
-        for (let i = 0; i < vitalsRows.length; i += 2) {
-          const a = vitalsRows[i];
-          const b = vitalsRows[i + 1];
-          rows.push(`<tr><td class="lab">${escapeHtml(a.label)}</td><td>${escapeHtml(a.value || "")}</td>${
-            b ? `<td class="lab">${escapeHtml(b.label)}</td><td>${escapeHtml(b.value || "")}</td>` : `<td></td><td></td>`
-          }</tr>`);
-        }
-        return rows.join("");
-      })()}
-    </tbody>
-  </table>` : ""}
+  <div class="vitals-grid">
+    ${vitalsRows.map(r => `
+      <div class="vital-tile">
+        <div class="v-label">${escapeHtml(r.label)}</div>
+        <div class="v-value">${escapeHtml(r.value || "")}</div>
+      </div>`).join("")}
+  </div>` : ""}
 
   ${effChiefComplaint ? `<h3 class="section">Chief Complaint</h3><div class="content-box">${escapeHtml(effChiefComplaint)}</div>` : ""}
 
@@ -333,13 +353,16 @@ export async function printAppointmentPrescription(opts: {
   ${eyeHistorySection}
 
   ${(clinical.icd_code || effDiagnosisText) ? `<h3 class="section">Diagnosis</h3>
-    <div style="font-size:10.5pt;">
+    <div style="font-size:10.5pt;padding:4px 0;">
       ${clinical.icd_code ? `<span class="icd">${escapeHtml(clinical.icd_code)}</span> ` : ""}
       ${effDiagnosisText ? escapeHtml(effDiagnosisText) : ""}
     </div>` : ""}
 
-  ${effPrescription ? `<h3 class="section"><span class="rx-symbol">℞</span>Prescription</h3>
-    <div class="rx-box">${escapeHtml(effPrescription)}</div>` : ""}
+  ${effPrescription ? `<h3 class="section">Prescription</h3>
+    <div class="rx-wrap">
+      <div class="rx-head"><span class="rx-symbol">℞</span><span class="rx-title">Medications</span></div>
+      <div class="rx-body">${escapeHtml(effPrescription)}</div>
+    </div>` : ""}
 
   ${clinical.test_reports ? `<h3 class="section">Recommended Tests</h3>
     <div class="test-box">${escapeHtml(clinical.test_reports)}</div>` : ""}
@@ -351,7 +374,7 @@ export async function printAppointmentPrescription(opts: {
       ${clinical.next_visit_notes ? `<div style="margin-top:4px;white-space:pre-wrap;">${escapeHtml(clinical.next_visit_notes)}</div>` : ""}
     </div>` : ""}
 
-  <div class="stamp"><span class="line">Doctor's Signature</span></div>
+  <div class="stamp"><span class="line">${escapeHtml(doctorName || "Doctor's Signature")}</span></div>
 
   <div class="footer">
     <div>${clinicInfo?.clinic_name ? escapeHtml(clinicInfo.clinic_name) : ""}</div>
