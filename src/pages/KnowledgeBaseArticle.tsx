@@ -2540,6 +2540,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "roles-permissions" || slug === "user-roles" || slug === "roles-and-permissions" || slug === "user-roles-permissions" || slug === "permissions" || slug === "role-based-access") {
     return <UserRolesArticle />;
   }
+  if (slug === "backups-recovery" || slug === "data-backups" || slug === "backup-recovery" || slug === "disaster-recovery" || slug === "data-recovery") {
+    return <BackupsRecoveryArticle />;
+  }
 
 
 
