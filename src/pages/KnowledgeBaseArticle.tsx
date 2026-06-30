@@ -23386,12 +23386,5 @@ const BackupsRecoveryArticle = () => {
   );
 };
 
-          </article>
-        </div>
-      </div>
 
-      <PublicFooter />
-    </div>
-  );
-};
 
