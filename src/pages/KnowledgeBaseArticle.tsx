@@ -2285,6 +2285,11 @@ const slugTitleMap: Record<string, string> = {
   "user-roles-permissions": "User Roles & Permissions Explained",
   "permissions": "User Roles & Permissions Explained",
   "role-based-access": "User Roles & Permissions Explained",
+  "backups-recovery": "Data Backups & Recovery",
+  "data-backups": "Data Backups & Recovery",
+  "backup-recovery": "Data Backups & Recovery",
+  "disaster-recovery": "Data Backups & Recovery",
+  "data-recovery": "Data Backups & Recovery",
 };
 
 
