@@ -2285,6 +2285,11 @@ const slugTitleMap: Record<string, string> = {
   "user-roles-permissions": "User Roles & Permissions Explained",
   "permissions": "User Roles & Permissions Explained",
   "role-based-access": "User Roles & Permissions Explained",
+  "backups-recovery": "Data Backups & Recovery",
+  "data-backups": "Data Backups & Recovery",
+  "backup-recovery": "Data Backups & Recovery",
+  "disaster-recovery": "Data Backups & Recovery",
+  "data-recovery": "Data Backups & Recovery",
 };
 
 
@@ -2534,6 +2539,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "roles-permissions" || slug === "user-roles" || slug === "roles-and-permissions" || slug === "user-roles-permissions" || slug === "permissions" || slug === "role-based-access") {
     return <UserRolesArticle />;
+  }
+  if (slug === "backups-recovery" || slug === "data-backups" || slug === "backup-recovery" || slug === "disaster-recovery" || slug === "data-recovery") {
+    return <BackupsRecoveryArticle />;
   }
 
 
@@ -23035,4 +23043,348 @@ const UserRolesArticle = () => {
     </div>
   );
 };
+
+const BackupsRecoveryArticle = () => {
+
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Security &amp; Compliance</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Data Backups &amp; Recovery</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <Database className="w-3 h-3 mr-1" />
+                Security &amp; Compliance
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                8 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Building2 className="w-3 h-3" />
+                For Clinics &amp; Doctors
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              Data Backups &amp; Recovery
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Exactly how Zonoir backs up your clinic data, how long backups are kept,
+              what you can recover yourself, and what to do the moment something goes
+              wrong — from a single deleted patient to a full disaster scenario.
+            </p>
+          </div>
+
+          <Card className="mb-10 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <h2 className="font-semibold mb-4 flex items-center gap-2 text-base">
+                <FileText className="w-5 h-5 text-primary" />
+                What you'll learn
+              </h2>
+              <ul className="grid md:grid-cols-2 gap-3">
+                {[
+                  "How automatic daily backups work",
+                  "Point-in-time recovery (last 7 days)",
+                  "What you can self-recover (CSV exports)",
+                  "Retention &amp; deletion timelines",
+                  "How file uploads are protected",
+                  "How to request a restore",
+                  "Best practices for clinic-side backups",
+                  "Disaster recovery scenarios",
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span dangerouslySetInnerHTML={{ __html: item }} />
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
+          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-20 prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3 prose-p:text-base prose-p:leading-relaxed prose-li:text-base">
+
+            <h2>Why backups matter for a clinic</h2>
+            <p>
+              In a healthcare setting, your records aren't just business data — they are a
+              legal, clinical, and ethical responsibility. A lost prescription history can
+              mean a missed allergy. A lost appointment book can mean a missed follow-up
+              for a high-risk pregnancy. Zonoir treats backups as a first-class feature, not
+              an afterthought: they run continuously in the background, are stored in
+              encrypted form, and are tested for restorability on a regular schedule.
+            </p>
+            <p>
+              This guide walks you through every layer of that protection, what you can do
+              yourself, and what to do if you ever need to recover lost data.
+            </p>
+
+            <h2>1. Automatic daily backups</h2>
+            <p>
+              Every Zonoir clinic is protected by <strong>automatic daily backups</strong> of
+              the entire production database. You don't need to schedule them, pay extra for
+              them, or remember to "run a backup" before a big change — it happens silently
+              in the background every day.
+            </p>
+            <ul>
+              <li><strong>Frequency:</strong> Full database snapshot once every 24 hours.</li>
+              <li><strong>Encryption:</strong> Each backup is encrypted with AES-256 before it is written to disk — the same standard used by banks.</li>
+              <li><strong>Isolation:</strong> Backups are stored in a separate, geographically replicated location from the live database. A failure of one does not affect the other.</li>
+              <li><strong>Integrity checks:</strong> Backups are verified after creation; a corrupted backup file would be detected and re-taken.</li>
+            </ul>
+
+            <Card className="my-6 border-emerald-500/20 bg-emerald-500/5">
+              <CardContent className="py-4">
+                <p className="m-0 text-sm flex items-start gap-2">
+                  <Database className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>Plain English:</strong> Every patient record, appointment, prescription, and invoice you saw at midnight is captured in a sealed, encrypted snapshot — ready to be restored if anything ever goes wrong.</span>
+                </p>
+              </CardContent>
+            </Card>
+
+            <h2>2. Point-in-time recovery (last 7 days)</h2>
+            <p>
+              Daily snapshots are useful, but they can only restore your data to "midnight
+              yesterday". For finer-grained recovery, Zonoir keeps a continuous
+              <strong> transaction log</strong> for the last 7 days. This unlocks
+              <strong> Point-In-Time Recovery (PITR)</strong>.
+            </p>
+            <p>
+              With PITR, we can rewind your clinic's database to any specific moment in the
+              last week — for example, "3:42 PM on Tuesday, right before the bulk delete".
+              This is the single most powerful safety net in the system.
+            </p>
+
+            <h3>What PITR can fix</h3>
+            <ul>
+              <li>A receptionist accidentally deleted 50 patient records this morning.</li>
+              <li>A bad CSV import overwrote correct phone numbers with junk.</li>
+              <li>A doctor account was deleted along with all linked appointments.</li>
+              <li>An incorrect bulk update changed every fee to Rs. 0.</li>
+            </ul>
+
+            <h3>What PITR cannot fix</h3>
+            <ul>
+              <li>Data lost more than 7 days ago (we fall back to daily snapshots for those).</li>
+              <li>Files that were never saved into Zonoir in the first place (e.g. lab reports kept only on a personal laptop).</li>
+              <li>Actions performed correctly but later regretted — restoring rolls back <em>every</em> change made by every user after that point.</li>
+            </ul>
+
+            <h2>3. File &amp; document backups</h2>
+            <p>
+              Lab reports, prescription PDFs, profile photos, and any patient document you
+              upload to Zonoir are stored in <strong>redundant object storage</strong> — not
+              on the same drive as the database. This gives them their own backup lifecycle:
+            </p>
+            <ul>
+              <li><strong>Redundancy:</strong> Every file is stored on multiple physical disks in different locations. A single disk failure cannot lose your scan.</li>
+              <li><strong>Versioning:</strong> When a file is overwritten or deleted, the previous version is retained for a recovery window, so accidental overwrites are reversible.</li>
+              <li><strong>Signed URLs:</strong> Download links expire automatically — but the underlying file in storage is preserved independently of those links.</li>
+            </ul>
+
+            <h2>4. Retention &amp; deletion timelines</h2>
+            <p>
+              Backups are not kept forever — that would be both expensive and a privacy risk.
+              Zonoir follows a tiered retention schedule designed to balance recoverability
+              with patient privacy rights.
+            </p>
+
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border border-border rounded-lg overflow-hidden">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 font-semibold">Backup type</th>
+                    <th className="text-left p-3 font-semibold">Frequency</th>
+                    <th className="text-left p-3 font-semibold">Retention</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  <tr><td className="p-3">Continuous transaction log (PITR)</td><td className="p-3">Real-time</td><td className="p-3">Last 7 days</td></tr>
+                  <tr className="bg-muted/30"><td className="p-3">Daily full snapshot</td><td className="p-3">Every 24 hours</td><td className="p-3">30 days</td></tr>
+                  <tr><td className="p-3">Weekly archive</td><td className="p-3">Every Sunday</td><td className="p-3">90 days</td></tr>
+                  <tr className="bg-muted/30"><td className="p-3">File storage versions</td><td className="p-3">On every write</td><td className="p-3">30 days</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              When you request account deletion, your live data is purged immediately and
+              your backups roll off within the retention window above — after which your
+              clinic's data is gone from every Zonoir system.
+            </p>
+
+            <h2>5. What you can recover yourself — CSV &amp; PDF exports</h2>
+            <p>
+              You don't need to wait for support for everyday backups. Zonoir gives every
+              clinic and doctor self-service export tools so you can keep your own offline
+              copies whenever you want.
+            </p>
+
+            <h3>Patient list</h3>
+            <ul>
+              <li>Go to <strong>Patients → Export</strong> to download your entire patient database as a CSV file (name, contact, CNIC, gender, DOB, medical summary).</li>
+              <li>Use this monthly as your own offline safety net.</li>
+              <li>See the <Link to={`${kbBase}/import-export-patients`} className="text-primary underline">Importing &amp; Exporting Patients (CSV)</Link> guide for the exact column format.</li>
+            </ul>
+
+            <h3>Appointments &amp; finance</h3>
+            <ul>
+              <li><strong>Appointment Calendar →</strong> filter by date range and export the table.</li>
+              <li><strong>Reports → Financial Reports →</strong> download monthly P&amp;L, revenue, and expense reports as CSV or PDF.</li>
+              <li><strong>Invoices →</strong> each appointment invoice can be printed or saved as PDF for your own archive.</li>
+            </ul>
+
+            <h3>Prescriptions &amp; visit notes</h3>
+            <ul>
+              <li>Every visit's prescription is printable and savable as PDF from the patient timeline.</li>
+              <li>For a full patient handover, open the patient profile and use <strong>Print Full History</strong>.</li>
+            </ul>
+
+            <Card className="my-6 border-blue-500/20 bg-blue-500/5">
+              <CardContent className="py-4">
+                <p className="m-0 text-sm flex items-start gap-2">
+                  <Download className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <span><strong>Recommended habit:</strong> Export your patient CSV on the 1st of every month and store it in your own Google Drive or external drive. It takes 30 seconds and adds a second, independent layer of safety on top of our server-side backups.</span>
+                </p>
+              </CardContent>
+            </Card>
+
+            <h2>6. How to request a restore</h2>
+            <p>
+              Server-side restores (PITR or full snapshot) are not self-service — they have
+              to be performed carefully by the Zonoir engineering team to avoid making
+              things worse. Here's exactly how to request one and what to expect.
+            </p>
+
+            <h3>Step-by-step</h3>
+            <ol>
+              <li><strong>Stop making changes</strong> in the affected area immediately. Every new edit makes recovery harder.</li>
+              <li>Email <a href="mailto:hello@zonoir.com" className="text-primary underline">hello@zonoir.com</a> with the subject <em>"Data Restore Request"</em>.</li>
+              <li>Include: your clinic name, the affected user(s), the exact time the loss happened (or "between X and Y"), and a description of what was lost.</li>
+              <li>Our team will reply within 24 hours with a restore plan and an estimated downtime window.</li>
+              <li>You'll receive a confirmation once the restore is complete, with a summary of what was recovered.</li>
+            </ol>
+
+            <h3>Important constraints</h3>
+            <ul>
+              <li><strong>Restores affect the whole clinic database.</strong> They cannot be limited to a single row — they roll back the entire tenant to a chosen point in time. Any correct changes made after that point are also reverted.</li>
+              <li><strong>For small losses (a few patients or appointments)</strong>, manual re-entry is usually faster and safer than a full restore. Our team will recommend the right approach.</li>
+              <li><strong>Restores requested more than 30 days after the loss</strong> may not be possible if the data is past the retention window.</li>
+            </ul>
+
+            <h2>7. Disaster recovery — the worst-case scenarios</h2>
+            <p>
+              These are the rare-but-real events Zonoir is engineered to survive without
+              losing your data.
+            </p>
+
+            <div className="not-prose my-6 grid md:grid-cols-2 gap-4">
+              <Card>
+                <CardContent className="py-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ShieldAlert className="w-4 h-4 text-rose-600" />
+                    <h4 className="font-semibold text-sm m-0">Datacenter failure</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground m-0">Backups are replicated to a separate geographic region. A full datacenter outage is recoverable to another region.</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="py-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <RefreshCw className="w-4 h-4 text-amber-600" />
+                    <h4 className="font-semibold text-sm m-0">Bad deployment</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground m-0">PITR rolls the database back to the exact second before the faulty deploy, with no data loss for users.</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="py-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Trash2 className="w-4 h-4 text-rose-600" />
+                    <h4 className="font-semibold text-sm m-0">Mass accidental delete</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground m-0">A receptionist deletes hundreds of records. PITR restores everything; audit logs identify who triggered the delete.</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="py-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Lock className="w-4 h-4 text-purple-600" />
+                    <h4 className="font-semibold text-sm m-0">Compromised account</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground m-0">The account is locked, its session revoked, audit logs reviewed, and any malicious changes rolled back via PITR.</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <h2>8. Clinic-side best practices</h2>
+            <p>
+              Zonoir handles the heavy lifting on the server side. To make your overall
+              setup truly resilient, layer these simple habits on top:
+            </p>
+            <ul>
+              <li><strong>Monthly CSV export</strong> of patients and finance to your own Google Drive or external drive.</li>
+              <li><strong>Don't share logins</strong> — audit logs are how we identify what to roll back. Shared accounts make recovery much harder.</li>
+              <li><strong>Use the Activity Log weekly.</strong> Spotting an unusual mass-edit in 24 hours is dramatically better than spotting it in 24 days.</li>
+              <li><strong>Train staff to call you</strong> the moment they realise they deleted something important. Speed matters — the sooner we know, the cleaner the restore.</li>
+              <li><strong>Keep printed prescriptions for high-risk patients</strong> as an additional clinical safety net, independent of any digital system.</li>
+            </ul>
+
+            <h2>9. Frequently asked questions</h2>
+
+            <h3>Do I need to pay extra for backups?</h3>
+            <p>No. Daily backups, PITR for the last 7 days, and file versioning are included on every Zonoir plan at no additional cost.</p>
+
+            <h3>Can I download a copy of my entire database?</h3>
+            <p>You can download your data per module — patients, appointments, invoices, finance — using the built-in CSV/PDF exports. A raw SQL dump is not provided for security and privacy reasons (it would contain other-tenant safeguards). If you are migrating off Zonoir, contact support for a structured export of all your data.</p>
+
+            <h3>How long does a restore take?</h3>
+            <p>Most PITR restores complete within 1–4 hours of the request being approved, depending on the size of your clinic and the timing window. Full snapshot restores can take longer. The team will give you a specific estimate when you raise the request.</p>
+
+            <h3>If I delete my account, are my backups deleted too?</h3>
+            <p>Yes. On account deletion your live data is purged immediately, and your backups age out within the retention windows listed in section 4 — typically within 90 days. After that, no copy of your clinic's data exists on Zonoir.</p>
+
+            <h3>Can backups be used to "spy" on my clinic?</h3>
+            <p>No. Backups are encrypted, access to them is restricted to a small number of senior engineers, every access is logged, and they are <em>only</em> opened in response to a documented restore request from the clinic itself or a verified emergency. Backups are never browsed casually.</p>
+
+            <h2>Summary</h2>
+            <p>
+              Zonoir's backup strategy is built on three principles: <strong>back up
+              everything, every day, automatically; keep enough history to undo recent
+              mistakes; and test that backups actually restore</strong>. Combined with your
+              own monthly CSV exports and good staff hygiene, your clinic's data is
+              protected at multiple independent layers — so a bad day never becomes a lost
+              year of patient history.
+            </p>
+
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
 
