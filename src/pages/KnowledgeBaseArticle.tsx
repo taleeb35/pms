@@ -23035,7 +23035,17 @@ const UserRolesArticle = () => {
               in the right hands — and stay out of the wrong ones.
             </p>
 
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 const BackupsRecoveryArticle = () => {
+
   const kbBase = useKBBase();
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
