@@ -2290,6 +2290,11 @@ const slugTitleMap: Record<string, string> = {
   "backup-recovery": "Data Backups & Recovery",
   "disaster-recovery": "Data Backups & Recovery",
   "data-recovery": "Data Backups & Recovery",
+  "hipaa-gdpr": "HIPAA & GDPR Awareness for Clinics",
+  "hipaa": "HIPAA & GDPR Awareness for Clinics",
+  "gdpr": "HIPAA & GDPR Awareness for Clinics",
+  "compliance-awareness": "HIPAA & GDPR Awareness for Clinics",
+  "healthcare-compliance": "HIPAA & GDPR Awareness for Clinics",
 };
 
 
