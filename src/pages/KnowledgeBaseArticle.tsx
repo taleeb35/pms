@@ -23385,9 +23385,364 @@ const BackupsRecoveryArticle = () => {
               year of patient history.
             </p>
 
+
+const HipaaGdprArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Security &amp; Compliance</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">HIPAA &amp; GDPR Awareness for Clinics</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-4 flex-wrap">
+              <Badge className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20">
+                <ShieldCheck className="w-3 h-3 mr-1" />
+                Security &amp; Compliance
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Clock className="w-3 h-3" />
+                10 min read
+              </Badge>
+              <Badge variant="outline" className="gap-1">
+                <Building2 className="w-3 h-3" />
+                For Clinic Owners &amp; Doctors
+              </Badge>
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold mb-4">
+              HIPAA &amp; GDPR Awareness for Clinics
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              A plain-English guide to what HIPAA and GDPR mean for your clinic,
+              how Zonoir's technical safeguards support your compliance journey,
+              and the day-to-day habits your staff must follow to keep patient
+              data safe and lawful to process.
+            </p>
+          </div>
+
+          <article className="prose prose-slate max-w-none prose-headings:scroll-mt-24">
+            <div className="not-prose mb-8 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <strong>Important disclaimer:</strong> Zonoir provides tools and
+              infrastructure that <em>support</em> your compliance efforts. HIPAA
+              (United States) and GDPR (European Union / UK) compliance is a
+              <strong> shared responsibility</strong>. Your clinic is the
+              <em> data controller</em> and remains legally accountable for how
+              patient data is collected, used, shared, and protected. This
+              article is educational only and does not constitute legal advice —
+              please consult a qualified healthcare attorney in your
+              jurisdiction.
+            </div>
+
+            <h2>1. What Are HIPAA and GDPR?</h2>
+            <p>
+              Both laws exist for the same reason: to protect sensitive
+              information about real people. They apply differently based on
+              <strong> where your patients live</strong>, not where your clinic
+              is located.
+            </p>
+
+            <h3>HIPAA — Health Insurance Portability and Accountability Act</h3>
+            <ul>
+              <li><strong>Where it applies:</strong> United States</li>
+              <li><strong>What it protects:</strong> Protected Health Information (PHI) — anything that identifies a patient combined with a health detail (name + diagnosis, phone + prescription, etc.)</li>
+              <li><strong>Who it applies to:</strong> "Covered Entities" (clinics, doctors, hospitals, insurers) and their "Business Associates" (software vendors, billing services)</li>
+              <li><strong>Core rules:</strong> Privacy Rule (who can see PHI), Security Rule (how PHI is protected technically), Breach Notification Rule (what to do if data leaks)</li>
+            </ul>
+
+            <h3>GDPR — General Data Protection Regulation</h3>
+            <ul>
+              <li><strong>Where it applies:</strong> European Union, EEA, and UK (via UK GDPR) — regardless of where your clinic is located, if you treat EU residents, it applies to you</li>
+              <li><strong>What it protects:</strong> All personal data, with health data classified as a "special category" requiring extra protection</li>
+              <li><strong>Core principles:</strong> Lawful basis for processing, purpose limitation, data minimization, accuracy, storage limitation, integrity/confidentiality, and accountability</li>
+              <li><strong>Patient rights:</strong> Access, rectification, erasure ("right to be forgotten"), portability, restriction, objection</li>
+            </ul>
+
+            <h2>2. Do These Laws Apply to My Clinic?</h2>
+            <p>
+              Zonoir is primarily used by clinics in Pakistan and other
+              non-US/non-EU regions. However, you should still care about HIPAA
+              and GDPR principles if:
+            </p>
+            <ul>
+              <li>You treat patients who are US or EU citizens/residents (medical tourism, expats, telemedicine)</li>
+              <li>You partner with international insurers, universities, or research institutions</li>
+              <li>You plan to expand into or serve patients from those regions</li>
+              <li>You want to demonstrate world-class data stewardship to build trust</li>
+            </ul>
+            <p>
+              Even in jurisdictions without HIPAA or GDPR, the underlying
+              principles — consent, security, transparency, minimum necessary
+              access — represent best practice for any clinic handling
+              sensitive patient information.
+            </p>
+
+            <h2>3. How Zonoir Supports Your Compliance</h2>
+            <p>
+              Zonoir provides the <strong>technical safeguards</strong> that
+              both HIPAA's Security Rule and GDPR's Article 32 require. Here's
+              what's built in:
+            </p>
+
+            <div className="not-prose overflow-x-auto my-6">
+              <table className="w-full border-collapse text-sm">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="border p-3 text-left font-semibold">Requirement</th>
+                    <th className="border p-3 text-left font-semibold">How Zonoir Helps</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border p-3">Access control</td>
+                    <td className="border p-3">Role-based permissions (Admin, Clinic Owner, Doctor, Receptionist), Row-Level Security enforced in the database</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Encryption in transit</td>
+                    <td className="border p-3">TLS 1.2+ on every request between browsers, apps, and servers</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Encryption at rest</td>
+                    <td className="border p-3">AES-256 encryption on databases, backups, and file storage</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Audit logs</td>
+                    <td className="border p-3">Activity Logs record who accessed or modified patient records</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Authentication</td>
+                    <td className="border p-3">Strong passwords, HaveIBeenPwned breach check, session expiry</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Backups &amp; recovery</td>
+                    <td className="border p-3">Daily backups, 7-day point-in-time recovery, 90-day archives</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Data isolation</td>
+                    <td className="border p-3">Each clinic's data is logically separated — no cross-clinic access</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Right to export</td>
+                    <td className="border p-3">CSV/PDF exports for patients, visits, and financial records (supports GDPR portability)</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Right to erasure</td>
+                    <td className="border p-3">Deletion of patient records on request, with cascading removal of related data</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>4. What You Are Responsible For</h2>
+            <p>
+              Software alone cannot make you compliant. Your clinic — as the
+              data controller — is responsible for the <strong>administrative
+              and physical safeguards</strong> around how staff actually use
+              the system:
+            </p>
+
+            <h3>Administrative safeguards</h3>
+            <ul>
+              <li><strong>Written policies:</strong> Maintain a privacy policy, data retention policy, and breach response plan</li>
+              <li><strong>Staff training:</strong> Every user must understand what PHI is and how to handle it</li>
+              <li><strong>Least-privilege access:</strong> Only give doctors/staff access to the patients they need for care</li>
+              <li><strong>Onboarding &amp; offboarding:</strong> Immediately deactivate accounts when staff leave</li>
+              <li><strong>Business Associate Agreements (BAAs):</strong> Required with any vendor touching PHI in the US</li>
+              <li><strong>Data Processing Agreements (DPAs):</strong> Required with any processor of EU personal data</li>
+            </ul>
+
+            <h3>Physical safeguards</h3>
+            <ul>
+              <li>Lock computers and phones when unattended — always require a screen lock</li>
+              <li>Position monitors so screens are not visible to patients in the waiting area</li>
+              <li>Never share login credentials — each user must have their own account</li>
+              <li>Avoid printing patient records; if you must, shred securely after use</li>
+              <li>Do not discuss patients in public spaces (elevators, cafeterias, family gatherings)</li>
+            </ul>
+
+            <h2>5. Patient Rights You Must Honor</h2>
+            <p>
+              Under GDPR and, in a narrower form, under HIPAA, patients have
+              enforceable rights over their data. Your clinic must be able to
+              respond within a legal timeframe (usually <strong>30 days</strong>).
+            </p>
+
+            <div className="not-prose overflow-x-auto my-6">
+              <table className="w-full border-collapse text-sm">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="border p-3 text-left font-semibold">Right</th>
+                    <th className="border p-3 text-left font-semibold">What It Means</th>
+                    <th className="border p-3 text-left font-semibold">How to Fulfill in Zonoir</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="border p-3">Right of access</td>
+                    <td className="border p-3">Patient can request a copy of their record</td>
+                    <td className="border p-3">Export visit history as PDF from the patient timeline</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Right to rectification</td>
+                    <td className="border p-3">Fix incorrect data (name, contact, diagnosis)</td>
+                    <td className="border p-3">Edit patient profile or visit record directly</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Right to erasure</td>
+                    <td className="border p-3">Delete patient data (with legal exceptions)</td>
+                    <td className="border p-3">Use the "Delete Patient" action; verify no legal retention obligation first</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Right to portability</td>
+                    <td className="border p-3">Receive data in a machine-readable format</td>
+                    <td className="border p-3">Export patient list and history via CSV</td>
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Right to be informed</td>
+                    <td className="border p-3">Know why and how data is used</td>
+                    <td className="border p-3">Display your clinic's privacy notice at intake</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-sm text-muted-foreground">
+              <strong>Note on retention:</strong> Most jurisdictions require
+              clinics to keep medical records for a minimum period (often
+              5–10 years for adults, longer for minors). A patient's request
+              for erasure does not override a legal retention obligation.
+              Consult local law before deleting.
+            </p>
+
+            <h2>6. Consent &amp; Lawful Basis</h2>
+            <p>
+              Under GDPR, you must have a <strong>lawful basis</strong> to
+              process health data. For clinics, this is usually one of:
+            </p>
+            <ul>
+              <li><strong>Explicit consent</strong> — the patient signs an intake form agreeing to specific uses</li>
+              <li><strong>Provision of medical care</strong> — Article 9(2)(h) allows processing necessary for diagnosis and treatment</li>
+              <li><strong>Legal obligation</strong> — mandatory reporting of certain conditions</li>
+              <li><strong>Vital interests</strong> — life-threatening emergencies</li>
+            </ul>
+            <p>
+              For non-clinical uses (marketing SMS, sharing testimonials,
+              research), you must obtain <strong>separate, explicit consent</strong>
+              — and the patient must be able to withdraw it as easily as they
+              gave it.
+            </p>
+
+            <h2>7. Breach Response — What to Do If Data Is Compromised</h2>
+            <p>
+              A breach is any unauthorized access, disclosure, loss, or
+              destruction of patient data. Common examples: a stolen laptop
+              with a saved session, a receptionist sharing a login with a
+              friend, a phishing email that stole a doctor's password.
+            </p>
+
+            <h3>Your response plan (72-hour rule under GDPR)</h3>
+            <ol>
+              <li><strong>Contain:</strong> Immediately reset the affected user's password and revoke sessions</li>
+              <li><strong>Assess:</strong> Determine which records were viewed or exposed using Activity Logs</li>
+              <li><strong>Document:</strong> Record what happened, when, who was affected, and what you did</li>
+              <li><strong>Notify Zonoir:</strong> Email <a href="mailto:hello@zonoir.com">hello@zonoir.com</a> so we can help investigate</li>
+              <li><strong>Notify authorities:</strong> Under GDPR, report to the supervisory authority within 72 hours if there is a risk to patients</li>
+              <li><strong>Notify patients:</strong> If the breach is likely to result in high risk, inform affected patients without undue delay</li>
+              <li><strong>Learn:</strong> Update your policies and training to prevent recurrence</li>
+            </ol>
+
+            <h2>8. Practical Compliance Checklist</h2>
+            <p>Use this checklist as a starting point for your clinic:</p>
+            <ul>
+              <li>☐ Every staff member has a unique login (no shared accounts)</li>
+              <li>☐ Passwords are strong and never written on sticky notes</li>
+              <li>☐ Departing staff are deactivated on their last day</li>
+              <li>☐ Screens auto-lock after inactivity</li>
+              <li>☐ A written privacy notice is displayed at intake</li>
+              <li>☐ Patients sign a consent form before their first visit</li>
+              <li>☐ Marketing consent is captured separately</li>
+              <li>☐ You know how to export a patient's full record on request</li>
+              <li>☐ You know how to delete a patient on lawful request</li>
+              <li>☐ You review Activity Logs periodically for unusual access</li>
+              <li>☐ You have a written breach response plan</li>
+              <li>☐ Staff receive annual privacy &amp; security training</li>
+              <li>☐ You keep monthly CSV backups as an independent copy</li>
+            </ul>
+
+            <h2>9. Frequently Asked Questions</h2>
+
+            <h3>Is Zonoir HIPAA-certified?</h3>
+            <p>
+              No software product is "HIPAA-certified" — HIPAA does not offer
+              certification. What matters is whether the technical safeguards
+              satisfy the Security Rule, and whether the vendor will sign a
+              Business Associate Agreement (BAA). If you serve US patients and
+              need a BAA, contact us at <a href="mailto:hello@zonoir.com">hello@zonoir.com</a>.
+            </p>
+
+            <h3>Where is my clinic's data stored?</h3>
+            <p>
+              Patient data is stored on managed, encrypted infrastructure in
+              secure data centers. Backups are geographically redundant.
+              Contact support for the specific region applicable to your
+              deployment.
+            </p>
+
+            <h3>Does the AI Assistant train on my patient data?</h3>
+            <p>
+              No. When you use AI features (visit summaries, prescription
+              suggestions, patient insights), the request is sent to the AI
+              provider for that single response and is <strong>not used to
+              train models</strong>. See the "How Zonoir Protects Patient Data"
+              article for more detail.
+            </p>
+
+            <h3>Can a patient sue us if there's a breach?</h3>
+            <p>
+              Depending on jurisdiction — yes. This is why administrative
+              controls (training, policies, access reviews) matter as much as
+              the technical controls Zonoir provides. Speak to a healthcare
+              lawyer to understand your specific exposure.
+            </p>
+
+            <h2>Summary</h2>
+            <p>
+              HIPAA and GDPR are not checkboxes — they are ongoing commitments
+              to treating patient data with the care it deserves. Zonoir
+              provides the technical foundation: encryption, access control,
+              audit logs, backups, and patient-rights tooling. Your clinic
+              provides the human layer: written policies, trained staff,
+              least-privilege access, and a culture of privacy. Together,
+              those two layers give patients confidence that their most
+              sensitive information is safe in your hands.
+            </p>
+
           </article>
         </div>
       </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
 
       <PublicFooter />
     </div>
