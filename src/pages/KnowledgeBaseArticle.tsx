@@ -23752,10 +23752,7 @@ const HipaaGdprArticle = () => {
   );
 };
 
-      <PublicFooter />
-    </div>
-  );
-};
+
 
 
 
