@@ -2548,6 +2548,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "backups-recovery" || slug === "data-backups" || slug === "backup-recovery" || slug === "disaster-recovery" || slug === "data-recovery") {
     return <BackupsRecoveryArticle />;
   }
+  if (slug === "hipaa-gdpr" || slug === "hipaa" || slug === "gdpr" || slug === "compliance-awareness" || slug === "healthcare-compliance") {
+    return <HipaaGdprArticle />;
+  }
 
 
 
