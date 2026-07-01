@@ -23385,6 +23385,14 @@ const BackupsRecoveryArticle = () => {
               year of patient history.
             </p>
 
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
 
 const HipaaGdprArticle = () => {
   const kbBase = useKBBase();
