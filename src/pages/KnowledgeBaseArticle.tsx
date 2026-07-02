@@ -2295,6 +2295,11 @@ const slugTitleMap: Record<string, string> = {
   "gdpr": "HIPAA & GDPR Awareness for Clinics",
   "compliance-awareness": "HIPAA & GDPR Awareness for Clinics",
   "healthcare-compliance": "HIPAA & GDPR Awareness for Clinics",
+  "profit-loss-trend": "Profit & Loss Trend Report",
+  "pnl-trend": "Profit & Loss Trend Report",
+  "profit-loss": "Profit & Loss Trend Report",
+  "pl-trend": "Profit & Loss Trend Report",
+  "profit-and-loss": "Profit & Loss Trend Report",
 };
 
 
