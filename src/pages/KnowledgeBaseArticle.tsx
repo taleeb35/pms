@@ -2564,6 +2564,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "profit-loss-trend" || slug === "pnl-trend" || slug === "profit-loss" || slug === "pl-trend" || slug === "profit-and-loss") {
     return <ProfitLossTrendArticle />;
   }
+  if (slug === "revenue-trend" || slug === "revenue-trends" || slug === "revenue-report" || slug === "revenue-reports" || slug === "monthly-revenue") {
+    return <RevenueTrendArticle />;
+  }
 
 
 
