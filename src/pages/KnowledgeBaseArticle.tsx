@@ -2300,6 +2300,11 @@ const slugTitleMap: Record<string, string> = {
   "profit-loss": "Profit & Loss Trend Report",
   "pl-trend": "Profit & Loss Trend Report",
   "profit-and-loss": "Profit & Loss Trend Report",
+  "revenue-trend": "Revenue Trend Reports",
+  "revenue-trends": "Revenue Trend Reports",
+  "revenue-report": "Revenue Trend Reports",
+  "revenue-reports": "Revenue Trend Reports",
+  "monthly-revenue": "Revenue Trend Reports",
 };
 
 
