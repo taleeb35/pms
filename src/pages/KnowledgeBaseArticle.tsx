@@ -2300,6 +2300,11 @@ const slugTitleMap: Record<string, string> = {
   "profit-loss": "Profit & Loss Trend Report",
   "pl-trend": "Profit & Loss Trend Report",
   "profit-and-loss": "Profit & Loss Trend Report",
+  "revenue-trend": "Revenue Trend Reports",
+  "revenue-trends": "Revenue Trend Reports",
+  "revenue-report": "Revenue Trend Reports",
+  "revenue-reports": "Revenue Trend Reports",
+  "monthly-revenue": "Revenue Trend Reports",
 };
 
 
@@ -2558,6 +2563,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "profit-loss-trend" || slug === "pnl-trend" || slug === "profit-loss" || slug === "pl-trend" || slug === "profit-and-loss") {
     return <ProfitLossTrendArticle />;
+  }
+  if (slug === "revenue-trend" || slug === "revenue-trends" || slug === "revenue-report" || slug === "revenue-reports" || slug === "monthly-revenue") {
+    return <RevenueTrendArticle />;
   }
 
 
@@ -23948,6 +23956,211 @@ const ProfitLossTrendArticle = () => {
                 <strong className="text-foreground">Tip:</strong> Review the P&amp;L Trend on the
                 1st of every month. It takes 60 seconds and is the fastest way to catch
                 margin erosion before it becomes a cash-flow problem.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+const RevenueTrendArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Financial &amp; Performance Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Revenue Trend Reports</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><TrendingUp className="w-3 h-3 mr-1" />Financial Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Revenue Trend Reports</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Revenue Trend Report shows exactly how much money your clinic is collecting
+              month after month — and, more importantly, whether that number is growing,
+              flat, or slipping. It is the first chart you should open when reviewing
+              clinic performance.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Log in as a <strong>Clinic Owner</strong> or <strong>Admin</strong> and go to
+              <strong> Reports &rarr; Analytics Dashboard</strong>. The Revenue Trend chart
+              is in the Financial section, directly above the Profit &amp; Loss Trend.
+              Doctors see their own personal revenue trend inside <strong>My Reports</strong>.
+            </p>
+
+            <h2>What the Chart Shows</h2>
+            <ul>
+              <li>
+                <strong>X-axis:</strong> Months (last 6 by default; switch to 12 or a custom range).
+              </li>
+              <li>
+                <strong>Y-axis:</strong> Total revenue in Rs. for each month.
+              </li>
+              <li>
+                <strong>Data point tooltip:</strong> Hover on any month to see the exact
+                amount, number of paid appointments, and month-over-month change (%).
+              </li>
+            </ul>
+
+            <h2>What Counts as Revenue</h2>
+            <p>Zonoir aggregates revenue automatically from these live sources:</p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Source</th>
+                    <th className="text-left p-3 border-b">Included When</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Appointment fees</td>
+                    <td className="p-3 border-b">Appointment is marked <em>Completed</em> and fee is paid</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Procedure charges</td>
+                    <td className="p-3 border-b">Added to a visit and marked paid</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Inventory / medicine sales</td>
+                    <td className="p-3 border-b">Invoice status is <em>Paid</em></td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Membership / package fees</td>
+                    <td className="p-3 border-b">Recorded against the patient</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Refunds</td>
+                    <td className="p-3">Subtracted from the month they were issued</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Cancelled and no-show appointments contribute <strong>zero</strong> revenue,
+              even if a slot was blocked.
+            </p>
+
+            <h2>Reading the Trend Correctly</h2>
+            <h3>1. Look at direction first, absolute values second</h3>
+            <p>
+              A clinic doing Rs. 400,000/month that grew from Rs. 350,000 is healthier
+              than one doing Rs. 600,000/month that fell from Rs. 750,000. The slope
+              matters more than the height.
+            </p>
+            <h3>2. Compare month-over-month %</h3>
+            <p>
+              The tooltip shows the MoM change. Sustained +5% to +10% per month is
+              excellent growth for a Pakistani clinic. Anything negative for two
+              consecutive months deserves investigation.
+            </p>
+            <h3>3. Remove seasonality</h3>
+            <p>
+              Ramzan, Eid, monsoon, and school-holiday months naturally dip. Switch to
+              a <strong>12-month view</strong> and compare the same month year-over-year
+              (e.g., Nov 2025 vs Nov 2024) to see true underlying growth.
+            </p>
+
+            <h2>Filtering Options</h2>
+            <ul>
+              <li><strong>Date range:</strong> Last 6 months, last 12 months, or custom.</li>
+              <li><strong>Per doctor:</strong> Isolate a single doctor&apos;s contribution.</li>
+              <li><strong>Revenue source:</strong> Toggle appointments, inventory, or memberships on/off.</li>
+              <li><strong>Payment mode:</strong> Cash vs online vs card (available in the detailed table below the chart).</li>
+            </ul>
+
+            <h2>Common Patterns &amp; What They Mean</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pattern</th>
+                    <th className="text-left p-3 border-b">Likely Cause</th>
+                    <th className="text-left p-3 border-b">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b">Steady month-on-month rise</td>
+                    <td className="p-3 border-b">Word-of-mouth, marketing paying off, new doctor onboarded</td>
+                    <td className="p-3 border-b">Double down — check the AI Revenue Forecast for next quarter</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Flat line for 3+ months</td>
+                    <td className="p-3 border-b">Capacity ceiling, no marketing, static patient base</td>
+                    <td className="p-3 border-b">Enable Online Booking, add more slots, promote public profile</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Sharp drop in one month</td>
+                    <td className="p-3 border-b">Doctor on leave, clinic closed, seasonal dip, cancellation spike</td>
+                    <td className="p-3 border-b">Cross-check the Appointment Status Breakdown &amp; Doctor Availability</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3">Growing revenue but shrinking profit</td>
+                    <td className="p-3">Costs rising faster than revenue</td>
+                    <td className="p-3">Open the P&amp;L Trend and Expense Category Breakdown</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Detailed Table View</h2>
+            <p>
+              Below the chart is a month-by-month table showing revenue, appointment
+              count, average revenue per appointment (ARPA), and the number of unique
+              paying patients. ARPA is one of the most useful hidden numbers — a rising
+              ARPA means you are treating higher-value cases, not just more of them.
+            </p>
+
+            <h2>Exporting</h2>
+            <p>
+              Use the <strong>Export</strong> button to download the trend as CSV (for
+              Excel analysis) or PDF (for meetings and lender documents). Filters
+              applied on-screen are respected in the export.
+            </p>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/profit-loss-trend`}>Profit &amp; Loss Trend Report</Link></li>
+              <li><Link to={`${kbBase}/net-profit`}>Calculating Net Profit &amp; Margin %</Link></li>
+              <li><Link to={`${kbBase}/ai-forecast-reports`}>AI Revenue Forecasts</Link></li>
+              <li><Link to={`${kbBase}/monthly-financial-reports`}>Monthly Financial Reports &amp; Exports</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Combine the Revenue
+                Trend with the Peak-Hour Heatmap. If revenue is flat but your peak hours
+                are fully booked, you have a capacity problem — not a demand problem.
+                Adding one more slot per day is often the fastest way to break through.
               </p>
             </div>
           </article>
