@@ -2556,6 +2556,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "hipaa-gdpr" || slug === "hipaa" || slug === "gdpr" || slug === "compliance-awareness" || slug === "healthcare-compliance") {
     return <HipaaGdprArticle />;
   }
+  if (slug === "profit-loss-trend" || slug === "pnl-trend" || slug === "profit-loss" || slug === "pl-trend" || slug === "profit-and-loss") {
+    return <ProfitLossTrendArticle />;
+  }
 
 
 
