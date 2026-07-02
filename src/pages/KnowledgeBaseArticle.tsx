@@ -2295,6 +2295,11 @@ const slugTitleMap: Record<string, string> = {
   "gdpr": "HIPAA & GDPR Awareness for Clinics",
   "compliance-awareness": "HIPAA & GDPR Awareness for Clinics",
   "healthcare-compliance": "HIPAA & GDPR Awareness for Clinics",
+  "profit-loss-trend": "Profit & Loss Trend Report",
+  "pnl-trend": "Profit & Loss Trend Report",
+  "profit-loss": "Profit & Loss Trend Report",
+  "pl-trend": "Profit & Loss Trend Report",
+  "profit-and-loss": "Profit & Loss Trend Report",
 };
 
 
@@ -2550,6 +2555,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "hipaa-gdpr" || slug === "hipaa" || slug === "gdpr" || slug === "compliance-awareness" || slug === "healthcare-compliance") {
     return <HipaaGdprArticle />;
+  }
+  if (slug === "profit-loss-trend" || slug === "pnl-trend" || slug === "profit-loss" || slug === "pl-trend" || slug === "profit-and-loss") {
+    return <ProfitLossTrendArticle />;
   }
 
 
@@ -23756,3 +23764,197 @@ const HipaaGdprArticle = () => {
 
 
 
+
+const ProfitLossTrendArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Financial &amp; Performance Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Profit &amp; Loss Trend Report</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><BarChart3 className="w-3 h-3 mr-1" />Financial Reports</Badge>
+              <Badge variant="outline">7 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Profit &amp; Loss Trend Report</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Profit &amp; Loss (P&amp;L) Trend Report is the single most important chart in your
+              Zonoir dashboard. It plots your clinic&apos;s <strong>Revenue</strong>,
+              <strong> Expenses</strong>, and <strong>Net Profit</strong> side-by-side over time —
+              so you can see, at a glance, whether the business is actually making money or just
+              staying busy.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Open <strong>Reports &rarr; Analytics Dashboard</strong> (Clinic Owner or Admin
+              login). The P&amp;L Trend chart sits near the top of the Financial section, right
+              below the Quick Stats cards. It is available on both the Clinic Reports and
+              Doctor Reports screens; the doctor view is scoped to that doctor&apos;s own
+              revenue and expenses.
+            </p>
+
+            <h2>What the Three Lines Mean</h2>
+            <ul>
+              <li>
+                <strong>Revenue (green):</strong> Total money collected from appointment fees,
+                procedures, memberships, and inventory sales — grouped by month.
+              </li>
+              <li>
+                <strong>Expenses (red):</strong> Every expense recorded in the Expenses module
+                (rent, salaries, utilities, supplies) plus inventory purchase cost and refunds
+                issued during the period.
+              </li>
+              <li>
+                <strong>Net Profit (blue):</strong> Revenue minus Expenses. When the blue line
+                crosses below zero it is plotted as a loss.
+              </li>
+            </ul>
+
+            <h2>How Zonoir Calculates the Numbers</h2>
+            <p>
+              Each data point is aggregated from your live transactions — nothing is entered
+              manually. The formulas are:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Formula</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Revenue</td>
+                    <td className="p-3 border-b">SUM(paid appointment fees) + SUM(inventory invoice totals) + SUM(membership fees) &minus; SUM(refunds)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Expenses</td>
+                    <td className="p-3 border-b">SUM(recorded expenses) + SUM(inventory purchase invoices)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Net Profit</td>
+                    <td className="p-3">Revenue &minus; Expenses</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Trend</h2>
+            <h3>1. Look at the slope, not just the height</h3>
+            <p>
+              A rising green line with a flat red line is the healthiest pattern — revenue is
+              growing faster than costs. If red is climbing steeper than green, your margin is
+              shrinking even if net profit is still positive.
+            </p>
+            <h3>2. Watch the gap between Revenue and Expenses</h3>
+            <p>
+              The vertical space between the green and red lines <em>is</em> your profit. A
+              widening gap month-over-month is the clearest signal of a healthy clinic.
+            </p>
+            <h3>3. Spot seasonal patterns</h3>
+            <p>
+              Most clinics see dips during Ramzan, Eid holidays, and monsoon weeks. Comparing
+              the same month year-over-year (use the date filter) removes seasonality and shows
+              true growth.
+            </p>
+
+            <h2>Filtering &amp; Date Ranges</h2>
+            <ul>
+              <li><strong>Last 6 months</strong> (default) — best for spotting recent trends.</li>
+              <li><strong>Last 12 months</strong> — reveals seasonality and year-on-year growth.</li>
+              <li><strong>Custom range</strong> — pick any start and end date to isolate a
+                campaign, a new doctor&apos;s onboarding period, or a rent increase.</li>
+              <li><strong>Per-doctor filter</strong> (Clinic view) — see which doctor is
+                contributing most to the bottom line.</li>
+            </ul>
+
+            <h2>Common Scenarios &amp; What They Mean</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pattern</th>
+                    <th className="text-left p-3 border-b">Likely Cause</th>
+                    <th className="text-left p-3 border-b">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b">Revenue flat, Expenses rising</td>
+                    <td className="p-3 border-b">Salary hikes, rent increase, or higher supply costs</td>
+                    <td className="p-3 border-b">Open the Expense Category Breakdown to find the culprit</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Sudden revenue drop</td>
+                    <td className="p-3 border-b">Doctor on leave, seasonal dip, or increased cancellations</td>
+                    <td className="p-3 border-b">Check the Appointment Status Breakdown for cancellation spikes</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Profit line dips below zero</td>
+                    <td className="p-3 border-b">One-off large expense (equipment, renovation)</td>
+                    <td className="p-3 border-b">Verify in the Expenses module and mark as capital if applicable</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3">Both lines rising together</td>
+                    <td className="p-3">Healthy growth — new patients driving both revenue and costs</td>
+                    <td className="p-3">Focus on margin % (see Net Profit article) to ensure scalability</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Exporting the Report</h2>
+            <p>
+              Click the <strong>Print</strong> icon at the top-right of the chart to generate a
+              PDF with the trend graph, summary table, and applied filters — perfect for
+              partner meetings, tax filings, or investor updates. Data can also be exported to
+              CSV from the Financial Reports section.
+            </p>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/net-profit`}>Calculating Net Profit &amp; Margin %</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+              <li><Link to={`${kbBase}/expense-categories`}>Expense Category Breakdown</Link></li>
+              <li><Link to={`${kbBase}/ai-forecast-reports`}>AI Revenue Forecast in Reports</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Tip:</strong> Review the P&amp;L Trend on the
+                1st of every month. It takes 60 seconds and is the fastest way to catch
+                margin erosion before it becomes a cash-flow problem.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
