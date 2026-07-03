@@ -2572,6 +2572,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "revenue-trend" || slug === "revenue-trends" || slug === "revenue-report" || slug === "revenue-reports" || slug === "monthly-revenue") {
     return <RevenueTrendArticle />;
   }
+  if (slug === "expense-categories" || slug === "expense-category-breakdown" || slug === "expense-breakdown" || slug === "expenses-report" || slug === "expense-report") {
+    return <ExpenseCategoryBreakdownArticle />;
+  }
 
 
 
