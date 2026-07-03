@@ -2305,6 +2305,11 @@ const slugTitleMap: Record<string, string> = {
   "revenue-report": "Revenue Trend Reports",
   "revenue-reports": "Revenue Trend Reports",
   "monthly-revenue": "Revenue Trend Reports",
+  "expense-categories": "Expense Category Breakdown",
+  "expense-category-breakdown": "Expense Category Breakdown",
+  "expense-breakdown": "Expense Category Breakdown",
+  "expenses-report": "Expense Category Breakdown",
+  "expense-report": "Expense Category Breakdown",
 };
 
 
