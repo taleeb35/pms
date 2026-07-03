@@ -24179,3 +24179,285 @@ const RevenueTrendArticle = () => {
     </div>
   );
 };
+
+const ExpenseCategoryBreakdownArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Financial &amp; Performance Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Expense Category Breakdown</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><PieChart className="w-3 h-3 mr-1" />Financial Reports</Badge>
+              <Badge variant="outline">7 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Expense Category Breakdown</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              Revenue tells you how much you earned. The Expense Category Breakdown tells
+              you where that money went — and, more importantly, which categories are
+              quietly eating your profit. It is the single most useful report for
+              controlling cost in a running clinic.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong> or <strong>Admin</strong> and go to
+              <strong> Reports &rarr; Analytics Dashboard</strong>. Scroll to the
+              <em> Expenses</em> section — the pie/donut chart on the left is the Category
+              Breakdown, and the bar chart on the right is the same data plotted month
+              over month.
+            </p>
+
+            <h2>What the Chart Shows</h2>
+            <ul>
+              <li><strong>Donut chart:</strong> Each slice is one expense category. Slice size = share of total spend for the selected period.</li>
+              <li><strong>Hover tooltip:</strong> Exact amount in Rs., percentage of total, and number of entries in that category.</li>
+              <li><strong>Legend:</strong> Click a category to isolate it, or hide it to see how the mix looks without it.</li>
+              <li><strong>Companion bar chart:</strong> Same categories plotted per month so you can see which ones are trending up.</li>
+            </ul>
+
+            <h2>Default Expense Categories</h2>
+            <p>
+              Every clinic starts with a standard set of categories. You can add, rename,
+              or hide categories from <strong>Settings &rarr; Expense Categories</strong>.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Category</th>
+                    <th className="text-left p-3 border-b">Typical Items</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Salaries &amp; Wages</td>
+                    <td className="p-3 border-b">Receptionists, nurses, cleaners, security</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Doctor Payouts</td>
+                    <td className="p-3 border-b">Visiting doctor share, monthly retainers</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Rent &amp; Utilities</td>
+                    <td className="p-3 border-b">Clinic rent, electricity, gas, internet, water</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Medical Supplies</td>
+                    <td className="p-3 border-b">Consumables, disposables, dressings, gloves</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Medicines &amp; Inventory</td>
+                    <td className="p-3 border-b">Stock purchases for the in-clinic pharmacy</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Equipment &amp; Maintenance</td>
+                    <td className="p-3 border-b">Repairs, calibration, service contracts</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Marketing</td>
+                    <td className="p-3 border-b">Facebook/Google ads, flyers, SEO, printing</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Software &amp; Subscriptions</td>
+                    <td className="p-3 border-b">Zonoir plan, accounting tools, cloud storage</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Taxes &amp; Fees</td>
+                    <td className="p-3 border-b">Withholding tax, licensing, professional fees</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Miscellaneous</td>
+                    <td className="p-3">Anything that does not fit the above — keep this small</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              If your Miscellaneous slice grows past ~5% of total expenses, that is a
+              sign you need to add more specific categories.
+            </p>
+
+            <h2>How Each Expense Gets Categorised</h2>
+            <p>
+              When you record an expense (<strong>Finance &rarr; Add Expense</strong>),
+              you pick a category from the dropdown. That single choice drives:
+            </p>
+            <ul>
+              <li>Its slice in the donut chart</li>
+              <li>Its column in the monthly bar chart</li>
+              <li>Its line in the Profit &amp; Loss Trend</li>
+              <li>Its inclusion in CSV/PDF exports and lender reports</li>
+            </ul>
+            <p>
+              Bulk-import expenses via CSV keep the category column — mis-categorised
+              imports are the #1 cause of a distorted breakdown.
+            </p>
+
+            <h2>Reading the Breakdown Correctly</h2>
+            <h3>1. Rank the top three slices</h3>
+            <p>
+              In almost every clinic, the top three categories account for 70–85% of
+              total spend — usually Salaries, Rent, and either Medicines or Doctor
+              Payouts. Optimising these three moves the needle. A 5% cut on Salaries
+              beats a 40% cut on Marketing.
+            </p>
+            <h3>2. Compare category share to industry norms</h3>
+            <p>Rough benchmarks for a mid-size Pakistani outpatient clinic:</p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Category</th>
+                    <th className="text-left p-3 border-b">Healthy Range</th>
+                    <th className="text-left p-3 border-b">Warning Sign</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b">Salaries + Doctor Payouts</td>
+                    <td className="p-3 border-b">40–55% of revenue</td>
+                    <td className="p-3 border-b">&gt; 60% for two months in a row</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Rent &amp; Utilities</td>
+                    <td className="p-3 border-b">8–15%</td>
+                    <td className="p-3 border-b">&gt; 20% (usually oversized premises)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Medical Supplies</td>
+                    <td className="p-3 border-b">5–10%</td>
+                    <td className="p-3 border-b">Sudden spike without procedure growth</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Marketing</td>
+                    <td className="p-3 border-b">3–8%</td>
+                    <td className="p-3 border-b">&gt; 10% with flat new-patient count</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3">Miscellaneous</td>
+                    <td className="p-3">&lt; 5%</td>
+                    <td className="p-3">Anything above — recategorise</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>3. Watch the trend, not just the snapshot</h3>
+            <p>
+              Switch the range from <em>This month</em> to <em>Last 6 months</em> and
+              look at the bar chart. A category that quietly grows 10% every month
+              becomes a monster in a year, even if today&apos;s slice looks small.
+            </p>
+
+            <h2>Filtering Options</h2>
+            <ul>
+              <li><strong>Date range:</strong> This month, last month, quarter, year, or custom.</li>
+              <li><strong>Category:</strong> Show only selected categories — useful when preparing a report for one department.</li>
+              <li><strong>Doctor / Branch:</strong> Isolate expenses tagged to a specific doctor or clinic branch.</li>
+              <li><strong>Payment mode:</strong> Cash vs bank transfer vs card (helps reconcile with your bank statement).</li>
+            </ul>
+
+            <h2>Common Scenarios &amp; What to Do</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pattern</th>
+                    <th className="text-left p-3 border-b">Likely Cause</th>
+                    <th className="text-left p-3 border-b">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b">One category jumps 30%+ in a single month</td>
+                    <td className="p-3 border-b">One-off purchase (equipment, deposit, licence renewal)</td>
+                    <td className="p-3 border-b">Open the category to see line items — reclassify one-offs to a separate &quot;Capital&quot; category</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Medicines &amp; Inventory rising faster than revenue</td>
+                    <td className="p-3 border-b">Overstocking, expiry losses, or theft</td>
+                    <td className="p-3 border-b">Cross-check inventory report; tighten reorder levels</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Marketing high, new patients flat</td>
+                    <td className="p-3 border-b">Poor ad targeting or unmeasured campaigns</td>
+                    <td className="p-3 border-b">Compare with New vs Returning Patients report; pause ads that do not convert</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Miscellaneous is the biggest slice</td>
+                    <td className="p-3 border-b">Staff picking &quot;Miscellaneous&quot; out of laziness</td>
+                    <td className="p-3 border-b">Add specific categories; retrain staff; review last 3 months and recategorise</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3">Salaries share creeping above 60% of revenue</td>
+                    <td className="p-3">Revenue dropped faster than headcount adjusted</td>
+                    <td className="p-3">Open Doctor Performance Scorecard; consider hours restructuring before layoffs</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Drilling into a Category</h2>
+            <p>
+              Click any slice or bar to open the detailed list of every expense entry
+              inside that category — date, amount, vendor, payment mode, added-by user,
+              and attached receipt (if any). This is where you catch duplicate entries,
+              wrong vendors, or expenses recorded by mistake.
+            </p>
+
+            <h2>Exporting</h2>
+            <p>
+              Use the <strong>Export</strong> button to download the breakdown as CSV
+              (opens in Excel for pivot analysis) or PDF (for board meetings, tax
+              filings, and bank/lender submissions). All active filters are respected in
+              the export. The PDF includes the donut chart, the monthly bar chart, and
+              the ranked category table on a single page.
+            </p>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/profit-loss-trend`}>Profit &amp; Loss Trend Report</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+              <li><Link to={`${kbBase}/net-profit`}>Calculating Net Profit &amp; Margin %</Link></li>
+              <li><Link to={`${kbBase}/expenses`}>Managing Expenses</Link></li>
+              <li><Link to={`${kbBase}/financial-reports`}>Monthly Financial Reports &amp; Exports</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review the Expense
+                Category Breakdown on the 1st of every month — before it becomes a
+                surprise. Ten minutes of category-level review beats a quarterly
+                accounting shock every single time.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
