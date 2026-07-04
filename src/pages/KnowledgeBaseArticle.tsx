@@ -2310,6 +2310,11 @@ const slugTitleMap: Record<string, string> = {
   "expense-breakdown": "Expense Category Breakdown",
   "expenses-report": "Expense Category Breakdown",
   "expense-report": "Expense Category Breakdown",
+  "doctor-performance-scorecard": "Doctor Performance Scorecard",
+  "doctor-scorecard": "Doctor Performance Scorecard",
+  "doctor-performance": "Doctor Performance Scorecard",
+  "performance-scorecard": "Doctor Performance Scorecard",
+  "doctor-kpi": "Doctor Performance Scorecard",
 };
 
 
