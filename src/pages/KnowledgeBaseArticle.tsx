@@ -2580,6 +2580,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "expense-categories" || slug === "expense-category-breakdown" || slug === "expense-breakdown" || slug === "expenses-report" || slug === "expense-report") {
     return <ExpenseCategoryBreakdownArticle />;
   }
+  if (slug === "doctor-performance-scorecard" || slug === "doctor-scorecard" || slug === "doctor-performance" || slug === "performance-scorecard" || slug === "doctor-kpi") {
+    return <DoctorPerformanceScorecardArticle />;
+  }
 
 
 
