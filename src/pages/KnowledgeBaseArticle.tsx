@@ -24469,3 +24469,242 @@ const ExpenseCategoryBreakdownArticle = () => {
     </div>
   );
 };
+
+const DoctorPerformanceScorecardArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Financial &amp; Performance Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Doctor Performance Scorecard</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Star className="w-3 h-3 mr-1" />Performance Reports</Badge>
+              <Badge variant="outline">8 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Doctor Performance Scorecard</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Doctor Performance Scorecard is the one report that turns a busy
+              clinic into a measurable business. It ranks every doctor across
+              revenue, patient load, retention, punctuality, and patient
+              satisfaction — in a single view — so you can reward top performers,
+              coach the middle, and act on quiet under-performance before it hurts
+              the clinic.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong> or <strong>Admin</strong> and
+              go to <strong>Reports &rarr; Doctor Performance</strong>. The scorecard
+              is the top card on the page; the ranked table below it lists every
+              active doctor in your clinic.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Individual doctors see their own scorecard under <strong>My Reports &rarr; Performance</strong>.
+              They cannot see other doctors&apos; numbers.
+            </p>
+
+            <h2>What the Scorecard Measures</h2>
+            <p>
+              Every doctor gets a score for the selected period across six pillars.
+              Each pillar is normalised to 0–100 and combined into an overall score.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pillar</th>
+                    <th className="text-left p-3 border-b">What It Tracks</th>
+                    <th className="text-left p-3 border-b">Weight</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Revenue Generated</td>
+                    <td className="p-3 border-b">Total fees + procedures billed under the doctor</td>
+                    <td className="p-3 border-b">25%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Patient Volume</td>
+                    <td className="p-3 border-b">Completed appointments in the period</td>
+                    <td className="p-3 border-b">15%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Retention Rate</td>
+                    <td className="p-3 border-b">% of patients returning within 90 days for follow-up</td>
+                    <td className="p-3 border-b">20%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Punctuality</td>
+                    <td className="p-3 border-b">Avg minutes late per appointment (lower is better)</td>
+                    <td className="p-3 border-b">10%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-Show / Cancel Rate</td>
+                    <td className="p-3 border-b">% of scheduled slots that did not complete</td>
+                    <td className="p-3 border-b">10%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Patient Reviews</td>
+                    <td className="p-3">Avg star rating from post-visit reviews</td>
+                    <td className="p-3">20%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Weights are fixed today — a settings screen to customise them per
+              clinic is on the roadmap.
+            </p>
+
+            <h2>How the Overall Score Is Calculated</h2>
+            <p>
+              Each pillar is converted to a 0–100 sub-score, then combined:
+            </p>
+            <div className="not-prose my-4 p-4 bg-muted/40 border rounded-lg font-mono text-sm">
+              Overall = 0.25×Revenue + 0.15×Volume + 0.20×Retention + 0.10×Punctuality + 0.10×(100 − NoShow) + 0.20×Reviews
+            </div>
+            <ul>
+              <li><strong>90–100</strong> — Top performer. Retain aggressively; feature on public profile.</li>
+              <li><strong>75–89</strong> — Strong. Small coaching wins can push into top tier.</li>
+              <li><strong>60–74</strong> — Average. Pick one pillar to work on next month.</li>
+              <li><strong>Below 60</strong> — Needs attention. Book a one-to-one before the next cycle.</li>
+            </ul>
+
+            <h2>Reading the Ranked Table</h2>
+            <p>Under the scorecard header you get one row per doctor with:</p>
+            <ul>
+              <li>Rank badge (gold/silver/bronze for top 3)</li>
+              <li>Doctor name, specialty, and photo</li>
+              <li>Overall score and change vs previous period (+ / −)</li>
+              <li>Each pillar as a colour-coded bar (green / amber / red)</li>
+              <li>Quick actions: <em>View full report</em>, <em>Message doctor</em>, <em>Adjust payout</em></li>
+            </ul>
+            <p>
+              Click a row to open the doctor&apos;s full performance page — appointment
+              history, revenue trend, review list, and patient retention cohort in one
+              scrollable view.
+            </p>
+
+            <h2>Filtering Options</h2>
+            <ul>
+              <li><strong>Date range:</strong> This month, last month, quarter, year-to-date, or custom.</li>
+              <li><strong>Specialty:</strong> Compare only doctors in the same specialty — fairer than comparing a GP to a surgeon.</li>
+              <li><strong>Employment type:</strong> Full-time vs visiting vs consultant — each has very different volume expectations.</li>
+              <li><strong>Minimum appointments:</strong> Hide doctors with fewer than N visits so a new joiner does not distort the ranking.</li>
+            </ul>
+
+            <h2>Common Scenarios &amp; What to Do</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pattern</th>
+                    <th className="text-left p-3 border-b">Likely Cause</th>
+                    <th className="text-left p-3 border-b">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b">High revenue, low retention</td>
+                    <td className="p-3 border-b">Short consultations, patients feel rushed</td>
+                    <td className="p-3 border-b">Extend slot length from 15 to 20 min; review avg consult duration</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">High volume, low reviews</td>
+                    <td className="p-3 border-b">Bedside manner or long wait times</td>
+                    <td className="p-3 border-b">Cross-check punctuality pillar; enable post-visit review request</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">High no-show rate for one doctor only</td>
+                    <td className="p-3 border-b">Bad slot timing (Friday evenings, early morning)</td>
+                    <td className="p-3 border-b">Open weekly heatmap; retire low-conversion slots</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Score dropped 10+ points MoM</td>
+                    <td className="p-3 border-b">Leave, illness, or a service change</td>
+                    <td className="p-3 border-b">Filter by pillar to find which one dropped; discuss in 1:1</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3">New doctor stuck at 60–65</td>
+                    <td className="p-3">Low patient base, not low ability</td>
+                    <td className="p-3">Feature on public profile; assign walk-ins for 30 days</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Using the Scorecard for Payouts &amp; Bonuses</h2>
+            <p>
+              Many clinics tie a monthly bonus to the overall score — for example,
+              a fixed base payout plus 5% of revenue for scores above 80. Because
+              retention and reviews are weighted heavily, this rewards doctors who
+              build long-term patient relationships rather than only high-fee
+              one-off visits. Export the scorecard at month-end and attach it to
+              the payout memo so calculations are transparent.
+            </p>
+
+            <h2>Fairness Notes</h2>
+            <ul>
+              <li>New doctors get a grace period — the first 30 days do not count toward retention.</li>
+              <li>Leaves are excluded from the punctuality and no-show calculations.</li>
+              <li>Reviews under 5 in the period fall back to specialty average so a single bad review does not sink the score.</li>
+              <li>Doctors only see their own scorecard — never a comparison table.</li>
+            </ul>
+
+            <h2>Exporting</h2>
+            <p>
+              Use the <strong>Export</strong> button to download the scorecard as
+              CSV (raw numbers for HR / payroll) or PDF (formatted, with pillar
+              bars and rank badges — ideal for a monthly performance meeting).
+              Filters are respected in the export.
+            </p>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/doctor-reports`}>Doctor Reports &amp; Patient Analytics</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/peak-hour-heatmaps`}>Peak Hours Heatmap Explained</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review the
+                scorecard on the 5th of every month — after all previous-month
+                appointments have been closed and reviews have landed. Doing it
+                too early gives an unfair picture and doing it too late means
+                you&apos;re coaching on stale data.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
