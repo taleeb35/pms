@@ -24717,3 +24717,264 @@ const DoctorPerformanceScorecardArticle = () => {
   );
 };
 
+const AIRevenueForecastReportsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Financial &amp; Performance Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">AI Revenue Forecast in Reports</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Sparkles className="w-3 h-3 mr-1" />AI &amp; Reports</Badge>
+              <Badge variant="outline">7 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">AI Revenue Forecast in Reports</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The AI Revenue Forecast lives inside your Analytics Dashboard and
+              predicts what the next 3, 6, and 12 months of revenue will look like
+              for your clinic — based on your own historical bookings, seasonality,
+              doctor availability, and current growth trend. Use it to plan
+              hiring, negotiate rent, and set realistic monthly targets instead
+              of guessing.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong> or <strong>Admin</strong> and
+              go to <strong>Reports &rarr; Analytics Dashboard</strong>. Scroll to
+              the <em>Revenue Trend</em> chart — the AI forecast appears as a dashed
+              projection line extending past today&apos;s date, with a shaded
+              confidence band around it.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Doctors see a smaller version on <strong>My Reports</strong>, forecasting
+              only their own future revenue based on their booked slots and
+              recurring patients.
+            </p>
+
+            <h2>What the Forecast Shows</h2>
+            <ul>
+              <li><strong>Solid line</strong> — actual monthly revenue up to the current month.</li>
+              <li><strong>Dashed line</strong> — AI predicted revenue for the next 3, 6, or 12 months.</li>
+              <li><strong>Shaded band</strong> — best-case / worst-case range (90% confidence interval).</li>
+              <li><strong>Target line</strong> — your own monthly revenue target (if set in Settings &rarr; Finance).</li>
+            </ul>
+
+            <h2>What Feeds the Prediction</h2>
+            <p>
+              The model is not a generic template — it is retrained on your clinic&apos;s
+              own data every night. Inputs include:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Input Signal</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Historical revenue (12+ months)</td>
+                    <td className="p-3 border-b">Baseline growth rate and long-term trend</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Seasonality</td>
+                    <td className="p-3 border-b">Ramadan, exam season, winter flu, wedding season</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Booked future appointments</td>
+                    <td className="p-3 border-b">Already-scheduled Rs. lift the near-term forecast</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Doctor availability &amp; leaves</td>
+                    <td className="p-3 border-b">Planned time off reduces capacity in that window</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New patient acquisition rate</td>
+                    <td className="p-3 border-b">Predicts how much fresh demand is coming</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Retention / follow-up cadence</td>
+                    <td className="p-3">Return visits are the most predictable revenue</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              The model needs at least 90 days of history to produce a meaningful
+              forecast. Newer clinics will see a <em>Not enough data yet</em> notice
+              in place of the dashed line.
+            </p>
+
+            <h2>Reading the Confidence Band</h2>
+            <p>
+              A wide band means the AI is less certain — usually because your
+              month-to-month revenue is volatile, or a doctor recently joined /
+              left. A narrow band means the pattern is stable and the prediction
+              is reliable. Rules of thumb:
+            </p>
+            <ul>
+              <li><strong>Band &lt; ±10%</strong> — safe to plan hiring, rent commitments, marketing spend.</li>
+              <li><strong>Band ±10–25%</strong> — usable for targets, not for large fixed costs.</li>
+              <li><strong>Band &gt; ±25%</strong> — treat as directional only; fix data gaps first (missing fees, uncategorised payments).</li>
+            </ul>
+
+            <h2>Forecast Horizons</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Horizon</th>
+                    <th className="text-left p-3 border-b">Best For</th>
+                    <th className="text-left p-3 border-b">Typical Accuracy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Next 30 days</td>
+                    <td className="p-3 border-b">Cash-flow planning, payout scheduling</td>
+                    <td className="p-3 border-b">±5–8%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Next 3 months</td>
+                    <td className="p-3 border-b">Hiring, marketing budgets, inventory orders</td>
+                    <td className="p-3 border-b">±10–15%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Next 6 months</td>
+                    <td className="p-3 border-b">New branch decisions, equipment purchases</td>
+                    <td className="p-3 border-b">±15–20%</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Next 12 months</td>
+                    <td className="p-3">Annual planning, investor conversations</td>
+                    <td className="p-3">±20–30%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Filtering the Forecast</h2>
+            <ul>
+              <li><strong>Per doctor</strong> — see who will contribute what in the coming quarter.</li>
+              <li><strong>Per revenue source</strong> — consultation fees, procedures, memberships, inventory.</li>
+              <li><strong>Per branch</strong> — if you run multiple locations.</li>
+              <li><strong>Exclude one-off events</strong> — a health camp or corporate deal can distort the trend; toggle it out.</li>
+            </ul>
+
+            <h2>Common Scenarios &amp; How to React</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Forecast Pattern</th>
+                    <th className="text-left p-3 border-b">Likely Meaning</th>
+                    <th className="text-left p-3 border-b">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b">Steady rise, narrow band</td>
+                    <td className="p-3 border-b">Healthy compounding growth</td>
+                    <td className="p-3 border-b">Consider adding a doctor or extending hours before capacity caps growth</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Flat line for 6+ months</td>
+                    <td className="p-3 border-b">Clinic hit capacity ceiling</td>
+                    <td className="p-3 border-b">Add slots, raise fees, or open a second branch</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Dip 2–3 months out</td>
+                    <td className="p-3 border-b">Doctor leave, exam season, or Ramadan</td>
+                    <td className="p-3 border-b">Push marketing in the weeks before; run a promo</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b">Wide band, unstable</td>
+                    <td className="p-3 border-b">Missing fees or uncategorised payments</td>
+                    <td className="p-3 border-b">Clean past 90 days of records; band narrows within a week</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3">Forecast below target line</td>
+                    <td className="p-3">Growth rate insufficient to hit annual goal</td>
+                    <td className="p-3">Increase acquisition spend or revise the target</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Setting a Monthly Target</h2>
+            <p>
+              Go to <strong>Settings &rarr; Finance &rarr; Revenue Targets</strong> and
+              enter a monthly Rs. figure. The target appears as a horizontal line on
+              the forecast chart. When the dashed forecast crosses <em>below</em> the
+              target you get an alert on your dashboard so you can act early — not at
+              month-end when it&apos;s too late.
+            </p>
+
+            <h2>Exporting the Forecast</h2>
+            <p>
+              Use <strong>Export</strong> to download the forecast as CSV (month, low,
+              mid, high) or PDF (chart + summary paragraph the AI writes for you).
+              The PDF version is ideal for board meetings, bank loan applications,
+              and investor updates.
+            </p>
+
+            <h2>Limitations to Keep in Mind</h2>
+            <ul>
+              <li>The model cannot predict shocks — new competitors, pandemics, or regulatory changes.</li>
+              <li>A major fee change (e.g., raising consultation from Rs. 2,000 to Rs. 3,000) invalidates the near-term forecast for ~30 days until it re-learns.</li>
+              <li>Forecasts assume current doctor roster continues. Add planned joiners in <em>Doctors &rarr; Roster</em> for a more accurate projection.</li>
+              <li>Predictions are a decision aid, not a guarantee. Always cross-check with the confidence band.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/ai-revenue-forecast`}>Reading AI Revenue Forecasts</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+              <li><Link to={`${kbBase}/profit-loss-trend`}>Profit &amp; Loss Trend Report</Link></li>
+              <li><Link to={`${kbBase}/doctor-performance-scorecard`}>Doctor Performance Scorecard</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Check the
+                forecast on the 1st of every month, right after the previous
+                month&apos;s revenue has been finalised. The model retrains overnight,
+                so you get the sharpest projection at the start of the month —
+                exactly when you&apos;re setting priorities.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
