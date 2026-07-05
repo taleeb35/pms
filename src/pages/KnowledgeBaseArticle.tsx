@@ -2315,6 +2315,12 @@ const slugTitleMap: Record<string, string> = {
   "doctor-performance": "Doctor Performance Scorecard",
   "performance-scorecard": "Doctor Performance Scorecard",
   "doctor-kpi": "Doctor Performance Scorecard",
+  "ai-forecast-reports": "AI Revenue Forecast in Reports",
+  "ai-revenue-forecast-reports": "AI Revenue Forecast in Reports",
+  "ai-forecast": "AI Revenue Forecast in Reports",
+  "revenue-forecast": "AI Revenue Forecast in Reports",
+  "ai-revenue-projection": "AI Revenue Forecast in Reports",
+  "forecast-report": "AI Revenue Forecast in Reports",
 };
 
 
