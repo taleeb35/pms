@@ -25277,6 +25277,359 @@ const PeakHoursHeatmapArticle = () => {
   );
 };
 
+const PatientDemographicsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Patient Demographics — Gender, Age &amp; City</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Users className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Patient Demographics — Gender, Age &amp; City</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Patient Demographics report breaks your patient base down by gender,
+              age group, and city. It helps you understand who your clinic serves, where
+              they come from, and how to tailor services, marketing, and staffing to
+              match real demand.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Look for the <em>Patient Demographics</em> card. Clinic owners see data for
+              the entire clinic by default; doctors see only patients they have personally
+              consulted unless the clinic has enabled full-clinic visibility.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide summary but
+              cannot export or filter by individual doctor unless that permission is
+              enabled in Settings &rarr; Roles.
+            </p>
+
+            <h2>What the Report Shows</h2>
+            <p>
+              The report is split into three independent lenses. Each lens answers a
+              different operational question and can be filtered by date range, doctor,
+              specialty, and visit type.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Lens</th>
+                    <th className="text-left p-3 border-b">What It Tells You</th>
+                    <th className="text-left p-3 border-b">Typical Use</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Gender</td>
+                    <td className="p-3 border-b">Male, female, and other / unspecified distribution</td>
+                    <td className="p-3 border-b">Plan gender-specific services, waiting-area layout, or marketing tone</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Age</td>
+                    <td className="p-3 border-b">Patients grouped into pediatric, young adult, adult, middle-aged, and senior bands</td>
+                    <td className="p-3 border-b">Stock medicines, design preventive-care packages, set appointment durations</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">City</td>
+                    <td className="p-3">Which cities your patients are traveling from</td>
+                    <td className="p-3">Decide local SEO focus, outreach budget, or satellite clinic locations</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Gender Breakdown</h2>
+            <p>
+              The gender chart shows the percentage and count of patients recorded as
+              male, female, or other / unspecified. It is based on the gender field
+              stored in each patient profile.
+            </p>
+            <ul>
+              <li><strong>Count</strong> — total unique patients with at least one visit in the selected period.</li>
+              <li><strong>Percentage</strong> — share of the total patient base for that filter set.</li>
+              <li><strong>Unspecified</strong> — patients whose gender was not captured during registration. A high share here usually means the front-desk form needs tightening.</li>
+            </ul>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Example:</strong> A gynaecology clinic
+                may see 95% female patients, while a general medicine practice in the same
+                building might see a 55/45 split. Use the gender lens to set expectations
+                for inventory like disposables, gowns, and sample medications.
+              </p>
+            </div>
+
+            <h2>Age Bands</h2>
+            <p>
+              Patients are automatically grouped into age brackets based on their date of
+              birth. The default bands are:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Age Band</th>
+                    <th className="text-left p-3 border-b">Range</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Pediatric</td>
+                    <td className="p-3 border-b">0–12 years</td>
+                    <td className="p-3 border-b">Vaccines, growth monitoring, school-medicine demand</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Young adult</td>
+                    <td className="p-3 border-b">13–24 years</td>
+                    <td className="p-3 border-b">Lifestyle, acne, mental health, first-time consultations</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Adult</td>
+                    <td className="p-3 border-b">25–44 years</td>
+                    <td className="p-3 border-b">Chronic disease screening, family planning, career-related stress</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Middle-aged</td>
+                    <td className="p-3 border-b">45–64 years</td>
+                    <td className="p-3 border-b">Diabetes, hypertension, cardiac risk, preventive labs</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Senior</td>
+                    <td className="p-3">65+ years</td>
+                    <td className="p-3">Polypharmacy reviews, mobility support, longer appointment slots</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Age is calculated at the time the report is generated, so the same patient may
+              move from one band to another next year. Historical reports keep the band the
+              patient belonged to during each visit if you filter by a past date range.
+            </p>
+
+            <h2>City Distribution</h2>
+            <p>
+              The city chart ranks patient home cities by count and percentage. It uses
+              the city field from the patient profile, not the clinic&apos;s own address.
+            </p>
+            <ul>
+              <li><strong>Top cities</strong> — the five cities with the most patients are shown as a bar chart.</li>
+              <li><strong>Other cities</strong> — all remaining cities are grouped into an &quot;Others&quot; bucket.</li>
+              <li><strong>Unknown</strong> — patients with no city on file. A large unknown bucket means registration data quality needs attention.</li>
+            </ul>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Tip:</strong> If a large share of
+                patients is traveling from a neighboring city, consider adding that city
+                to your public profile SEO keywords or running a targeted WhatsApp campaign
+                there.
+              </p>
+            </div>
+
+            <h2>What Data Feeds the Report</h2>
+            <p>
+              Each lens is built from the patient profile and linked visit records. Only
+              patients with at least one appointment or walk-in in the selected period are
+              counted, so the report reflects your active patient base rather than every
+              profile ever created.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Field</th>
+                    <th className="text-left p-3 border-b">Used In</th>
+                    <th className="text-left p-3 border-b">If Missing</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Gender</td>
+                    <td className="p-3 border-b">Gender breakdown</td>
+                    <td className="p-3 border-b">Patient is counted in &quot;Unspecified&quot;</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Date of birth</td>
+                    <td className="p-3 border-b">Age band calculation</td>
+                    <td className="p-3 border-b">Patient is excluded from age analysis</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">City</td>
+                    <td className="p-3 border-b">City distribution</td>
+                    <td className="p-3 border-b">Patient is counted in &quot;Unknown&quot;</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Appointment / walk-in date</td>
+                    <td className="p-3">Determines whether the patient is included in the selected period</td>
+                    <td className="p-3">Patient is not counted at all</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Filters and Date Ranges</h2>
+            <p>
+              Use the toolbar above the report to change the view without changing the
+              underlying patient records:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> — last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> — view patients seen by a specific doctor.</li>
+              <li><strong>Specialty</strong> — filter by the specialty under which the visit was booked.</li>
+              <li><strong>Visit type</strong> — new patients, follow-ups, procedures, or video consultations.</li>
+              <li><strong>Gender</strong> — focus the age and city charts on one gender.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Filters stack. If you select &quot;Gynaecology,&quot; &quot;Female,&quot; and
+              &quot;Last 90 days,&quot; every chart updates to show only female patients
+              who had a gynaecology visit in the last 90 days.
+            </p>
+
+            <h2>Reading the Charts</h2>
+            <p>
+              Each lens uses a different visual so the insight is immediate:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Lens</th>
+                    <th className="text-left p-3 border-b">Chart Type</th>
+                    <th className="text-left p-3 border-b">How to Read It</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Gender</td>
+                    <td className="p-3 border-b">Donut / pie chart</td>
+                    <td className="p-3 border-b">Slice size = share of active patients; hover for exact count</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Age</td>
+                    <td className="p-3 border-b">Vertical bar chart</td>
+                    <td className="p-3 border-b">Bar height = number of patients in each band; compare across bands</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">City</td>
+                    <td className="p-3">Horizontal bar chart</td>
+                    <td className="p-3">Longer bars = more patients from that city; &quot;Others&quot; groups smaller cities</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Pediatric share is rising</td>
+                    <td className="p-3 border-b">Age chart over last 6 months</td>
+                    <td className="p-3 border-b">Add pediatric supplies, child-friendly waiting area, and vaccination reminders</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Most patients from one distant city</td>
+                    <td className="p-3 border-b">City chart</td>
+                    <td className="p-3 border-b">Run a weekend camp or partner with a lab collection center there</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Unspecified gender is high</td>
+                    <td className="p-3 border-b">Gender chart</td>
+                    <td className="p-3 border-b">Make gender a required field in reception and online booking forms</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Seniors dominate but slots are short</td>
+                    <td className="p-3 border-b">Age chart + appointment duration</td>
+                    <td className="p-3 border-b">Reserve longer slots for senior patients or add a dedicated geriatric hour</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Female patients peak on certain days</td>
+                    <td className="p-3">Gender filter + peak hours heatmap</td>
+                    <td className="p-3">Align female-focused specialties with those days and promote them accordingly</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> above any chart to download a CSV or PDF. The
+              CSV contains raw counts and percentages for each band, making it easy to
+              build your own charts in Excel or Google Sheets. The PDF is formatted for
+              printing and works well for clinic meetings, investor updates, or partnership
+              proposals.
+            </p>
+
+            <h2>Known Limitations</h2>
+            <ul>
+              <li>The report counts unique patients, not visits. A patient who visits five times in the period is counted once.</li>
+              <li>Age bands are fixed. If you need custom bands, export the CSV and group the data yourself.</li>
+              <li>City values are taken exactly as entered during registration. Spelling variations like &quot;Lahore&quot; and &quot;lahore&quot; may appear as separate cities. Clean data in Patients &rarr; Profiles for the cleanest report.</li>
+              <li>Patients with no visits in the selected period are excluded even if their profile exists.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/top-cities`}>Top Cities &amp; Patient Geography</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/peak-hour-heatmaps`}>Peak Hours Heatmap Explained</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review the
+                demographics report at the start of every quarter. A 15-minute review can
+                reveal shifts in patient mix before they become staffing or inventory
+                problems.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 
 
 
