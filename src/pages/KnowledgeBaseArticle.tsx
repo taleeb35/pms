@@ -2595,6 +2595,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "ai-forecast-reports" || slug === "ai-revenue-forecast-reports" || slug === "ai-revenue-projection" || slug === "forecast-report") {
     return <AIRevenueForecastReportsArticle />;
   }
+  if (slug === "peak-hour-heatmaps" || slug === "peak-hours" || slug === "heatmap" || slug === "appointment-heatmap" || slug === "busy-hours") {
+    return <PeakHoursHeatmapArticle />;
+  }
 
 
 
