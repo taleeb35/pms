@@ -2319,6 +2319,11 @@ const slugTitleMap: Record<string, string> = {
   "ai-revenue-forecast-reports": "AI Revenue Forecast in Reports",
   "ai-revenue-projection": "AI Revenue Forecast in Reports",
   "forecast-report": "AI Revenue Forecast in Reports",
+  "peak-hour-heatmaps": "Peak Hours Heatmap Explained",
+  "peak-hours": "Peak Hours Heatmap Explained",
+  "heatmap": "Peak Hours Heatmap Explained",
+  "appointment-heatmap": "Peak Hours Heatmap Explained",
+  "busy-hours": "Peak Hours Heatmap Explained",
 };
 
 
