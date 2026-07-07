@@ -2324,6 +2324,11 @@ const slugTitleMap: Record<string, string> = {
   "heatmap": "Peak Hours Heatmap Explained",
   "appointment-heatmap": "Peak Hours Heatmap Explained",
   "busy-hours": "Peak Hours Heatmap Explained",
+  "patient-demographics": "Patient Demographics — Gender, Age & City",
+  "demographics": "Patient Demographics — Gender, Age & City",
+  "gender-age-city": "Patient Demographics — Gender, Age & City",
+  "patient-demographics-report": "Patient Demographics — Gender, Age & City",
+  "patient-profile-report": "Patient Demographics — Gender, Age & City",
 };
 
 
@@ -2598,6 +2603,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "peak-hour-heatmaps" || slug === "peak-hours" || slug === "heatmap" || slug === "appointment-heatmap" || slug === "busy-hours") {
     return <PeakHoursHeatmapArticle />;
   }
+  if (slug === "patient-demographics" || slug === "demographics" || slug === "gender-age-city" || slug === "patient-demographics-report" || slug === "patient-profile-report") {
+    return <PatientDemographicsArticle />;
+  }
+
 
 
 
