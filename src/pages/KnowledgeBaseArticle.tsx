@@ -2319,6 +2319,11 @@ const slugTitleMap: Record<string, string> = {
   "ai-revenue-forecast-reports": "AI Revenue Forecast in Reports",
   "ai-revenue-projection": "AI Revenue Forecast in Reports",
   "forecast-report": "AI Revenue Forecast in Reports",
+  "peak-hour-heatmaps": "Peak Hours Heatmap Explained",
+  "peak-hours": "Peak Hours Heatmap Explained",
+  "heatmap": "Peak Hours Heatmap Explained",
+  "appointment-heatmap": "Peak Hours Heatmap Explained",
+  "busy-hours": "Peak Hours Heatmap Explained",
 };
 
 
@@ -2589,6 +2594,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "ai-forecast-reports" || slug === "ai-revenue-forecast-reports" || slug === "ai-revenue-projection" || slug === "forecast-report") {
     return <AIRevenueForecastReportsArticle />;
+  }
+  if (slug === "peak-hour-heatmaps" || slug === "peak-hours" || slug === "heatmap" || slug === "appointment-heatmap" || slug === "busy-hours") {
+    return <PeakHoursHeatmapArticle />;
   }
 
 
@@ -24976,5 +24984,290 @@ const AIRevenueForecastReportsArticle = () => {
     </div>
   );
 };
+
+const PeakHoursHeatmapArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Peak Hours Heatmap Explained</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><BarChart3 className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Peak Hours Heatmap Explained</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Peak Hours Heatmap turns your appointment history into a color-coded
+              calendar grid so you can see — at a glance — which hours and days are
+              busiest, when chairs sit empty, and where small schedule tweaks can
+              unlock more revenue without adding doctors.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Scroll to the <em>Peak Hours Heatmap</em> card. Clinic owners see every
+              doctor combined by default; doctors see only their own booked slots.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide heatmap but
+              cannot filter down to individual doctors unless the clinic owner has
+              enabled that permission in Settings &rarr; Roles.
+            </p>
+
+            <h2>How the Heatmap Is Laid Out</h2>
+            <ul>
+              <li><strong>Rows</strong> — Days of the week: Monday through Sunday.</li>
+              <li><strong>Columns</strong> — Hours of the day, typically 8:00 AM to 10:00 PM, in 15-minute or 1-hour blocks depending on your zoom setting.</li>
+              <li><strong>Color intensity</strong> — Darker or more saturated cells mean more appointments (or more revenue) booked in that slot.</li>
+              <li><strong>Empty / pale cells</strong> — Few or no bookings. These are your quiet windows.</li>
+              <li><strong>Numbers inside cells</strong> — Optional. Toggle them on to see exact appointment counts or estimated revenue for that hour.</li>
+            </ul>
+
+            <h2>What the Colors Mean</h2>
+            <p>
+              The heatmap uses a continuous color scale. Think of it like a weather map:
+              cool colors are calm, warm colors are busy.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Color Band</th>
+                    <th className="text-left p-3 border-b">Typical Meaning</th>
+                    <th className="text-left p-3 border-b">What to Do</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Pale / light blue</td>
+                    <td className="p-3 border-b">0–1 appointment per slot</td>
+                    <td className="p-3 border-b">Consider trimming hours, running a promo, or using the slot for admin work</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Yellow / amber</td>
+                    <td className="p-3 border-b">Moderate load, 2–4 appointments</td>
+                    <td className="p-3 border-b">Healthy baseline; monitor for growth</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Orange</td>
+                    <td className="p-3 border-b">Busy, 5–7 appointments</td>
+                    <td className="p-3 border-b">Add buffer time, confirm pre-visit payments, avoid overbooking</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Deep red / crimson</td>
+                    <td className="p-3">Very busy, 8+ appointments or at capacity</td>
+                    <td className="p-3">Open a parallel chair, extend the day, or add a doctor before patients wait too long</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Color thresholds auto-adjust to your clinic&apos;s normal volume. A
+              small one-doctor clinic will turn red at 4 appointments, while a
+              multi-doctor hospital may not turn red until 15+. The scale is relative
+              to your own data, not a generic benchmark.
+            </p>
+
+            <h2>What Data Feeds the Heatmap</h2>
+            <p>
+              Every confirmed, completed, or in-progress appointment contributes to
+              the heatmap. Cancelled and no-show appointments are excluded by default
+              so the map reflects real demand, not noise.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Data Point</th>
+                    <th className="text-left p-3 border-b">How It Affects the Map</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Appointment start time</td>
+                    <td className="p-3 border-b">Determines which hour / 15-min cell is colored</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Doctor assignment</td>
+                    <td className="p-3 border-b">Filters the map when you select a specific doctor</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Visit type</td>
+                    <td className="p-3 border-b">New, follow-up, procedure, or video — can be filtered separately</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Status</td>
+                    <td className="p-3 border-b">Only Confirmed, Completed, and In-Progress count by default</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Revenue mode</td>
+                    <td className="p-3">Toggle between appointment count and estimated revenue per cell</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading Common Patterns</h2>
+            <p>
+              Once you know what to look for, the heatmap tells a story about patient
+              behavior and clinic operations. Here are the most common patterns:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pattern</th>
+                    <th className="text-left p-3 border-b">What It Means</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Morning red, afternoon pale</td>
+                    <td className="p-3 border-b">Patients prefer early slots; afternoons are underused</td>
+                    <td className="p-3 border-b">Offer afternoon discounts or shift non-urgent follow-ups to afternoon</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Monday and Saturday spikes</td>
+                    <td className="p-3 border-b">Weekend / start-of-week demand clustering</td>
+                    <td className="p-3 border-b">Add extra doctor hours on those days; lighten midweek</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Same hour red every day</td>
+                    <td className="p-3 border-b">A popular doctor or a fixed popular time</td>
+                    <td className="p-3 border-b">Consider extending that doctor&apos;s shift or cloning their schedule</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Random scattered hotspots</td>
+                    <td className="p-3 border-b">Demand is there but scheduling is inefficient</td>
+                    <td className="p-3 border-b">Tighten appointment rules, reduce walk-in chaos, use online booking</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Whole day pale</td>
+                    <td className="p-3 border-b">Doctor is scheduled but not attracting patients</td>
+                    <td className="p-3 border-b">Review marketing, profile completeness, or consider closing that day</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Red cells with long gaps beside them</td>
+                    <td className="p-3">Patients book around a specific event or doctor break</td>
+                    <td className="p-3">Move breaks to quieter slots; publish availability in larger blocks</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Filtering and Zooming</h2>
+            <p>
+              Use the toolbar above the heatmap to drill into the exact view you need:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> — last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> — isolate one doctor to see their personal peak and quiet hours.</li>
+              <li><strong>Specialty</strong> — compare demand across dermatology, gynaecology, dentistry, etc.</li>
+              <li><strong>Visit type</strong> — new patients, follow-ups, procedures, or video consultations.</li>
+              <li><strong>Revenue vs count</strong> — count shows volume; revenue shows which slots are most valuable.</li>
+              <li><strong>Time grain</strong> — 15-minute, 30-minute, or 1-hour cells. Use 15-minute for fine-tuning; use 1-hour for strategic planning.</li>
+            </ul>
+
+            <h2>Using the Heatmap for Staffing</h2>
+            <p>
+              The heatmap is one of the fastest ways to decide whether you need more
+              staff, fewer chairs, or simply a better schedule. Before hiring, ask:
+            </p>
+            <ol>
+              <li>Are the red cells caused by one doctor being overbooked, or by genuine market demand?</li>
+              <li>Are there pale cells immediately before or after the red ones where the same doctor could absorb demand?</li>
+              <li>Would adding 30 minutes at the start or end of the day clear the busiest block?</li>
+              <li>Which days have consistent low demand and could become half-days or admin days?</li>
+            </ol>
+            <p>
+              If red cells persist across multiple doctors and cannot be absorbed by
+              shifting demand, that is a reliable signal that hiring or expanding
+              hours will pay for itself.
+            </p>
+
+            <h2>Using the Heatmap for Marketing</h2>
+            <p>
+              Empty cells are not a failure — they are inventory. Run targeted
+              campaigns to fill them:
+            </p>
+            <ul>
+              <li><strong>Happy hours</strong> — offer a small discount for bookings in consistently pale afternoon slots.</li>
+              <li><strong>Same-day slots</strong> — push notifications for open cells today or tomorrow.</li>
+              <li><strong>Procedure days</strong> — if Fridays are quiet but your equipment is expensive, promote Friday procedures.</li>
+              <li><strong>New-patient windows</strong> — reserve your red morning slots for follow-ups and use quieter slots for longer new-patient consultations.</li>
+            </ul>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> to download the heatmap as a PNG image for
+              team WhatsApp groups, or as a CSV grid (day × hour) for spreadsheet
+              analysis. The PNG export is useful for morning huddles; the CSV export
+              is useful when you want to model &quot;what if&quot; scenarios like
+              adding a new doctor or changing slot duration.
+            </p>
+
+            <h2>Known Limitations</h2>
+            <ul>
+              <li>The heatmap uses historical bookings, not future bookings. It shows where demand has been, not what is scheduled next week.</li>
+              <li>Walk-ins are included only if they are logged in the appointment system as walk-in appointments.</li>
+              <li>Doctor leave and holidays appear as empty cells; do not mistake them for low demand unless the same pattern repeats outside holidays.</li>
+              <li>Color scales are clinic-relative, so comparing two clinics side by side requires reading the legend, not just the colors.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/appointment-status-breakdown`}>Appointment Status Breakdown</Link></li>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/new-vs-followup`}>New vs Follow-up Appointments</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/doctor-performance-scorecard`}>Doctor Performance Scorecard</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Print the
+                heatmap PNG and stick it in the reception area. Staff who answer
+                phones and book appointments will naturally start steering flexible
+                patients toward pale slots, balancing your day without any extra
+                software training.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
 
 
