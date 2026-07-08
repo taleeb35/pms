@@ -2329,6 +2329,12 @@ const slugTitleMap: Record<string, string> = {
   "gender-age-city": "Patient Demographics — Gender, Age & City",
   "patient-demographics-report": "Patient Demographics — Gender, Age & City",
   "patient-profile-report": "Patient Demographics — Gender, Age & City",
+  "new-vs-returning": "New vs Returning Patients Report",
+  "new-vs-returning-patients": "New vs Returning Patients Report",
+  "new-patients": "New vs Returning Patients Report",
+  "returning-patients": "New vs Returning Patients Report",
+  "patient-retention": "New vs Returning Patients Report",
+  "retention-report": "New vs Returning Patients Report",
 };
 
 
@@ -2605,6 +2611,9 @@ const KnowledgeBaseArticle = () => {
   }
   if (slug === "patient-demographics" || slug === "demographics" || slug === "gender-age-city" || slug === "patient-demographics-report" || slug === "patient-profile-report") {
     return <PatientDemographicsArticle />;
+  }
+  if (slug === "new-vs-returning" || slug === "new-vs-returning-patients" || slug === "new-patients" || slug === "returning-patients" || slug === "patient-retention" || slug === "retention-report") {
+    return <NewVsReturningPatientsArticle />;
   }
 
 
@@ -25632,4 +25641,299 @@ const PatientDemographicsArticle = () => {
 
 
 
+const NewVsReturningPatientsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">New vs Returning Patients Report</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Users className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">New vs Returning Patients Report</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The New vs Returning Patients report shows how many of your appointments come from
+              first-time patients and how many come from patients who have visited before. It is
+              one of the fastest ways to measure patient acquisition, loyalty, and the overall
+              health of your practice.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Look for the <em>New vs Returning Patients</em> card. Clinic owners see the full
+              clinic view by default; doctors see only patients they have personally consulted
+              unless the clinic has enabled full-clinic reporting.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide summary but cannot
+              export or filter by individual doctor unless that permission is enabled in
+              Settings &rarr; Roles.
+            </p>
+
+            <h2>How Patients Are Classified</h2>
+            <p>
+              A patient is counted as <strong>new</strong> for the selected period if they had
+              their first ever appointment or walk-in with the clinic (or doctor) during that
+              period. Every subsequent visit makes them a <strong>returning</strong> patient for
+              that period.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Category</th>
+                    <th className="text-left p-3 border-b">Definition</th>
+                    <th className="text-left p-3 border-b">Counted As</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New patient</td>
+                    <td className="p-3 border-b">First visit with the clinic/doctor in the selected period</td>
+                    <td className="p-3 border-b">One new patient, regardless of how many times they return later</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Returning patient</td>
+                    <td className="p-3 border-b">Has at least one prior completed visit before the selected period</td>
+                    <td className="p-3 border-b">Every qualifying visit in the period adds to returning visit count</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Walk-in</td>
+                    <td className="p-3">Unscheduled visit recorded through the walk-in flow</td>
+                    <td className="p-3">Treated the same as an appointment for new/returning classification</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Important:</strong> The report counts
+                <em>patients</em>, not just appointments. A new patient who books three follow-ups
+                in the same month is counted once as new and twice as returning within that month.
+              </p>
+            </div>
+
+            <h2>What the Report Shows</h2>
+            <p>
+              The report surfaces three core metrics that together describe patient flow and
+              loyalty:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New patient count</td>
+                    <td className="p-3 border-b">Unique first-time patients in the period</td>
+                    <td className="p-3 border-b">Measures marketing reach and front-desk conversion</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Returning patient count</td>
+                    <td className="p-3 border-b">Unique patients with at least one prior visit</td>
+                    <td className="p-3 border-b">Measures loyalty, continuity of care, and follow-up discipline</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Return ratio</td>
+                    <td className="p-3">Returning patients &divide; total patients &times; 100</td>
+                    <td className="p-3">A healthy practice usually sees 40&ndash;70% returning patients</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Charts</h2>
+            <p>
+              The report uses a combination of visuals so you can spot trends quickly:
+            </p>
+            <ul>
+              <li>
+                <strong>Stacked bar chart</strong> &mdash; shows new and returning counts side by
+                side for each day, week, or month in the selected range. Useful for spotting
+                seasonal swings.
+              </li>
+              <li>
+                <strong>Donut chart</strong> &mdash; shows the overall share of new vs returning
+                patients for the whole period. Hover over a slice to see exact counts and
+                percentages.
+              </li>
+              <li>
+                <strong>Trend line</strong> &mdash; plots the return ratio over time. A falling line
+                means the clinic is acquiring new patients faster than it is retaining old ones.
+              </li>
+            </ul>
+
+            <h2>Filters and Date Ranges</h2>
+            <p>
+              Use the toolbar above the report to narrow the view without changing any patient
+              records:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> &mdash; last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> &mdash; view new vs returning patients for a specific doctor.</li>
+              <li><strong>Specialty</strong> &mdash; filter by the specialty under which visits were booked.</li>
+              <li><strong>Visit type</strong> &mdash; in-person, video consultation, or walk-in.</li>
+              <li><strong>Gender / age</strong> &mdash; cross-filter with demographics for deeper insight.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Filters stack. Selecting &quot;Last 90 days,&quot; &quot;Dr. Ahmed,&quot; and
+              &quot;Video consultation&quot; will show only new and returning video patients for
+              Dr. Ahmed in that window.
+            </p>
+
+            <h2>Interpreting the Numbers</h2>
+            <p>
+              The right mix depends on your specialty, clinic age, and growth goals. Use these
+              benchmarks as a starting point:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Return Ratio</th>
+                    <th className="text-left p-3 border-b">What It Usually Means</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Below 30%</td>
+                    <td className="p-3 border-b">High acquisition but poor retention</td>
+                    <td className="p-3 border-b">Review follow-up reminders, discharge instructions, and patient experience</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">30&ndash;50%</td>
+                    <td className="p-3 border-b">Healthy growth with room to improve loyalty</td>
+                    <td className="p-3 border-b">Introduce recall campaigns and membership plans</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">50&ndash;70%</td>
+                    <td className="p-3 border-b">Strong loyalty and repeat care</td>
+                    <td className="p-3 border-b">Maintain service quality while testing new-patient marketing</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Above 70%</td>
+                    <td className="p-3">Very loyal base, but acquisition may be too low</td>
+                    <td className="p-3">Invest in SEO, social proof, and referral programs to attract new patients</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New patients spiked after a marketing campaign</td>
+                    <td className="p-3 border-b">Daily stacked bar chart during campaign dates</td>
+                    <td className="p-3 border-b">Track whether those new patients return within 60&ndash;90 days</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Return ratio is dropping</td>
+                    <td className="p-3 border-b">Trend line over last 6 months</td>
+                    <td className="p-3 border-b">Audit wait times, billing disputes, and follow-up call completion</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">One doctor has far more returning patients</td>
+                    <td className="p-3 border-b">Filter by doctor and compare ratios</td>
+                    <td className="p-3 border-b">Study that doctor&apos;s communication style and share best practices</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Video consultations have low retention</td>
+                    <td className="p-3 border-b">Filter by visit type = video</td>
+                    <td className="p-3 border-b">Add post-video care plans and scheduled follow-up links</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">New patient count is flat</td>
+                    <td className="p-3 border-b">Monthly new-patient trend</td>
+                    <td className="p-3 border-b">Refresh public profile, run a Google review campaign, or offer first-visit packages</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> above any chart to download a CSV or PDF. The CSV
+              contains one row per patient with their classification, first-visit date, and
+              total visits in the period. The PDF is formatted for printing and works well for
+              clinic meetings, partnership reviews, or investor updates.
+            </p>
+
+            <h2>Data Sources and Accuracy</h2>
+            <p>
+              The report is built from completed appointments and walk-in records. A visit only
+              counts when it has a status of <em>Completed</em> or <em>Checked Out</em>. Cancelled,
+              no-show, and pending appointments are excluded.
+            </p>
+            <ul>
+              <li>Patients are matched by profile, not by name alone, so duplicate profiles can affect accuracy.</li>
+              <li>Merged patients keep their earliest visit date as the first-visit reference.</li>
+              <li>Walk-ins recorded without a patient profile are excluded until a profile is linked.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/patient-demographics`}>Patient Demographics &mdash; Gender, Age &amp; City</Link></li>
+              <li><Link to={`${kbBase}/appointment-status-breakdown`}>Appointment Status Breakdown</Link></li>
+              <li><Link to={`${kbBase}/new-vs-followup`}>New vs Follow-up Appointments</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review this report every
+                month alongside your marketing spend. If new-patient acquisition is rising but the
+                return ratio is falling, you are filling a leaky bucket &mdash; fix retention
+                before spending more on ads.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
 
