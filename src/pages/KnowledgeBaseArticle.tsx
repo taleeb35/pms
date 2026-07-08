@@ -2329,6 +2329,12 @@ const slugTitleMap: Record<string, string> = {
   "gender-age-city": "Patient Demographics — Gender, Age & City",
   "patient-demographics-report": "Patient Demographics — Gender, Age & City",
   "patient-profile-report": "Patient Demographics — Gender, Age & City",
+  "new-vs-returning": "New vs Returning Patients Report",
+  "new-vs-returning-patients": "New vs Returning Patients Report",
+  "new-patients": "New vs Returning Patients Report",
+  "returning-patients": "New vs Returning Patients Report",
+  "patient-retention": "New vs Returning Patients Report",
+  "retention-report": "New vs Returning Patients Report",
 };
 
 
