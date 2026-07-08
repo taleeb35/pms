@@ -2612,6 +2612,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "patient-demographics" || slug === "demographics" || slug === "gender-age-city" || slug === "patient-demographics-report" || slug === "patient-profile-report") {
     return <PatientDemographicsArticle />;
   }
+  if (slug === "new-vs-returning" || slug === "new-vs-returning-patients" || slug === "new-patients" || slug === "returning-patients" || slug === "patient-retention" || slug === "retention-report") {
+    return <NewVsReturningPatientsArticle />;
+  }
 
 
 
