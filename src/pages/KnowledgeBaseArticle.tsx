@@ -25945,3 +25945,325 @@ const NewVsReturningPatientsArticle = () => {
   );
 };
 
+const AppointmentStatusBreakdownArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Appointment Status Breakdown</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Calendar className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Appointment Status Breakdown</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Appointment Status Breakdown report shows how every appointment in your clinic
+              ended up — scheduled, started, completed, cancelled, or no-show. It helps you spot
+              scheduling leaks, measure front-desk efficiency, and understand patient flow at a glance.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Look for the <em>Appointment Status Breakdown</em> card. Clinic owners see the full
+              clinic view; doctors see only appointments linked to their own profile unless the
+              clinic has enabled full-clinic reporting.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide summary but cannot
+              export or filter by individual doctor unless that permission is enabled in
+              Settings &rarr; Roles.
+            </p>
+
+            <h2>Statuses Explained</h2>
+            <p>
+              Zonoir tracks four core appointment statuses. Each one tells you something different
+              about what happened to the slot:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Status</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Counted In Report</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium"><Clock className="w-4 h-4 inline mr-1 text-blue-500" />Scheduled</td>
+                    <td className="p-3 border-b">Booked but not yet started</td>
+                    <td className="p-3 border-b">Yes — upcoming load and future capacity</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium"><Activity className="w-4 h-4 inline mr-1 text-yellow-500" />Started / In Progress</td>
+                    <td className="p-3 border-b">Patient has checked in and consultation is active</td>
+                    <td className="p-3 border-b">Yes — current day activity</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium"><CheckCircle2 className="w-4 h-4 inline mr-1 text-purple-500" />Completed</td>
+                    <td className="p-3 border-b">Visit finished and marked done</td>
+                    <td className="p-3 border-b">Yes — revenue and productivity base</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium"><XCircle className="w-4 h-4 inline mr-1 text-red-500" />Cancelled</td>
+                    <td className="p-3 border-b">Appointment cancelled before it happened</td>
+                    <td className="p-3 border-b">Yes — lost slot and possible rescheduling need</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium"><AlertCircle className="w-4 h-4 inline mr-1 text-orange-500" />No-show</td>
+                    <td className="p-3">Patient did not arrive and status was marked no-show</td>
+                    <td className="p-3">Yes — when explicitly recorded as no-show</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Note:</strong> A single appointment can only
+                have one final status. If a patient cancels and later rebooks, the original
+                appointment stays cancelled and the new one starts fresh as scheduled.
+              </p>
+            </div>
+
+            <h2>What the Report Shows</h2>
+            <p>
+              The report surfaces the status distribution for the selected period and breaks it
+              down so you can act quickly:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Total appointments</td>
+                    <td className="p-3 border-b">All appointments created in the period</td>
+                    <td className="p-3 border-b">Baseline demand and scheduling volume</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Completion rate</td>
+                    <td className="p-3 border-b">Completed &divide; total final-status appointments &times; 100</td>
+                    <td className="p-3 border-b">Core efficiency metric; most clinics aim for 80%+</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Cancellation rate</td>
+                    <td className="p-3 border-b">Cancelled &divide; total final-status appointments &times; 100</td>
+                    <td className="p-3 border-b">High rates may indicate overbooking or reminder issues</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-show rate</td>
+                    <td className="p-3 border-b">No-shows &divide; total final-status appointments &times; 100</td>
+                    <td className="p-3 border-b">Shows how many patients forgot or skipped visits</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">In-progress count</td>
+                    <td className="p-3">Appointments currently started</td>
+                    <td className="p-3">Live snapshot of today&apos;s clinic activity</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Charts</h2>
+            <p>
+              The report combines several visuals so you can see both the big picture and the
+              daily detail:
+            </p>
+            <ul>
+              <li>
+                <strong>Donut / pie chart</strong> &mdash; the overall share of each status for the
+                selected period. Hover over a slice to see the exact count and percentage.
+              </li>
+              <li>
+                <strong>Stacked bar chart</strong> &mdash; status counts grouped by day, week, or
+                month. Useful for spotting whether cancellations spike on specific days.
+              </li>
+              <li>
+                <strong>Completion trend line</strong> &mdash; plots the completion rate over time.
+                A rising line means operations are improving; a falling line needs investigation.
+              </li>
+              <li>
+                <strong>Status table</strong> &mdash; a sortable grid with counts, rates, and
+                comparisons to the previous period.
+              </li>
+            </ul>
+
+            <h2>Filters and Date Ranges</h2>
+            <p>
+              Use the toolbar above the report to drill into specific slices of your schedule:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> &mdash; last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> &mdash; view status breakdown for a specific doctor.</li>
+              <li><strong>Specialty</strong> &mdash; filter by the specialty under which visits were booked.</li>
+              <li><strong>Visit type</strong> &mdash; in-person, video consultation, or walk-in.</li>
+              <li><strong>Status</strong> &mdash; focus on one status, such as cancelled only, to investigate leaks.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Filters stack. Selecting &quot;Last 30 days,&quot; &quot;Dr. Khan,&quot; and
+              &quot;Video consultation&quot; will show only the status breakdown for that doctor&apos;s
+              video appointments in that window.
+            </p>
+
+            <h2>Interpreting the Numbers</h2>
+            <p>
+              Benchmarks vary by specialty and clinic type, but these ranges are a useful starting
+              point:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Rate</th>
+                    <th className="text-left p-3 border-b">What It Usually Means</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Completion rate above 85%</td>
+                    <td className="p-3 border-b">Strong scheduling and patient commitment</td>
+                    <td className="p-3 border-b">Maintain reminders and front-desk confirmation process</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Completion rate 70&ndash;85%</td>
+                    <td className="p-3 border-b">Healthy but with room to improve</td>
+                    <td className="p-3 border-b">Review cancellation reasons and add pre-visit reminders</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Cancellation rate above 15%</td>
+                    <td className="p-3 border-b">Patients are changing plans often</td>
+                    <td className="p-3 border-b">Send SMS reminders 24 hours ahead and confirm high-value slots</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-show rate above 10%</td>
+                    <td className="p-3 border-b">Patients forget appointments</td>
+                    <td className="p-3 border-b">Add WhatsApp reminders and consider a no-show policy</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Started count stays high after hours</td>
+                    <td className="p-3">Appointments not being marked completed</td>
+                    <td className="p-3">Train staff to close visits before the end of the day</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Cancellations spike on Mondays</td>
+                    <td className="p-3 border-b">Stacked bar chart grouped by day of week</td>
+                    <td className="p-3 border-b">Avoid overbooking Mondays; send weekend reminders</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">One doctor has low completion rate</td>
+                    <td className="p-3 border-b">Filter by doctor and compare status share</td>
+                    <td className="p-3 border-b">Check scheduling density, wait times, and patient feedback</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Video consultations cancel more often</td>
+                    <td className="p-3 border-b">Filter by visit type = video</td>
+                    <td className="p-3 border-b">Send video-link reminders 1 hour before the call</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-shows rise after holidays</td>
+                    <td className="p-3 border-b">Trend line around public holidays</td>
+                    <td className="p-3 border-b">Run a reconfirmation campaign for post-holiday slots</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Many appointments stuck on Started</td>
+                    <td className="p-3 border-b">In-progress count at end of day</td>
+                    <td className="p-3 border-b">Add end-of-day checklist to mark visits completed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> above any chart to download a CSV or PDF. The CSV
+              contains one row per appointment with its final status, date, doctor, patient, and
+              visit type. The PDF is formatted for printing and works well for clinic meetings,
+              partnership reviews, or operational audits.
+            </p>
+
+            <h2>Data Sources and Accuracy</h2>
+            <p>
+              The report is built from appointment records created in the system. Every status change
+              is timestamped, so the report reflects the final status recorded at the end of the
+              selected period.
+            </p>
+            <ul>
+              <li>Appointments must have a status other than draft to appear in the report.</li>
+              <li>Walk-ins are included if they were recorded through the walk-in flow and assigned a final status.</li>
+              <li>Deleted appointments are excluded entirely.</li>
+              <li>Status changes made after the report date range may shift historical numbers slightly.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/new-vs-followup`}>New vs Follow-up Appointments</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/peak-hour-heatmaps`}>Peak Hours Heatmap Explained</Link></li>
+              <li><Link to={`${kbBase}/appointment-statuses`}>The 4 Appointment Statuses Explained</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review the Appointment Status
+                Breakdown every Monday morning. A quick glance at last week&apos;s completion,
+                cancellation, and no-show rates tells you whether the coming week needs tighter
+                reminders or schedule adjustments.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
