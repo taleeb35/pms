@@ -2619,6 +2619,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "new-vs-returning" || slug === "new-vs-returning-patients" || slug === "new-patients" || slug === "returning-patients" || slug === "patient-retention" || slug === "retention-report") {
     return <NewVsReturningPatientsArticle />;
   }
+  if (slug === "appointment-status-breakdown" || slug === "status-breakdown" || slug === "appointment-statuses-report" || slug === "appointment-outcomes") {
+    return <AppointmentStatusBreakdownArticle />;
+  }
+
 
 
 
