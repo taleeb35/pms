@@ -2336,7 +2336,6 @@ const slugTitleMap: Record<string, string> = {
   "patient-retention": "New vs Returning Patients Report",
   "retention-report": "New vs Returning Patients Report",
   "appointment-status-breakdown": "Appointment Status Breakdown",
-  "appointment-status": "Appointment Status Breakdown",
   "status-breakdown": "Appointment Status Breakdown",
   "appointment-statuses-report": "Appointment Status Breakdown",
   "appointment-outcomes": "Appointment Status Breakdown",
