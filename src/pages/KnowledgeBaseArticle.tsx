@@ -2345,6 +2345,14 @@ const slugTitleMap: Record<string, string> = {
   "new-appointments": "New vs Follow-up Appointments",
   "first-visit-vs-follow-up": "New vs Follow-up Appointments",
   "appointment-type-breakdown": "New vs Follow-up Appointments",
+  "patient-dropoff": "Patient Drop-Off Reports",
+  "patient-drop-off": "Patient Drop-Off Reports",
+  "patient-drop-off-reports": "Patient Drop-Off Reports",
+  "dropoff-report": "Patient Drop-Off Reports",
+  "drop-off-report": "Patient Drop-Off Reports",
+  "patient-leakage": "Patient Drop-Off Reports",
+  "patient-loss": "Patient Drop-Off Reports",
+  "no-show-dropoff": "Patient Drop-Off Reports",
 };
 
 
@@ -2631,6 +2639,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "new-vs-followup" || slug === "new-vs-follow-up" || slug === "follow-up-appointments" || slug === "new-appointments" || slug === "first-visit-vs-follow-up" || slug === "appointment-type-breakdown") {
     return <NewVsFollowUpAppointmentsArticle />;
   }
+  if (slug === "patient-dropoff" || slug === "patient-drop-off" || slug === "patient-drop-off-reports" || slug === "dropoff-report" || slug === "drop-off-report" || slug === "patient-leakage" || slug === "patient-loss" || slug === "no-show-dropoff") {
+    return <PatientDropOffReportsArticle />;
+  }
+
 
 
 
@@ -26605,6 +26617,357 @@ const NewVsFollowUpAppointmentsArticle = () => {
     </div>
   );
 };
+
+const PatientDropOffReportsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Patient Drop-Off Reports</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><TrendingDown className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Patient Drop-Off Reports</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Patient Drop-Off report shows where patients leave your care journey before reaching
+              a completed visit. It helps clinics identify leakage points — from booked appointments that
+              never happen to patients who visit once and do not return — so you can plug gaps and
+              protect revenue.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Look for the <em>Patient Drop-Off</em> card. Clinic owners see the full clinic funnel
+              by default; doctors see only drop-offs linked to their own appointments unless the clinic
+              has enabled full-clinic reporting.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide summary but cannot export
+              or filter by individual doctor unless that permission is enabled in Settings &rarr; Roles.
+            </p>
+
+            <h2>What Counts as a Drop-Off?</h2>
+            <p>
+              A drop-off is any patient interaction that does not result in a completed, billable
+              visit. The report groups drop-offs into four stages so you can see exactly where patients
+              leave:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Stage</th>
+                    <th className="text-left p-3 border-b">Definition</th>
+                    <th className="text-left p-3 border-b">Typical Cause</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Booked but not arrived</td>
+                    <td className="p-3 border-b">Appointment was scheduled but the patient did not show up</td>
+                    <td className="p-3 border-b">No-show, forgotten appointment, transport issues</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Cancelled by patient</td>
+                    <td className="p-3 border-b">Patient cancelled before the appointment time</td>
+                    <td className="p-3 border-b">Recovered elsewhere, changed mind, scheduling conflict</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Cancelled by clinic</td>
+                    <td className="p-3 border-b">Clinic cancelled due to doctor unavailability or emergency</td>
+                    <td className="p-3 border-b">Doctor leave, overbooking, clinic closure</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">One-time visit, no return</td>
+                    <td className="p-3">Patient completed one visit but never booked again</td>
+                    <td className="p-3">No follow-up plan, poor experience, moved away</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Important:</strong> The report lists up to the
+                most recent 50 dropped patient records so the dashboard stays fast. For a complete
+                historical list, use the CSV export or filter by a narrower date range.
+              </p>
+            </div>
+
+            <h2>What the Report Shows</h2>
+            <p>
+              The report surfaces five core metrics that describe the health of your patient funnel:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Total drop-offs</td>
+                    <td className="p-3 border-b">Count of patients who left the funnel in the selected period</td>
+                    <td className="p-3 border-b">Top-line indicator of how much potential care is being lost</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Drop-off rate</td>
+                    <td className="p-3 border-b">Drop-offs &divide; total patient interactions &times; 100</td>
+                    <td className="p-3 border-b">Shows leakage as a percentage of opportunity</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-show rate</td>
+                    <td className="p-3 border-b">No-shows &divide; scheduled appointments &times; 100</td>
+                    <td className="p-3 border-b">Isolates the most common and most fixable drop-off stage</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">One-time patient rate</td>
+                    <td className="p-3 border-b">Patients with exactly one completed visit and no return &divide; new patients</td>
+                    <td className="p-3 border-b">Measures whether new patients are sticking around</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Recovered patients</td>
+                    <td className="p-3">Patients who dropped off but later returned within the period</td>
+                    <td className="p-3">Shows the effectiveness of recall and follow-up campaigns</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Charts</h2>
+            <p>
+              The report uses a combination of visuals so you can see both the funnel shape and
+              trends over time:
+            </p>
+            <ul>
+              <li>
+                <strong>Funnel chart</strong> &mdash; shows how many patients move from booked
+                appointments to completed visits. The widest section is booked appointments; the
+                narrowest is completed visits. Gaps between sections represent drop-offs.
+              </li>
+              <li>
+                <strong>Stage breakdown bar</strong> &mdash; splits drop-offs by stage: no-show,
+                patient-cancelled, clinic-cancelled, and one-time-only. The largest bar points to
+                your biggest leakage point.
+              </li>
+              <li>
+                <strong>Trend line</strong> &mdash; plots the drop-off rate over days or weeks. A
+                rising line means more patients are leaking; a falling line means retention or
+                reminder workflows are working.
+              </li>
+              <li>
+                <strong>Top drop-off reasons</strong> &mdash; if your team records cancellation or
+                no-show reasons, this list shows the most common excuses so you can address them.
+              </li>
+            </ul>
+
+            <h2>Filters and Date Ranges</h2>
+            <p>
+              Use the toolbar above the report to drill into specific slices of your funnel:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> &mdash; last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> &mdash; view drop-offs for a specific doctor or compare doctors.</li>
+              <li><strong>Specialty</strong> &mdash; filter by the specialty under which appointments were booked.</li>
+              <li><strong>Visit type</strong> &mdash; in-person, video consultation, or walk-in.</li>
+              <li><strong>Drop-off stage</strong> &mdash; focus on no-shows, cancellations, or one-time patients only.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Filters stack. Selecting &quot;Last 90 days,&quot; &quot;Dr. Ayesha,&quot; and
+              &quot;No-show&quot; will show only no-shows for that doctor in that window.
+            </p>
+
+            <h2>Interpreting the Numbers</h2>
+            <p>
+              Drop-off benchmarks vary by specialty, location, and clinic maturity, but these ranges
+              are a useful starting point for Pakistani outpatient clinics:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Drop-Off Rate</th>
+                    <th className="text-left p-3 border-b">What It Usually Means</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Below 10%</td>
+                    <td className="p-3 border-b">Excellent retention and arrival discipline</td>
+                    <td className="p-3 border-b">Maintain current reminder and confirmation workflows</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">10&ndash;20%</td>
+                    <td className="p-3 border-b">Healthy range for most clinics</td>
+                    <td className="p-3 border-b">Monitor weekly; spot-check the largest drop-off stage</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">20&ndash;35%</td>
+                    <td className="p-3 border-b">Moderate leakage; reminders or scheduling may need attention</td>
+                    <td className="p-3 border-b">Add SMS/WhatsApp reminders, confirm appointments 24 hours ahead</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Above 35%</td>
+                    <td className="p-3">Severe leakage; revenue and patient trust at risk</td>
+                    <td className="p-3">Audit booking flow, doctor punctuality, front-desk communication, and follow-up protocols</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-shows spike on Monday mornings</td>
+                    <td className="p-3 border-b">Trend line by day of week and time slot</td>
+                    <td className="p-3 border-b">Send Sunday evening reminders and overbook Monday slots slightly</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">One doctor has twice the clinic average drop-off rate</td>
+                    <td className="p-3 border-b">Filter by doctor and compare wait times</td>
+                    <td className="p-3 border-b">Review that doctor&apos;s schedule for overbooking or long consultation times</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Many first-time patients never return</td>
+                    <td className="p-3 border-b">One-time patient rate and new-vs-returning report</td>
+                    <td className="p-3 border-b">Train doctors to book the next visit before the patient leaves</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Video consultations have higher drop-offs</td>
+                    <td className="p-3 border-b">Filter by visit type = video and check reason codes</td>
+                    <td className="p-3 border-b">Send video links and test-call instructions 15 minutes before the call</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Drop-off rate fell after enabling reminders</td>
+                    <td className="p-3 border-b">Trend line before and after the change</td>
+                    <td className="p-3 border-b">Document the workflow and roll it out to all doctors and receptionists</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>How to Reduce Patient Drop-Offs</h2>
+            <p>
+              The report is most valuable when it drives action. Here are proven ways to close the
+              gaps in your funnel:
+            </p>
+            <ul>
+              <li>
+                <strong>Confirm appointments automatically.</strong> Send an SMS or WhatsApp
+                confirmation 24 hours before the visit and ask patients to reply &quot;Yes&quot; to
+                confirm.
+              </li>
+              <li>
+                <strong>Book the next visit at checkout.</strong> Before a patient leaves, schedule
+                their follow-up appointment and send the details via SMS.
+              </li>
+              <li>
+                <strong>Record reasons.</strong> Train receptionists to note why an appointment was
+                cancelled or missed. Patterns in reasons guide your fixes.
+              </li>
+              <li>
+                <strong>Manage wait times.</strong> Long waits are a top cause of patient churn.
+                Use the peak-hours heatmap to spread load and avoid overbooking.
+              </li>
+              <li>
+                <strong>Run recall campaigns.</strong> Patients with chronic conditions often need
+                scheduled reminders. A monthly recall list can turn one-time visitors into returning
+                patients.
+              </li>
+              <li>
+                <strong>Track by doctor.</strong> Share drop-off metrics in monthly doctor meetings
+                so underperforming schedules can be adjusted quickly.
+              </li>
+            </ul>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> above any chart to download a CSV or PDF. The CSV
+              contains one row per dropped interaction with the patient name, date, doctor, stage,
+              and recorded reason. The PDF is formatted for printing and works well for clinic
+              meetings, partnership reviews, or operational audits.
+            </p>
+
+            <h2>Data Sources and Accuracy</h2>
+            <p>
+              The report is built from appointment, walk-in, and patient records. A drop-off only
+              counts when the underlying record has a clear outcome:
+            </p>
+            <ul>
+              <li>No-shows are counted from appointments marked as <em>No-show</em> or left in <em>Scheduled</em> past the appointment time.</li>
+              <li>Cancellations are counted from appointments with a <em>Cancelled</em> status and a recorded cancellation source.</li>
+              <li>One-time patients are identified from completed visits where the patient has no other completed visit in the selected period.</li>
+              <li>Deleted appointments are excluded entirely.</li>
+              <li>Changes to appointment status after the date may shift historical numbers slightly.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/appointment-status-breakdown`}>Appointment Status Breakdown</Link></li>
+              <li><Link to={`${kbBase}/new-vs-followup`}>New vs Follow-up Appointments</Link></li>
+              <li><Link to={`${kbBase}/peak-hour-heatmaps`}>Peak Hours Heatmap Explained</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review the Patient Drop-Off
+                report every Monday morning. A 10-minute review of the previous week&apos;s no-shows
+                and cancellations lets you rebook empty slots and spot problems before they
+                become trends.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
+
+
 
 
 
