@@ -2339,6 +2339,12 @@ const slugTitleMap: Record<string, string> = {
   "status-breakdown": "Appointment Status Breakdown",
   "appointment-statuses-report": "Appointment Status Breakdown",
   "appointment-outcomes": "Appointment Status Breakdown",
+  "new-vs-followup": "New vs Follow-up Appointments",
+  "new-vs-follow-up": "New vs Follow-up Appointments",
+  "follow-up-appointments": "New vs Follow-up Appointments",
+  "new-appointments": "New vs Follow-up Appointments",
+  "first-visit-vs-follow-up": "New vs Follow-up Appointments",
+  "appointment-type-breakdown": "New vs Follow-up Appointments",
 };
 
 
