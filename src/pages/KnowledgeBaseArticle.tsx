@@ -2339,6 +2339,12 @@ const slugTitleMap: Record<string, string> = {
   "status-breakdown": "Appointment Status Breakdown",
   "appointment-statuses-report": "Appointment Status Breakdown",
   "appointment-outcomes": "Appointment Status Breakdown",
+  "new-vs-followup": "New vs Follow-up Appointments",
+  "new-vs-follow-up": "New vs Follow-up Appointments",
+  "follow-up-appointments": "New vs Follow-up Appointments",
+  "new-appointments": "New vs Follow-up Appointments",
+  "first-visit-vs-follow-up": "New vs Follow-up Appointments",
+  "appointment-type-breakdown": "New vs Follow-up Appointments",
 };
 
 
@@ -2622,6 +2628,20 @@ const KnowledgeBaseArticle = () => {
   if (slug === "appointment-status-breakdown" || slug === "status-breakdown" || slug === "appointment-statuses-report" || slug === "appointment-outcomes") {
     return <AppointmentStatusBreakdownArticle />;
   }
+  if (slug === "new-vs-followup" || slug === "new-vs-follow-up" || slug === "follow-up-appointments" || slug === "new-appointments" || slug === "first-visit-vs-follow-up" || slug === "appointment-type-breakdown") {
+    return <NewVsFollowUpAppointmentsArticle />;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -26265,5 +26285,327 @@ const AppointmentStatusBreakdownArticle = () => {
     </div>
   );
 };
+
+const NewVsFollowUpAppointmentsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">New vs Follow-up Appointments</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Calendar className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">New vs Follow-up Appointments</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The New vs Follow-up Appointments report separates first-time visits from return
+              visits for continuing care. It helps clinics understand how much of their schedule is
+              consumed by initial consultations versus ongoing treatment, follow-up reviews, and
+              chronic-care management.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Look for the <em>New vs Follow-up Appointments</em> card. Clinic owners see the full
+              clinic view by default; doctors see only appointments linked to their own profile
+              unless the clinic has enabled full-clinic reporting.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide summary but cannot
+              export or filter by individual doctor unless that permission is enabled in
+              Settings &rarr; Roles.
+            </p>
+
+            <h2>How Appointments Are Classified</h2>
+            <p>
+              Unlike the <em>New vs Returning Patients</em> report, which looks at whether the
+              patient has ever visited before, this report looks at the purpose of the
+              appointment itself. Every booked or walk-in visit is tagged as either a
+              <strong>new appointment</strong> or a <strong>follow-up appointment</strong>.
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Category</th>
+                    <th className="text-left p-3 border-b">Definition</th>
+                    <th className="text-left p-3 border-b">Typical Examples</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New appointment</td>
+                    <td className="p-3 border-b">First visit for a new complaint, condition, or referral</td>
+                    <td className="p-3 border-b">First consultation, annual check-up, new specialist referral, screening visit</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Follow-up appointment</td>
+                    <td className="p-3 border-b">Return visit to review progress, results, or continuing treatment</td>
+                    <td className="p-3 border-b">Post-op review, chronic care monitoring, lab result review, medication adjustment</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Unspecified / mixed</td>
+                    <td className="p-3">Visit type not recorded or visit spans both categories</td>
+                    <td className="p-3">Counted separately and excluded from the new/follow-up ratio</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Important:</strong> A patient can have a new
+                appointment and a follow-up appointment in the same period. The report counts
+                <em>visits</em>, not unique patients, so it reflects your actual clinical workload.
+              </p>
+            </div>
+
+            <h2>What the Report Shows</h2>
+            <p>
+              The report surfaces four core metrics that describe the shape of your clinical
+              workload:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New appointment count</td>
+                    <td className="p-3 border-b">Visits flagged as first-time or new complaints</td>
+                    <td className="p-3 border-b">Shows demand for initial consultations and diagnostic work</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Follow-up appointment count</td>
+                    <td className="p-3 border-b">Visits flagged as return or continuing care</td>
+                    <td className="p-3 border-b">Shows how much capacity is tied to ongoing treatment</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Follow-up ratio</td>
+                    <td className="p-3 border-b">Follow-up appointments &divide; total classified appointments &times; 100</td>
+                    <td className="p-3 border-b">High ratios often indicate strong continuity of care</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Unspecified count</td>
+                    <td className="p-3">Visits without a recorded new/follow-up tag</td>
+                    <td className="p-3">Flags data-quality gaps at the front desk or in booking forms</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Charts</h2>
+            <p>
+              The report uses a combination of visuals so you can see both workload mix and
+              trends over time:
+            </p>
+            <ul>
+              <li>
+                <strong>Stacked bar chart</strong> &mdash; shows new and follow-up counts side by
+                side for each day, week, or month. Useful for spotting whether follow-ups cluster
+                after specific procedures or campaigns.
+              </li>
+              <li>
+                <strong>Donut chart</strong> &mdash; shows the overall share of new vs follow-up
+                appointments for the whole period. Hover over a slice to see exact counts and
+                percentages.
+              </li>
+              <li>
+                <strong>Trend line</strong> &mdash; plots the follow-up ratio over time. A rising
+                line means more of your schedule is being used for continuing care; a falling line
+                means you are seeing more first-time visits.
+              </li>
+              <li>
+                <strong>Data-quality indicator</strong> &mdash; shows the percentage of
+                appointments that have a visit type recorded. Low coverage means the report is
+                undercounting one or both categories.
+              </li>
+            </ul>
+
+            <h2>Filters and Date Ranges</h2>
+            <p>
+              Use the toolbar above the report to drill into specific slices of your schedule:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> &mdash; last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> &mdash; view the new vs follow-up mix for a specific doctor.</li>
+              <li><strong>Specialty</strong> &mdash; filter by the specialty under which visits were booked.</li>
+              <li><strong>Visit type</strong> &mdash; in-person, video consultation, or walk-in.</li>
+              <li><strong>Condition tag</strong> &mdash; filter by chronic condition, post-op, or other follow-up tags.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Filters stack. Selecting &quot;Last 90 days,&quot; &quot;Dr. Rizvi,&quot; and
+              &quot;Diabetes clinic&quot; will show only the new vs follow-up mix for that doctor&apos;s
+              diabetes appointments in that window.
+            </p>
+
+            <h2>Interpreting the Numbers</h2>
+            <p>
+              The ideal mix depends on your specialty, clinic model, and growth stage. Use these
+              benchmarks as a starting point:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Follow-up Ratio</th>
+                    <th className="text-left p-3 border-b">What It Usually Means</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Below 30%</td>
+                    <td className="p-3 border-b">Most visits are first-time; low continuity</td>
+                    <td className="p-3 border-b">Review discharge planning, follow-up reminders, and care-plan workflows</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">30&ndash;50%</td>
+                    <td className="p-3 border-b">Healthy balance between acquisition and continuity</td>
+                    <td className="p-3 border-b">Maintain current follow-up protocols while monitoring data quality</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">50&ndash;70%</td>
+                    <td className="p-3 border-b">Strong follow-up discipline; common in chronic-care specialties</td>
+                    <td className="p-3 border-b">Ensure capacity is not being squeezed by follow-ups; consider dedicated follow-up slots</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Above 70%</td>
+                    <td className="p-3">Very high follow-up load; risk of long waits for new patients</td>
+                    <td className="p-3">Open more new-patient slots or add a junior doctor to handle routine follow-ups</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Follow-ups spike after a surgical camp</td>
+                    <td className="p-3 border-b">Stacked bar chart around camp dates</td>
+                    <td className="p-3 border-b">Book post-op review slots in advance and send reminder messages</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New appointments are rising but follow-ups are flat</td>
+                    <td className="p-3 border-b">Trend line and doctor-level filters</td>
+                    <td className="p-3 border-b">Audit whether follow-up recommendations are being recorded at checkout</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">One doctor has almost no follow-ups</td>
+                    <td className="p-3 border-b">Filter by doctor and compare visit-type capture rate</td>
+                    <td className="p-3 border-b">Train the doctor or receptionist to tag visits correctly during booking</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Unspecified count is above 20%</td>
+                    <td className="p-3 border-b">Data-quality indicator and booking source</td>
+                    <td className="p-3 border-b">Make visit type a required field in online booking and walk-in forms</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Video consultations have fewer follow-ups</td>
+                    <td className="p-3 border-b">Filter by visit type = video</td>
+                    <td className="p-3">Add video follow-up links and scheduled return appointments to care plans</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Improving Data Accuracy</h2>
+            <p>
+              The report is only as useful as the visit-type data captured at booking. To keep the
+              numbers reliable:
+            </p>
+            <ul>
+              <li>Train receptionists to ask &quot;Is this a first visit or a follow-up?&quot; for every booking.</li>
+              <li>Set the visit type default to unspecified so staff must actively choose new or follow-up.</li>
+              <li>Use appointment templates for common follow-up workflows so the tag is applied automatically.</li>
+              <li>Review the unspecified count weekly and correct miscoded appointments before month-end reporting.</li>
+            </ul>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> above any chart to download a CSV or PDF. The CSV
+              contains one row per appointment with its visit type, date, doctor, patient, and
+              specialty. The PDF is formatted for printing and works well for clinic meetings,
+              partnership reviews, or operational audits.
+            </p>
+
+            <h2>Data Sources and Accuracy</h2>
+            <p>
+              The report is built from appointment and walk-in records that have a recorded visit
+              type. A visit only counts when it has a status of <em>Completed</em> or
+              <em> Checked Out</em>. Cancelled, no-show, and pending appointments are excluded.
+            </p>
+            <ul>
+              <li>Walk-ins are included if they were recorded through the walk-in flow and tagged with a visit type.</li>
+              <li>Appointments without a visit type are counted as unspecified and excluded from the follow-up ratio.</li>
+              <li>Deleted appointments are excluded entirely.</li>
+              <li>Changes to the visit type after the appointment is completed may shift historical numbers slightly.</li>
+            </ul>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/appointment-status-breakdown`}>Appointment Status Breakdown</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/peak-hour-heatmaps`}>Peak Hours Heatmap Explained</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Review the New vs Follow-up
+                Appointments report alongside your doctor schedules. If follow-ups are consuming
+                prime morning slots, consider blocking late-afternoon or specific days for routine
+                follow-ups so new patients can be seen sooner.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
 
 
