@@ -2628,6 +2628,20 @@ const KnowledgeBaseArticle = () => {
   if (slug === "appointment-status-breakdown" || slug === "status-breakdown" || slug === "appointment-statuses-report" || slug === "appointment-outcomes") {
     return <AppointmentStatusBreakdownArticle />;
   }
+  if (slug === "new-vs-followup" || slug === "new-vs-follow-up" || slug === "follow-up-appointments" || slug === "new-appointments" || slug === "first-visit-vs-follow-up" || slug === "appointment-type-breakdown") {
+    return <NewVsFollowUpAppointmentsArticle />;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
