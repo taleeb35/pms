@@ -2353,6 +2353,13 @@ const slugTitleMap: Record<string, string> = {
   "patient-leakage": "Patient Drop-Off Reports",
   "patient-loss": "Patient Drop-Off Reports",
   "no-show-dropoff": "Patient Drop-Off Reports",
+  "top-cities": "Top Cities & Patient Geography",
+  "patient-geography": "Top Cities & Patient Geography",
+  "patient-location": "Top Cities & Patient Geography",
+  "city-breakdown": "Top Cities & Patient Geography",
+  "top-cities-report": "Top Cities & Patient Geography",
+  "geography-report": "Top Cities & Patient Geography",
+  "patient-cities": "Top Cities & Patient Geography",
 };
 
 
@@ -2642,7 +2649,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "patient-dropoff" || slug === "patient-drop-off" || slug === "patient-drop-off-reports" || slug === "dropoff-report" || slug === "drop-off-report" || slug === "patient-leakage" || slug === "patient-loss" || slug === "no-show-dropoff") {
     return <PatientDropOffReportsArticle />;
   }
-
+  if (slug === "top-cities" || slug === "patient-geography" || slug === "patient-location" || slug === "city-breakdown" || slug === "top-cities-report" || slug === "geography-report" || slug === "patient-cities") {
+    return <TopCitiesPatientGeographyArticle />;
+  }
 
 
 
@@ -26954,6 +26963,350 @@ const PatientDropOffReportsArticle = () => {
                 report every Monday morning. A 10-minute review of the previous week&apos;s no-shows
                 and cancellations lets you rebook empty slots and spot problems before they
                 become trends.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
+
+
+
+const TopCitiesPatientGeographyArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Top Cities &amp; Patient Geography</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><MapPin className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Top Cities &amp; Patient Geography</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Top Cities &amp; Patient Geography report shows where your patients come from. It
+              ranks cities by patient volume, maps appointment density, and helps clinics decide
+              where to focus marketing, open a branch, or add outreach hours.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>, or
+              <strong> Doctor</strong> and go to <strong>Reports &rarr; Analytics Dashboard</strong>.
+              Look for the <em>Top Cities &amp; Patient Geography</em> card. Clinic owners see the
+              full clinic footprint by default; doctors see only the geography tied to their own
+              patient appointments unless the clinic has enabled full-clinic reporting.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Receptionists with reporting access can view the clinic-wide summary but cannot export
+              or filter by individual doctor unless that permission is enabled in Settings &rarr; Roles.
+            </p>
+
+            <h2>What the Report Shows</h2>
+            <p>
+              The report answers three practical questions for any clinic:
+            </p>
+            <ul>
+              <li><strong>Which cities send us the most patients?</strong> — ranked list by patient count and appointment count.</li>
+              <li><strong>Are patients travelling from far away?</strong> — distance or out-of-city ratio shows how wide your catchment area is.</li>
+              <li><strong>Is our marketing spend matching our patient base?</strong> — compare city volume against ad spend or referral campaigns.</li>
+            </ul>
+            <p>
+              Geography data is pulled from the city field in each patient&apos;s profile and from the
+              appointment record. If a patient has moved or the city was entered differently across
+              visits, the report groups by the most recently recorded city.
+            </p>
+
+            <h2>Key Metrics Explained</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Patient count by city</td>
+                    <td className="p-3 border-b">Unique patients with a recorded address in each city</td>
+                    <td className="p-3 border-b">Shows your core patient base and brand reach</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Appointment count by city</td>
+                    <td className="p-3 border-b">Total appointments booked by patients from each city</td>
+                    <td className="p-3 border-b">High appointments from one city may signal repeat-visit loyalty</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">City share (%)</td>
+                    <td className="p-3 border-b">A city&apos;s patient count divided by total patients &times; 100</td>
+                    <td className="p-3 border-b">Makes it easy to compare cities of different sizes</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Top city concentration</td>
+                    <td className="p-3 border-b">Percentage of all patients coming from the top city alone</td>
+                    <td className="p-3 border-b">High concentration means you depend heavily on one local market</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Out-of-city patients</td>
+                    <td className="p-3 border-b">Patients whose city differs from the clinic&apos;s own city</td>
+                    <td className="p-3 border-b">Indicates reputation strong enough to attract travel</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">New patients by city</td>
+                    <td className="p-3">First-time patients in the period, grouped by city</td>
+                    <td className="p-3">Shows which cities your newest marketing is reaching</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Charts</h2>
+            <p>
+              The report combines a ranked list with visual charts so you can see both the leaders
+              and the long tail of smaller cities:
+            </p>
+            <ul>
+              <li>
+                <strong>Horizontal bar chart</strong> &mdash; cities ranked by patient count. The
+                longest bar is your dominant market; shorter bars show secondary markets.
+              </li>
+              <li>
+                <strong>Pie or donut chart</strong> &mdash; city share as a percentage of the total.
+                Useful when presenting to stakeholders who want a quick market-split view.
+              </li>
+              <li>
+                <strong>Trend line by city</strong> &mdash; when you filter to a single city, the
+                report shows how patient volume from that city changed over the selected period.
+              </li>
+              <li>
+                <strong>Map view</strong> &mdash; if enabled, a simple dot map shows patient density
+                by city. Larger dots mean more patients. This is especially helpful for multi-city
+                clinics planning outreach or a new branch.
+              </li>
+              <li>
+                <strong>Out-of-city ratio</strong> &mdash; a small gauge or percentage that compares
+                local patients to patients travelling from other cities.
+              </li>
+            </ul>
+
+            <h2>Filters and Date Ranges</h2>
+            <p>
+              Use the toolbar above the report to focus on specific geographies or time windows:
+            </p>
+            <ul>
+              <li><strong>Date range</strong> &mdash; last 30 days, last 90 days, last 12 months, or a custom range.</li>
+              <li><strong>Doctor</strong> &mdash; view geography for a specific doctor or compare doctors.</li>
+              <li><strong>Specialty</strong> &mdash; filter by the specialty under which appointments were booked.</li>
+              <li><strong>Visit type</strong> &mdash; in-person, video consultation, or walk-in.</li>
+              <li><strong>City</strong> &mdash; focus on one city to see its trend and patient mix.</li>
+              <li><strong>Local vs out-of-city</strong> &mdash; toggle to show only patients from your clinic&apos;s own city or only those travelling in.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Filters stack. Selecting &quot;Last 90 days,&quot; &quot;Video consultation,&quot; and
+              &quot;Lahore&quot; will show only video patients from Lahore in that window.
+            </p>
+
+            <h2>Interpreting the Numbers</h2>
+            <p>
+              Geography patterns vary by clinic type, specialty, and city size. Use these rules of
+              thumb when reviewing the report:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Pattern</th>
+                    <th className="text-left p-3 border-b">What It Usually Means</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">One city dominates (&gt;70%)</td>
+                    <td className="p-3 border-b">Your clinic is strongly local-brand dependent</td>
+                    <td className="p-3 border-b">Protect local reputation; test small campaigns in nearby cities</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Top 3 cities are close in share</td>
+                    <td className="p-3 border-b">You have a diversified patient base</td>
+                    <td className="p-3 border-b">Double down on the city with the highest growth rate</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">High out-of-city ratio</td>
+                    <td className="p-3 border-b">Patients trust your specialty enough to travel</td>
+                    <td className="p-3 border-b">Add online booking, video consultations, and clear directions</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">A city is rising fast</td>
+                    <td className="p-3 border-b">Word-of-mouth or recent marketing is working there</td>
+                    <td className="p-3 border-b">Increase targeted ads and ask new patients for referrals in that city</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">A city is falling</td>
+                    <td className="p-3 border-b">Competitor opened, transport changed, or recall weakened</td>
+                    <td className="p-3 border-b">Run a recall campaign or offer a follow-up package for that city</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Many one-time cities</td>
+                    <td className="p-3">Patients travel once for a specific procedure or specialist</td>
+                    <td className="p-3">Create post-visit care packages and video follow-ups to keep them engaged</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Planning a second branch</td>
+                    <td className="p-3 border-b">Top 5 cities and out-of-city concentration</td>
+                    <td className="p-3 border-b">Open in the city that already sends the most out-of-city patients</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Launching a digital ad campaign</td>
+                    <td className="p-3 border-b">New patients by city and current city share</td>
+                    <td className="p-3 border-b">Target underperforming nearby cities with the highest potential</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">A doctor complains about low bookings</td>
+                    <td className="p-3 border-b">Filter by doctor and compare city distribution</td>
+                    <td className="p-3 border-b">Promote that doctor in the cities where their patient share is lowest</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Video consultations are popular</td>
+                    <td className="p-3 border-b">Filter by visit type = video and list top cities</td>
+                    <td className="p-3 border-b">Advertise video visits in cities more than 50 km away</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">City names look duplicated</td>
+                    <td className="p-3 border-b">Raw patient city field for spelling variations</td>
+                    <td className="p-3 border-b">Standardise city entries in patient profiles (e.g., &quot;Lahore&quot; vs &quot;Lahore Cantt&quot;)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Using Geography for Marketing and Operations</h2>
+            <p>
+              Patient geography is not just a report &mdash; it is a decision tool. Here is how clinics
+              commonly use it:
+            </p>
+            <ul>
+              <li>
+                <strong>Target ads by city.</strong> Run Facebook, Google, or WhatsApp campaigns in
+                the cities that already appear in your top five, because those markets have proven
+                demand.
+              </li>
+              <li>
+                <strong>Plan outreach camps.</strong> If a nearby city sends many patients, a monthly
+                camp or pop-up clinic there can capture demand before competitors do.
+              </li>
+              <li>
+                <strong>Adjust doctor schedules.</strong> If many patients travel from a specific
+                city on weekends, add Saturday slots or cluster appointments to reduce travel
+                friction.
+              </li>
+              <li>
+                <strong>Improve directions and transport info.</strong> Out-of-city patients often
+                need parking, public transport, or landmark guidance. Add this to your public clinic
+                profile and appointment reminders.
+              </li>
+              <li>
+                <strong>Build referral partnerships.</strong> Cities with rising patient counts are
+                good places to partner with local labs, pharmacies, or general physicians for
+                referrals.
+              </li>
+              <li>
+                <strong>Measure campaign ROI.</strong> After a city-specific campaign, check the
+                &quot;New patients by city&quot; metric to see if the spend translated into actual
+                appointments.
+              </li>
+            </ul>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> above any chart to download a CSV or PDF. The CSV contains
+              one row per city with patient count, appointment count, city share, new-patient count,
+              and out-of-city flag. The PDF is formatted for printing and works well for management
+              reviews, investor updates, or branch-expansion proposals.
+            </p>
+
+            <h2>Data Sources and Accuracy</h2>
+            <p>
+              The report is built from the city field stored in each patient profile and linked
+              appointment records. Keep these points in mind:
+            </p>
+            <ul>
+              <li>City is taken from the patient&apos;s most recently updated address.</li>
+              <li>Patients without a recorded city are grouped under &quot;Unknown / Not Set&quot;.</li>
+              <li>Spelling variations (e.g., &quot;Lahore&quot;, &quot;lahore&quot;, &quot;Lahore Cantt&quot;) may appear as separate cities unless standardised.</li>
+              <li>Walk-in patients use the city entered at the time of registration.</li>
+              <li>Video consultations may show a patient&apos;s home city, which can differ from where the clinic is located.</li>
+              <li>Deleted patient records are excluded entirely.</li>
+            </ul>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Tip:</strong> Review the &quot;Unknown / Not
+                Set&quot; row monthly. Asking receptionists to confirm the city during check-in is
+                the easiest way to improve geography accuracy.
+              </p>
+            </div>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/patient-demographics`}>Patient Demographics &mdash; Gender, Age &amp; City</Link></li>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/peak-hour-heatmaps`}>Peak Hours Heatmap Explained</Link></li>
+              <li><Link to={`${kbBase}/analytics-dashboard`}>Reading Your Analytics Dashboard</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Compare the Top Cities report
+                with your appointment calendar before adding a new branch. If one city already sends
+                20% of your patients and travel time is more than 45 minutes, that city is usually
+                the strongest candidate for expansion.
               </p>
             </div>
           </article>
