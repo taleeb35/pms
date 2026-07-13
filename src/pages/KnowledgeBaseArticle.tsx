@@ -2353,6 +2353,13 @@ const slugTitleMap: Record<string, string> = {
   "patient-leakage": "Patient Drop-Off Reports",
   "patient-loss": "Patient Drop-Off Reports",
   "no-show-dropoff": "Patient Drop-Off Reports",
+  "top-cities": "Top Cities & Patient Geography",
+  "patient-geography": "Top Cities & Patient Geography",
+  "patient-location": "Top Cities & Patient Geography",
+  "city-breakdown": "Top Cities & Patient Geography",
+  "top-cities-report": "Top Cities & Patient Geography",
+  "geography-report": "Top Cities & Patient Geography",
+  "patient-cities": "Top Cities & Patient Geography",
 };
 
 
