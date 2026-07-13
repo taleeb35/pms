@@ -2649,7 +2649,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "patient-dropoff" || slug === "patient-drop-off" || slug === "patient-drop-off-reports" || slug === "dropoff-report" || slug === "drop-off-report" || slug === "patient-leakage" || slug === "patient-loss" || slug === "no-show-dropoff") {
     return <PatientDropOffReportsArticle />;
   }
-
+  if (slug === "top-cities" || slug === "patient-geography" || slug === "patient-location" || slug === "city-breakdown" || slug === "top-cities-report" || slug === "geography-report" || slug === "patient-cities") {
+    return <TopCitiesPatientGeographyArticle />;
+  }
 
 
 
