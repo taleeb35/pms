@@ -2360,6 +2360,13 @@ const slugTitleMap: Record<string, string> = {
   "top-cities-report": "Top Cities & Patient Geography",
   "geography-report": "Top Cities & Patient Geography",
   "patient-cities": "Top Cities & Patient Geography",
+  "quick-stats": "Quick Stats Overview",
+  "quick-stats-overview": "Quick Stats Overview",
+  "stats-overview": "Quick Stats Overview",
+  "dashboard-stats": "Quick Stats Overview",
+  "kpi-overview": "Quick Stats Overview",
+  "summary-metrics": "Quick Stats Overview",
+  "clinic-kpis": "Quick Stats Overview",
 };
 
 
@@ -2652,6 +2659,10 @@ const KnowledgeBaseArticle = () => {
   if (slug === "top-cities" || slug === "patient-geography" || slug === "patient-location" || slug === "city-breakdown" || slug === "top-cities-report" || slug === "geography-report" || slug === "patient-cities") {
     return <TopCitiesPatientGeographyArticle />;
   }
+  if (slug === "quick-stats" || slug === "quick-stats-overview" || slug === "stats-overview" || slug === "dashboard-stats" || slug === "kpi-overview" || slug === "summary-metrics" || slug === "clinic-kpis") {
+    return <QuickStatsOverviewArticle />;
+  }
+
 
 
 
@@ -27317,6 +27328,322 @@ const TopCitiesPatientGeographyArticle = () => {
     </div>
   );
 };
+
+const QuickStatsOverviewArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Patient &amp; Appointment Reports</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Quick Stats Overview</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Zap className="w-3 h-3 mr-1" />Patient &amp; Appointment Reports</Badge>
+              <Badge variant="outline">5 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Quick Stats Overview</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              The Quick Stats Overview is the first thing you see when you open the Reports or
+              Analytics section. It gives a one-glance summary of clinic health: how many patients
+              you saw, how many appointments moved through the day, what revenue looks like, and
+              where attention is needed.
+            </p>
+
+            <h2>Where to Find It</h2>
+            <p>
+              Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>,
+              <strong> Doctor</strong>, or a <strong>Receptionist</strong> with reporting access and
+              go to <strong>Reports &rarr; Analytics Dashboard</strong>. The Quick Stats cards appear
+              at the top of the dashboard, above detailed charts and tables. On smaller screens they
+              stack vertically; on desktops they sit in a row so you can scan them in seconds.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Doctors see stats scoped to their own patients and appointments unless the clinic has
+              enabled full-clinic reporting for their role.
+            </p>
+
+            <h2>What It Shows</h2>
+            <p>
+              Quick Stats is designed to answer four everyday questions before you scroll deeper
+              into reports:
+            </p>
+            <ul>
+              <li><strong>How busy are we?</strong> — total appointments and patients in the selected period.</li>
+              <li><strong>Are we growing?</strong> — new patient count and comparison with the previous period.</li>
+              <li><strong>How much did we earn?</strong> — revenue, collections, and outstanding dues.</li>
+              <li><strong>What needs attention?</strong> — no-shows, cancellations, and drop-offs.</li>
+            </ul>
+            <p>
+              Each metric is shown as a card with a number, a short label, and usually a small trend
+              indicator such as an up or down arrow and a percentage change from the previous period.
+            </p>
+
+            <h2>Key Metrics Explained</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Metric</th>
+                    <th className="text-left p-3 border-b">Meaning</th>
+                    <th className="text-left p-3 border-b">Why It Matters</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Total Appointments</td>
+                    <td className="p-3 border-b">All appointments in the selected date range</td>
+                    <td className="p-3 border-b">The simplest measure of clinic activity</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Total Patients</td>
+                    <td className="p-3 border-b">Unique patients with at least one appointment</td>
+                    <td className="p-3 border-b">Shows how many individuals the clinic touched</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">New Patients</td>
+                    <td className="p-3 border-b">First-time patients in the period</td>
+                    <td className="p-3 border-b">Signals growth and marketing effectiveness</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Returning Patients</td>
+                    <td className="p-3 border-b">Patients who have visited before</td>
+                    <td className="p-3 border-b">Indicates retention and ongoing care</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Revenue</td>
+                    <td className="p-3 border-b">Total billed amount from confirmed visits</td>
+                    <td className="p-3 border-b">Top-line financial health</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Collected</td>
+                    <td className="p-3 border-b">Payments actually received</td>
+                    <td className="p-3 border-b">Cash flow reality vs. billed revenue</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Outstanding Dues</td>
+                    <td className="p-3 border-b">Revenue billed but not yet collected</td>
+                    <td className="p-3 border-b">Shows follow-up and collection workload</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">No-Shows</td>
+                    <td className="p-3 border-b">Patients who did not arrive and were not cancelled</td>
+                    <td className="p-3 border-b">Operational leakage and schedule waste</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Cancelled</td>
+                    <td className="p-3 border-b">Appointments cancelled by patient or clinic</td>
+                    <td className="p-3 border-b">Helps distinguish patient-driven from clinic-driven gaps</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Avg. Patients per Day</td>
+                    <td className="p-3">Total patients divided by active days in range</td>
+                    <td className="p-3">Useful for capacity and staffing decisions</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Reading the Trend Indicators</h2>
+            <p>
+              Most Quick Stats cards include a small trend value, such as &quot;+12% vs last week&quot;
+              or &quot;-5% vs last month&quot;. These compare the current selected period with the
+              immediately previous period of the same length.
+            </p>
+            <ul>
+              <li>
+                <strong>Green upward arrow</strong> &mdash; the metric improved compared with the
+                previous period. For revenue and patient counts this is usually good; for no-shows
+                or cancellations it may need context.
+              </li>
+              <li>
+                <strong>Red downward arrow</strong> &mdash; the metric declined. A drop in revenue
+                deserves attention, while a drop in no-shows is positive.
+              </li>
+              <li>
+                <strong>Grey dash or zero</strong> &mdash; no change or not enough data to calculate a
+                trend. This often happens with custom date ranges shorter than two days.
+              </li>
+            </ul>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Tip:</strong> Trends are directional, not
+                diagnostic. A rising no-show rate tells you to investigate reminders or scheduling,
+                not why it changed.
+              </p>
+            </div>
+
+            <h2>Date Range and Filters</h2>
+            <p>
+              The Quick Stats bar changes instantly when you adjust the date range or filters at the
+              top of the dashboard. Common options include:
+            </p>
+            <ul>
+              <li><strong>Today</strong> &mdash; live view of the current day&apos;s numbers.</li>
+              <li><strong>Yesterday</strong> &mdash; useful for morning huddles and daily reviews.</li>
+              <li><strong>Last 7 days</strong> &mdash; a rolling week view that smooths out single-day spikes.</li>
+              <li><strong>Last 30 days</strong> &mdash; the default monthly snapshot.</li>
+              <li><strong>This month / Last month</strong> &mdash; calendar-month comparisons.</li>
+              <li><strong>Custom range</strong> &mdash; pick start and end dates for campaign or audit windows.</li>
+            </ul>
+            <p>
+              You can also filter by <strong>doctor</strong>, <strong>specialty</strong>, or
+              <strong> visit type</strong> to see how each part of the clinic contributes to the top
+              numbers.
+            </p>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">What to Check</th>
+                    <th className="text-left p-3 border-b">Suggested Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Morning huddle</td>
+                    <td className="p-3 border-b">Today / Yesterday appointments, no-shows</td>
+                    <td className="p-3 border-b">Confirm today&apos;s schedule and call yesterday&apos;s no-shows to reschedule</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Weekly review</td>
+                    <td className="p-3 border-b">Last 7 days: new vs returning, revenue trend</td>
+                    <td className="p-3 border-b">Celebrate growth; if new patients dropped, review marketing spend</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Month-end closing</td>
+                    <td className="p-3 border-b">This month revenue, collected vs outstanding</td>
+                    <td className="p-3 border-b">Reconcile collections and plan follow-up calls for overdue dues</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Doctor performance check</td>
+                    <td className="p-3 border-b">Filter by doctor and compare appointments, revenue</td>
+                    <td className="p-3 border-b">Identify underutilised slots or high cancellation patterns</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Receptionist handover</td>
+                    <td className="p-3 border-b">Today&apos;s total patients and cancellations</td>
+                    <td className="p-3 border-b">Brief the next shift on expected arrivals and empty slots to fill</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Investor or owner update</td>
+                    <td className="p-3">Last 30 days revenue, new patients, retention</td>
+                    <td className="p-3">Export the dashboard PDF for a clean summary slide</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Using Quick Stats for Decisions</h2>
+            <p>
+              Because the numbers update in real time, Quick Stats is useful for both daily
+              operations and longer planning:
+            </p>
+            <ul>
+              <li>
+                <strong>Spot busy days early.</strong> If total appointments are climbing through
+                the morning, add a receptionist or prepare rooms in advance.
+              </li>
+              <li>
+                <strong>Protect revenue.</strong> Watch the gap between Revenue and Collected. A
+                growing outstanding balance means collections need attention.
+              </li>
+              <li>
+                <strong>Track marketing impact.</strong> New Patients is the fastest signal of
+                whether a recent campaign or referral push is working.
+              </li>
+              <li>
+                <strong>Manage doctor schedules.</strong> Filter by doctor to see whose appointment
+                count is low and whose slots are overbooked.
+              </li>
+              <li>
+                <strong>Reduce leakage.</strong> High no-shows or cancellations are an early warning
+                to review reminders, confirmation messages, or overbooking policies.
+              </li>
+              <li>
+                <strong>Compare periods.</strong> Switch between This Month and Last Month to see
+                whether seasonal trends, holidays, or promotions moved the needle.
+              </li>
+            </ul>
+
+            <h2>Exporting and Sharing</h2>
+            <p>
+              Click <strong>Export</strong> near the Quick Stats bar to download a CSV or PDF
+              snapshot. The CSV contains one row per metric with current value, previous-period value,
+              and percentage change. The PDF formats the cards neatly for WhatsApp, email, or
+              printed handovers.
+            </p>
+
+            <h2>Data Sources and Accuracy</h2>
+            <p>
+              Quick Stats pulls from live appointment, patient, and payment records. Keep these
+              points in mind:
+            </p>
+            <ul>
+              <li>Appointments are counted by their scheduled date, not creation date.</li>
+              <li>Revenue includes only visits with a confirmed or completed status.</li>
+              <li>Outstanding dues are calculated from invoices minus recorded payments.</li>
+              <li>No-shows and cancellations rely on staff updating appointment status correctly.</li>
+              <li>Walk-in patients count as new patients if it is their first recorded visit.</li>
+              <li>Deleted records are excluded, so historical numbers may shift slightly if old data is cleaned up.</li>
+            </ul>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Tip:</strong> Make status updates a habit at
+                check-in and check-out. The accuracy of Quick Stats depends on how reliably staff
+                mark appointments as arrived, completed, cancelled, or no-show.
+              </p>
+            </div>
+
+            <h2>Related Reports</h2>
+            <ul>
+              <li><Link to={`${kbBase}/clinic-reports`}>Clinic Reports &amp; Analytics Dashboard</Link></li>
+              <li><Link to={`${kbBase}/new-vs-returning`}>New vs Returning Patients Report</Link></li>
+              <li><Link to={`${kbBase}/appointment-status-breakdown`}>Appointment Status Breakdown</Link></li>
+              <li><Link to={`${kbBase}/patient-dropoff`}>Patient Drop-Off Reports</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Set a 5-minute daily routine
+                around Quick Stats. Compare Today with Yesterday, note any red arrows, and assign one
+                follow-up action before the first patient arrives. Consistency turns the dashboard
+                from a report into a management habit.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 
 
 
