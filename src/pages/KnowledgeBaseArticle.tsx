@@ -2669,7 +2669,7 @@ const KnowledgeBaseArticle = () => {
   if (slug === "quick-stats" || slug === "quick-stats-overview" || slug === "stats-overview" || slug === "dashboard-stats" || slug === "kpi-overview" || slug === "summary-metrics" || slug === "clinic-kpis") {
     return <QuickStatsOverviewArticle />;
   }
-  if (slug === "filtering-reports-by-date" || slug === "date-range-filter" || slug === "report-date-filter" || slug === "date-filter" || slug === "custom-date-range" || slug === "report-date-range") {
+  if (slug === "report-date-filters" || slug === "filtering-reports-by-date" || slug === "date-range-filter" || slug === "report-date-filter" || slug === "date-filter" || slug === "custom-date-range" || slug === "report-date-range") {
     return <FilteringReportsByDateArticle />;
   }
 
