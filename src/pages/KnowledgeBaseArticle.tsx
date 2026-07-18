@@ -27652,6 +27652,370 @@ const QuickStatsOverviewArticle = () => {
   );
 };
 
+const FilteringReportsByDateArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Reports &amp; Analytics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Filtering Reports by Date Range</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Filter className="w-3 h-3 mr-1" />Reports &amp; Analytics</Badge>
+              <Badge variant="outline">5 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Filtering Reports by Date Range</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              Date filtering is the fastest way to turn raw clinic data into actionable insight.
+              Whether you need this morning&apos;s summary, a month-end review, or a custom audit window,
+              Zonoir&apos;s date range controls let you focus on exactly the period that matters.
+            </p>
+
+            <h2>Where to Find the Date Filter</h2>
+            <p>
+              Most reports and analytics screens in Zonoir have a date picker near the top of the
+              page. Sign in as a <strong>Clinic Owner</strong>, <strong>Admin</strong>,
+              <strong> Doctor</strong>, or reporting-enabled <strong>Receptionist</strong>, then open
+              any of the following areas:
+            </p>
+            <ul>
+              <li><strong>Reports &rarr; Analytics Dashboard</strong> — Quick Stats and KPI cards.</li>
+              <li><strong>Reports &rarr; Revenue Trend</strong> — revenue, collections, and profit over time.</li>
+              <li><strong>Reports &rarr; Appointment Status Breakdown</strong> — scheduled, completed, cancelled, and no-show counts.</li>
+              <li><strong>Reports &rarr; Patient Demographics</strong> — gender, age, and city distribution.</li>
+              <li><strong>Reports &rarr; Doctor Performance Scorecard</strong> — per-doctor volume and revenue.</li>
+              <li><strong>Finance &rarr; Monthly Reports</strong> — profit and loss, expenses, and exports.</li>
+            </ul>
+            <p>
+              Look for a button or dropdown that currently shows a preset such as
+              <strong> Last 30 days</strong>. Click it to reveal the full range of options.
+            </p>
+
+            <h2>Preset Date Ranges</h2>
+            <p>
+              Presets are the quickest way to filter. They automatically set the start and end dates
+              relative to today, so you do not have to pick dates manually:
+            </p>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Preset</th>
+                    <th className="text-left p-3 border-b">What It Covers</th>
+                    <th className="text-left p-3 border-b">Best Used For</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Today</td>
+                    <td className="p-3 border-b">Current calendar day</td>
+                    <td className="p-3 border-b">Morning huddles and live capacity checks</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Yesterday</td>
+                    <td className="p-3 border-b">Previous calendar day</td>
+                    <td className="p-3 border-b">Daily closing and next-day follow-up planning</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Last 7 days</td>
+                    <td className="p-3 border-b">Rolling week ending today</td>
+                    <td className="p-3 border-b">Weekly reviews and spotting short-term trends</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Last 14 days</td>
+                    <td className="p-3 border-b">Rolling two weeks ending today</td>
+                    <td className="p-3 border-b">Payroll cycles and fortnightly summaries</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Last 30 days</td>
+                    <td className="p-3 border-b">Rolling month ending today</td>
+                    <td className="p-3 border-b">Default monthly snapshot and marketing reviews</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Last 90 days</td>
+                    <td className="p-3 border-b">Rolling quarter ending today</td>
+                    <td className="p-3 border-b">Quarterly performance and seasonal analysis</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">This Month</td>
+                    <td className="p-3 border-b">Current calendar month</td>
+                    <td className="p-3 border-b">Month-to-date progress tracking</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Last Month</td>
+                    <td className="p-3 border-b">Previous calendar month</td>
+                    <td className="p-3 border-b">Month-end closing and comparisons</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Custom Range</td>
+                    <td className="p-3">Any start and end date you choose</td>
+                    <td className="p-3">Audits, campaigns, tax windows, or irregular periods</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              When you switch presets, every chart, table, and KPI card on the page updates
+              automatically. You do not need to refresh the screen or run a separate export.
+            </p>
+
+            <h2>Using a Custom Date Range</h2>
+            <p>
+              Custom ranges are useful when presets do not match the period you need — for example,
+              a Ramadan clinic drive, a Eid holiday window, or a tax quarter that does not align with
+              calendar months.
+            </p>
+            <ol>
+              <li>Open the date filter dropdown.</li>
+              <li>Select <strong>Custom Range</strong>.</li>
+              <li>Click the <strong>Start</strong> field and pick the first day you want to include.</li>
+              <li>Click the <strong>End</strong> field and pick the last day you want to include.</li>
+              <li>Press <strong>Apply</strong> or close the calendar to refresh the report.</li>
+            </ol>
+            <p>
+              The calendar will not let you pick a future end date, and the end date cannot be before
+              the start date. If you need to look at a single day, set the start and end date to the
+              same value.
+            </p>
+            <div className="not-prose p-4 bg-muted/40 border rounded-lg my-6">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Tip:</strong> Custom ranges are remembered while
+                you stay on the report, but they reset to the default when you leave and come back.
+                For recurring windows, use the export feature to save a snapshot.
+              </p>
+            </div>
+
+            <h2>How Date Filtering Affects Different Reports</h2>
+            <p>
+              Each report uses the selected range in a slightly different way. Understanding the logic
+              helps you interpret numbers correctly:
+            </p>
+            <ul>
+              <li>
+                <strong>Appointments</strong> are counted by their scheduled date, not the date they
+                were created. A booking made last week for today appears in today&apos;s numbers.
+              </li>
+              <li>
+                <strong>Patients</strong> are counted when they had at least one appointment in the
+                range. A patient may appear in multiple periods if they visit more than once.
+              </li>
+              <li>
+                <strong>Revenue</strong> is based on completed or confirmed visits within the range.
+                Unbilled or cancelled appointments are excluded.
+              </li>
+              <li>
+                <strong>Expenses</strong> are matched by the expense date you entered when recording
+                the transaction.
+              </li>
+              <li>
+                <strong>No-shows and cancellations</strong> use the original appointment date, so you
+                can see which days produced the most leakage.
+              </li>
+              <li>
+                <strong>Doctor performance</strong> is scoped to appointments where that doctor was
+                assigned, using the same scheduled-date rule.
+              </li>
+            </ul>
+
+            <h2>Combining Date Filters with Other Filters</h2>
+            <p>
+              Date filtering works alongside doctor, specialty, visit type, and status filters. The
+              order does not matter — the report always shows records that match <em>all</em> active
+              filters at once.
+            </p>
+            <p>Common combinations include:</p>
+            <ul>
+              <li><strong>This Month + Doctor:</strong> see how one doctor performed in the current month.</li>
+              <li><strong>Last 7 days + Specialty:</strong> compare recent volume across departments.</li>
+              <li><strong>Custom Range + Status:</strong> audit all cancelled appointments during a campaign.</li>
+              <li><strong>Yesterday + Walk-in:</strong> review unscheduled traffic and capacity impact.</li>
+            </ul>
+            <p>
+              To clear all filters and start over, look for a <strong>Reset</strong> or
+              <strong> Clear Filters</strong> option near the filter bar.
+            </p>
+
+            <h2>Common Scenarios</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Scenario</th>
+                    <th className="text-left p-3 border-b">Suggested Range</th>
+                    <th className="text-left p-3 border-b">Why It Works</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Daily morning huddle</td>
+                    <td className="p-3 border-b">Today or Yesterday</td>
+                    <td className="p-3 border-b">Keeps the conversation focused on immediate arrivals and follow-ups</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Weekly team review</td>
+                    <td className="p-3 border-b">Last 7 days</td>
+                    <td className="p-3 border-b">Smooths out single-day spikes and shows the recent trend</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Month-end closing</td>
+                    <td className="p-3 border-b">This Month or Last Month</td>
+                    <td className="p-3 border-b">Aligns revenue and expenses with calendar accounting periods</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Marketing campaign review</td>
+                    <td className="p-3 border-b">Custom Range</td>
+                    <td className="p-3 border-b">Matches the exact campaign start and end dates</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Quarterly planning</td>
+                    <td className="p-3 border-b">Last 90 days</td>
+                    <td className="p-3 border-b">Gives enough history to spot seasonal patterns</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Tax or audit preparation</td>
+                    <td className="p-3">Custom Range</td>
+                    <td className="p-3">Lets you isolate the exact fiscal window an auditor requests</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Exporting Filtered Reports</h2>
+            <p>
+              Once you have the date range you need, use the <strong>Export</strong> button to
+              download a <strong>CSV</strong> or <strong>PDF</strong>. The export reflects the active
+              filters, so the file contains only the records visible on screen.
+            </p>
+            <ul>
+              <li><strong>CSV</strong> is best for further analysis in Excel or Google Sheets.</li>
+              <li><strong>PDF</strong> is best for sharing with owners, accountants, or investors.</li>
+            </ul>
+            <p className="text-sm text-muted-foreground">
+              Some dashboard views cap the on-screen list at a fixed number of rows for performance,
+              but exports include every record that matches the selected range and filters.
+            </p>
+
+            <h2>Troubleshooting Date Filters</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Issue</th>
+                    <th className="text-left p-3 border-b">Likely Cause</th>
+                    <th className="text-left p-3 border-b">Fix</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Numbers look too low</td>
+                    <td className="p-3 border-b">A narrow range or extra filter is applied</td>
+                    <td className="p-3 border-b">Widen the range and click Clear Filters</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Revenue does not match bank deposits</td>
+                    <td className="p-3 border-b">Revenue uses scheduled date; deposits may span different dates</td>
+                    <td className="p-3 border-b">Compare with the Collections report or filter by payment date if available</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Custom range will not apply</td>
+                    <td className="p-3 border-b">Start date is after end date</td>
+                    <td className="p-3 border-b">Re-pick the dates so start comes before end</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Trend arrows are missing</td>
+                    <td className="p-3 border-b">Range is too short to compare with a previous period</td>
+                    <td className="p-3 border-b">Use a preset of at least 7 days or pick a longer custom range</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Report is blank</td>
+                    <td className="p-3 border-b">No records exist in the selected range</td>
+                    <td className="p-3 border-b">Switch to All Time or a wider range to confirm data exists</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Best Practices</h2>
+            <ul>
+              <li>
+                <strong>Start with a preset, then refine.</strong> Presets give you a baseline fast;
+                switch to custom only when you need an irregular window.
+              </li>
+              <li>
+                <strong>Match the range to the decision.</strong> Daily operations need Today or
+                Yesterday; strategic reviews need 30 or 90 days.
+              </li>
+              <li>
+                <strong>Compare like with like.</strong> When comparing two periods, use the same
+                length to avoid misleading trend arrows.
+              </li>
+              <li>
+                <strong>Export before sharing.</strong> A filtered export is more reliable than a
+                screenshot because it captures the exact range and active filters.
+              </li>
+              <li>
+                <strong>Train staff on status discipline.</strong> Date filters are only accurate
+                when appointment statuses are updated on the day they happen.
+              </li>
+            </ul>
+
+            <h2>Related Articles</h2>
+            <ul>
+              <li><Link to={`${kbBase}/clinic-reports`}>Clinic Reports &amp; Analytics Dashboard</Link></li>
+              <li><Link to={`${kbBase}/quick-stats`}>Quick Stats Overview</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+              <li><Link to={`${kbBase}/profit-loss-trend`}>Profit &amp; Loss Trend Report</Link></li>
+              <li><Link to={`${kbBase}/appointment-status-breakdown`}>Appointment Status Breakdown</Link></li>
+              <li><Link to={`${kbBase}/monthly-vs-yearly`}>Monthly vs Yearly Plans — Which to Choose</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Bookmark your most-used date
+                ranges by exporting a PDF after each filter. Over time you will build a library of
+                weekly, monthly, and quarterly snapshots that make board meetings and tax prep much
+                faster.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
+
+
+
+
+
+
+
+
+
 
 
 
