@@ -2367,6 +2367,12 @@ const slugTitleMap: Record<string, string> = {
   "kpi-overview": "Quick Stats Overview",
   "summary-metrics": "Quick Stats Overview",
   "clinic-kpis": "Quick Stats Overview",
+  "filtering-reports-by-date": "Filtering Reports by Date Range",
+  "date-range-filter": "Filtering Reports by Date Range",
+  "report-date-filter": "Filtering Reports by Date Range",
+  "date-filter": "Filtering Reports by Date Range",
+  "custom-date-range": "Filtering Reports by Date Range",
+  "report-date-range": "Filtering Reports by Date Range",
 };
 
 
