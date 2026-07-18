@@ -28017,6 +28017,238 @@ const FilteringReportsByDateArticle = () => {
   );
 };
 
+const PrintingExportingReportsArticle = () => {
+  const kbBase = useKBBase();
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/10">
+      <PublicHeader />
+
+      <section className="border-b bg-muted/30">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Knowledge Base</Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={kbBase} className="hover:text-foreground transition-colors">Reports &amp; Analytics</Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-foreground">Printing &amp; Exporting Reports</span>
+          </div>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8 lg:py-12">
+        <div className="max-w-4xl mx-auto">
+          <Link to={kbBase}>
+            <Button variant="ghost" className="mb-6 gap-2 -ml-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Knowledge Base
+            </Button>
+          </Link>
+
+          <article className="prose prose-slate max-w-none">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant="secondary"><Printer className="w-3 h-3 mr-1" />Reports &amp; Analytics</Badge>
+              <Badge variant="outline">6 min read</Badge>
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">Printing &amp; Exporting Reports</h1>
+            <p className="lead text-lg text-muted-foreground mb-8">
+              Every report in Zonoir can leave the screen and land in a board meeting, a tax file,
+              or an accountant&apos;s inbox. This guide walks you through printing reports, exporting
+              them as PDF or CSV, and using those files for audits, payroll, and long-term record
+              keeping.
+            </p>
+
+            <h2>Who Can Print and Export</h2>
+            <p>
+              Report exports are permission-gated so that patient and financial data stays in the
+              right hands:
+            </p>
+            <ul>
+              <li><strong>Clinic Owner &amp; Admin</strong> — full access to all reports, including finance and doctor performance.</li>
+              <li><strong>Doctor</strong> — can print and export their own appointment, patient, and prescription reports.</li>
+              <li><strong>Receptionist</strong> — can export appointment and patient lists if reporting is enabled by the owner; finance exports remain hidden.</li>
+            </ul>
+            <p>
+              If you cannot see an export button, ask your clinic owner to review your role in
+              <strong> Settings &rarr; Team &amp; Roles</strong>.
+            </p>
+
+            <h2>Export Formats at a Glance</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Format</th>
+                    <th className="text-left p-3 border-b">Best For</th>
+                    <th className="text-left p-3 border-b">Opens In</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">PDF</td>
+                    <td className="p-3 border-b">Sharing with owners, accountants, and board members. Preserves charts, colors, and clinic branding.</td>
+                    <td className="p-3 border-b">Any PDF viewer, email, WhatsApp</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">CSV</td>
+                    <td className="p-3 border-b">Deeper analysis, pivot tables, or importing into Excel, Google Sheets, or accounting software.</td>
+                    <td className="p-3 border-b">Excel, Google Sheets, Numbers</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Print</td>
+                    <td className="p-3">Physical copies for signatures, filing cabinets, or offline distribution.</td>
+                    <td className="p-3">Any connected printer</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>How to Print a Report</h2>
+            <ol>
+              <li>Open the report you want to print (for example, <strong>Reports &rarr; Revenue Trend</strong>).</li>
+              <li>Apply your <Link to={`${kbBase}/report-date-filters`}>date range</Link> and any other filters — the printout will reflect exactly what is on screen.</li>
+              <li>Click the <strong>Print</strong> icon in the top-right toolbar, or press <kbd>Ctrl</kbd> + <kbd>P</kbd> (<kbd>Cmd</kbd> + <kbd>P</kbd> on Mac).</li>
+              <li>In the browser print dialog, choose your printer, set paper size to <strong>A4</strong>, and enable <strong>Background graphics</strong> so charts and colored badges render correctly.</li>
+              <li>Click <strong>Print</strong>.</li>
+            </ol>
+            <p className="text-sm text-muted-foreground">
+              Zonoir automatically hides sidebars, ads, and navigation elements during print so you
+              get a clean, single-focus document.
+            </p>
+
+            <h2>How to Export as PDF</h2>
+            <ol>
+              <li>Open the report and set your filters.</li>
+              <li>Click <strong>Export &rarr; PDF</strong> from the toolbar.</li>
+              <li>Wait 2–5 seconds while Zonoir renders the file on the server.</li>
+              <li>The PDF downloads automatically to your device with a name like
+                <code> revenue-trend-2026-01-01-to-2026-01-31.pdf</code>.
+              </li>
+            </ol>
+            <p>
+              PDF exports include the clinic name, logo, report title, active filters, generation
+              date, and the user who exported it — useful for audit trails.
+            </p>
+
+            <h2>How to Export as CSV</h2>
+            <ol>
+              <li>Open the report and set your filters.</li>
+              <li>Click <strong>Export &rarr; CSV</strong>.</li>
+              <li>The file downloads as
+                <code> report-name-YYYY-MM-DD.csv</code>.
+              </li>
+              <li>Open it in Excel or Google Sheets to sort, filter, and build pivots.</li>
+            </ol>
+            <p>
+              CSV exports contain the raw underlying rows — not just the summary numbers you see on
+              screen. For example, exporting the Revenue Trend gives you one row per invoice, with
+              date, doctor, patient ID (anonymized), amount, and payment method.
+            </p>
+
+            <h2>What Each Report Includes When Exported</h2>
+            <div className="not-prose my-6 overflow-x-auto">
+              <table className="w-full text-sm border">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="text-left p-3 border-b">Report</th>
+                    <th className="text-left p-3 border-b">PDF Contents</th>
+                    <th className="text-left p-3 border-b">CSV Contents</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Revenue Trend</td>
+                    <td className="p-3 border-b">Line chart, totals, MoM %</td>
+                    <td className="p-3 border-b">Per-invoice rows with date, doctor, amount</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Profit &amp; Loss</td>
+                    <td className="p-3 border-b">Revenue, expense, profit summary</td>
+                    <td className="p-3 border-b">Line-item breakdown by category</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Appointment Status</td>
+                    <td className="p-3 border-b">Donut chart and status totals</td>
+                    <td className="p-3 border-b">Per-appointment rows with status &amp; timestamps</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 border-b font-medium">Doctor Performance</td>
+                    <td className="p-3 border-b">Scorecard tables and rankings</td>
+                    <td className="p-3 border-b">Per-doctor metrics and weighted score</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium">Patient Demographics</td>
+                    <td className="p-3">Gender / age / city charts</td>
+                    <td className="p-3">Anonymized patient count per segment</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h2>Privacy &amp; Data Protection</h2>
+            <p>
+              Exported files leave Zonoir&apos;s protected environment, so treat them like any other
+              patient record:
+            </p>
+            <ul>
+              <li>Never email an unencrypted export to a personal account or over public Wi-Fi.</li>
+              <li>Store PDFs and CSVs on password-protected devices or encrypted drives.</li>
+              <li>Delete exports as soon as they are no longer needed.</li>
+              <li>CSV rows use internal patient IDs, not names, but you should still handle them as sensitive.</li>
+              <li>Every export is logged in the <strong>Audit Log</strong> with the user, timestamp, and report name.</li>
+            </ul>
+            <p>
+              For a full overview of how Zonoir keeps records safe, read
+              <Link to={`${kbBase}/data-security`}> How Zonoir Protects Patient Data</Link> and
+              <Link to={`${kbBase}/hipaa-gdpr`}> HIPAA &amp; GDPR Awareness for Clinics</Link>.
+            </p>
+
+            <h2>Common Use Cases</h2>
+            <ul>
+              <li><strong>Monthly board packs</strong> — export Revenue Trend, Profit &amp; Loss, and Doctor Performance as PDFs on the 1st of each month.</li>
+              <li><strong>Doctor payouts</strong> — export the Doctor Performance CSV, filter by doctor, calculate share, and share with your accountant.</li>
+              <li><strong>Tax season</strong> — export Profit &amp; Loss and Expense Breakdown for the full financial year as PDFs.</li>
+              <li><strong>Marketing reviews</strong> — export New vs Returning Patients and Top Cities to plan next quarter&apos;s campaigns.</li>
+              <li><strong>Insurance &amp; audits</strong> — export Appointment Status and Patient Demographics to answer regulator or partner queries.</li>
+            </ul>
+
+            <h2>Troubleshooting</h2>
+            <ul>
+              <li><strong>Nothing downloads</strong> — check that your browser is not blocking pop-ups from <code>zonoir.com</code>.</li>
+              <li><strong>Charts missing in printout</strong> — re-open the print dialog and enable <strong>Background graphics</strong>.</li>
+              <li><strong>CSV opens with garbled characters</strong> — in Excel, use <em>Data &rarr; From Text/CSV</em> and choose <strong>UTF-8</strong> encoding.</li>
+              <li><strong>Export button greyed out</strong> — the current filter returned zero rows. Widen the date range and try again.</li>
+              <li><strong>PDF is too large to email</strong> — narrow the date range or export as CSV, which is far smaller.</li>
+            </ul>
+
+            <h2>Related Articles</h2>
+            <ul>
+              <li><Link to={`${kbBase}/report-date-filters`}>Filtering Reports by Date Range</Link></li>
+              <li><Link to={`${kbBase}/financial-reports`}>Monthly Financial Reports &amp; Exports</Link></li>
+              <li><Link to={`${kbBase}/revenue-trend`}>Revenue Trend Reports</Link></li>
+              <li><Link to={`${kbBase}/profit-loss-trend`}>Profit &amp; Loss Trend Report</Link></li>
+              <li><Link to={`${kbBase}/doctor-performance`}>Doctor Performance Scorecard</Link></li>
+              <li><Link to={`${kbBase}/data-security`}>How Zonoir Protects Patient Data</Link></li>
+            </ul>
+
+            <div className="not-prose mt-10 p-6 bg-muted/40 border rounded-lg">
+              <p className="text-sm text-muted-foreground m-0">
+                <strong className="text-foreground">Pro tip:</strong> Create a shared, access-
+                controlled folder (Google Drive, OneDrive, or a local NAS) named
+                <em> Zonoir Reports</em> and save every monthly export there using the format
+                <code> YYYY-MM_report-name.pdf</code>. Over a year you will build a searchable,
+                audit-ready archive without any extra effort.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <PublicFooter />
+    </div>
+  );
+};
+
 
 
 
