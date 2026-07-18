@@ -2374,6 +2374,12 @@ const slugTitleMap: Record<string, string> = {
   "date-filter": "Filtering Reports by Date Range",
   "custom-date-range": "Filtering Reports by Date Range",
   "report-date-range": "Filtering Reports by Date Range",
+  "print-export-reports": "Printing & Exporting Reports",
+  "printing-exporting-reports": "Printing & Exporting Reports",
+  "print-reports": "Printing & Exporting Reports",
+  "export-reports": "Printing & Exporting Reports",
+  "report-exports": "Printing & Exporting Reports",
+  "report-pdf-csv": "Printing & Exporting Reports",
 };
 
 
