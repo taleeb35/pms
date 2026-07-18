@@ -2377,7 +2377,7 @@ const slugTitleMap: Record<string, string> = {
   "print-export-reports": "Printing & Exporting Reports",
   "printing-exporting-reports": "Printing & Exporting Reports",
   "print-reports": "Printing & Exporting Reports",
-  "export-reports": "Printing & Exporting Reports",
+  "export-report": "Printing & Exporting Reports",
   "report-exports": "Printing & Exporting Reports",
   "report-pdf-csv": "Printing & Exporting Reports",
 };
