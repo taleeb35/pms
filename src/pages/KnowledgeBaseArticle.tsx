@@ -2367,6 +2367,7 @@ const slugTitleMap: Record<string, string> = {
   "kpi-overview": "Quick Stats Overview",
   "summary-metrics": "Quick Stats Overview",
   "clinic-kpis": "Quick Stats Overview",
+  "report-date-filters": "Filtering Reports by Date Range",
   "filtering-reports-by-date": "Filtering Reports by Date Range",
   "date-range-filter": "Filtering Reports by Date Range",
   "report-date-filter": "Filtering Reports by Date Range",
@@ -2668,7 +2669,7 @@ const KnowledgeBaseArticle = () => {
   if (slug === "quick-stats" || slug === "quick-stats-overview" || slug === "stats-overview" || slug === "dashboard-stats" || slug === "kpi-overview" || slug === "summary-metrics" || slug === "clinic-kpis") {
     return <QuickStatsOverviewArticle />;
   }
-  if (slug === "filtering-reports-by-date" || slug === "date-range-filter" || slug === "report-date-filter" || slug === "date-filter" || slug === "custom-date-range" || slug === "report-date-range") {
+  if (slug === "report-date-filters" || slug === "filtering-reports-by-date" || slug === "date-range-filter" || slug === "report-date-filter" || slug === "date-filter" || slug === "custom-date-range" || slug === "report-date-range") {
     return <FilteringReportsByDateArticle />;
   }
 
