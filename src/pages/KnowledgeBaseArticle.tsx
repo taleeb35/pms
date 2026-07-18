@@ -2678,6 +2678,9 @@ const KnowledgeBaseArticle = () => {
   if (slug === "report-date-filters" || slug === "filtering-reports-by-date" || slug === "date-range-filter" || slug === "report-date-filter" || slug === "date-filter" || slug === "custom-date-range" || slug === "report-date-range") {
     return <FilteringReportsByDateArticle />;
   }
+  if (slug === "print-export-reports" || slug === "printing-exporting-reports" || slug === "print-reports" || slug === "export-report" || slug === "report-exports" || slug === "report-pdf-csv") {
+    return <PrintingExportingReportsArticle />;
+  }
 
 
 
