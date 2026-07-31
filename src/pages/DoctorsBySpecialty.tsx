@@ -113,7 +113,7 @@ const DoctorsBySpecialty = () => {
       ? `?city=${encodeURIComponent(selectedCity)}`
       : "";
 
-  const pageUrl = `https://zonoir.com/doctors/${specialty}${cityQuery}`;
+  const pageUrl = `https://app.zonoir.com/doctors/${specialty}${cityQuery}`;
 
   const faqItems = [
     {
@@ -161,8 +161,8 @@ const DoctorsBySpecialty = () => {
       },
     ],
     breadcrumbs: [
-      { name: "Home", url: "https://zonoir.com/" },
-      { name: "Find Doctors", url: "https://zonoir.com/find-doctors" },
+      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Find Doctors", url: "https://app.zonoir.com/find-doctors" },
       { name: `${displayName}s in ${locationLabel}`, url: pageUrl },
     ],
   });

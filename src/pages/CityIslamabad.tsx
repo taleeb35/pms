@@ -30,10 +30,10 @@ const CityIslamabad = () => {
     title: "EMR Software for Doctors in Islamabad | Clinic Management Software Islamabad",
     description: "Best EMR software for doctors in Islamabad. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 300+ Islamabad clinics.",
     keywords: "EMR software Islamabad, clinic management software Islamabad, doctor software Islamabad, patient management Islamabad, clinic software F-sectors, hospital software Islamabad, medical billing software Islamabad, prescription software Islamabad, OPD management Islamabad, healthcare software Islamabad, electronic medical records Islamabad, doctor appointment system Islamabad, clinic ERP Islamabad, healthcare IT Islamabad",
-    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-islamabad",
+    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-islamabad",
     ogTitle: "EMR Software for Doctors in Islamabad | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Islamabad. Complete clinic management solution trusted by 300+ Islamabad clinics.",
-    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-islamabad",
+    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-islamabad",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

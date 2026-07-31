@@ -18,11 +18,11 @@ const Pricing = () => {
     title: "Pricing Plans for Clinics & Doctors | Zonoir",
     description:
       "Transparent monthly & yearly pricing for Zonoir clinic management & EMR software in Pakistan. Start your 14-day free trial — no credit card required.",
-    canonicalUrl: "https://zonoir.com/pricing",
-    ogUrl: "https://zonoir.com/pricing",
+    canonicalUrl: "https://app.zonoir.com/pricing",
+    ogUrl: "https://app.zonoir.com/pricing",
     breadcrumbs: [
-      { name: "Home", url: "https://zonoir.com/" },
-      { name: "Pricing", url: "https://zonoir.com/pricing" },
+      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Pricing", url: "https://app.zonoir.com/pricing" },
     ],
     jsonLd: {
       "@context": "https://schema.org",

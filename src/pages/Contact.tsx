@@ -17,17 +17,17 @@ const Contact = () => {
     title: "Contact Zonoir — Sales, Support & Demo Requests",
     description:
       "Get in touch with the Zonoir team. Request a demo, ask about pricing, or reach our support via email, phone, or WhatsApp.",
-    canonicalUrl: "https://zonoir.com/contact",
-    ogUrl: "https://zonoir.com/contact",
+    canonicalUrl: "https://app.zonoir.com/contact",
+    ogUrl: "https://app.zonoir.com/contact",
     breadcrumbs: [
-      { name: "Home", url: "https://zonoir.com/" },
-      { name: "Contact", url: "https://zonoir.com/contact" },
+      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Contact", url: "https://app.zonoir.com/contact" },
     ],
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "ContactPage",
       name: "Contact Zonoir",
-      url: "https://zonoir.com/contact",
+      url: "https://app.zonoir.com/contact",
     },
   });
   const [formData, setFormData] = useState({

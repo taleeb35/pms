@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const BASE_URL = "https://zonoir.com";
+const BASE_URL = "https://app.zonoir.com";
 
 // Helper to generate slugs (same logic as frontend)
 const generateCitySlug = (city: string): string => {

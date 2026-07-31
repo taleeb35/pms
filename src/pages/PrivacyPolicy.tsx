@@ -21,8 +21,8 @@ const PrivacyPolicy = () => {
     title: "Privacy Policy | Zonoir - Clinic Management Software",
     description:
       "Zonoir's privacy commitment to doctors and clinics: we never access your patient data, we never sell data to anyone, and your records remain fully under your control.",
-    canonicalUrl: "https://zonoir.com/privacy-policy",
-    ogUrl: "https://zonoir.com/privacy-policy",
+    canonicalUrl: "https://app.zonoir.com/privacy-policy",
+    ogUrl: "https://app.zonoir.com/privacy-policy",
   });
 
   const lastUpdated = "May 1, 2026";

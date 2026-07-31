@@ -38,7 +38,7 @@ const DemoLanding = () => {
     title: "Zonoir — Run your clinic smarter, not harder",
     description:
       "Pakistan's #1 clinic management software. EMR, patient management, AI prescriptions, and revenue analytics — all in one beautifully simple platform.",
-    canonicalUrl: "https://zonoir.com/demo-landing",
+    canonicalUrl: "https://app.zonoir.com/demo-landing",
   });
 
   const features = [
