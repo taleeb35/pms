@@ -4,6 +4,7 @@
 
 const ALLOWED_ORIGINS = new Set<string>([
   "https://app.zonoir.com",
+  "https://zonoir.com",
   "https://www.zonoir.com",
   "https://zonoir.lovable.app",
 ]);
