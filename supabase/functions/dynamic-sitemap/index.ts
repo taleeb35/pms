@@ -25,8 +25,6 @@ const generateDoctorSlug = (name: string): string => {
   return slug.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 };
 
-const today = new Date().toISOString().split('T')[0];
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -59,7 +57,6 @@ serve(async (req) => {
     for (const page of staticPages) {
       sitemap += `  <url>
     <loc>${BASE_URL}${page.loc}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>
@@ -76,7 +73,6 @@ serve(async (req) => {
     for (const city of cities) {
       sitemap += `  <url>
     <loc>${BASE_URL}/emr-software-for-doctors-in-${city}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -125,7 +121,6 @@ serve(async (req) => {
     for (const article of knowledgeBaseArticles) {
       sitemap += `  <url>
     <loc>${BASE_URL}/knowledge-base/${article}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -148,7 +143,6 @@ serve(async (req) => {
     for (const specialty of specialties) {
       sitemap += `  <url>
     <loc>${BASE_URL}/doctors/${specialty}</loc>
-    <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -163,10 +157,9 @@ serve(async (req) => {
 
     if (blogPosts) {
       for (const post of blogPosts) {
-        const lastmod = post.updated_at ? post.updated_at.split('T')[0] : today;
+        const lastmod = post.updated_at ? `\n    <lastmod>${post.updated_at.split('T')[0]}</lastmod>` : '';
         sitemap += `  <url>
-    <loc>${BASE_URL}/blog/${post.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
+    <loc>${BASE_URL}/blog/${post.slug}</loc>${lastmod}
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -187,11 +180,10 @@ serve(async (req) => {
         const citySlug = generateCitySlug(doc.city);
         const specialtySlug = generateSpecialtySlug(doc.specialization);
         const doctorSlug = generateDoctorSlug(doc.full_name);
-        const lastmod = doc.updated_at ? doc.updated_at.split('T')[0] : today;
+        const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/${citySlug}/${specialtySlug}/${doctorSlug}</loc>
-    <lastmod>${lastmod}</lastmod>
+    <loc>${BASE_URL}/doctors/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -233,11 +225,10 @@ serve(async (req) => {
         // Skip if already added from SEO listings
         if (addedUrls.has(urlKey)) continue;
 
-        const lastmod = doc.updated_at ? doc.updated_at.split('T')[0] : today;
+        const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/${citySlug}/${specialtySlug}/${doctorSlug}</loc>
-    <lastmod>${lastmod}</lastmod>
+    <loc>${BASE_URL}/doctors/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
