@@ -32,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Always use the production domain so users never receive Lovable preview links.
     // Only allow overrides that point to zonoir.com.
-    const SITE_URL = "https://zonoir.com";
+    const SITE_URL = "https://app.zonoir.com";
     const safeRedirect =
       redirectTo && redirectTo.startsWith(SITE_URL)
         ? redirectTo

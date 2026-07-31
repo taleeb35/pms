@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const BASE_URL = "https://zonoir.com";
+const BASE_URL = "https://app.zonoir.com";
 
 const generateCitySlug = (city: string): string =>
   city.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

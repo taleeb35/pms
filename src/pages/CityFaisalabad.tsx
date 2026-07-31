@@ -30,10 +30,10 @@ const CityFaisalabad = () => {
     title: "EMR Software for Doctors in Faisalabad | Clinic Management Software Faisalabad",
     description: "Best EMR software for doctors in Faisalabad. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 350+ Faisalabad clinics.",
     keywords: "EMR software Faisalabad, clinic management software Faisalabad, doctor software Faisalabad, patient management Faisalabad, clinic software D Ground, hospital software Faisalabad, medical billing software Faisalabad, prescription software Faisalabad, OPD management Faisalabad, healthcare software Faisalabad, electronic medical records Faisalabad, doctor appointment system Faisalabad, clinic ERP Faisalabad, healthcare IT Faisalabad",
-    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-faisalabad",
+    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-faisalabad",
     ogTitle: "EMR Software for Doctors in Faisalabad | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Faisalabad. Complete clinic management solution trusted by 350+ Faisalabad clinics.",
-    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-faisalabad",
+    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-faisalabad",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

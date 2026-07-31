@@ -30,10 +30,10 @@ const CityMultan = () => {
     title: "EMR Software for Doctors in Multan | Clinic Management Software Multan",
     description: "Best EMR software for doctors in Multan. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 300+ Multan clinics.",
     keywords: "EMR software Multan, clinic management software Multan, doctor software Multan, patient management Multan, clinic software Multan, hospital software Multan, medical billing software Multan, prescription software Multan, OPD management Multan, healthcare software Multan, electronic medical records Multan, doctor appointment system Multan, clinic ERP Multan",
-    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-multan",
+    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-multan",
     ogTitle: "EMR Software for Doctors in Multan | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Multan. Complete clinic management solution trusted by 300+ Multan clinics.",
-    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-multan",
+    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-multan",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

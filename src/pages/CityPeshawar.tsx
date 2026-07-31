@@ -29,10 +29,10 @@ const CityPeshawar = () => {
     title: "EMR Software for Doctors in Peshawar | Clinic Management Software Peshawar",
     description: "Best EMR software for doctors in Peshawar. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 200+ Peshawar clinics.",
     keywords: "EMR software Peshawar, clinic management software Peshawar, doctor software Peshawar, patient management Peshawar, clinic software Peshawar, hospital software Peshawar, medical billing software Peshawar, prescription software Peshawar, OPD management Peshawar, healthcare software Peshawar, electronic medical records Peshawar, doctor appointment system Peshawar, clinic ERP Peshawar, KPK healthcare software",
-    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-peshawar",
+    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-peshawar",
     ogTitle: "EMR Software for Doctors in Peshawar | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Peshawar. Complete clinic management solution trusted by 200+ Peshawar clinics.",
-    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-peshawar",
+    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-peshawar",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

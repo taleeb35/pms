@@ -3,6 +3,7 @@
 // stop cost-runaway abuse on paid APIs (Gemini, Resend).
 
 const ALLOWED_ORIGINS = new Set<string>([
+  "https://app.zonoir.com",
   "https://zonoir.com",
   "https://www.zonoir.com",
   "https://zonoir.lovable.app",
@@ -17,7 +18,7 @@ const ALLOW_LOCALHOST = true;
 
 export function buildCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("Origin") || "";
-  let allow = "https://zonoir.com";
+  let allow = "https://app.zonoir.com";
   try {
     const u = new URL(origin);
     if (ALLOWED_ORIGINS.has(origin)) allow = origin;

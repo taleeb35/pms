@@ -39,41 +39,41 @@ const BlogPost = () => {
   useSEO({
     title: blog ? `${blog.title} | Zonoir Blog` : "Blog | Zonoir",
     description: seoDescription,
-    canonicalUrl: `https://zonoir.com/blog/${slug}`,
+    canonicalUrl: `https://app.zonoir.com/blog/${slug}`,
     ogTitle: blog?.title,
     ogDescription: seoDescription,
-    ogUrl: `https://zonoir.com/blog/${slug}`,
+    ogUrl: `https://app.zonoir.com/blog/${slug}`,
     ogType: "article",
-    ogImage: blog?.featured_image || "https://zonoir.com/og-image.png",
+    ogImage: blog?.featured_image || "https://app.zonoir.com/og-image.png",
     breadcrumbs: [
-      { name: "Home", url: "https://zonoir.com/" },
-      { name: "Blog", url: "https://zonoir.com/blog" },
-      ...(blog ? [{ name: blog.title, url: `https://zonoir.com/blog/${slug}` }] : []),
+      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Blog", url: "https://app.zonoir.com/blog" },
+      ...(blog ? [{ name: blog.title, url: `https://app.zonoir.com/blog/${slug}` }] : []),
     ],
     jsonLd: blog ? {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
       "headline": blog.title,
       "description": seoDescription,
-      "image": blog.featured_image || "https://zonoir.com/og-image.png",
+      "image": blog.featured_image || "https://app.zonoir.com/og-image.png",
       "datePublished": blog.published_at || blog.created_at,
       "dateModified": (blog as any).updated_at || blog.published_at || blog.created_at,
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `https://zonoir.com/blog/${slug}`
+        "@id": `https://app.zonoir.com/blog/${slug}`
       },
       "author": {
         "@type": "Organization",
         "name": "Zonoir",
-        "url": "https://zonoir.com"
+        "url": "https://app.zonoir.com"
       },
       "publisher": {
         "@type": "Organization",
         "name": "Zonoir",
-        "url": "https://zonoir.com",
+        "url": "https://app.zonoir.com",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://zonoir.com/favicon.png"
+          "url": "https://app.zonoir.com/favicon.png"
         }
       }
     } : undefined,

@@ -30,10 +30,10 @@ const CityHyderabad = () => {
     title: "EMR Software for Doctors in Hyderabad | Clinic Management Software Hyderabad",
     description: "Best EMR software for doctors in Hyderabad, Sindh. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 200+ Hyderabad clinics.",
     keywords: "EMR software Hyderabad, clinic management software Hyderabad, doctor software Hyderabad, patient management Hyderabad, clinic software Latifabad, hospital software Hyderabad, medical billing software Hyderabad, prescription software Hyderabad, OPD management Hyderabad, healthcare software Hyderabad, electronic medical records Hyderabad, doctor appointment system Hyderabad, clinic ERP Hyderabad, healthcare IT Hyderabad Sindh",
-    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-hyderabad",
+    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-hyderabad",
     ogTitle: "EMR Software for Doctors in Hyderabad | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Hyderabad, Sindh. Complete clinic management solution trusted by 200+ Hyderabad clinics.",
-    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-hyderabad",
+    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-hyderabad",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

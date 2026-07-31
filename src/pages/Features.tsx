@@ -72,11 +72,11 @@ const Features = () => {
     title: "Features — Complete Clinic, EMR & AI Software | Zonoir",
     description:
       "Explore Zonoir's full feature set: appointments, patient EMR, prescriptions, finance, AI assistants, video consultations, doctor discovery, multi-role access, and more.",
-    canonicalUrl: "https://zonoir.com/features",
-    ogUrl: "https://zonoir.com/features",
+    canonicalUrl: "https://app.zonoir.com/features",
+    ogUrl: "https://app.zonoir.com/features",
     breadcrumbs: [
-      { name: "Home", url: "https://zonoir.com/" },
-      { name: "Features", url: "https://zonoir.com/features" },
+      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Features", url: "https://app.zonoir.com/features" },
     ],
   });
 

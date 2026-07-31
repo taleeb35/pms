@@ -32,7 +32,7 @@ const CityQuetta = () => {
       "Zonoir is the leading EMR and clinic management software trusted by doctors and clinics across Quetta. Manage patients, appointments, and finances with ease.",
     keywords:
       "EMR software Quetta, clinic management Quetta, doctor software Quetta, patient management Quetta, medical software Balochistan, healthcare software Quetta",
-    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-quetta",
+    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-quetta",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

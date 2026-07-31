@@ -408,7 +408,7 @@ const PublicDoctorProfile = () => {
     ? `Book appointment with ${doctor.full_name}, ${doctor.qualification}. ${doctor.experience_years ? `${doctor.experience_years}+ years experience` : ''} ${doctor.specialization} in ${doctor.city}. ${doctor.clinic_name ? `Available at ${doctor.clinic_name}.` : ''}`
     : `Find the best ${specialtyDisplay} doctors in ${cityDisplay}, Pakistan.`;
 
-  const canonicalUrl = `https://zonoir.com/doctors/${city}/${specialty}/${doctorSlug}`;
+  const canonicalUrl = `https://app.zonoir.com/doctors/${city}/${specialty}/${doctorSlug}`;
 
   const jsonLd = doctor ? {
     "@context": "https://schema.org",
@@ -461,15 +461,15 @@ const PublicDoctorProfile = () => {
     ogDescription: pageDescription,
     ogUrl: canonicalUrl,
     ogType: "profile",
-    ogImage: doctor?.avatar_url || "https://zonoir.com/og-image.png",
+    ogImage: doctor?.avatar_url || "https://app.zonoir.com/og-image.png",
     twitterTitle: pageTitle,
     twitterDescription: pageDescription,
-    twitterImage: doctor?.avatar_url || "https://zonoir.com/og-image.png",
+    twitterImage: doctor?.avatar_url || "https://app.zonoir.com/og-image.png",
     jsonLd: combinedJsonLd.length > 0 ? combinedJsonLd : undefined,
     breadcrumbs: [
-      { name: "Home", url: "https://zonoir.com/" },
-      { name: "Find Doctors", url: "https://zonoir.com/find-doctors" },
-      { name: specialtyDisplay, url: `https://zonoir.com/doctors/${specialty}` },
+      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Find Doctors", url: "https://app.zonoir.com/find-doctors" },
+      { name: specialtyDisplay, url: `https://app.zonoir.com/doctors/${specialty}` },
       { name: doctor?.full_name || doctorSlug || "Profile", url: canonicalUrl },
     ],
   });
