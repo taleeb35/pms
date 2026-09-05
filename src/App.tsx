@@ -12,6 +12,7 @@ import DemoLanding from "./pages/DemoLanding";
 import Features from "./pages/Features";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
+import ClinicManagementSoftware from "./pages/ClinicManagementSoftware";
 import Reviews from "./pages/Reviews";
 import CityLahore from "./pages/CityLahore";
 import CityKarachi from "./pages/CityKarachi";
@@ -213,6 +214,7 @@ const App = () => (
           <Route path="/features" element={<Features />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/pricing" element={<Pricing />} />
+          <Route path="/clinic-management-software" element={<ClinicManagementSoftware />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/emr-software-for-doctors-in-lahore" element={<CityLahore />} />
           <Route path="/emr-software-for-doctors-in-karachi" element={<CityKarachi />} />
