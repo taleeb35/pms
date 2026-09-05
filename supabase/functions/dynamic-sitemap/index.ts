@@ -44,6 +44,7 @@ serve(async (req) => {
       { loc: "/", priority: "1.0", changefreq: "weekly" },
       { loc: "/features", priority: "0.9", changefreq: "monthly" },
       { loc: "/pricing", priority: "0.9", changefreq: "monthly" },
+      { loc: "/clinic-management-software", priority: "0.9", changefreq: "monthly" },
       { loc: "/contact", priority: "0.8", changefreq: "monthly" },
       { loc: "/reviews", priority: "0.8", changefreq: "weekly" },
       { loc: "/find-doctors", priority: "0.9", changefreq: "daily" },
