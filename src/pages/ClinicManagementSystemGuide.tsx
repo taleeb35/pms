@@ -19,8 +19,8 @@ import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import { useSEO } from "@/hooks/useSEO";
 
-const PAGE_URL = "https://app.zonoir.com/clinic-management-system-guide";
-const PILLAR_URL = "https://app.zonoir.com/clinic-management-software";
+const PAGE_URL = "https://zonoir.com/clinic-management-system-guide";
+const PILLAR_URL = "https://zonoir.com/clinic-management-software";
 
 const sections = [
   {
@@ -125,7 +125,7 @@ const ClinicManagementSystemGuide = () => {
       },
     ],
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Home", url: "https://zonoir.com/" },
       { name: "Clinic Management Software", url: PILLAR_URL },
       { name: "Clinic Management System Guide", url: PAGE_URL },
     ],
