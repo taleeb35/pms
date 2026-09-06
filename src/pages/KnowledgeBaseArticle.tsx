@@ -2396,14 +2396,14 @@ const KnowledgeBaseArticle = () => {
     description: articleTitle
       ? `${articleTitle} — step-by-step guide on the Zonoir help center for clinics, doctors, and receptionists.`
       : "Step-by-step guides and tutorials for using Zonoir clinic management software.",
-    canonicalUrl: `https://app.zonoir.com/knowledge-base/${slug ?? ""}`,
-    ogUrl: `https://app.zonoir.com/knowledge-base/${slug ?? ""}`,
+    canonicalUrl: `https://zonoir.com/knowledge-base/${slug ?? ""}`,
+    ogUrl: `https://zonoir.com/knowledge-base/${slug ?? ""}`,
     ogType: "article",
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
-      { name: "Knowledge Base", url: "https://app.zonoir.com/knowledge-base" },
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Knowledge Base", url: "https://zonoir.com/knowledge-base" },
       ...(articleTitle
-        ? [{ name: articleTitle, url: `https://app.zonoir.com/knowledge-base/${slug}` }]
+        ? [{ name: articleTitle, url: `https://zonoir.com/knowledge-base/${slug}` }]
         : []),
     ],
     jsonLd: articleTitle
@@ -2417,12 +2417,12 @@ const KnowledgeBaseArticle = () => {
             name: "Zonoir",
             logo: {
               "@type": "ImageObject",
-              url: "https://app.zonoir.com/favicon.png",
+              url: "https://zonoir.com/favicon.png",
             },
           },
           mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `https://app.zonoir.com/knowledge-base/${slug}`,
+            "@id": `https://zonoir.com/knowledge-base/${slug}`,
           },
         }
       : undefined,
@@ -21989,7 +21989,7 @@ const PatientVideoJoinArticle = () => {
             <p>
               The link looks something like this:
             </p>
-            <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>https://app.zonoir.com/video-call?room=abc123&t=...</code></pre>
+            <pre className="bg-muted p-4 rounded-lg text-sm overflow-x-auto"><code>https://zonoir.com/video-call?room=abc123&t=...</code></pre>
             <Card className="my-6 border-amber-500/40 bg-amber-50 dark:bg-amber-950/20">
               <CardContent className="py-4 flex gap-3">
                 <Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />

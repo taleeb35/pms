@@ -40,7 +40,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending welcome email to doctor:", doctorEmail);
 
-    const loginUrl = "https://app.zonoir.com/doctor/auth";
+    const loginUrl = "https://zonoir.com/doctor/auth";
 
     const emailHtml = `
       <!DOCTYPE html>

@@ -103,7 +103,7 @@ const ServiceStatus = () => {
     title: "Service Status | Zonoir",
     description:
       "Real-time status of Zonoir services including web app, patient booking, authentication, video calls, and more.",
-    canonicalUrl: "https://app.zonoir.com/service-status",
+    canonicalUrl: "https://zonoir.com/service-status",
   });
 
   const allOperational = services.every((s) => s.status === "operational");

@@ -32,7 +32,7 @@ const CitySialkot = () => {
       "Zonoir is the leading EMR and clinic management software trusted by doctors and clinics across Sialkot. Manage patients, appointments, and finances with ease.",
     keywords:
       "EMR software Sialkot, clinic management Sialkot, doctor software Sialkot, patient management Sialkot, medical software Punjab, healthcare software Sialkot",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-sialkot",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-sialkot",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

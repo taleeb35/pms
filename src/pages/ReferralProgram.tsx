@@ -34,11 +34,11 @@ const ReferralProgram = () => {
     title: "Referral Program — Earn 20% Commission | Zonoir",
     description:
       "Join the Zonoir Referral Program. Earn 20% lifetime commission for every clinic or doctor that signs up through your unique link.",
-    canonicalUrl: "https://app.zonoir.com/referral-program",
-    ogUrl: "https://app.zonoir.com/referral-program",
+    canonicalUrl: "https://zonoir.com/referral-program",
+    ogUrl: "https://zonoir.com/referral-program",
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
-      { name: "Referral Program", url: "https://app.zonoir.com/referral-program" },
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Referral Program", url: "https://zonoir.com/referral-program" },
     ],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);

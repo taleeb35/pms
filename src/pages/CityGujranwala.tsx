@@ -26,7 +26,7 @@ const CityGujranwala = () => {
       "Zonoir is the leading EMR and clinic management software trusted by doctors and clinics across Gujranwala. Manage patients, appointments, and finances with ease.",
     keywords:
       "EMR software Gujranwala, clinic management Gujranwala, doctor software Gujranwala, patient management Gujranwala, medical software Punjab, healthcare software Gujranwala",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-gujranwala",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-gujranwala",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

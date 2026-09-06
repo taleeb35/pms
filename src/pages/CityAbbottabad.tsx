@@ -29,10 +29,10 @@ const CityAbbottabad = () => {
     title: "EMR Software for Doctors in Abbottabad | Clinic Management Software Abbottabad",
     description: "Best EMR software for doctors in Abbottabad. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 130+ Abbottabad clinics.",
     keywords: "EMR software Abbottabad, clinic management software Abbottabad, doctor software Abbottabad, patient management Abbottabad, clinic software Mansehra Road, hospital software Abbottabad, medical billing software Abbottabad, prescription software Abbottabad, OPD management Abbottabad, healthcare software Abbottabad, electronic medical records Abbottabad, doctor appointment system Abbottabad, clinic ERP Abbottabad, healthcare IT KPK",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-abbottabad",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-abbottabad",
     ogTitle: "EMR Software for Doctors in Abbottabad | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Abbottabad. Complete clinic management solution trusted by 130+ Abbottabad clinics.",
-    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-abbottabad",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-abbottabad",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
