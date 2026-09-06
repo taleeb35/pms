@@ -18,7 +18,7 @@ const ALLOW_LOCALHOST = true;
 
 export function buildCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("Origin") || "";
-  let allow = "https://app.zonoir.com";
+  let allow = "https://zonoir.com";
   try {
     const u = new URL(origin);
     if (ALLOWED_ORIGINS.has(origin)) allow = origin;
