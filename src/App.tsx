@@ -13,6 +13,7 @@ import Features from "./pages/Features";
 import Contact from "./pages/Contact";
 import Pricing from "./pages/Pricing";
 import ClinicManagementSoftware from "./pages/ClinicManagementSoftware";
+import ClinicManagementSystemGuide from "./pages/ClinicManagementSystemGuide";
 import Reviews from "./pages/Reviews";
 import CityLahore from "./pages/CityLahore";
 import CityKarachi from "./pages/CityKarachi";
