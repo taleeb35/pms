@@ -33,7 +33,7 @@ import {
   USD_YEARLY_MONTHLY_RATE,
 } from "@/lib/pricingConfig";
 
-const PAGE_URL = "https://app.zonoir.com/clinic-management-software";
+const PAGE_URL = "https://zonoir.com/clinic-management-software";
 
 const modules = [
   {
@@ -141,7 +141,7 @@ const ClinicManagementSoftware = () => {
     canonicalUrl: PAGE_URL,
     ogUrl: PAGE_URL,
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
+      { name: "Home", url: "https://zonoir.com/" },
       { name: "Clinic Management Software", url: PAGE_URL },
     ],
     jsonLd: [

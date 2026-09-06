@@ -29,10 +29,10 @@ const CitySukkur = () => {
     title: "EMR Software for Doctors in Sukkur | Clinic Management Software Sukkur",
     description: "Best EMR software for doctors in Sukkur. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 120+ Sukkur clinics.",
     keywords: "EMR software Sukkur, clinic management software Sukkur, doctor software Sukkur, patient management Sukkur, clinic software Sukkur Barrage, hospital software Sukkur, medical billing software Sukkur, prescription software Sukkur, OPD management Sukkur, healthcare software Sukkur, electronic medical records Sukkur, doctor appointment system Sukkur, clinic ERP Sukkur, healthcare IT Upper Sindh",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-sukkur",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-sukkur",
     ogTitle: "EMR Software for Doctors in Sukkur | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Sukkur. Complete clinic management solution trusted by 120+ Sukkur clinics.",
-    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-sukkur",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-sukkur",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

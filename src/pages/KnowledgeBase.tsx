@@ -218,11 +218,11 @@ const KnowledgeBase = () => {
     title: "Knowledge Base — Help, Guides & Tutorials | Zonoir",
     description:
       "Find step-by-step guides for clinics, doctors, and receptionists on using Zonoir — from sign-up and adding doctors to billing and patient records.",
-    canonicalUrl: "https://app.zonoir.com/knowledge-base",
-    ogUrl: "https://app.zonoir.com/knowledge-base",
+    canonicalUrl: "https://zonoir.com/knowledge-base",
+    ogUrl: "https://zonoir.com/knowledge-base",
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
-      { name: "Knowledge Base", url: "https://app.zonoir.com/knowledge-base" },
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Knowledge Base", url: "https://zonoir.com/knowledge-base" },
     ],
   });
 

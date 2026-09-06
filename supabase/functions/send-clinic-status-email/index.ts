@@ -71,7 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <li>Access financial reports and analytics</li>
                     </ul>
                     <div style="text-align: center; margin: 30px 0;">
-                      <a href="https://app.zonoir.com/auth" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
+                      <a href="https://zonoir.com/auth" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
                         Login to Your Dashboard →
                       </a>
                     </div>

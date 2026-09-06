@@ -31,11 +31,11 @@ const Blogs = () => {
     title: "Healthcare Blog — Insights for Doctors & Clinics | Zonoir",
     description:
       "Read the latest articles on clinic management, EMR adoption, healthcare technology, and patient experience from the Zonoir team.",
-    canonicalUrl: "https://app.zonoir.com/blog",
-    ogUrl: "https://app.zonoir.com/blog",
+    canonicalUrl: "https://zonoir.com/blog",
+    ogUrl: "https://zonoir.com/blog",
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
-      { name: "Blog", url: "https://app.zonoir.com/blog" },
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Blog", url: "https://zonoir.com/blog" },
     ],
   });
 

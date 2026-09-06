@@ -16,10 +16,10 @@ Disallow: /referral-partner/
 Disallow: /video-call
 
 # Sitemaps
-Sitemap: https://app.zonoir.com/sitemap.xml
+Sitemap: https://zonoir.com/sitemap.xml
 Sitemap: https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap
 
 # LLMs
 # Full dynamic version with all doctor profiles:
 # https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-llms-txt
-# Static fallback: https://app.zonoir.com/llms.txt
+# Static fallback: https://zonoir.com/llms.txt

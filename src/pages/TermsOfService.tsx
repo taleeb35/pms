@@ -8,8 +8,8 @@ const TermsOfService = () => {
     title: "Terms of Service | Zonoir - Clinic Management Software",
     description:
       "Read the Terms of Service for Zonoir clinic management software. Understand your rights, responsibilities, and our commitment to healthcare data privacy.",
-    canonicalUrl: "https://app.zonoir.com/terms-of-service",
-    ogUrl: "https://app.zonoir.com/terms-of-service",
+    canonicalUrl: "https://zonoir.com/terms-of-service",
+    ogUrl: "https://zonoir.com/terms-of-service",
   });
 
   const lastUpdated = "February 12, 2026";

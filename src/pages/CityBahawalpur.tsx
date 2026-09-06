@@ -30,10 +30,10 @@ const CityBahawalpur = () => {
     title: "EMR Software for Doctors in Bahawalpur | Clinic Management Software Bahawalpur",
     description: "Best EMR software for doctors in Bahawalpur. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 150+ Bahawalpur clinics.",
     keywords: "EMR software Bahawalpur, clinic management software Bahawalpur, doctor software Bahawalpur, patient management Bahawalpur, clinic software Model Town, hospital software Bahawalpur, medical billing software Bahawalpur, prescription software Bahawalpur, OPD management Bahawalpur, healthcare software Bahawalpur, electronic medical records Bahawalpur, doctor appointment system Bahawalpur, clinic ERP Bahawalpur, healthcare IT South Punjab",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-bahawalpur",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-bahawalpur",
     ogTitle: "EMR Software for Doctors in Bahawalpur | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Bahawalpur. Complete clinic management solution trusted by 150+ Bahawalpur clinics.",
-    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-bahawalpur",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-bahawalpur",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

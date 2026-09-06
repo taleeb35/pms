@@ -45,11 +45,11 @@ const Reviews = () => {
     title: "Reviews — What Doctors Say About Zonoir",
     description:
       "Read what real doctors and clinics across Pakistan say about using Zonoir for clinic management, EMR, and patient appointments.",
-    canonicalUrl: "https://app.zonoir.com/reviews",
-    ogUrl: "https://app.zonoir.com/reviews",
+    canonicalUrl: "https://zonoir.com/reviews",
+    ogUrl: "https://zonoir.com/reviews",
     breadcrumbs: [
-      { name: "Home", url: "https://app.zonoir.com/" },
-      { name: "Reviews", url: "https://app.zonoir.com/reviews" },
+      { name: "Home", url: "https://zonoir.com/" },
+      { name: "Reviews", url: "https://zonoir.com/reviews" },
     ],
   });
   return (

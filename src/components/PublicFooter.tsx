@@ -17,7 +17,7 @@ const PublicFooter = () => {
     { name: "Service Status", href: "/service-status" },
     {
       name: "What is Zonoir?",
-      href: "https://app.zonoir.com/blog/what-is-zonoir",
+      href: "https://zonoir.com/blog/what-is-zonoir",
       external: true,
     },
   ];

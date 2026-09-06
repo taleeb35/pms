@@ -30,10 +30,10 @@ const CityRawalpindi = () => {
     title: "EMR Software for Doctors in Rawalpindi | Clinic Management Software Rawalpindi",
     description: "Best EMR software for doctors in Rawalpindi. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 400+ Rawalpindi clinics.",
     keywords: "EMR software Rawalpindi, clinic management software Rawalpindi, doctor software Rawalpindi, patient management Rawalpindi, clinic software Saddar, hospital software Rawalpindi, medical billing software Rawalpindi, prescription software Rawalpindi, OPD management Rawalpindi, healthcare software Rawalpindi, electronic medical records Rawalpindi, doctor appointment system Rawalpindi, clinic ERP Rawalpindi, healthcare IT Rawalpindi",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-rawalpindi",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-rawalpindi",
     ogTitle: "EMR Software for Doctors in Rawalpindi | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Rawalpindi. Complete clinic management solution trusted by 400+ Rawalpindi clinics.",
-    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-rawalpindi",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-rawalpindi",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

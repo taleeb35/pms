@@ -30,10 +30,10 @@ const CitySargodha = () => {
     title: "EMR Software for Doctors in Sargodha | Clinic Management Software Sargodha",
     description: "Best EMR software for doctors in Sargodha. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 180+ Sargodha clinics.",
     keywords: "EMR software Sargodha, clinic management software Sargodha, doctor software Sargodha, patient management Sargodha, clinic software Satellite Town, hospital software Sargodha, medical billing software Sargodha, prescription software Sargodha, OPD management Sargodha, healthcare software Sargodha, electronic medical records Sargodha, doctor appointment system Sargodha, clinic ERP Sargodha, healthcare IT Central Punjab",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-sargodha",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-sargodha",
     ogTitle: "EMR Software for Doctors in Sargodha | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Sargodha. Complete clinic management solution trusted by 180+ Sargodha clinics.",
-    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-sargodha",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-sargodha",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

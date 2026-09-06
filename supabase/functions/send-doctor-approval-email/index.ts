@@ -88,7 +88,7 @@ const handler = async (req: Request): Promise<Response> => {
                       
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 30px 0;">
-                        <a href="${Deno.env.get("SITE_URL") || "https://app.zonoir.com"}/doctor-auth" 
+                        <a href="${Deno.env.get("SITE_URL") || "https://zonoir.com"}/doctor-auth" 
                            style="display: inline-block; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                           Login to Dashboard →
                         </a>
@@ -201,7 +201,7 @@ const handler = async (req: Request): Promise<Response> => {
                       
                       <!-- CTA Button -->
                       <div style="text-align: center; margin: 30px 0;">
-                        <a href="${Deno.env.get("SITE_URL") || "https://app.zonoir.com"}/contact" 
+                        <a href="${Deno.env.get("SITE_URL") || "https://zonoir.com"}/contact" 
                            style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; padding: 15px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">
                           Contact Support →
                         </a>

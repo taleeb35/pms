@@ -30,10 +30,10 @@ const CityKarachi = () => {
     title: "EMR Software for Doctors in Karachi | Clinic Management Software Karachi",
     description: "Best EMR software for doctors in Karachi. Complete clinic management solution with patient records, appointment scheduling, billing & prescriptions. Trusted by 800+ Karachi clinics.",
     keywords: "EMR software Karachi, clinic management software Karachi, doctor software Karachi, patient management Karachi, clinic software Clifton, hospital software Karachi, medical billing software Karachi, prescription software Karachi, OPD management Karachi, healthcare software Karachi, electronic medical records Karachi, doctor appointment system Karachi, clinic ERP Karachi",
-    canonicalUrl: "https://app.zonoir.com/emr-software-for-doctors-in-karachi",
+    canonicalUrl: "https://zonoir.com/emr-software-for-doctors-in-karachi",
     ogTitle: "EMR Software for Doctors in Karachi | Clinic Management Software",
     ogDescription: "Best EMR software for doctors in Karachi. Complete clinic management solution trusted by 800+ Karachi clinics.",
-    ogUrl: "https://app.zonoir.com/emr-software-for-doctors-in-karachi",
+    ogUrl: "https://zonoir.com/emr-software-for-doctors-in-karachi",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",

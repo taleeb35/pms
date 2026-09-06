@@ -24,7 +24,7 @@ interface SEOProps {
   noIndex?: boolean;
 }
 
-const DEFAULT_OG_IMAGE = "https://app.zonoir.com/og-image.png";
+const DEFAULT_OG_IMAGE = "https://zonoir.com/og-image.png";
 
 export const useSEO = ({
   title,
