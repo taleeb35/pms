@@ -45,7 +45,7 @@ export const AIPrescriptionAssistant = ({
     setIsLoading(true);
     setSuggestion("");
 
-    const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-prescription-assistant`;
+    const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/ai-prescription-assistant`;
 
     try {
       const resp = await fetch(CHAT_URL, {

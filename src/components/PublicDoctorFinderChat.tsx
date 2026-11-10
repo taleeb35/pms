@@ -245,7 +245,7 @@ export const PublicDoctorFinderChat = () => {
       setLoading(true);
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/find-doctor-chatbot`,
+          `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/find-doctor-chatbot`,
           {
             method: "POST",
             headers: {
@@ -337,7 +337,7 @@ export const PublicDoctorFinderChat = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/find-doctor-chatbot`,
+        `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/find-doctor-chatbot`,
         {
           method: "POST",
           headers: {
@@ -370,7 +370,7 @@ export const PublicDoctorFinderChat = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/find-doctor-chatbot`,
+        `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/find-doctor-chatbot`,
         {
           method: "POST",
           headers: {
@@ -413,7 +413,7 @@ export const PublicDoctorFinderChat = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/find-doctor-chatbot`,
+        `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/find-doctor-chatbot`,
         {
           method: "POST",
           headers: {

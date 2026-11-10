@@ -37,10 +37,11 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
-        navigateFallbackDenylist: [/^\/~oauth/, /^\/api/, /supabase\.co/],
+        // Backend is self-hosted Supabase on the same origin (nginx proxies these paths).
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/api/, /^\/(rest|auth|storage|functions|realtime)\/v1\//],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.origin.includes("supabase.co"),
+            urlPattern: ({ url }) => /^\/(rest|auth|storage|functions)\/v1\//.test(url.pathname),
             handler: "NetworkFirst",
             options: {
               cacheName: "api-cache",

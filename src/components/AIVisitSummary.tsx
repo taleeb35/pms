@@ -61,7 +61,7 @@ export const AIVisitSummary = ({
 
     try {
       const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-visit-summary`,
+        `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/ai-visit-summary`,
         {
           method: "POST",
           headers: {

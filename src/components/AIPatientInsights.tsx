@@ -35,9 +35,8 @@ const AIPatientInsights = ({ patientId, patientName }: AIPatientInsightsProps) =
         return;
       }
 
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/ai-patient-insights`,
+        `${import.meta.env.VITE_SUPABASE_URL || window.location.origin}/functions/v1/ai-patient-insights`,
         {
           method: "POST",
           headers: {

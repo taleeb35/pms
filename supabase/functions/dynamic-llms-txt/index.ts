@@ -284,7 +284,7 @@ Yes. Zonoir has a referral partner program where partners earn commission for ev
     // Footer
     output += `## API & Sitemap
 
-- [Dynamic Sitemap (XML)](${Deno.env.get("SUPABASE_URL")}/functions/v1/dynamic-sitemap)
+- [Dynamic Sitemap (XML)](https://app.zonoir.com/functions/v1/dynamic-sitemap)
 - [Static Sitemap (XML)](${BASE_URL}/sitemap.xml)
 
 ## Contact
