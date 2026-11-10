@@ -105,14 +105,6 @@ const ReceptionistAuth = () => {
       </div>
 
       <div className="w-full max-w-md relative z-10">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/")}
-          className="mb-4 gap-2 hover:bg-card/50"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Home
-        </Button>
 
         <Card className="shadow-xl border-border/40 backdrop-blur-sm bg-card/95">
           <CardHeader className="text-center space-y-4">

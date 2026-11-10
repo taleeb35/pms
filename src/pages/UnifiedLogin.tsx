@@ -443,16 +443,6 @@ const UnifiedLogin = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
-      {/* Home Button */}
-      <Button
-        onClick={() => navigate("/")}
-        variant="outline"
-        size="lg"
-        className="absolute top-6 left-6 z-20 bg-white/90 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/40 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in"
-      >
-        <Home className="mr-2 h-5 w-5 text-primary" />
-        <span className="font-semibold text-primary">Back to Home</span>
-      </Button>
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         <Card className="shadow-xl border-border/40 backdrop-blur-sm bg-card/95">

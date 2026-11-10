@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
 import { useNavigate } from "react-router-dom";
+import { isAuthRoute } from "@/lib/authRoutes";
 
 interface DoctorClinic {
   clinic_name: string;
@@ -600,6 +601,9 @@ export const PublicDoctorFinderChat = () => {
     const slug = generateDoctorSlug(doctor.full_name);
     return `/doctors/${slug}`;
   };
+
+  // Never show the doctor-finder launcher on sign-in / registration screens
+  if (isAuthRoute(location.pathname)) return null;
 
   return (
     <>

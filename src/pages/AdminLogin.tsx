@@ -73,16 +73,6 @@ const AdminLogin = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
       </div>
 
-      {/* Back to Home Button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute top-4 left-4 z-10 gap-2 hover:bg-background/80 backdrop-blur-sm"
-        onClick={() => navigate("/")}
-      >
-        <Home className="h-4 w-4" />
-        Back to Home
-      </Button>
 
       <Card className="w-full max-w-md relative z-10 shadow-2xl border-primary/20 backdrop-blur-sm bg-card/95 animate-scale-in">
         <CardHeader className="space-y-4 text-center pb-8">

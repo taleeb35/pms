@@ -1,3 +1,4 @@
+import { MarketingRedirect, AppHomeGate } from "@/components/MarketingRedirect";
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -188,8 +189,8 @@ const App = () => (
           <FloatingWhatsApp />
           <PublicDoctorFinderChat />
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/demo-landing" element={<DemoLanding />} />
+          <Route path="/" element={<AppHomeGate><Index /></AppHomeGate>} />
+          <Route path="/demo-landing" element={<MarketingRedirect><DemoLanding /></MarketingRedirect>} />
           <Route path="/app" element={<MobileHome />} />
           <Route path="/app/appointments" element={<MobileAppointments />} />
           <Route path="/app/patients" element={<MobilePatients />} />
@@ -213,48 +214,48 @@ const App = () => (
           <Route path="/app/doctor-schedules" element={<MobileDoctorSchedules />} />
           <Route path="/app/expenses" element={<MobileExpenses />} />
           <Route path="/app/specializations" element={<MobileSpecializations />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/clinic-management-software" element={<ClinicManagementSoftware />} />
-          <Route path="/clinic-management-system-guide" element={<ClinicManagementSystemGuide />} />
-          <Route path="/clinic-software-small-practices" element={<ClinicSoftwareSmallPractices />} />
-          <Route path="/reviews" element={<Reviews />} />
-          <Route path="/emr-software-for-doctors-in-lahore" element={<CityLahore />} />
-          <Route path="/emr-software-for-doctors-in-karachi" element={<CityKarachi />} />
-          <Route path="/emr-software-for-doctors-in-islamabad" element={<CityIslamabad />} />
-          <Route path="/emr-software-for-doctors-in-rawalpindi" element={<CityRawalpindi />} />
-          <Route path="/emr-software-for-doctors-in-faisalabad" element={<CityFaisalabad />} />
-          <Route path="/emr-software-for-doctors-in-multan" element={<CityMultan />} />
-          <Route path="/emr-software-for-doctors-in-peshawar" element={<CityPeshawar />} />
-          <Route path="/emr-software-for-doctors-in-quetta" element={<CityQuetta />} />
-          <Route path="/emr-software-for-doctors-in-sialkot" element={<CitySialkot />} />
-          <Route path="/emr-software-for-doctors-in-gujranwala" element={<CityGujranwala />} />
-          <Route path="/emr-software-for-doctors-in-hyderabad" element={<CityHyderabad />} />
-          <Route path="/emr-software-for-doctors-in-bahawalpur" element={<CityBahawalpur />} />
-          <Route path="/emr-software-for-doctors-in-sargodha" element={<CitySargodha />} />
-          <Route path="/emr-software-for-doctors-in-sukkur" element={<CitySukkur />} />
-          <Route path="/emr-software-for-doctors-in-abbottabad" element={<CityAbbottabad />} />
-          <Route path="/knowledge-base" element={<KnowledgeBase />} />
-          <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
+          <Route path="/features" element={<MarketingRedirect><Features /></MarketingRedirect>} />
+          <Route path="/contact" element={<MarketingRedirect><Contact /></MarketingRedirect>} />
+          <Route path="/pricing" element={<MarketingRedirect><Pricing /></MarketingRedirect>} />
+          <Route path="/clinic-management-software" element={<MarketingRedirect><ClinicManagementSoftware /></MarketingRedirect>} />
+          <Route path="/clinic-management-system-guide" element={<MarketingRedirect><ClinicManagementSystemGuide /></MarketingRedirect>} />
+          <Route path="/clinic-software-small-practices" element={<MarketingRedirect><ClinicSoftwareSmallPractices /></MarketingRedirect>} />
+          <Route path="/reviews" element={<MarketingRedirect><Reviews /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-lahore" element={<MarketingRedirect><CityLahore /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-karachi" element={<MarketingRedirect><CityKarachi /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-islamabad" element={<MarketingRedirect><CityIslamabad /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-rawalpindi" element={<MarketingRedirect><CityRawalpindi /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-faisalabad" element={<MarketingRedirect><CityFaisalabad /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-multan" element={<MarketingRedirect><CityMultan /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-peshawar" element={<MarketingRedirect><CityPeshawar /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-quetta" element={<MarketingRedirect><CityQuetta /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-sialkot" element={<MarketingRedirect><CitySialkot /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-gujranwala" element={<MarketingRedirect><CityGujranwala /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-hyderabad" element={<MarketingRedirect><CityHyderabad /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-bahawalpur" element={<MarketingRedirect><CityBahawalpur /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-sargodha" element={<MarketingRedirect><CitySargodha /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-sukkur" element={<MarketingRedirect><CitySukkur /></MarketingRedirect>} />
+          <Route path="/emr-software-for-doctors-in-abbottabad" element={<MarketingRedirect><CityAbbottabad /></MarketingRedirect>} />
+          <Route path="/knowledge-base" element={<MarketingRedirect><KnowledgeBase /></MarketingRedirect>} />
+          <Route path="/knowledge-base/:slug" element={<MarketingRedirect><KnowledgeBaseArticle /></MarketingRedirect>} />
           <Route path="/doctor/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />
           <Route path="/doctor/knowledge-base/:slug" element={<Layout><KBEmbeddedProvider><KnowledgeBaseArticle /></KBEmbeddedProvider></Layout>} />
           <Route path="/clinic/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />
           <Route path="/clinic/knowledge-base/:slug" element={<Layout><KBEmbeddedProvider><KnowledgeBaseArticle /></KBEmbeddedProvider></Layout>} />
-          <Route path="/referral-program" element={<ReferralProgram />} />
+          <Route path="/referral-program" element={<MarketingRedirect><ReferralProgram /></MarketingRedirect>} />
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
           <Route path="/doctors/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/doctors/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
-          <Route path="/blog" element={<Blogs />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="/service-status" element={<ServiceStatus />} />
-          <Route path="/install" element={<InstallApp />} />
-          <Route path="/install-app" element={<InstallApp />} />
+          <Route path="/blog" element={<MarketingRedirect><Blogs /></MarketingRedirect>} />
+          <Route path="/blog/:slug" element={<MarketingRedirect><BlogPost /></MarketingRedirect>} />
+          <Route path="/privacy-policy" element={<MarketingRedirect><PrivacyPolicy /></MarketingRedirect>} />
+          <Route path="/terms-of-service" element={<MarketingRedirect><TermsOfService /></MarketingRedirect>} />
+          <Route path="/service-status" element={<MarketingRedirect><ServiceStatus /></MarketingRedirect>} />
+          <Route path="/install" element={<MarketingRedirect><InstallApp /></MarketingRedirect>} />
+          <Route path="/install-app" element={<MarketingRedirect><InstallApp /></MarketingRedirect>} />
           <Route path="/video-call" element={<PatientVideoCall />} />
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/login" element={<UnifiedLogin />} />

@@ -290,16 +290,6 @@ const DoctorAuth = () => {
         <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl animate-pulse"></div>
       </div>
 
-      {/* Home Button */}
-      <Button
-        onClick={() => navigate("/")}
-        variant="outline"
-        size="lg"
-        className="absolute top-6 left-6 z-20 bg-white/90 backdrop-blur-sm border-2 border-teal-200 hover:border-teal-400 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 animate-fade-in"
-      >
-        <Home className="mr-2 h-5 w-5 text-teal-600" />
-        <span className="font-semibold text-teal-600">Back to Home</span>
-      </Button>
 
       <Card className="w-full max-w-lg relative z-10 border-2 border-teal-200 shadow-2xl bg-white/95 backdrop-blur-sm animate-fade-in">
         <CardHeader className="space-y-4 text-center pb-4">

@@ -1,6 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { isStandalonePWA } from "@/lib/pwaUtils";
+import { isAuthRoute } from "@/lib/authRoutes";
 
 const FloatingWhatsApp = () => {
   const phoneNumber = "923004313139";
@@ -9,6 +10,10 @@ const FloatingWhatsApp = () => {
 
   // Hide inside the mobile app shell or when running as installed PWA
   if (location.pathname.startsWith("/app") || isStandalonePWA()) return null;
+
+  // Hide on sign-in / registration screens
+  if (isAuthRoute(location.pathname)) return null;
+
 
   // Hide on public doctor profile pages — patients confuse it for the doctor's number
   const segs = location.pathname.replace(/\/+$/, "").split("/").filter(Boolean);

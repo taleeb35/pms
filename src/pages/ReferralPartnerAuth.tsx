@@ -56,13 +56,6 @@ const ReferralPartnerAuth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Link
-          to="/"
-          className="back_home inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Home
-        </Link>
 
         <Card className="border-0 shadow-xl bg-white/80 backdrop-blur">
           <CardHeader className="text-center pb-2">
