@@ -94,98 +94,24 @@ const ReferralPartnerDashboard = () => {
     
     const fetchAllData = async () => {
       try {
-        // Fetch fresh partner data
-        const { data: freshPartner, error: partnerError } = await supabase
-          .from("referral_partners")
-          .select("*")
-          .eq("id", partnerData.id)
-          .single();
-        
-        if (partnerError) {
-          console.error("Error fetching partner data:", partnerError);
-          setPartner(partnerData);
-        } else if (freshPartner) {
-          setPartner(freshPartner);
-          sessionStorage.setItem("referral_partner", JSON.stringify(freshPartner));
+        // Everything is loaded by one server-side call that re-checks email + referral code.
+        const { data: dash, error: dashError } = await supabase.rpc("referral_partner_dashboard" as any, {
+          p_email: partnerData.email,
+          p_code: partnerData.referral_code,
+        });
+        const d = dash as any;
+
+        if (dashError || !d) {
+          console.error("Error fetching partner dashboard:", dashError);
+          sessionStorage.removeItem("referral_partner");
+          navigate("/referral-partner/login");
+          return;
         }
 
-        const referralCode = freshPartner?.referral_code || partnerData.referral_code;
-        const partnerId = freshPartner?.id || partnerData.id;
-
-        // Fetch referral commissions
-        const { data: commissions, error: commissionsError } = await supabase
-          .from("referral_commissions")
-          .select("*")
-          .eq("referral_partner_id", partnerId)
-          .order("month", { ascending: false });
-
-        if (commissionsError) {
-          console.error("Error fetching commissions:", commissionsError);
-        } else {
-          setMonthlyCommissions(commissions || []);
-        }
-
-        // Fetch clinics with this referral code
-        const { data: clinics, error: clinicsError } = await supabase
-          .from("clinics")
-          .select("id, clinic_name, status, created_at")
-          .eq("referred_by", referralCode);
-
-        if (clinicsError) {
-          console.error("Error fetching clinics:", clinicsError);
-        }
-
-        // Get clinic emails from profiles
-        let clinicReferrals: Referral[] = [];
-        if (clinics && clinics.length > 0) {
-          const { data: clinicProfiles } = await supabase
-            .from("profiles")
-            .select("id, email")
-            .in("id", clinics.map(c => c.id));
-
-          clinicReferrals = clinics.map(clinic => ({
-            id: clinic.id,
-            name: clinic.clinic_name,
-            email: clinicProfiles?.find(p => p.id === clinic.id)?.email,
-            type: "clinic" as const,
-            status: clinic.status,
-            created_at: clinic.created_at,
-          }));
-        }
-
-        // Fetch doctors with this referral code
-        const { data: doctors, error: doctorsError } = await supabase
-          .from("doctors")
-          .select("id, specialization, approved, created_at")
-          .eq("referred_by", referralCode);
-
-        if (doctorsError) {
-          console.error("Error fetching doctors:", doctorsError);
-        }
-
-        // Get doctor names and emails from profiles
-        let doctorReferrals: Referral[] = [];
-        if (doctors && doctors.length > 0) {
-          const { data: profiles } = await supabase
-            .from("profiles")
-            .select("id, full_name, email")
-            .in("id", doctors.map(d => d.id));
-
-          doctorReferrals = doctors.map(doctor => ({
-            id: doctor.id,
-            name: profiles?.find(p => p.id === doctor.id)?.full_name || doctor.specialization,
-            email: profiles?.find(p => p.id === doctor.id)?.email,
-            type: "doctor" as const,
-            status: doctor.approved ? "active" : "pending",
-            created_at: doctor.created_at,
-          }));
-        }
-
-        const allReferrals = [...clinicReferrals, ...doctorReferrals].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-
-        setReferrals(allReferrals);
+        setPartner(d.partner);
+        sessionStorage.setItem("referral_partner", JSON.stringify(d.partner));
+        setMonthlyCommissions(d.commissions || []);
+        setReferrals((d.referrals || []) as Referral[]);
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to load data");

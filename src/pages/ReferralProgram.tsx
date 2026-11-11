@@ -61,18 +61,12 @@ const ReferralProgram = () => {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // Insert with auto-approved status - the database trigger will generate referral_code
-      const { data: insertedData, error } = await supabase
-        .from("referral_partners")
-        .insert({
-          full_name: data.full_name.trim(),
-          email: data.email.toLowerCase().trim(),
-          phone: data.phone.trim(),
-          referral_code: "TEMP", // Will be overwritten by database trigger
-          status: "active", // Auto-approve on signup
-        })
-        .select("referral_code")
-        .single();
+      // Server-side signup (auto-approved); the database generates the referral code.
+      const { data: newCode, error } = await supabase.rpc("referral_partner_signup" as any, {
+        p_full_name: data.full_name.trim(),
+        p_email: data.email.toLowerCase().trim(),
+        p_phone: data.phone.trim(),
+      });
 
       if (error) {
         if (error.code === "23505") {
@@ -86,7 +80,7 @@ const ReferralProgram = () => {
         throw error;
       }
 
-      const referralCode = insertedData?.referral_code || "";
+      const referralCode = (newCode as unknown as string | null) || "";
 
       // Send welcome email with the database-generated code
       try {

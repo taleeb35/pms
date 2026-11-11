@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { requireServiceRole, authErrorResponse } from "../_shared/auth.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.76.1";
 
 const corsHeaders = {
@@ -10,6 +11,12 @@ serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    await requireServiceRole(req);
+  } catch (e) {
+    return authErrorResponse(e, corsHeaders)!;
   }
 
   try {

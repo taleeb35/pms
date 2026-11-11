@@ -180,7 +180,7 @@ const DoctorAuth = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = "https://zonoir.com/login";
+      const redirectUrl = "https://app.zonoir.com/login";
 
       // Create auth user for the doctor
       const { data: authData, error: authError } = await supabase.auth.signUp({

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { requireRole, authErrorResponse } from "../_shared/auth.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
@@ -20,6 +21,12 @@ interface DoctorStatusEmailRequest {
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    await requireRole(req, ["admin", "clinic"]);
+  } catch (e) {
+    return authErrorResponse(e, corsHeaders)!;
   }
 
   try {

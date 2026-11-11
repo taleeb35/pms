@@ -25,12 +25,12 @@ const ReferralPartnerAuth = () => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("referral_partners")
-        .select("*")
-        .eq("email", email.toLowerCase().trim())
-        .eq("referral_code", referralCode.toUpperCase().trim())
-        .single();
+      // Verified on the server: returns the partner only if email + code match.
+      const { data: found, error } = await supabase.rpc("referral_partner_login" as any, {
+        p_email: email.toLowerCase().trim(),
+        p_code: referralCode.toUpperCase().trim(),
+      });
+      const data = found as any;
 
       if (error || !data) {
         toast.error("Invalid email or referral code");
