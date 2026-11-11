@@ -4,7 +4,7 @@
 
 > [!NOTE]
 > This is a summary version. For the complete dynamically generated llms.txt with all 400+ doctor profiles (with headings and bios), visit:
-> https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-llms-txt
+> https://app.zonoir.com/functions/v1/dynamic-llms-txt
 
 ## About
 
@@ -75,8 +75,8 @@ Zonoir provides EMR software, appointment booking, patient management, visit rec
 
 ## Sitemaps
 
-- Dynamic Sitemap: https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap
-- Dynamic LLMs.txt (full): https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-llms-txt
+- Dynamic Sitemap: https://app.zonoir.com/functions/v1/dynamic-sitemap
+- Dynamic LLMs.txt (full): https://app.zonoir.com/functions/v1/dynamic-llms-txt
 - Static Sitemap: https://zonoir.com/sitemap.xml
 
 ## Contact

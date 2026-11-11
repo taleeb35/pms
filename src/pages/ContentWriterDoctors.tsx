@@ -760,15 +760,15 @@ const ContentWriterDoctors = () => {
       // Upload new avatar if provided
       if (editAvatarFile) {
         const fileExt = editAvatarFile.name.split('.').pop();
-        const fileName = `seo-doctor-${Date.now()}.${fileExt}`;
+        const fileName = `seo/seo-doctor-${Date.now()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage
-          .from("medical-documents")
+          .from("doctor-avatars")
           .upload(fileName, editAvatarFile);
 
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-          .from("medical-documents")
+          .from("doctor-avatars")
           .getPublicUrl(fileName);
         
         avatarUrl = publicUrl;
@@ -918,15 +918,15 @@ const ContentWriterDoctors = () => {
       // Upload avatar if provided
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const fileName = `seo-doctor-${Date.now()}.${fileExt}`;
+        const fileName = `seo/seo-doctor-${Date.now()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage
-          .from("medical-documents")
+          .from("doctor-avatars")
           .upload(fileName, avatarFile);
 
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
-          .from("medical-documents")
+          .from("doctor-avatars")
           .getPublicUrl(fileName);
         
         avatarUrl = publicUrl;

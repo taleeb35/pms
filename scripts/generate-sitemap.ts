@@ -6,7 +6,7 @@ import { writeFileSync, existsSync, mkdirSync } from "fs";
 import { resolve } from "path";
 
 const SITEMAP_URL =
-  "https://anqhnkcppujulkugcpee.supabase.co/functions/v1/dynamic-sitemap";
+  "https://app.zonoir.com/functions/v1/dynamic-sitemap";
 
 async function main() {
   let xml: string;
