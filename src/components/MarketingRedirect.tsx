@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 
-const APP_HOSTS = ["app.zonoir.com", "zonoir.lovable.app", "72-62-45-147.sslip.io"];
+const APP_HOSTS = ["app.zonoir.com", "zonoir.lovable.app"];
 export const isAppHost = () =>
   typeof window !== "undefined" && APP_HOSTS.includes(window.location.hostname);
 
