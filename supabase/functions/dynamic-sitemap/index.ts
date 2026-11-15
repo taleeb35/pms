@@ -186,7 +186,7 @@ serve(async (req) => {
         const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
+    <loc>${BASE_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -231,7 +231,7 @@ serve(async (req) => {
         const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
+    <loc>${BASE_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

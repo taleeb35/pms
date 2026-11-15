@@ -58,7 +58,8 @@ export const slugToDisplayName = (slug: string): string => {
 export const generateDoctorProfileUrl = (
   city: string,
   specialty: string,
-  fullName: string
+  fullName: string,
+  country: string = "PK" // A7: country is part of the URL (all current listings are in Pakistan)
 ): string => {
   const specialtySlug = generateSpecialtySlug(specialty);
   const doctorSlug = generateDoctorSlug(fullName);
@@ -68,5 +69,5 @@ export const generateDoctorProfileUrl = (
     return `/doctors/${specialtySlug}/${doctorSlug}`;
   }
 
-  return `/doctors/${citySlug}/${specialtySlug}/${doctorSlug}`;
+  return `/doctors/${(country || "PK").toLowerCase()}/${citySlug}/${specialtySlug}/${doctorSlug}`;
 };

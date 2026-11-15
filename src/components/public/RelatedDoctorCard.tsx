@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MapPin, Award } from "lucide-react";
-import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug } from "@/lib/slugUtils";
+import { generateCitySlug, generateSpecialtySlug, generateDoctorSlug, generateDoctorProfileUrl } from "@/lib/slugUtils";
 import VerifiedBadge from "@/components/public/VerifiedBadge";
 
 interface RelatedDoctorCardProps {
@@ -28,7 +28,7 @@ const RelatedDoctorCard = ({ doctor }: RelatedDoctorCardProps) => {
       .slice(0, 2);
   };
 
-  const doctorUrl = `/doctors/${generateCitySlug(doctor.city)}/${generateSpecialtySlug(doctor.specialization)}/${generateDoctorSlug(doctor.full_name)}`;
+  const doctorUrl = generateDoctorProfileUrl(doctor.city, doctor.specialization, doctor.full_name);
 
   return (
     <Link to={doctorUrl} className="block group">

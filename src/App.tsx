@@ -175,6 +175,7 @@ import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import StandaloneRedirect from "./components/StandaloneRedirect";
 import PortalPageTitle from "./components/PortalPageTitle";
+import LegacyDoctorRedirect from "./components/public/LegacyDoctorRedirect";
 import { RegionProvider } from "./contexts/RegionContext";
 
 const queryClient = new QueryClient();
@@ -250,7 +251,8 @@ const App = () => (
           <Route path="/find-doctors" element={<FindDoctors />} />
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
           <Route path="/doctors/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
-          <Route path="/doctors/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
+          <Route path="/doctors/:city/:specialty/:doctorSlug" element={<LegacyDoctorRedirect />} />
+          <Route path="/doctors/:country/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/blog" element={<MarketingRedirect><Blogs /></MarketingRedirect>} />

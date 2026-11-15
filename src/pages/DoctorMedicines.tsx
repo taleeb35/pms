@@ -19,6 +19,7 @@ import {
 interface Medicine {
   id: string;
   name: string;
+  generic_name?: string | null;
   created_at: string;
 }
 
@@ -31,6 +32,7 @@ const DoctorMedicines = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newGeneric, setNewGeneric] = useState(""); // A9: generic name (optional)
   const [editing, setEditing] = useState<Medicine | null>(null);
   const [deleting, setDeleting] = useState<Medicine | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -71,7 +73,7 @@ const DoctorMedicines = () => {
       if (isSingleDoctor && doctorId) {
         const r = await supabase
           .from("doctor_medicines")
-          .select("id, name, created_at")
+          .select("id, name, generic_name, created_at")
           .eq("doctor_id", doctorId)
           .order("name")
           .limit(1000);
@@ -79,7 +81,7 @@ const DoctorMedicines = () => {
       } else if (clinicId) {
         const r = await supabase
           .from("clinic_medicines")
-          .select("id, name, created_at")
+          .select("id, name, generic_name, created_at")
           .eq("clinic_id", clinicId)
           .order("name")
           .limit(1000);
@@ -100,15 +102,15 @@ const DoctorMedicines = () => {
     try {
       let error;
       if (isSingleDoctor && doctorId) {
-        const r = await supabase.from("doctor_medicines").insert({ doctor_id: doctorId, name: newName.trim() });
+        const r = await supabase.from("doctor_medicines").insert({ doctor_id: doctorId, name: newName.trim(), generic_name: newGeneric.trim() || null });
         error = r.error;
       } else if (clinicId) {
-        const r = await supabase.from("clinic_medicines").insert({ clinic_id: clinicId, name: newName.trim() });
+        const r = await supabase.from("clinic_medicines").insert({ clinic_id: clinicId, name: newName.trim(), generic_name: newGeneric.trim() || null });
         error = r.error;
       }
       if (error) throw error;
       toast({ title: "Medicine added" });
-      setNewName(""); setIsAddDialogOpen(false); fetchMedicines();
+      setNewName(""); setNewGeneric(""); setIsAddDialogOpen(false); fetchMedicines();
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally { setSubmitting(false); }
@@ -119,7 +121,7 @@ const DoctorMedicines = () => {
     setSubmitting(true);
     try {
       const table = isSingleDoctor ? "doctor_medicines" : "clinic_medicines";
-      const { error } = await supabase.from(table).update({ name: editing.name.trim() }).eq("id", editing.id);
+      const { error } = await supabase.from(table).update({ name: editing.name.trim(), generic_name: (editing.generic_name || "").trim() || null }).eq("id", editing.id);
       if (error) throw error;
       toast({ title: "Medicine updated" });
       setIsEditDialogOpen(false); setEditing(null); fetchMedicines();
@@ -142,7 +144,7 @@ const DoctorMedicines = () => {
     } finally { setSubmitting(false); }
   };
 
-  const filtered = medicines.filter((m) => m.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filtered = medicines.filter((m) => `${m.name} ${m.generic_name || ""}`.toLowerCase().includes(searchQuery.toLowerCase()));
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -150,6 +152,7 @@ const DoctorMedicines = () => {
     <>{[1,2,3,4,5].map((i) => (
       <TableRow key={i}>
         <TableCell><Skeleton className="h-5 w-[200px]" /></TableCell>
+        <TableCell><Skeleton className="h-5 w-[140px]" /></TableCell>
         <TableCell><div className="flex gap-2"><Skeleton className="h-8 w-8 rounded" /><Skeleton className="h-8 w-8 rounded" /></div></TableCell>
       </TableRow>
     ))}</>
@@ -185,20 +188,20 @@ const DoctorMedicines = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>Name</TableHead><TableHead>Generic name</TableHead>
                   <TableHead className="w-[120px] text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? <Skel /> : paginated.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={2} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
                       {searchQuery ? "No medicines match your search" : "No medicines found."}
                     </TableCell>
                   </TableRow>
                 ) : paginated.map((m) => (
                   <TableRow key={m.id}>
-                    <TableCell>{m.name}</TableCell>
+                    <TableCell>{m.name}</TableCell><TableCell className="text-muted-foreground">{m.generic_name || "—"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex gap-1 justify-end flex-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => { setEditing(m); setIsEditDialogOpen(true); }}>
@@ -243,7 +246,10 @@ const DoctorMedicines = () => {
             <DialogTitle>Add Medicine</DialogTitle>
             <DialogDescription>Add a new medicine to your library.</DialogDescription>
           </DialogHeader>
-          <Input placeholder="Medicine name" value={newName} onChange={(e) => setNewName(e.target.value)} />
+          <div className="space-y-3">
+            <Input placeholder="Medicine name (brand or generic)" value={newName} onChange={(e) => setNewName(e.target.value)} />
+            <Input placeholder="Generic name (optional), e.g. Paracetamol" value={newGeneric} onChange={(e) => setNewGeneric(e.target.value)} />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleAdd} disabled={submitting || !newName.trim()}>{submitting ? "Adding..." : "Add"}</Button>
@@ -257,7 +263,10 @@ const DoctorMedicines = () => {
             <DialogTitle>Edit Medicine</DialogTitle>
             <DialogDescription>Update the medicine name.</DialogDescription>
           </DialogHeader>
-          <Input placeholder="Medicine name" value={editing?.name || ""} onChange={(e) => setEditing((p) => p ? { ...p, name: e.target.value } : null)} />
+          <div className="space-y-3">
+            <Input placeholder="Medicine name (brand or generic)" value={editing?.name || ""} onChange={(e) => setEditing((p) => p ? { ...p, name: e.target.value } : null)} />
+            <Input placeholder="Generic name (optional)" value={editing?.generic_name || ""} onChange={(e) => setEditing((p) => p ? { ...p, generic_name: e.target.value } : null)} />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleEdit} disabled={submitting || !editing?.name.trim()}>{submitting ? "Saving..." : "Save"}</Button>
