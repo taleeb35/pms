@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { zonedNow } from "@/lib/region";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ export default function InventoryDashboard() {
 
   const load = async () => {
     setLoading(true);
-    const today = new Date().toISOString().slice(0, 10);
+    const today = zonedNow().ymd;
     const in30 = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
 
     const [

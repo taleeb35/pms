@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { isRevenueAppointment, grossFee } from "@/lib/revenue";
 import { money, moneySymbol } from "@/lib/region";
 import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,8 +87,8 @@ const MobileReports = () => {
     const months = eachMonthOfInterval({ start: dateFrom, end: dateTo });
     return months.map((month) => {
       const monthStr = format(month, "yyyy-MM");
-      const ma = appointments.filter((a) => a.appointment_date?.startsWith(monthStr) && a.status !== "cancelled");
-      const revenue = ma.reduce((s, a) => s + (Number(a.total_fee) || 0), 0);
+      const ma = appointments.filter((a) => a.appointment_date?.startsWith(monthStr) && isRevenueAppointment(a));
+      const revenue = ma.reduce((s, a) => s + grossFee(a), 0);
       const refunds = ma.reduce((s, a) => s + (Number(a.refund) || 0), 0);
       const consultation = ma.reduce((s, a) => s + (Number(a.consultation_fee) || 0), 0);
       const procedures = ma.reduce((s, a) => s + (Number(a.procedure_fee) || 0), 0);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { zonedNow } from "@/lib/region";
 import PhoneInput from "@/components/PhoneInput";
 import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
@@ -114,8 +115,8 @@ const DoctorReceptionistWalkIn = () => {
         return;
       }
 
-      const today = new Date().toISOString().split("T")[0];
-      const now = new Date().toTimeString().slice(0, 5);
+      // Clinic's own date/time (toISOString gave the UTC date, a day early after midnight).
+      const { ymd: today, hm: now } = zonedNow();
 
       const { error: apptError } = await supabase.from("appointments").insert({
         patient_id: patientId,
@@ -126,7 +127,7 @@ const DoctorReceptionistWalkIn = () => {
         appointment_type: "walk-in",
         reason: formData.reason || "Walk-in",
         consultation_fee: parseFloat(formData.consultationFee) || 0,
-        total_fee: parseFloat(formData.consultationFee) || 0,
+        // total_fee is calculated by the database (writing it made every walk-in fail)
       });
 
       if (apptError) throw apptError;

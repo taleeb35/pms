@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { zonedNow } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useClinicId } from "@/hooks/useClinicId";
@@ -68,7 +69,7 @@ const emptyForm = {
   doctor_id: "",
   name: "",
   phone: "",
-  lead_date: new Date().toISOString().slice(0, 10),
+  lead_date: zonedNow().ymd,
   comment: "",
   status: "active",
 };

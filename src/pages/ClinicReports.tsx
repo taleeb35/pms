@@ -240,8 +240,8 @@ const ClinicReports = () => {
       const docAppts = appointments.filter(a => a.doctor_id === doc.id);
       const completed = docAppts.filter(a => a.status === "completed").length;
       const cancelled = docAppts.filter(a => a.status === "cancelled").length;
-      const totalFees = docAppts.filter(a => a.status !== "cancelled").reduce((s, a) => s + (Number(a.total_fee) || 0), 0);
-      const totalRefund = docAppts.reduce((s, a) => s + (Number(a.refund) || 0), 0);
+      const totalFees = docAppts.filter(a => isRevenueAppointment(a)).reduce((s, a) => s + grossFee(a), 0);
+      const totalRefund = docAppts.filter(a => isRevenueAppointment(a)).reduce((s, a) => s + (Number(a.refund) || 0), 0);
       const netRevenue = totalFees - totalRefund;
       const clinicShare = doc.clinic_percentage ? netRevenue * (doc.clinic_percentage / 100) : 0;
       const docPatients = new Set(docAppts.map(a => a.patient_id)).size;
@@ -270,8 +270,8 @@ const ClinicReports = () => {
       const doc = doctors.find(d => d.id === a.doctor_id);
       const spec = doc?.specialization || "Unknown";
       if (!specMap[spec]) specMap[spec] = { revenue: 0, refunds: 0, patients: new Set(), appointments: 0 };
-      specMap[spec].revenue += Number(a.total_fee) || 0;
-      specMap[spec].refunds += Number(a.refund) || 0;
+      specMap[spec].revenue += isRevenueAppointment(a) ? grossFee(a) : 0;
+      specMap[spec].refunds += isRevenueAppointment(a) ? Number(a.refund) || 0 : 0;
       specMap[spec].patients.add(a.patient_id);
       specMap[spec].appointments++;
     });
@@ -291,8 +291,8 @@ const ClinicReports = () => {
   // ======= REVENUE BY DOCTOR (with clinic share splits) =======
   const revenueByDoctor = useMemo(() => {
     return doctors.map(doc => {
-      const docAppts = appointments.filter(a => a.doctor_id === doc.id && a.status !== "cancelled");
-      const gross = docAppts.reduce((s, a) => s + (Number(a.total_fee) || 0), 0);
+      const docAppts = appointments.filter(a => a.doctor_id === doc.id && isRevenueAppointment(a));
+      const gross = docAppts.reduce((s, a) => s + grossFee(a), 0);
       const refunds = docAppts.reduce((s, a) => s + (Number(a.refund) || 0), 0);
       const net = gross - refunds;
       const clinicPct = doc.clinic_percentage || 0;

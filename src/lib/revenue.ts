@@ -2,7 +2,8 @@
 //   Revenue counts COMPLETED appointments only.
 //   Gross = consultation + procedure + other fees.
 //   Net   = gross - discount/refund.
-// (total_fee is stored already net of the refund, so it must not be reduced by the refund again.)
+// (The stored total_fee column is calculated by the database as consultation + other fee only,
+// so it misses procedure fees and discounts. Always use grossFee()/netFee() below.)
 
 type FeeRow = {
   status?: string | null;

@@ -134,15 +134,10 @@ const DoctorAuth = () => {
       }
 
       // Fetch monthly fee from system settings
-      const { data: feeData } = await supabase
-        .from("system_settings")
-        .select("value")
-        .eq("key", "doctor_monthly_fee")
-        .maybeSingle();
-      
-      if (feeData) {
-        setMonthlyFee(parseFloat(feeData.value) || 0);
-      }
+      // Logged-out visitors can't read system_settings directly; use the public settings function.
+      const { data: pub } = await supabase.rpc("get_public_settings" as any);
+      const fee = (pub as any)?.doctor_monthly_fee;
+      if (fee) setMonthlyFee(parseFloat(fee) || 0);
     };
     fetchData();
   }, []);
