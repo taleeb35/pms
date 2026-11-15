@@ -473,7 +473,7 @@ const ClinicReports = () => {
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Revenue</p>
             <p className="text-lg font-bold">{money(totalRevenue)}</p>
-            <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} â {format(dateTo, "d MMM yyyy")} Â· completed visits</p>
+            <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} – {format(dateTo, "d MMM yyyy")} · completed visits</p>
           </CardContent>
         </Card>
         <Card>

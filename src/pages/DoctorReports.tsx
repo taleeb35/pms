@@ -972,7 +972,7 @@ const DoctorReports = () => {
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Net Revenue</p>
             <p className="text-xl font-bold">{money(totalNet)}</p>
-            <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} â {format(dateTo, "d MMM yyyy")} Â· completed visits</p>
+            <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} – {format(dateTo, "d MMM yyyy")} · completed visits</p>
             <div className={cn("flex items-center gap-1 text-xs mt-1", revenueGrowth >= 0 ? "text-green-600" : "text-red-500")}>
               {revenueGrowth >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {Number.isFinite(revenueGrowth) ? `${Math.abs(revenueGrowth).toFixed(1)}% vs last month` : "No revenue last month to compare"}
