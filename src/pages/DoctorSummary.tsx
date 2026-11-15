@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { format } from "date-fns";
 import { CalendarIcon, Users, Calendar as CalIcon, CheckCircle2, XCircle, Wallet, RotateCcw, Clock, UserPlus, Activity, Banknote, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -83,7 +84,7 @@ const DoctorSummary = () => {
   };
 
   const fmtPKR = (n: number) =>
-    `Rs. ${n.toLocaleString("en-PK", { maximumFractionDigits: 0 })}`;
+    `${money(n)}`;
 
   const cards: Array<{ label: string; value: string | number; icon: any; tint: string }> = [
     { label: "Total Appointments", value: stats.total, icon: CalIcon, tint: "from-blue-500/10 to-blue-500/5 text-blue-600" },

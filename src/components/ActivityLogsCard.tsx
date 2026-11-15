@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -234,16 +235,16 @@ export const ActivityLogsCard = ({ doctorId, clinicId }: ActivityLogsCardProps) 
       parts.push(`Procedure: ${String(details.procedure_name)}`);
     }
     if (details.procedure_fee !== undefined) {
-      parts.push(`Fee: Rs. ${String(details.procedure_fee)}`);
+      parts.push(`Fee: ${money(String(details.procedure_fee))}`);
     }
     if (details.discount_amount !== undefined) {
-      parts.push(`Discount: Rs. ${String(details.discount_amount)}`);
+      parts.push(`Discount: ${money(String(details.discount_amount))}`);
     }
     if (details.refund_amount !== undefined) {
-      parts.push(`Refund: Rs. ${String(details.refund_amount)}`);
+      parts.push(`Refund: ${money(String(details.refund_amount))}`);
     }
     if (details.total_fee !== undefined) {
-      parts.push(`Total: Rs. ${String(details.total_fee)}`);
+      parts.push(`Total: ${money(String(details.total_fee))}`);
     }
 
     return parts.join(" • ");

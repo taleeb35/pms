@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { zonedNow } from "@/lib/region";
 
 // B8: dashboard prompt for past appointments still marked Scheduled/Started.
 // Access rules already limit the count to the signed-in doctor's or clinic's appointments.
@@ -10,8 +11,7 @@ const StaleAppointmentsPrompt = ({ to }: { to: string }) => {
 
   useEffect(() => {
     let alive = true;
-    const today = new Date();
-    const ymd = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const ymd = zonedNow().ymd; // "today" in the clinic's timezone
     supabase
       .from("appointments")
       .select("id", { count: "exact", head: true })

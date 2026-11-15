@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -146,7 +147,7 @@ const ClinicActivityLogs = () => {
 
     // Fee related
     if (details.total_fee !== undefined) {
-      parts.push(`Total: Rs. ${String(details.total_fee)}`);
+      parts.push(`Total: ${money(String(details.total_fee))}`);
     }
 
     // Procedure related
@@ -156,7 +157,7 @@ const ClinicActivityLogs = () => {
 
     // Refund related
     if (details.refund_amount) {
-      parts.push(`Refund: Rs. ${String(details.refund_amount)}`);
+      parts.push(`Refund: ${money(String(details.refund_amount))}`);
     }
 
     // Leave related

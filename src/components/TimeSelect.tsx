@@ -15,6 +15,9 @@ interface TimeSelectProps {
   required?: boolean;
 }
 
+// Daytime (06:00-23:59) first, then night slots, so a search for "5:45" offers 5:45 PM before 5:45 AM.
+const daytimeFirst = (hhmm: string) => { const m = Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5)); return m < 360 ? m + 1440 : m; };
+
 const TimeSelect = ({
   value,
   onValueChange,
@@ -36,10 +39,10 @@ const TimeSelect = ({
       // Convert to 12-hour format for display
       const period = hours >= 12 ? 'PM' : 'AM';
       const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-      const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+      const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}${hours < 6 ? " · night" : ""}`;
       
       return { value: time24, label: time12, searchText: `${time24} ${time12}`.toLowerCase() };
-    });
+    }).sort((a, b) => daytimeFirst(a.value) - daytimeFirst(b.value));
   }, []);
 
   // Filter time slots based on search query
@@ -53,7 +56,7 @@ const TimeSelect = ({
   const selectedLabel = useMemo(() => {
     if (!value) return null;
     const slot = timeSlots.find(s => s.value === value);
-    return slot ? `${slot.value} (${slot.label})` : value;
+    return slot ? `${slot.label} (${slot.value})` : value;
   }, [value, timeSlots]);
 
   const handleSelect = (selectedValue: string) => {

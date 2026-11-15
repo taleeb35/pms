@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -174,7 +175,7 @@ export const AppointmentTimeline = ({
   const formatMoney = (v: unknown): string => {
     const n = Number(v);
     if (!isFinite(n)) return String(v ?? "");
-    return `Rs. ${n.toFixed(0)}`;
+    return `${money(n.toFixed(0))}`;
   };
 
   const getActionMessage = (action: string, details: Record<string, unknown> | null): string => {

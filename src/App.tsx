@@ -175,12 +175,14 @@ import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import StandaloneRedirect from "./components/StandaloneRedirect";
 import PortalPageTitle from "./components/PortalPageTitle";
+import { RegionProvider } from "./contexts/RegionContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <GeoLocationProvider>
+      <RegionProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -1063,6 +1065,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+      </RegionProvider>
     </GeoLocationProvider>
   </QueryClientProvider>
 );

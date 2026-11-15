@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { REVENUE_DEFINITION } from "@/lib/revenue";
 import { withDrTitle } from "@/lib/doctorName";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -280,7 +281,7 @@ export default function DoctorFinance() {
     doc.setFont("helvetica", "bold");
     doc.text("Total Revenue", 20, 82);
     doc.setFontSize(16);
-    doc.text(totalRevenue.toLocaleString("en-PK"), 20, 94);
+    doc.text(totalRevenue.toLocaleString("en"), 20, 94);
     
     // Clinic Share Box
     doc.setFillColor(99, 102, 241);
@@ -292,7 +293,7 @@ export default function DoctorFinance() {
     doc.text(`${clinicPct}% of revenue`, 20 + boxWidth + 7, 88);
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text(clinicShare.toLocaleString("en-PK"), 20 + boxWidth + 7, 96);
+    doc.text(clinicShare.toLocaleString("en"), 20 + boxWidth + 7, 96);
     
     // Doctor Share Box
     doc.setFillColor(6, 182, 212);
@@ -304,15 +305,15 @@ export default function DoctorFinance() {
     doc.text(`${doctorPct}% of revenue`, 20 + (boxWidth + 7) * 2, 88);
     doc.setFontSize(16);
     doc.setFont("helvetica", "bold");
-    doc.text(doctorShare.toLocaleString("en-PK"), 20 + (boxWidth + 7) * 2, 96);
+    doc.text(doctorShare.toLocaleString("en"), 20 + (boxWidth + 7) * 2, 96);
     
     // Appointments Table
     const tableData = appointments.map((apt) => [
       apt.patient_name,
       format(new Date(apt.appointment_date), "MMM d, yyyy"),
-      apt.total_fee.toLocaleString("en-PK"),
-      apt.clinic_share.toLocaleString("en-PK"),
-      apt.doctor_share.toLocaleString("en-PK"),
+      apt.total_fee.toLocaleString("en"),
+      apt.clinic_share.toLocaleString("en"),
+      apt.doctor_share.toLocaleString("en"),
     ]);
     
     autoTable(doc, {
@@ -452,7 +453,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {totalRevenue.toLocaleString('en-PK')}
+              {totalRevenue.toLocaleString("en")}
             </div>
             <p className="text-xs text-muted-foreground mt-1">{REVENUE_DEFINITION}</p>
           </CardContent>
@@ -470,7 +471,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              -{totalDiscount.toLocaleString('en-PK')}
+              -{totalDiscount.toLocaleString("en")}
             </div>
           </CardContent>
         </Card>
@@ -487,7 +488,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {clinicShare.toLocaleString('en-PK')}
+              {clinicShare.toLocaleString("en")}
             </div>
           </CardContent>
         </Card>
@@ -504,7 +505,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {doctorShare.toLocaleString('en-PK')}
+              {doctorShare.toLocaleString("en")}
             </div>
           </CardContent>
         </Card>
@@ -580,19 +581,19 @@ export default function DoctorFinance() {
                       <TableCell className="font-medium">{apt.patient_name}</TableCell>
                       <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
                       <TableCell className="text-right text-muted-foreground">
-                        {apt.sub_total.toLocaleString('en-PK')}
+                        {apt.sub_total.toLocaleString("en")}
                       </TableCell>
                       <TableCell className="text-right text-red-600 dark:text-red-400">
-                        {apt.refund > 0 ? `-${apt.refund.toLocaleString('en-PK')}` : '-'}
+                        {apt.refund > 0 ? `-${apt.refund.toLocaleString("en")}` : '-'}
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {apt.total_fee.toLocaleString('en-PK')}
+                        {apt.total_fee.toLocaleString("en")}
                       </TableCell>
                       <TableCell className="text-right text-indigo-600 dark:text-indigo-400">
-                        {apt.clinic_share.toLocaleString('en-PK')}
+                        {apt.clinic_share.toLocaleString("en")}
                       </TableCell>
                       <TableCell className="text-right font-bold text-cyan-600 dark:text-cyan-400">
-                        {apt.doctor_share.toLocaleString('en-PK')}
+                        {apt.doctor_share.toLocaleString("en")}
                       </TableCell>
                       <TableCell className="text-center">
                         <Button

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +44,7 @@ interface AIRevenueForecastProps {
 }
 
 const formatCurrency = (amount: number) => {
-  return `Rs. ${Math.round(amount).toLocaleString()}`;
+  return `${money(Math.round(amount))}`;
 };
 
 const getMonthLabel = (monthStr: string) => {

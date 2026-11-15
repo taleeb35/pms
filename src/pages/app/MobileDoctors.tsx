@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { withDrTitle } from "@/lib/doctorName";
 import { Link } from "react-router-dom";
 import MobileScreen from "@/components/mobile/MobileScreen";
@@ -135,7 +136,7 @@ const MobileDoctors = () => {
                 {d.consultation_fee != null && (
                   <div className="text-right shrink-0">
                     <p className="text-xs text-muted-foreground">Fee</p>
-                    <p className="font-bold text-sm">Rs {Number(d.consultation_fee).toLocaleString("en-PK")}</p>
+                    <p className="font-bold text-sm">Rs {Number(d.consultation_fee).toLocaleString("en")}</p>
                   </div>
                 )}
               </div>

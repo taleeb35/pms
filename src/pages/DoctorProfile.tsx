@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import RegionSettingsCard from "@/components/RegionSettingsCard";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -661,6 +662,7 @@ const DoctorProfile = () => {
 
         {/* Right Column */}
         <div className="space-y-6">
+          <RegionSettingsCard />
           {/* Password Change Card */}
           <Card className="border-accent/20 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-accent/10 to-accent/5">

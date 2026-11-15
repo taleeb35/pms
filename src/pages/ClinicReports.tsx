@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { isRevenueAppointment, grossFee, pctChange, fmtPct, REVENUE_DEFINITION } from "@/lib/revenue";
 import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -415,10 +416,10 @@ const ClinicReports = () => {
       startY: 46,
       head: [["Metric", "Value"]],
       body: [
-        ["Total Revenue", `Rs. ${totalRevenue.toLocaleString()}`],
-        ["Total Refunds", `Rs. ${totalRefunds.toLocaleString()}`],
-        ["Total Expenses", `Rs. ${totalExpenses.toLocaleString()}`],
-        ["Net Profit", `Rs. ${totalProfit.toLocaleString()}`],
+        ["Total Revenue", `${money(totalRevenue)}`],
+        ["Total Refunds", `${money(totalRefunds)}`],
+        ["Total Expenses", `${money(totalExpenses)}`],
+        ["Net Profit", `${money(totalProfit)}`],
         ["Total Appointments", appointments.length.toString()],
         ["Total Patients", patients.length.toString()],
         ["Doctors", doctors.length.toString()],
@@ -430,7 +431,7 @@ const ClinicReports = () => {
     autoTable(doc, {
       startY: (doc as any).lastAutoTable.finalY + 18,
       head: [["Doctor", "Specialization", "Appointments", "Revenue", "Clinic Share", "Completion %"]],
-      body: doctorScorecard.map(d => [d.full_name, d.specialization, d.totalAppointments.toString(), `Rs. ${d.totalRevenue.toLocaleString()}`, `Rs. ${d.clinicShare.toLocaleString()}`, `${d.completionRate}%`]),
+      body: doctorScorecard.map(d => [d.full_name, d.specialization, d.totalAppointments.toString(), `${money(d.totalRevenue)}`, `${money(d.clinicShare)}`, `${d.completionRate}%`]),
     });
 
     doc.save(`clinic-report-${format(new Date(), "yyyy-MM-dd")}.pdf`);
@@ -471,26 +472,26 @@ const ClinicReports = () => {
         <Card>
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Revenue</p>
-            <p className="text-lg font-bold">Rs. {totalRevenue.toLocaleString()}</p>
+            <p className="text-lg font-bold">{money(totalRevenue)}</p>
             <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} â {format(dateTo, "d MMM yyyy")} Â· completed visits</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Refunds</p>
-            <p className="text-lg font-bold text-red-500">Rs. {totalRefunds.toLocaleString()}</p>
+            <p className="text-lg font-bold text-red-500">{money(totalRefunds)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Expenses</p>
-            <p className="text-lg font-bold text-orange-500">Rs. {totalExpenses.toLocaleString()}</p>
+            <p className="text-lg font-bold text-orange-500">{money(totalExpenses)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Net Profit</p>
-            <p className={cn("text-lg font-bold", totalProfit >= 0 ? "text-green-600" : "text-red-500")}>Rs. {totalProfit.toLocaleString()}</p>
+            <p className={cn("text-lg font-bold", totalProfit >= 0 ? "text-green-600" : "text-red-500")}>{money(totalProfit)}</p>
             <div className={cn("flex items-center gap-1 text-xs mt-1", revenueGrowth >= 0 ? "text-green-600" : "text-red-500")}>
               {revenueGrowth >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {Number.isFinite(revenueGrowth) ? `${Math.abs(revenueGrowth).toFixed(1)}%` : "—"}
@@ -518,15 +519,15 @@ const ClinicReports = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Revenue / Patient</p>
-              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerPatient).toLocaleString()}</p>
+              <p className="text-lg font-bold">{money(Math.round(growthMetrics.revenuePerPatient))}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Revenue / Working Hour</p>
-              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerHour).toLocaleString()}</p>
+              <p className="text-lg font-bold">{money(Math.round(growthMetrics.revenuePerHour))}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Daily Avg Revenue</p>
-              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.dailyAvgRevenue).toLocaleString()}</p>
+              <p className="text-lg font-bold">{money(Math.round(growthMetrics.dailyAvgRevenue))}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Month-over-Month</p>
@@ -557,7 +558,7 @@ const ClinicReports = () => {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(val: number) => `Rs. ${val.toLocaleString()}`} />
+                <Tooltip formatter={(val: number) => `${money(val)}`} />
                 <Legend />
                 <Area type="monotone" dataKey="revenue" stroke={COLORS[1]} fill={COLORS[1]} fillOpacity={0.3} name="Revenue" />
                 <Area type="monotone" dataKey="expenses" stroke={COLORS[4]} fill={COLORS[4]} fillOpacity={0.3} name="Expenses" />
@@ -603,8 +604,8 @@ const ClinicReports = () => {
                     <TableCell className="text-xs text-muted-foreground">{doc.specialization}</TableCell>
                     <TableCell className="text-xs text-right">{doc.patients}</TableCell>
                     <TableCell className="text-xs text-right">{doc.totalAppointments}</TableCell>
-                    <TableCell className="text-xs text-right font-medium">Rs. {doc.totalRevenue.toLocaleString()}</TableCell>
-                    <TableCell className="text-xs text-right">Rs. {Math.round(doc.clinicShare).toLocaleString()}</TableCell>
+                    <TableCell className="text-xs text-right font-medium">{money(doc.totalRevenue)}</TableCell>
+                    <TableCell className="text-xs text-right">{money(Math.round(doc.clinicShare))}</TableCell>
                     <TableCell className="text-xs text-center">
                       <Badge variant={Number(doc.completionRate) >= 80 ? "default" : "secondary"} className="text-xs">
                         {doc.completionRate}%
@@ -637,7 +638,7 @@ const ClinicReports = () => {
                   <Pie data={expenseByCategory} cx="50%" cy="50%" innerRadius={40} outerRadius={70} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                     {expenseByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                   </Pie>
-                  <Tooltip formatter={(val: number) => `Rs. ${val.toLocaleString()}`} />
+                  <Tooltip formatter={(val: number) => `${money(val)}`} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -782,9 +783,9 @@ const ClinicReports = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={revenueBySpecialization} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                    <XAxis type="number" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `Rs.${(v / 1000).toFixed(0)}k`} />
+                    <XAxis type="number" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `${money((v / 1000).toFixed(0))}k`} />
                     <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={120} />
-                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(v: number) => [`Rs. ${v.toLocaleString()}`, ""]} />
+                    <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(v: number) => [`${money(v)}`, ""]} />
                     <Bar dataKey="net" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Net Revenue" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -808,9 +809,9 @@ const ClinicReports = () => {
                             <span className="font-medium text-sm">{s.name}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right font-semibold">Rs. {s.net.toLocaleString()}</TableCell>
+                        <TableCell className="text-right font-semibold">{money(s.net)}</TableCell>
                         <TableCell className="text-right">{s.patients}</TableCell>
-                        <TableCell className="text-right">Rs. {s.avgPerPatient.toLocaleString()}</TableCell>
+                        <TableCell className="text-right">{money(s.avgPerPatient)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -837,8 +838,8 @@ const ClinicReports = () => {
                 <BarChart data={revenueByDoctor}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `Rs.${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(v: number) => [`Rs. ${v.toLocaleString()}`, ""]} />
+                  <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `${money((v / 1000).toFixed(0))}k`} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px" }} formatter={(v: number) => [`${money(v)}`, ""]} />
                   <Legend />
                   <Bar dataKey="clinicShare" stackId="a" fill="hsl(var(--primary))" name="Clinic Share" radius={[0, 0, 0, 0]} />
                   <Bar dataKey="doctorShare" stackId="a" fill="hsl(var(--chart-2, 160 60% 45%))" name="Doctor Share" radius={[4, 4, 0, 0]} />
@@ -866,24 +867,24 @@ const ClinicReports = () => {
                     <TableRow key={d.id}>
                       <TableCell className="font-medium">{d.name}</TableCell>
                       <TableCell><Badge variant="outline" className="text-xs">{d.specialization}</Badge></TableCell>
-                      <TableCell className="text-right">Rs. {d.gross.toLocaleString()}</TableCell>
-                      <TableCell className="text-right text-destructive">{d.refunds > 0 ? `Rs. ${d.refunds.toLocaleString()}` : "–"}</TableCell>
-                      <TableCell className="text-right font-semibold">Rs. {d.net.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{money(d.gross)}</TableCell>
+                      <TableCell className="text-right text-destructive">{d.refunds > 0 ? `${money(d.refunds)}` : "–"}</TableCell>
+                      <TableCell className="text-right font-semibold">{money(d.net)}</TableCell>
                       <TableCell className="text-right">{d.clinicPct}%</TableCell>
-                      <TableCell className="text-right font-semibold" style={{ color: "hsl(var(--primary))" }}>Rs. {d.clinicShare.toLocaleString()}</TableCell>
-                      <TableCell className="text-right" style={{ color: "hsl(var(--chart-2, 160 60% 45%))" }}>Rs. {d.doctorShare.toLocaleString()}</TableCell>
+                      <TableCell className="text-right font-semibold" style={{ color: "hsl(var(--primary))" }}>{money(d.clinicShare)}</TableCell>
+                      <TableCell className="text-right" style={{ color: "hsl(var(--chart-2, 160 60% 45%))" }}>{money(d.doctorShare)}</TableCell>
                       <TableCell className="text-right">{d.appointments}</TableCell>
-                      <TableCell className="text-right">Rs. {d.avgPerAppointment.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{money(d.avgPerAppointment)}</TableCell>
                     </TableRow>
                   ))}
                   <TableRow className="bg-muted/50 font-bold">
                     <TableCell colSpan={2}>Total</TableCell>
-                    <TableCell className="text-right">Rs. {revenueByDoctor.reduce((s, d) => s + d.gross, 0).toLocaleString()}</TableCell>
-                    <TableCell className="text-right text-destructive">Rs. {revenueByDoctor.reduce((s, d) => s + d.refunds, 0).toLocaleString()}</TableCell>
-                    <TableCell className="text-right">Rs. {revenueByDoctor.reduce((s, d) => s + d.net, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{money(revenueByDoctor.reduce((s, d) => s + d.gross, 0))}</TableCell>
+                    <TableCell className="text-right text-destructive">{money(revenueByDoctor.reduce((s, d) => s + d.refunds, 0))}</TableCell>
+                    <TableCell className="text-right">{money(revenueByDoctor.reduce((s, d) => s + d.net, 0))}</TableCell>
                     <TableCell className="text-right">–</TableCell>
-                    <TableCell className="text-right" style={{ color: "hsl(var(--primary))" }}>Rs. {revenueByDoctor.reduce((s, d) => s + d.clinicShare, 0).toLocaleString()}</TableCell>
-                    <TableCell className="text-right" style={{ color: "hsl(var(--chart-2, 160 60% 45%))" }}>Rs. {revenueByDoctor.reduce((s, d) => s + d.doctorShare, 0).toLocaleString()}</TableCell>
+                    <TableCell className="text-right" style={{ color: "hsl(var(--primary))" }}>{money(revenueByDoctor.reduce((s, d) => s + d.clinicShare, 0))}</TableCell>
+                    <TableCell className="text-right" style={{ color: "hsl(var(--chart-2, 160 60% 45%))" }}>{money(revenueByDoctor.reduce((s, d) => s + d.doctorShare, 0))}</TableCell>
                     <TableCell className="text-right">{revenueByDoctor.reduce((s, d) => s + d.appointments, 0)}</TableCell>
                     <TableCell className="text-right">–</TableCell>
                   </TableRow>

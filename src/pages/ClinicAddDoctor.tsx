@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -408,7 +409,7 @@ const ClinicAddDoctor = () => {
                   value={formData.consultationFee}
                   onChange={(e) => setFormData({ ...formData, consultationFee: e.target.value })}
                   required
-                  placeholder="PKR 2000"
+                  placeholder={`${moneySymbol()} 2000`}
                 />
               </div>
 

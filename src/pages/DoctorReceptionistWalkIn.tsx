@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -237,7 +238,7 @@ const DoctorReceptionistWalkIn = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Consultation Fee (Rs.)</Label>
+                <Label>Consultation Fee ({moneySymbol()})</Label>
                 <Input
                   type="number"
                   value={formData.consultationFee}

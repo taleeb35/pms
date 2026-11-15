@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { confirmUnusualFee } from "@/lib/feeCheck";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -1126,12 +1127,12 @@ const ClinicAppointmentDetail = () => {
                     <div className="flex justify-between text-sm">
                       <span>Total:</span>
                       <span className="font-bold">
-                        Rs. {(
+                        {money((
                           (parseFloat(formData.consultation_fee) || 0) +
                           (parseFloat(procedureFee) || 0) +
                           (parseFloat(formData.other_fee) || 0) -
                           (parseFloat(formData.refund) || 0)
-                        ).toLocaleString()}
+                        ))}
                       </span>
                     </div>
                   </div>

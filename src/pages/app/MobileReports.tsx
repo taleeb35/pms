@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { supabase } from "@/integrations/supabase/client";
 import MobileAppShell from "@/components/MobileAppShell";
@@ -380,7 +381,7 @@ const MobileReports = () => {
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 8);
   }, [patients]);
 
-  const fmtPKR = (n: number) => `Rs ${n.toLocaleString()}`;
+  const fmtPKR = (n: number) => money(n);
   const tickFont = { fontSize: 10 };
 
   return (

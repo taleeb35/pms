@@ -1,10 +1,11 @@
+import { zonedNow } from "@/lib/region";
 // B8: appointments whose time has passed but are still "scheduled"/"start"
 // are flagged as needing a status update (completed, cancelled or no-show).
 const GRACE_MINUTES = 60;
 
 type ApptLike = { status?: string | null; appointment_date?: string | null; appointment_time?: string | null };
 
-export function needsStatusUpdate(a: ApptLike, now: Date = new Date()): boolean {
+export function needsStatusUpdate(a: ApptLike, now: Date = zonedNow().asLocalDate): boolean {
   if (!a || (a.status !== "scheduled" && a.status !== "start") || !a.appointment_date) return false;
   const time = (a.appointment_time || "23:59:00").slice(0, 8);
   const when = new Date(`${a.appointment_date}T${time.length === 5 ? time + ":00" : time}`);

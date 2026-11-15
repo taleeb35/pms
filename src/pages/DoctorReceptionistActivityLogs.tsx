@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -219,7 +220,7 @@ const DoctorReceptionistActivityLogs = () => {
                           )}
                           {(log.details as Record<string, unknown>).total_fee !== undefined && (
                             <span className="ml-2">
-                              • Total: Rs. {String((log.details as Record<string, unknown>).total_fee)}
+                              • Total: {money(String((log.details as Record<string, unknown>).total_fee))}
                             </span>
                           )}
                           {(log.details as Record<string, unknown>).procedure_name && (
@@ -230,7 +231,7 @@ const DoctorReceptionistActivityLogs = () => {
                           )}
                           {(log.details as Record<string, unknown>).refund_amount && (
                             <span className="ml-2">
-                              • Refund: Rs. {String((log.details as Record<string, unknown>).refund_amount)}
+                              • Refund: {money(String((log.details as Record<string, unknown>).refund_amount))}
                             </span>
                           )}
                         </>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import MobileScreen from "@/components/mobile/MobileScreen";
 import MobileFAB from "@/components/mobile/MobileFAB";
 import MobileFormScreen from "@/components/mobile/MobileFormScreen";
@@ -154,7 +155,7 @@ const MobileExpenses = () => {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label>Amount (PKR)</Label>
+          <Label>Amount ({moneySymbol()})</Label>
           <Input type="number" inputMode="numeric" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} className="h-12 text-base" placeholder="0" />
         </div>
         <div className="space-y-2">
@@ -193,7 +194,7 @@ const MobileExpenses = () => {
         <>
           <div className="rounded-2xl bg-gradient-to-br from-rose-500 to-rose-600 text-white p-4 mb-4 shadow-md shadow-rose-500/20">
             <p className="text-xs opacity-80 uppercase tracking-wider font-medium">Total Expenses ({expenses.length})</p>
-            <p className="text-2xl font-bold mt-1">Rs {Math.round(total).toLocaleString("en-PK")}</p>
+            <p className="text-2xl font-bold mt-1">Rs {Math.round(total).toLocaleString("en")}</p>
           </div>
 
           {expenses.length === 0 ? (
@@ -218,7 +219,7 @@ const MobileExpenses = () => {
                     <div className="flex items-center justify-between gap-2">
                       <span>{e.category}</span>
                       <span className="text-sm font-bold text-rose-600 shrink-0">
-                        Rs {Math.round(e.amount).toLocaleString("en-PK")}
+                        Rs {Math.round(e.amount).toLocaleString("en")}
                       </span>
                     </div>
                   }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { isRevenueAppointment, grossFee, pctChange, fmtPct, REVENUE_DEFINITION } from "@/lib/revenue";
 import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { calculatePregnancyWeeks, calculateExpectedDueDate, getTrimester, getTrimesterLabel } from "@/lib/pregnancyUtils";
@@ -507,9 +508,9 @@ const DoctorReports = () => {
       startY: y,
       head: [["Metric", "Value"]],
       body: [
-        ["Total Revenue", `Rs. ${totalRevenue.toLocaleString()}`],
-        ["Total Refunds", `Rs. ${totalRefunds.toLocaleString()}`],
-        ["Net Revenue", `Rs. ${totalNet.toLocaleString()}`],
+        ["Total Revenue", `${money(totalRevenue)}`],
+        ["Total Refunds", `${money(totalRefunds)}`],
+        ["Net Revenue", `${money(totalNet)}`],
         ["Revenue Growth", `${fmtPct(revenueGrowth)}`],
       ],
       headStyles: { fillColor: primary, textColor: [255, 255, 255], fontStyle: "bold" },
@@ -525,9 +526,9 @@ const DoctorReports = () => {
       startY: y,
       head: [["KPI", "Value"]],
       body: [
-        ["Revenue per Patient", `Rs. ${growthMetrics.revenuePerPatient.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
-        ["Revenue per Hour", `Rs. ${growthMetrics.revenuePerHour.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
-        ["Daily Avg Revenue", `Rs. ${growthMetrics.dailyAvgRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
+        ["Revenue per Patient", `${money(growthMetrics.revenuePerPatient)}`],
+        ["Revenue per Hour", `${money(growthMetrics.revenuePerHour)}`],
+        ["Daily Avg Revenue", `${money(growthMetrics.dailyAvgRevenue)}`],
         ["MoM Growth", `${fmtPct(growthMetrics.momGrowth)}`],
         ["Period Growth", `${fmtPct(growthMetrics.yoyGrowth)}`],
       ],
@@ -545,11 +546,11 @@ const DoctorReports = () => {
       head: [["Month", "Revenue", "Refunds", "Net", "Consultation", "Procedures"]],
       body: revenueTrendData.map(d => [
         d.month,
-        `Rs. ${d.revenue.toLocaleString()}`,
-        `Rs. ${d.refunds.toLocaleString()}`,
-        `Rs. ${d.net.toLocaleString()}`,
-        `Rs. ${d.consultation.toLocaleString()}`,
-        `Rs. ${d.procedures.toLocaleString()}`,
+        `${money(d.revenue)}`,
+        `${money(d.refunds)}`,
+        `${money(d.net)}`,
+        `${money(d.consultation)}`,
+        `${money(d.procedures)}`,
       ]),
       headStyles: { fillColor: orange, textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [255, 251, 235] },
@@ -970,7 +971,7 @@ const DoctorReports = () => {
         <Card>
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Net Revenue</p>
-            <p className="text-xl font-bold">Rs. {totalNet.toLocaleString()}</p>
+            <p className="text-xl font-bold">{money(totalNet)}</p>
             <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} â {format(dateTo, "d MMM yyyy")} Â· completed visits</p>
             <div className={cn("flex items-center gap-1 text-xs mt-1", revenueGrowth >= 0 ? "text-green-600" : "text-red-500")}>
               {revenueGrowth >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
@@ -1013,15 +1014,15 @@ const DoctorReports = () => {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Revenue / Patient</p>
-              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerPatient).toLocaleString()}</p>
+              <p className="text-lg font-bold">{money(Math.round(growthMetrics.revenuePerPatient))}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Revenue / Working Hour</p>
-              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.revenuePerHour).toLocaleString()}</p>
+              <p className="text-lg font-bold">{money(Math.round(growthMetrics.revenuePerHour))}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Daily Avg Revenue</p>
-              <p className="text-lg font-bold">Rs. {Math.round(growthMetrics.dailyAvgRevenue).toLocaleString()}</p>
+              <p className="text-lg font-bold">{money(Math.round(growthMetrics.dailyAvgRevenue))}</p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Month-over-Month</p>
@@ -1052,7 +1053,7 @@ const DoctorReports = () => {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis dataKey="month" className="text-xs" tick={{ fontSize: 11 }} />
                 <YAxis className="text-xs" tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(val: number) => `Rs. ${val.toLocaleString()}`} />
+                <Tooltip formatter={(val: number) => `${money(val)}`} />
                 <Legend />
                 <Area type="monotone" dataKey="consultation" stackId="1" stroke={COLORS[0]} fill={COLORS[0]} fillOpacity={0.6} name="Consultation" />
                 <Area type="monotone" dataKey="procedures" stackId="1" stroke={COLORS[1]} fill={COLORS[1]} fillOpacity={0.6} name="Procedures" />
@@ -1215,11 +1216,11 @@ const DoctorReports = () => {
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
               <span className="text-sm text-muted-foreground">Avg Revenue/Appointment</span>
-              <span className="font-semibold text-sm">Rs. {appointments.length > 0 ? Math.round(totalNet / appointments.length).toLocaleString() : 0}</span>
+              <span className="font-semibold text-sm">{money(appointments.length > 0 ? Math.round(totalNet / appointments.length).toLocaleString() : 0)}</span>
             </div>
             <div className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
               <span className="text-sm text-muted-foreground">Avg Revenue/Patient</span>
-              <span className="font-semibold text-sm">Rs. {patients.length > 0 ? Math.round(totalNet / patients.length).toLocaleString() : 0}</span>
+              <span className="font-semibold text-sm">{money(patients.length > 0 ? Math.round(totalNet / patients.length).toLocaleString() : 0)}</span>
             </div>
             <div className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
               <span className="text-sm text-muted-foreground">Avg Appointments/Month</span>
@@ -1227,7 +1228,7 @@ const DoctorReports = () => {
             </div>
             <div className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
               <span className="text-sm text-muted-foreground">Total Refunds</span>
-              <span className="font-semibold text-sm text-red-500">Rs. {totalRefunds.toLocaleString()}</span>
+              <span className="font-semibold text-sm text-red-500">{money(totalRefunds)}</span>
             </div>
           </CardContent>
         </Card>
