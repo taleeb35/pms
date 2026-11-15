@@ -61,6 +61,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Only send for a real, just-created clinic account (stops anyone using this to send emails).
+    {
+      const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { data: prof } = await supabase.from("profiles").select("id").ilike("email", String(email).trim()).maybeSingle();
+      const { data: clinic } = prof
+        ? await supabase.from("clinics").select("id").eq("id", prof.id).gte("created_at", since).maybeSingle()
+        : { data: null };
+      if (!clinic) {
+        return new Response(JSON.stringify({ success: false, error: "No new clinic account found for this email" }), {
+          status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+    }
+
     const { data: settingsData, error: settingsError } = await supabase
       .from("system_settings")
       .select("key, value");

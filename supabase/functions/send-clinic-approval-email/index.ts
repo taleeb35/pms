@@ -80,7 +80,7 @@ const handler = async (req: Request): Promise<Response> => {
                     
                     <!-- Login Button -->
                     <div style="text-align: center; margin: 30px 0;">
-                      <a href="https://zonoir.com/auth" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
+                      <a href="https://app.zonoir.com/login" style="display: inline-block; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">
                         Login to Your Dashboard →
                       </a>
                     </div>
@@ -120,6 +120,8 @@ const handler = async (req: Request): Promise<Response> => {
       subject: `Zonoir - Your Clinic "${clinicName}" Has Been Activated`,
       html: emailHtml,
     });
+
+    if ((emailResponse as any)?.error) throw new Error((emailResponse as any).error.message || "Email could not be sent");
 
     console.log("Approval email sent successfully:", emailResponse);
 
