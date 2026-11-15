@@ -501,8 +501,6 @@ const DoctorPatients = () => {
       toast({ title: "Error fetching patients", variant: "destructive" });
     } finally {
       setPatientsLoading(false);
-    } finally {
-      setPatientsLoading(false);
     }
   };
 

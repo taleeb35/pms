@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { confirmUnusualFee } from "@/lib/feeCheck";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CalendarIcon, Printer, ChevronUp, ChevronDown, MoreHorizontal, Phone, Mail, MapPin, User, FileText, Clock, CheckCircle, XCircle, Play, Pencil, Loader2 } from "lucide-react";
+import { UserX, CalendarIcon, Printer, ChevronUp, ChevronDown, MoreHorizontal, Phone, Mail, MapPin, User, FileText, Clock, CheckCircle, XCircle, Play, Pencil, Loader2 } from "lucide-react";
 import { format, differenceInYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -599,6 +600,7 @@ const DoctorAppointmentDetail = () => {
       case "start": return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "completed": return "bg-purple-100 text-purple-800 border-purple-200";
       case "cancelled": return "bg-red-100 text-red-800 border-red-200";
+      case "no_show": return "bg-gray-100 text-gray-700 border-gray-300";
       default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
@@ -646,7 +648,7 @@ const DoctorAppointmentDetail = () => {
     }
   };
 
-  const handleStatusChange = async (newStatus: "scheduled" | "start" | "completed" | "cancelled") => {
+  const handleStatusChange = async (newStatus: "scheduled" | "start" | "completed" | "cancelled" | "no_show") => {
     if (!appointment) return;
     if (id) appointmentCache.delete(id);
     
@@ -774,6 +776,8 @@ const DoctorAppointmentDetail = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!appointment) return;
+    const feeOk = await confirmUnusualFee(formData.consultation_fee, (appointment as any).doctor_id);
+    if (!feeOk) return;
     // Invalidate cache so subsequent visits re-fetch fresh data
     if (id) appointmentCache.delete(id);
 
@@ -1071,7 +1075,12 @@ const DoctorAppointmentDetail = () => {
                   <CheckCircle className="h-4 w-4 mr-2" /> Mark Completed
                 </DropdownMenuItem>
               )}
-              {appointment.status !== "completed" && appointment.status !== "cancelled" && (
+              {(appointment.status === "scheduled" || appointment.status === "start") && (
+                <DropdownMenuItem onClick={() => handleStatusChange("no_show")}>
+                  <UserX className="h-4 w-4 mr-2" /> Mark No-show
+                </DropdownMenuItem>
+              )}
+              {appointment.status !== "completed" && appointment.status !== "cancelled" && appointment.status !== "no_show" && (
                 <DropdownMenuItem onClick={() => handleStatusChange("cancelled")} className="text-destructive">
                   <XCircle className="h-4 w-4 mr-2" /> Cancel Appointment
                 </DropdownMenuItem>

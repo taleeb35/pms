@@ -13,6 +13,7 @@ import ClinicAnalyticsCharts from "@/components/ClinicAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
+import StaleAppointmentsPrompt from "@/components/StaleAppointmentsPrompt";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
 interface Clinic {
@@ -154,6 +155,7 @@ const ClinicDashboard = () => {
     <div className="space-y-6">
       {/* Trial Banner */}
       <TrialBanner userType="clinic" />
+      <StaleAppointmentsPrompt to="/clinic/appointments" />
       
       {/* Compact Header */}
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-info/10 via-info/5 to-background p-3 sm:p-4 border border-info/20">

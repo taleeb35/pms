@@ -3422,7 +3422,7 @@ export type Database = {
         | "patient"
         | "clinic"
         | "content_writer"
-      appointment_status: "scheduled" | "start" | "cancelled" | "completed"
+      appointment_status: "scheduled" | "start" | "cancelled" | "completed" | "no_show"
       gender: "male" | "female" | "other"
       inv_invoice_status: "draft" | "issued" | "cancelled"
       membership_status: "active" | "expired" | "cancelled"
@@ -3564,7 +3564,7 @@ export const Constants = {
         "clinic",
         "content_writer",
       ],
-      appointment_status: ["scheduled", "start", "cancelled", "completed"],
+      appointment_status: ["scheduled", "start", "cancelled", "completed", "no_show"],
       gender: ["male", "female", "other"],
       inv_invoice_status: ["draft", "issued", "cancelled"],
       membership_status: ["active", "expired", "cancelled"],

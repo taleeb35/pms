@@ -11,6 +11,7 @@ import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
+import StaleAppointmentsPrompt from "@/components/StaleAppointmentsPrompt";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
 const DoctorDashboard = () => {
@@ -81,6 +82,7 @@ const DoctorDashboard = () => {
     <div className="space-y-6">
       {/* Trial Banner for Single Doctors */}
       <TrialBanner userType="doctor" />
+      <StaleAppointmentsPrompt to="/doctor/appointments" />
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
