@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useClinicId } from "@/hooks/useClinicId";
 
-interface Medicine { id: string; name: string; created_at: string; }
+interface Medicine { id: string; name: string; generic_name?: string | null; created_at: string; }
 
 const ClinicMedicines = () => {
   const { toast } = useToast();

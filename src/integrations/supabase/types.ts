@@ -483,18 +483,21 @@ export type Database = {
         Row: {
           clinic_id: string
           created_at: string
+          generic_name: string | null
           id: string
           name: string
         }
         Insert: {
           clinic_id: string
           created_at?: string
+          generic_name?: string | null
           id?: string
           name: string
         }
         Update: {
           clinic_id?: string
           created_at?: string
+          generic_name?: string | null
           id?: string
           name?: string
         }
@@ -1023,18 +1026,21 @@ export type Database = {
         Row: {
           created_at: string
           doctor_id: string
+          generic_name: string | null
           id: string
           name: string
         }
         Insert: {
           created_at?: string
           doctor_id: string
+          generic_name?: string | null
           id?: string
           name: string
         }
         Update: {
           created_at?: string
           doctor_id?: string
+          generic_name?: string | null
           id?: string
           name?: string
         }
