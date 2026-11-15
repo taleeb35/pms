@@ -25,6 +25,26 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { doctorName, email, specialization, city, monthlyFee }: DoctorSignupEmailRequest = await req.json();
 
+    // Only send for a real, just-created doctor account (stops anyone using this to send emails).
+    if (!doctorName?.trim() || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return new Response(JSON.stringify({ error: "doctorName and a valid email are required" }), {
+        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    {
+      const check = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+      const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { data: prof } = await check.from("profiles").select("id").ilike("email", email.trim()).maybeSingle();
+      const { data: doc } = prof
+        ? await check.from("doctors").select("id").eq("id", prof.id).gte("created_at", since).maybeSingle()
+        : { data: null };
+      if (!doc) {
+        return new Response(JSON.stringify({ error: "No new doctor account found for this email" }), {
+          status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+    }
+
     console.log("Sending doctor signup email to:", email);
 
     // Fetch the monthly fee per doctor from system_settings (server-side, not from the client)
@@ -198,6 +218,8 @@ const handler = async (req: Request): Promise<Response> => {
         "Importance": "High",
       },
     });
+
+    if ((emailResponse as any)?.error) throw new Error((emailResponse as any).error.message || "Email could not be sent");
 
     console.log("Doctor signup email sent successfully:", emailResponse);
 
