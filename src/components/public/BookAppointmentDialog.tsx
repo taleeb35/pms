@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -244,7 +245,7 @@ const BookAppointmentDialog = ({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label htmlFor="b-phone">Phone number *</Label>
-                  <Input
+                  <PhoneInput
                     id="b-phone"
                     value={phone}
                     onChange={(e) => setPhone(handlePhoneInput(e))}

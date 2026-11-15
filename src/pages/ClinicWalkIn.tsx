@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -390,7 +392,7 @@ const ClinicWalkIn = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
+                  <PhoneInput
                     id="phone"
                     value={patientForm.phone}
                     onChange={(e) => {
@@ -457,7 +459,7 @@ const ClinicWalkIn = () => {
                   </Popover>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cnic">CNIC</Label>
+                  <Label htmlFor="cnic">{idLabel()}</Label>
                   <Input
                     id="cnic"
                     value={patientForm.cnic}
@@ -466,7 +468,7 @@ const ClinicWalkIn = () => {
                       clearFieldError("cnic");
                     }}
                     onBlur={() => handleFieldBlur("cnic", patientForm.cnic)}
-                    placeholder="Enter CNIC (13 digits)"
+                    placeholder={idPlaceholder()}
                     maxLength={15}
                     className={formErrors.cnic ? "border-destructive" : ""}
                   />

@@ -1,6 +1,6 @@
 // Region helpers: countries, currencies, timezones, money formatting and
 // country-dependent labels. Settings come from get_my_region() (see RegionContext).
-import { getCountries, getCountryCallingCode, type CountryCode } from "libphonenumber-js/min";
+import { getCountries, getCountryCallingCode, parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js/min";
 
 export type Region = {
   country_code: string;   // ISO 3166-1 alpha-2, e.g. "PK", "AE", "GB"
@@ -111,4 +111,19 @@ export const zonedNow = (tz: string = active.timezone) => {
   const ymd = `${g("year")}-${g("month")}-${g("day")}`;
   const hm = `${g("hour") === "24" ? "00" : g("hour")}:${g("minute")}`;
   return { ymd, hm, asLocalDate: new Date(`${ymd}T${hm}:00`) };
+};
+
+// A2 helpers bound to the signed-in account's country.
+export const idLabel = () => nationalIdLabel(active.country_code);
+export const idPlaceholder = () =>
+  active.country_code === "PK" ? "Enter CNIC (e.g., 12345-1234567-1)" : "Enter national ID number (optional)";
+export const licLabel = () => licenceLabel(active.country_code);
+export const isPakistan = () => active.country_code === "PK";
+
+/** A5: possible phone number for its country; local numbers (no "+") use the account country. */
+export const isPossiblePhone = (value: string): boolean => {
+  const v = (value || "").trim();
+  if (!v) return false;
+  const p = v.startsWith("+") ? parsePhoneNumberFromString(v) : parsePhoneNumberFromString(v, active.country_code as CountryCode);
+  return !!p && p.isPossible();
 };

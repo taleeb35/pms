@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { money, moneySymbol } from "@/lib/region";
+import PhoneInput from "@/components/PhoneInput";
+import { money, moneySymbol, licLabel } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -516,7 +517,7 @@ const ClinicDoctors = () => {
               </div>
               <div>
                 <Label>Contact Number *</Label>
-                <Input
+                <PhoneInput
                   value={editForm.contact_number}
                   onChange={(e) => {
                     const value = handlePhoneInput(e);
@@ -599,7 +600,7 @@ const ClinicDoctors = () => {
                 />
               </div>
               <div>
-                <Label>PMDC Number</Label>
+                <Label>{licLabel()}</Label>
                 <Input
                   value={editForm.pmdc_number}
                   onChange={(e) => setEditForm({ ...editForm, pmdc_number: e.target.value })}

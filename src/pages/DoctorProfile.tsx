@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { licLabel } from "@/lib/region";
 import RegionSettingsCard from "@/components/RegionSettingsCard";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -523,7 +524,7 @@ const DoctorProfile = () => {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  PMDC Number
+                  {licLabel()}
                 </Label>
                 <Input
                   value={profile.pmdc_number}

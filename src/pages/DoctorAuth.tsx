@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -374,7 +375,7 @@ const DoctorAuth = () => {
 
               <div className="space-y-1">
                 <Label htmlFor="contactNumber" className="text-xs">Contact Number *</Label>
-                <Input
+                <PhoneInput
                   id="contactNumber"
                   type="tel"
                   value={signupData.contactNumber}
@@ -516,7 +517,7 @@ const DoctorAuth = () => {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="pmdcNumber" className="text-xs">PMDC Number</Label>
+                <Label htmlFor="pmdcNumber" className="text-xs">Medical licence number</Label>
                 <Input
                   id="pmdcNumber"
                   value={signupData.pmdcNumber}

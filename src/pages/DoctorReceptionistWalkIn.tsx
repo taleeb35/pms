@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -191,7 +192,7 @@ const DoctorReceptionistWalkIn = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Phone *</Label>
-                  <Input
+                  <PhoneInput
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: handlePhoneInput(e) })}
                     required

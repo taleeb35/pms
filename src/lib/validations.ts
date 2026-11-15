@@ -1,3 +1,4 @@
+import { isPakistan, idLabel, isPossiblePhone } from "@/lib/region";
 // Comprehensive validation utilities for the Patient Management System
 
 // Name validation - only letters, spaces, and common name characters
@@ -29,13 +30,14 @@ export const validatePhone = (value: string): { isValid: boolean; message: strin
   if (!phoneRegex.test(value)) {
     return { isValid: false, message: "Only numbers and +, -, () are allowed" };
   }
-  // Remove non-numeric characters for length check
-  const digitsOnly = value.replace(/\D/g, "");
-  if (digitsOnly.length < 10) {
-    return { isValid: false, message: "Phone number must be at least 10 digits" };
-  }
-  if (digitsOnly.length > 15) {
-    return { isValid: false, message: "Phone number must be less than 15 digits" };
+  // A5: check against the number's country (local numbers use the account country).
+  if (!isPossiblePhone(value)) {
+    return {
+      isValid: false,
+      message: value.trim().startsWith("+")
+        ? "This doesn't look like a valid number for the selected country"
+        : "This doesn't look like a valid phone number. Pick the country code if it's an international number",
+    };
   }
   return { isValid: true, message: "" };
 };
@@ -72,10 +74,16 @@ export const validatePassword = (value: string): { isValid: boolean; message: st
   return { isValid: true, message: "" };
 };
 
-// CNIC validation (Pakistan National ID - 13 digits with optional dashes)
+// National ID validation (optional field). Pakistan: CNIC, 13 digits with optional dashes.
+// Other countries: 4-30 letters, digits, spaces or dashes.
 export const validateCNIC = (value: string): { isValid: boolean; message: string } => {
   if (!value.trim()) {
     return { isValid: true, message: "" }; // Optional field
+  }
+  if (!isPakistan()) {
+    return /^[A-Za-z0-9][A-Za-z0-9 -]{2,28}[A-Za-z0-9]$/.test(value.trim())
+      ? { isValid: true, message: "" }
+      : { isValid: false, message: `${idLabel()} must be 4-30 letters or digits` };
   }
   // Remove dashes for validation
   const cleanValue = value.replace(/-/g, "");
@@ -140,7 +148,8 @@ export const handlePhoneInput = (e: React.ChangeEvent<HTMLInputElement>): string
 };
 
 export const handleCNICInput = (e: React.ChangeEvent<HTMLInputElement>): string => {
-  // Allow only numbers and dashes
+  // Pakistan CNIC: numbers and dashes only. Other national IDs: letters, digits, spaces and dashes.
+  if (!isPakistan()) return e.target.value.replace(/[^A-Za-z0-9 \-]/g, "").toUpperCase().slice(0, 30);
   return e.target.value.replace(/[^0-9\-]/g, "");
 };
 

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { licLabel } from "@/lib/region";
 import { format, differenceInYears } from "date-fns";
 
 export interface PrescriptionVitals {
@@ -287,7 +288,7 @@ export async function printAppointmentPrescription(opts: {
       ${doctorName ? `<div class="doctor-name">${escapeHtml(doctorName)}</div>` : ""}
       ${doctorQualification ? `<div class="doctor-quals">${escapeHtml(doctorQualification)}</div>` : ""}
       ${doctorSpecialization ? `<div class="doctor-spec">${escapeHtml(doctorSpecialization)}</div>` : ""}
-      ${doctorPmdc ? `<div class="doctor-extra">PMDC #: ${escapeHtml(doctorPmdc)}</div>` : ""}
+      ${doctorPmdc ? `<div class="doctor-extra">${escapeHtml(licLabel())} #: ${escapeHtml(doctorPmdc)}</div>` : ""}
       ${doctorContact ? `<div class="doctor-extra">${escapeHtml(doctorContact)}</div>` : ""}
     </div>
   </div>

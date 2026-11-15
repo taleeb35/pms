@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -461,7 +462,7 @@ const ClinicReceptionists = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input
+                <PhoneInput
                   id="phone"
                   type="tel"
                   value={formData.phone}
@@ -666,7 +667,7 @@ const ClinicReceptionists = () => {
 
             <div className="space-y-2">
               <Label htmlFor="editPhone">Phone Number</Label>
-              <Input
+              <PhoneInput
                 id="editPhone"
                 type="tel"
                 value={editFormData.phone}

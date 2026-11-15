@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -292,7 +293,7 @@ const Auth = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phoneNumber" className="text-sm font-semibold">Phone Number <span className="text-destructive">*</span></Label>
-                <Input
+                <PhoneInput
                   id="phoneNumber"
                   type="tel"
                   placeholder="+92 300 1234567"

@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -241,7 +242,7 @@ const PatientImportExport = ({ createdBy, onImportComplete }: PatientImportExpor
           continue;
         }
         if (cnicKey && seenInBatch.has(cnicKey)) {
-          skipped.push({ name: patient.full_name, reason: `Duplicate of "${seenInBatch.get(cnicKey)}" in this file (same CNIC)` });
+          skipped.push({ name: patient.full_name, reason: `Duplicate of "${seenInBatch.get(cnicKey)}" in this file (same ${idLabel()})` });
           continue;
         }
 
@@ -249,7 +250,7 @@ const PatientImportExport = ({ createdBy, onImportComplete }: PatientImportExpor
         const dup = await findDuplicatePatients(patient.phone, patient.cnic);
         if (dup.all.length > 0) {
           const existing = dup.all[0];
-          const matched = dup.byPhone.length ? "Contact Number" : "CNIC";
+          const matched = dup.byPhone.length ? "Contact Number" : idLabel();
           skipped.push({
             name: patient.full_name,
             reason: `Already exists as "${existing.full_name}" (${existing.patient_id}) — same ${matched}`,

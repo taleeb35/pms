@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -297,7 +299,7 @@ const DoctorReceptionistPatients = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Phone *</Label>
-                  <Input
+                  <PhoneInput
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: handlePhoneInput(e) })}
                     required
@@ -312,7 +314,7 @@ const DoctorReceptionistPatients = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>CNIC</Label>
+                  <Label>{idLabel()}</Label>
                   <Input
                     value={formData.cnic}
                     onChange={(e) => setFormData({ ...formData, cnic: handleCNICInput(e) })}
