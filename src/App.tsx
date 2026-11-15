@@ -243,8 +243,8 @@ const App = () => (
           <Route path="/emr-software-for-doctors-in-sargodha" element={<MarketingRedirect><CitySargodha /></MarketingRedirect>} />
           <Route path="/emr-software-for-doctors-in-sukkur" element={<MarketingRedirect><CitySukkur /></MarketingRedirect>} />
           <Route path="/emr-software-for-doctors-in-abbottabad" element={<MarketingRedirect><CityAbbottabad /></MarketingRedirect>} />
-          <Route path="/knowledge-base" element={<MarketingRedirect><KnowledgeBase /></MarketingRedirect>} />
-          <Route path="/knowledge-base/:slug" element={<MarketingRedirect><KnowledgeBaseArticle /></MarketingRedirect>} />
+          <Route path="/knowledge-base" element={<KnowledgeBase />} /> {/* zonoir.com sends the knowledge base here; redirecting back made a blank loop */}
+          <Route path="/knowledge-base/:slug" element={<KnowledgeBaseArticle />} />
           <Route path="/doctor/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />
           <Route path="/doctor/knowledge-base/:slug" element={<Layout><KBEmbeddedProvider><KnowledgeBaseArticle /></KBEmbeddedProvider></Layout>} />
           <Route path="/clinic/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />

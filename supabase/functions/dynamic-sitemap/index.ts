@@ -6,7 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const BASE_URL = "https://zonoir.com";
+const BASE_URL = "https://zonoir.com"; // WordPress marketing site
+// Doctor pages, Find Doctors and the knowledge base only exist on the app subdomain.
+const APP_URL = "https://app.zonoir.com";
 
 // Helper to generate slugs (same logic as frontend)
 const generateCitySlug = (city: string): string => {
@@ -59,7 +61,7 @@ serve(async (req) => {
 
     for (const page of staticPages) {
       sitemap += `  <url>
-    <loc>${BASE_URL}${page.loc}</loc>
+    <loc>${["/find-doctors", "/knowledge-base"].includes(page.loc) ? APP_URL : BASE_URL}${page.loc}</loc>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>
@@ -123,7 +125,7 @@ serve(async (req) => {
 
     for (const article of knowledgeBaseArticles) {
       sitemap += `  <url>
-    <loc>${BASE_URL}/knowledge-base/${article}</loc>
+    <loc>${APP_URL}/knowledge-base/${article}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -145,7 +147,7 @@ serve(async (req) => {
 
     for (const specialty of specialties) {
       sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/${specialty}</loc>
+    <loc>${APP_URL}/doctors/${specialty}</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -186,7 +188,7 @@ serve(async (req) => {
         const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
+    <loc>${APP_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -231,7 +233,7 @@ serve(async (req) => {
         const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${BASE_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
+    <loc>${APP_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

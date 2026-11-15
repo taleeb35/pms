@@ -6,7 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const BASE_URL = "https://zonoir.com";
+const BASE_URL = "https://zonoir.com"; // WordPress marketing site
+// Doctor pages, Find Doctors and the knowledge base only exist on the app subdomain.
+const APP_URL = "https://app.zonoir.com";
 
 const generateCitySlug = (city: string): string =>
   city.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -63,7 +65,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
 - [Blog](${BASE_URL}/blog)
 - [Contact](${BASE_URL}/contact)
 - [Reviews](${BASE_URL}/reviews)
-- [Knowledge Base](${BASE_URL}/knowledge-base)
+- [Knowledge Base](${APP_URL}/knowledge-base)
 - [Referral Program](${BASE_URL}/referral-program)
 - [Privacy Policy](${BASE_URL}/privacy-policy)
 - [Terms of Service](${BASE_URL}/terms-of-service)
@@ -85,7 +87,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
     ];
 
     for (const s of specialties) {
-      output += `- [${s}](${BASE_URL}/doctors/${generateSpecialtySlug(s)})\n`;
+      output += `- [${s}](${APP_URL}/doctors/${generateSpecialtySlug(s)})\n`;
     }
 
     // City pages
@@ -122,7 +124,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
       { slug: "expenses", title: "Expenses" },
     ];
     for (const a of kbArticles) {
-      output += `- [${a.title}](${BASE_URL}/knowledge-base/${a.slug})\n`;
+      output += `- [${a.title}](${APP_URL}/knowledge-base/${a.slug})\n`;
     }
 
     // Blog posts
@@ -180,7 +182,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
           specialization: doc.specialization,
           city: doc.city,
           qualification: doc.qualification || "",
-          url: `${BASE_URL}/doctors/pk/${urlKey}`,
+          url: `${APP_URL}/doctors/pk/${urlKey}`,
         });
       }
     }
@@ -201,7 +203,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
           specialization: doc.specialization,
           city: doc.city,
           qualification: doc.qualification || "",
-          url: `${BASE_URL}/doctors/pk/${urlKey}`,
+          url: `${APP_URL}/doctors/pk/${urlKey}`,
         });
       }
     }
