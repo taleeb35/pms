@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { REVENUE_DEFINITION } from "@/lib/revenue";
 import { withDrTitle } from "@/lib/doctorName";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -453,6 +454,7 @@ export default function DoctorFinance() {
             <div className="text-3xl font-bold">
               {totalRevenue.toLocaleString('en-PK')}
             </div>
+            <p className="text-xs text-muted-foreground mt-1">{REVENUE_DEFINITION}</p>
           </CardContent>
         </Card>
 

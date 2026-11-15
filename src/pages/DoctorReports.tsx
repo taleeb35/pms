@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
+import { isRevenueAppointment, grossFee, pctChange, fmtPct, REVENUE_DEFINITION } from "@/lib/revenue";
+import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { calculatePregnancyWeeks, calculateExpectedDueDate, getTrimester, getTrimesterLabel } from "@/lib/pregnancyUtils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -114,8 +116,8 @@ const DoctorReports = () => {
     const months = eachMonthOfInterval({ start: dateFrom, end: dateTo });
     return months.map(month => {
       const monthStr = format(month, "yyyy-MM");
-      const monthAppts = appointments.filter(a => a.appointment_date?.startsWith(monthStr) && a.status !== "cancelled");
-      const revenue = monthAppts.reduce((sum, a) => sum + (Number(a.total_fee) || 0), 0);
+      const monthAppts = appointments.filter(a => a.appointment_date?.startsWith(monthStr) && isRevenueAppointment(a));
+      const revenue = monthAppts.reduce((sum, a) => sum + grossFee(a), 0);
       const refunds = monthAppts.reduce((sum, a) => sum + (Number(a.refund) || 0), 0);
       const consultationRev = monthAppts.reduce((sum, a) => sum + (Number(a.consultation_fee) || 0), 0);
       const procedureRev = monthAppts.reduce((sum, a) => sum + (Number(a.procedure_fee) || 0), 0);
@@ -133,8 +135,8 @@ const DoctorReports = () => {
   const revenueGrowth = useMemo(() => {
     if (revenueTrendData.length < 2) return 0;
     const current = revenueTrendData[revenueTrendData.length - 1]?.net || 0;
-    const previous = revenueTrendData[revenueTrendData.length - 2]?.net || 1;
-    return ((current - previous) / previous * 100);
+    const previous = revenueTrendData[revenueTrendData.length - 2]?.net || 0;
+    return pctChange(current, previous) ?? NaN;
   }, [revenueTrendData]);
 
   const totalRevenue = revenueTrendData.reduce((s, d) => s + d.revenue, 0);
@@ -143,7 +145,7 @@ const DoctorReports = () => {
 
   // ======= GROWTH METRICS =======
   const growthMetrics = useMemo(() => {
-    const completedAppts = appointments.filter(a => a.status !== "cancelled");
+    const completedAppts = appointments.filter(a => isRevenueAppointment(a));
     const uniquePatients = new Set(completedAppts.map(a => a.patient_id)).size;
     const revenuePerPatient = uniquePatients > 0 ? totalNet / uniquePatients : 0;
     const workingDays = new Set(completedAppts.map(a => a.appointment_date)).size;
@@ -156,13 +158,13 @@ const DoctorReports = () => {
     const momGrowth = revenueTrendData.length >= 2 ? (() => {
       const curr = revenueTrendData[revenueTrendData.length - 1]?.net || 0;
       const prev = revenueTrendData[revenueTrendData.length - 2]?.net || 0;
-      return prev !== 0 ? ((curr - prev) / Math.abs(prev)) * 100 : 0;
+      return prev !== 0 ? ((curr - prev) / Math.abs(prev)) * 100 : NaN;
     })() : 0;
     const yoyGrowth = revenueTrendData.length >= 4 ? (() => {
       const half = Math.floor(revenueTrendData.length / 2);
       const firstHalf = revenueTrendData.slice(0, half).reduce((s, d) => s + (d.net || 0), 0);
       const secondHalf = revenueTrendData.slice(half).reduce((s, d) => s + (d.net || 0), 0);
-      return firstHalf !== 0 ? ((secondHalf - firstHalf) / Math.abs(firstHalf)) * 100 : 0;
+      return firstHalf !== 0 ? ((secondHalf - firstHalf) / Math.abs(firstHalf)) * 100 : NaN;
     })() : 0;
     return { revenuePerPatient, revenuePerHour, dailyAvgRevenue, momGrowth, yoyGrowth };
   }, [appointments, totalNet, revenueTrendData]);
@@ -180,7 +182,7 @@ const DoctorReports = () => {
         const start = new Date(a.started_at).getTime();
         const end = new Date(a.completed_at).getTime();
         return Math.max(0, (end - start) / 60000); // minutes
-      }).filter(d => d > 0 && d < 300); // filter unrealistic values
+      }).filter(d => d > 0 && d <= MAX_CONSULT_MINUTES); // filter unrealistic values
       const avg = durations.length > 0 ? parseFloat((durations.reduce((s, d) => s + d, 0) / durations.length).toFixed(1)) : 0;
       const min = durations.length > 0 ? parseFloat(Math.min(...durations).toFixed(1)) : 0;
       const max = durations.length > 0 ? parseFloat(Math.max(...durations).toFixed(1)) : 0;
@@ -196,8 +198,8 @@ const DoctorReports = () => {
         const end = new Date(a.completed_at).getTime();
         return Math.max(0, (end - start) / 60000);
       })
-      .filter(d => d > 0 && d < 300);
-    return allDurations.length > 0 ? parseFloat((allDurations.reduce((s, d) => s + d, 0) / allDurations.length).toFixed(1)) : 0;
+      .filter(d => d > 0 && d <= MAX_CONSULT_MINUTES);
+    return allDurations.length >= MIN_CONSULT_SAMPLE ? parseFloat((allDurations.reduce((s, d) => s + d, 0) / allDurations.length).toFixed(1)) : 0;
   }, [appointments]);
 
   // ======= PATIENT DEMOGRAPHICS =======
@@ -508,7 +510,7 @@ const DoctorReports = () => {
         ["Total Revenue", `Rs. ${totalRevenue.toLocaleString()}`],
         ["Total Refunds", `Rs. ${totalRefunds.toLocaleString()}`],
         ["Net Revenue", `Rs. ${totalNet.toLocaleString()}`],
-        ["Revenue Growth", `${revenueGrowth >= 0 ? "+" : ""}${revenueGrowth.toFixed(1)}%`],
+        ["Revenue Growth", `${fmtPct(revenueGrowth)}`],
       ],
       headStyles: { fillColor: primary, textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [239, 246, 255] },
@@ -526,8 +528,8 @@ const DoctorReports = () => {
         ["Revenue per Patient", `Rs. ${growthMetrics.revenuePerPatient.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
         ["Revenue per Hour", `Rs. ${growthMetrics.revenuePerHour.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
         ["Daily Avg Revenue", `Rs. ${growthMetrics.dailyAvgRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`],
-        ["MoM Growth", `${growthMetrics.momGrowth >= 0 ? "+" : ""}${growthMetrics.momGrowth.toFixed(1)}%`],
-        ["Period Growth", `${growthMetrics.yoyGrowth >= 0 ? "+" : ""}${growthMetrics.yoyGrowth.toFixed(1)}%`],
+        ["MoM Growth", `${fmtPct(growthMetrics.momGrowth)}`],
+        ["Period Growth", `${fmtPct(growthMetrics.yoyGrowth)}`],
       ],
       headStyles: { fillColor: green, textColor: [255, 255, 255], fontStyle: "bold" },
       alternateRowStyles: { fillColor: [236, 253, 245] },
@@ -969,9 +971,10 @@ const DoctorReports = () => {
           <CardContent className="pt-4 pb-3">
             <p className="text-xs text-muted-foreground">Net Revenue</p>
             <p className="text-xl font-bold">Rs. {totalNet.toLocaleString()}</p>
+            <p className="text-[11px] text-muted-foreground" title={REVENUE_DEFINITION}>{format(dateFrom, "d MMM yyyy")} â {format(dateTo, "d MMM yyyy")} Â· completed visits</p>
             <div className={cn("flex items-center gap-1 text-xs mt-1", revenueGrowth >= 0 ? "text-green-600" : "text-red-500")}>
               {revenueGrowth >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-              {Math.abs(revenueGrowth).toFixed(1)}% vs last month
+              {Number.isFinite(revenueGrowth) ? `${Math.abs(revenueGrowth).toFixed(1)}% vs last month` : "No revenue last month to compare"}
             </div>
           </CardContent>
         </Card>
@@ -1023,13 +1026,13 @@ const DoctorReports = () => {
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Month-over-Month</p>
               <p className={cn("text-lg font-bold", growthMetrics.momGrowth >= 0 ? "text-green-600" : "text-destructive")}>
-                {growthMetrics.momGrowth >= 0 ? "+" : ""}{growthMetrics.momGrowth.toFixed(1)}%
+                {fmtPct(growthMetrics.momGrowth)}
               </p>
             </div>
             <div className="text-center p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground mb-1">Period Growth</p>
               <p className={cn("text-lg font-bold", growthMetrics.yoyGrowth >= 0 ? "text-green-600" : "text-destructive")}>
-                {growthMetrics.yoyGrowth >= 0 ? "+" : ""}{growthMetrics.yoyGrowth.toFixed(1)}%
+                {fmtPct(growthMetrics.yoyGrowth)}
               </p>
             </div>
           </div>
@@ -1668,11 +1671,11 @@ const DoctorReports = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {consultationTimeData.every(d => d.count === 0) ? (
+          {overallAvgTime === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Clock className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="font-medium">No consultation time data yet</p>
-              <p className="text-sm mt-1">Time tracking starts when you mark an appointment as "Started" and then "Completed"</p>
+              <p className="font-medium">Not enough data yet</p>
+              <p className="text-sm mt-1">Shown after at least {MIN_CONSULT_SAMPLE} visits are marked "Started" and then "Completed". Visits longer than {MAX_CONSULT_MINUTES / 60} hours are ignored.</p>
             </div>
           ) : (
             <div className="space-y-6">
