@@ -1,4 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -71,6 +73,10 @@ interface MedicalHistoryEntry {
 
 const DoctorPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  // A6: patient country (empty = clinic's country, filled in by the database)
+  const [addCountry, setAddCountry] = useState("");
+  const [editCountry, setEditCountry] = useState("");
+  const [patientsLoading, setPatientsLoading] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [deliveryLocationDialogOpen, setDeliveryLocationDialogOpen] = useState(false);
   const [pendingDeliveryPatient, setPendingDeliveryPatient] = useState<Patient | null>(null);
@@ -334,7 +340,7 @@ const DoctorPatients = () => {
 
   const fetchPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setPatientsLoading(false); return; }
 
     try {
       // Build the query with search term
@@ -498,6 +504,8 @@ const DoctorPatients = () => {
     } catch (error) {
       console.error("Error fetching patients:", error);
       toast({ title: "Error fetching patients", variant: "destructive" });
+    } finally {
+      setPatientsLoading(false);
     }
   };
 
@@ -691,6 +699,7 @@ const DoctorPatients = () => {
   };
 
   const handleEditPatient = (patient: Patient) => {
+    setEditCountry((patient as any).country_code || "");
     setEditForm({
       full_name: patient.full_name,
       father_name: patient.father_name || "",
@@ -734,7 +743,7 @@ const DoctorPatients = () => {
     
     if (editForm.cnic) {
       const cnicValidation = validateCNIC(editForm.cnic);
-      if (!cnicValidation.isValid) errors.push(`CNIC: ${cnicValidation.message}`);
+      if (!cnicValidation.isValid) errors.push(`${idLabel()}: ${cnicValidation.message}`);
     }
     
     if (errors.length > 0) {
@@ -764,6 +773,7 @@ const DoctorPatients = () => {
         allergies: editSelectedAllergies.length > 0 ? editSelectedAllergies.join(", ") : null,
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
+        ...(editCountry ? { country_code: editCountry } : {}),
         major_diseases: editSelectedDiseases.length > 0 ? editSelectedDiseases.join(", ") : null,
         pregnancy_start_date: isGynecologist && editForm.gender === "female" && editPregnancyStartDate 
           ? format(editPregnancyStartDate, "yyyy-MM-dd") 
@@ -970,7 +980,7 @@ const DoctorPatients = () => {
     
     if (addForm.cnic) {
       const cnicValidation = validateCNIC(addForm.cnic);
-      if (!cnicValidation.isValid) errors.push(`CNIC: ${cnicValidation.message}`);
+      if (!cnicValidation.isValid) errors.push(`${idLabel()}: ${cnicValidation.message}`);
     }
     
     if (errors.length > 0) {
@@ -1004,10 +1014,10 @@ const DoctorPatients = () => {
       const dup = await findDuplicatePatients(addForm.phone, addForm.cnic);
       if (dup.all.length > 0) {
         const reason = dup.byPhone.length && dup.byCnic.length
-          ? "the same Contact Number and CNIC"
+          ? `the same Contact Number and ${idLabel()}`
           : dup.byPhone.length
           ? "the same Contact Number"
-          : "the same CNIC";
+          : `the same ${idLabel()}`;
         const proceed = window.confirm(
           `A patient with ${reason} already exists:\n\n${describeDuplicates(dup.all)}\n\nDo you still want to create a new record?`
         );
@@ -1043,6 +1053,7 @@ const DoctorPatients = () => {
             allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
             marital_status: addForm.marital_status || null,
             city: addForm.city || null,
+            ...(addCountry ? { country_code: addCountry } : {}),
             major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
             confidential_notes: addForm.confidential_notes || null,
             patient_id: patientId,
@@ -1085,6 +1096,8 @@ const DoctorPatients = () => {
         title: "Success",
         description: "Patient added successfully",
       });
+
+      setAddCountry("");
 
       setAddForm({
         full_name: "",
@@ -1390,7 +1403,13 @@ const DoctorPatients = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPatients.length === 0 ? (
+                {patientsLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell colSpan={7}><div className="h-6 w-full animate-pulse rounded bg-muted" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : filteredPatients.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center text-muted-foreground">
                       No patients found
@@ -1522,7 +1541,7 @@ const DoctorPatients = () => {
                                     </div>
                                     {selectedPatient.cnic && (
                                       <div>
-                                        <p className="text-sm text-muted-foreground">CNIC</p>
+                                        <p className="text-sm text-muted-foreground">{idLabel()}</p>
                                         <p className="font-medium">{selectedPatient.cnic}</p>
                                       </div>
                                     )}
@@ -1957,7 +1976,7 @@ const DoctorPatients = () => {
               </div>
               <div>
                 <Label>Phone *</Label>
-                <Input
+                <PhoneInput
                   value={addForm.phone}
                   onChange={(e) => {
                     const value = handlePhoneInput(e);
@@ -1971,7 +1990,7 @@ const DoctorPatients = () => {
                 {addFormErrors.phone && <p className="text-sm text-destructive">{addFormErrors.phone}</p>}
               </div>
               <div>
-                <Label>CNIC</Label>
+                <Label>{idLabel()}</Label>
                 <Input
                   value={addForm.cnic}
                   onChange={(e) => {
@@ -1984,7 +2003,7 @@ const DoctorPatients = () => {
                       setAddFormErrors(prev => ({ ...prev, cnic: "" }));
                     }
                   }}
-                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  placeholder={idPlaceholder()}
                   className={addFormErrors.cnic ? "border-destructive" : ""}
                 />
                 {addFormErrors.cnic && <p className="text-sm text-destructive">{addFormErrors.cnic}</p>}
@@ -2117,6 +2136,8 @@ const DoctorPatients = () => {
                 <CitySelect 
                   value={addForm.city} 
                   onValueChange={(value) => setAddForm({ ...addForm, city: value })}
+                  country={addCountry || undefined}
+                  onCountryChange={setAddCountry}
                   label="City"
                 />
               </div>
@@ -2288,7 +2309,7 @@ const DoctorPatients = () => {
               </div>
               <div>
                 <Label>Phone *</Label>
-                <Input
+                <PhoneInput
                   value={editForm.phone}
                   onChange={(e) => {
                     const value = handlePhoneInput(e);
@@ -2302,7 +2323,7 @@ const DoctorPatients = () => {
                 {editFormErrors.phone && <p className="text-sm text-destructive">{editFormErrors.phone}</p>}
               </div>
               <div>
-                <Label>CNIC</Label>
+                <Label>{idLabel()}</Label>
                 <Input
                   value={editForm.cnic}
                   onChange={(e) => {
@@ -2315,7 +2336,7 @@ const DoctorPatients = () => {
                       setEditFormErrors(prev => ({ ...prev, cnic: "" }));
                     }
                   }}
-                  placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                  placeholder={idPlaceholder()}
                   className={editFormErrors.cnic ? "border-destructive" : ""}
                 />
                 {editFormErrors.cnic && <p className="text-sm text-destructive">{editFormErrors.cnic}</p>}
@@ -2412,6 +2433,8 @@ const DoctorPatients = () => {
                 <CitySelect 
                   value={editForm.city} 
                   onValueChange={(value) => setEditForm({ ...editForm, city: value })}
+                  country={editCountry || undefined}
+                  onCountryChange={setEditCountry}
                   label="City"
                 />
               </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Link } from "react-router-dom";
 import MobileScreen from "@/components/mobile/MobileScreen";
 import MobileSection from "@/components/mobile/MobileSection";
@@ -21,8 +22,7 @@ interface ApptRow {
   total_fee: number | null;
 }
 
-const fmtPKR = (n: number) =>
-  `Rs ${Math.round(n).toLocaleString("en-PK")}`;
+const fmtPKR = (n: number) => money(Math.round(n));
 
 const MobileFinance = () => {
   const { id: userId, role, loading: roleLoading } = useMobileRole();

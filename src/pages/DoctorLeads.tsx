@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { zonedNow } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,7 +62,7 @@ const statusVariant = (s: string | null) => {
 const emptyForm = {
   name: "",
   phone: "",
-  lead_date: new Date().toISOString().slice(0, 10),
+  lead_date: zonedNow().ymd,
   comment: "",
   status: "active",
 };

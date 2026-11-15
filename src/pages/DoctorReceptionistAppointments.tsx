@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -275,7 +276,7 @@ const DoctorReceptionistAppointments = () => {
                           <Badge variant="outline">{appt.appointment_type || "new"}</Badge>
                         </TableCell>
                         <TableCell>{getStatusBadge(appt.status)}</TableCell>
-                        <TableCell>Rs. {appt.total_fee || 0}</TableCell>
+                        <TableCell>{money(appt.total_fee || 0)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

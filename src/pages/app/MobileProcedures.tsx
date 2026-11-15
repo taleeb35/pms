@@ -1,4 +1,5 @@
 import MobileCatalogScreen from "@/components/mobile/MobileCatalogScreen";
+import { money, moneySymbol } from "@/lib/region";
 import { useMobileRole } from "@/hooks/useMobileRole";
 import { Syringe } from "lucide-react";
 
@@ -15,11 +16,11 @@ const MobileProcedures = () => {
       titleField="name"
       searchFields={["name"]}
       trailingField="price"
-      trailingFormat={(v) => `Rs ${Number(v).toLocaleString("en-PK")}`}
+      trailingFormat={(v) => `Rs ${Number(v).toLocaleString("en")}`}
       orderBy="name"
       fields={[
         { key: "name", label: "Procedure Name", placeholder: "e.g. ECG", required: true },
-        { key: "price", label: "Price (PKR)", placeholder: "0", type: "number", required: true },
+        { key: "price", label: "Price ({moneySymbol()})", placeholder: "0", type: "number", required: true },
       ]}
     />
   );

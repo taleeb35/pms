@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Calendar, Clock, UserPlus, ClipboardList, Activity, CreditCard } from "lucide-react";
@@ -10,6 +11,7 @@ import DoctorAnalyticsCharts from "@/components/DoctorAnalyticsCharts";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 import { AIRevenueForecast } from "@/components/AIRevenueForecast";
 import TrialBanner from "@/components/TrialBanner";
+import StaleAppointmentsPrompt from "@/components/StaleAppointmentsPrompt";
 import { ActivityLogsCard } from "@/components/ActivityLogsCard";
 
 const DoctorDashboard = () => {
@@ -80,6 +82,7 @@ const DoctorDashboard = () => {
     <div className="space-y-6">
       {/* Trial Banner for Single Doctors */}
       <TrialBanner userType="doctor" />
+      <StaleAppointmentsPrompt to="/doctor/appointments" />
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -94,7 +97,7 @@ const DoctorDashboard = () => {
               </Badge>
             )}
           </div>
-          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight mb-1 truncate">Welcome Dr. {doctorName}</h2>
+          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight mb-1 truncate">Welcome {withDrTitle(doctorName)}</h2>
           <p className="text-muted-foreground text-sm sm:text-base">
             Overview of your patients, appointments & waitlist in one glance.
           </p>

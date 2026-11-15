@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { money, moneySymbol } from "@/lib/region";
 import { format, differenceInYears } from "date-fns";
 
 export interface InvoiceVitals {
@@ -49,7 +50,7 @@ const escapeHtml = (s: any) =>
 const fmtMoney = (n: any) => {
   const v = typeof n === "string" ? parseFloat(n) : n;
   if (!v || isNaN(v)) return "0";
-  return new Intl.NumberFormat("en-PK").format(v);
+  return new Intl.NumberFormat("en").format(v);
 };
 
 const fmtTime = (t?: string | null) => {
@@ -222,7 +223,7 @@ export async function printAppointmentInvoice(opts: {
     <thead>
       <tr>
         <th>Description</th>
-        <th class="amt">Amount (Rs)</th>
+        <th class="amt">Amount (${moneySymbol()})</th>
       </tr>
     </thead>
     <tbody>
@@ -236,9 +237,9 @@ export async function printAppointmentInvoice(opts: {
   </table>
 
   <div class="totals">
-    <div class="row sub"><span>Subtotal</span><span>Rs ${fmtMoney(subtotal)}</span></div>
-    ${refund > 0 ? `<div class="row refund"><span>Refund</span><span>- Rs ${fmtMoney(refund)}</span></div>` : ""}
-    <div class="row total"><span>Total Payable</span><span>Rs ${fmtMoney(total)}</span></div>
+    <div class="row sub"><span>Subtotal</span><span>${moneySymbol()} ${fmtMoney(subtotal)}</span></div>
+    ${refund > 0 ? `<div class="row refund"><span>Refund</span><span>- ${moneySymbol()} ${fmtMoney(refund)}</span></div>` : ""}
+    <div class="row total"><span>Total Payable</span><span>${moneySymbol()} ${fmtMoney(total)}</span></div>
   </div>`
   }
 

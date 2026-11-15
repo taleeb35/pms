@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { isRevenueAppointment, grossFee, netFee } from "@/lib/revenue";
+import { money, moneySymbol } from "@/lib/region";
 import { format } from "date-fns";
 import { CalendarIcon, Users, Calendar as CalIcon, CheckCircle2, XCircle, Wallet, RotateCcw, Clock, UserPlus, Activity, Banknote, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,12 +69,12 @@ const DoctorSummary = () => {
         else if (r.status === "completed") s.completed++;
         else if (r.status === "cancelled") s.cancelled++;
         if (r.status !== "cancelled") {
-          s.revenue += Number(r.total_fee) || 0;
+          s.revenue += isRevenueAppointment(r) ? grossFee(r) : 0;
           s.consultationFee += Number(r.consultation_fee) || 0;
           s.procedureFee += Number(r.procedure_fee) || 0;
           s.otherFee += Number(r.other_fee) || 0;
         }
-        s.refunds += Number(r.refund) || 0;
+        s.refunds += isRevenueAppointment(r) ? Number(r.refund) || 0 : 0;
       }
       s.net = s.revenue - s.refunds;
       s.newPatients = patients?.length || 0;
@@ -83,7 +85,7 @@ const DoctorSummary = () => {
   };
 
   const fmtPKR = (n: number) =>
-    `Rs. ${n.toLocaleString("en-PK", { maximumFractionDigits: 0 })}`;
+    `${money(n)}`;
 
   const cards: Array<{ label: string; value: string | number; icon: any; tint: string }> = [
     { label: "Total Appointments", value: stats.total, icon: CalIcon, tint: "from-blue-500/10 to-blue-500/5 text-blue-600" },

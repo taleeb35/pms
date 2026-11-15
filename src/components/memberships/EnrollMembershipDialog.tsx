@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { zonedNow } from "@/lib/region";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +34,7 @@ export default function EnrollMembershipDialog({ open, onOpenChange, clinicId, f
   const [patient, setPatient] = useState<Patient | null>(fixedPatient ?? null);
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
-  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [startDate, setStartDate] = useState(zonedNow().ymd);
   const [amountPaid, setAmountPaid] = useState<number | "">("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
@@ -41,7 +42,7 @@ export default function EnrollMembershipDialog({ open, onOpenChange, clinicId, f
   useEffect(() => {
     if (!open) return;
     setPatient(fixedPatient ?? null);
-    setPlanId(""); setStartDate(new Date().toISOString().slice(0, 10));
+    setPlanId(""); setStartDate(zonedNow().ymd);
     setAmountPaid(""); setNotes(""); setSearch("");
     void loadPlans();
   }, [open, fixedPatient]);

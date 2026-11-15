@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { AiDisclosure } from "@/components/AiDisclosure";
+import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -104,6 +106,7 @@ export const AIPrescriptionAssistant = ({
           }
         }
       }
+      if (fullText) logAi("prescription", "suggested", fullText, diagnosis ? `diagnosis: ${diagnosis}` : undefined);
     } catch (error: any) {
       toast({
         title: "AI Error",
@@ -117,6 +120,7 @@ export const AIPrescriptionAssistant = ({
   };
 
   const handleApply = () => {
+    logAi("prescription", "applied", suggestion, diagnosis ? `diagnosis: ${diagnosis}` : undefined);
     onApplySuggestion(suggestion);
     toast({ title: "Applied", description: "AI suggestion applied to prescription" });
     setIsOpen(false);
@@ -156,6 +160,7 @@ export const AIPrescriptionAssistant = ({
                 For Review Only
               </Badge>
             </CardTitle>
+            <AiDisclosure />
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setIsOpen(false); setSuggestion(""); }}>
               <X className="h-3 w-3" />
             </Button>

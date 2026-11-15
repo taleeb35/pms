@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { zonedNow } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileAppShell from "@/components/MobileAppShell";
@@ -14,7 +15,7 @@ const MobileHome = () => {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const today = new Date().toISOString().split("T")[0];
+      const today = zonedNow().ymd;
 
       const [p, t, td, wl] = await Promise.all([
         supabase.from("patients").select("id", { count: "exact", head: true }).eq("created_by", user.id),

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -102,6 +104,9 @@ const ClinicPatients = () => {
   const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   
   const [patients, setPatients] = useState<Patient[]>([]);
+  // A6: patient country (empty = clinic's country, filled in by the database)
+  const [addCountry, setAddCountry] = useState("");
+  const [editCountry, setEditCountry] = useState("");
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
@@ -439,6 +444,7 @@ const ClinicPatients = () => {
   };
 
   const handleEditPatient = (patient: Patient) => {
+    setEditCountry((patient as any).country_code || "");
     setEditForm({
       full_name: patient.full_name,
       father_name: patient.father_name || "",
@@ -514,6 +520,7 @@ const ClinicPatients = () => {
         allergies: editSelectedAllergies.length > 0 ? editSelectedAllergies.join(", ") : null,
         marital_status: editForm.marital_status || null,
         city: editForm.city || null,
+        ...(editCountry ? { country_code: editCountry } : {}),
         major_diseases: editSelectedDiseases.length > 0 ? editSelectedDiseases.join(", ") : null,
         confidential_notes: editForm.confidential_notes || null,
       })
@@ -862,10 +869,10 @@ const ClinicPatients = () => {
     const dup = await findDuplicatePatients(addForm.phone, addForm.cnic);
     if (dup.all.length > 0) {
       const reason = dup.byPhone.length && dup.byCnic.length
-        ? "the same Contact Number and CNIC"
+        ? `the same Contact Number and ${idLabel()}`
         : dup.byPhone.length
         ? "the same Contact Number"
-        : "the same CNIC";
+        : `the same ${idLabel()}`;
       const proceed = window.confirm(
         `A patient with ${reason} already exists:\n\n${describeDuplicates(dup.all)}\n\nDo you still want to create a new record?`
       );
@@ -894,6 +901,7 @@ const ClinicPatients = () => {
           allergies: selectedAllergies.length > 0 ? selectedAllergies.join(", ") : null,
           marital_status: addForm.marital_status || null,
           city: addForm.city || null,
+          ...(addCountry ? { country_code: addCountry } : {}),
           major_diseases: selectedDiseases.length > 0 ? selectedDiseases.join(", ") : null,
           confidential_notes: addForm.confidential_notes || null,
           patient_id: patientId,
@@ -930,6 +938,8 @@ const ClinicPatients = () => {
       title: "Success",
       description: "Patient added successfully",
     });
+
+    setAddCountry("");
 
     setAddForm({
       doctor_id: "",
@@ -1266,7 +1276,7 @@ const ClinicPatients = () => {
                                       </div>
                                       {selectedPatient.cnic && (
                                         <div>
-                                          <p className="text-sm text-muted-foreground">CNIC</p>
+                                          <p className="text-sm text-muted-foreground">{idLabel()}</p>
                                           <p className="font-medium">{selectedPatient.cnic}</p>
                                         </div>
                                       )}
@@ -1546,7 +1556,7 @@ const ClinicPatients = () => {
               </div>
               <div>
                 <Label>Phone *</Label>
-                <Input
+                <PhoneInput
                   value={addForm.phone}
                   onChange={(e) => setAddForm({ ...addForm, phone: handlePhoneInput(e) })}
                   placeholder="Enter phone number"
@@ -1555,11 +1565,11 @@ const ClinicPatients = () => {
                 {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
               </div>
               <div>
-                <Label>CNIC</Label>
+                <Label>{idLabel()}</Label>
                 <Input
                   value={addForm.cnic}
                   onChange={(e) => setAddForm({ ...addForm, cnic: handleCNICInput(e) })}
-                  placeholder="Enter CNIC (13 digits)"
+                  placeholder={idPlaceholder()}
                   maxLength={15}
                   className={formErrors.cnic ? "border-destructive" : ""}
                 />
@@ -1688,6 +1698,8 @@ const ClinicPatients = () => {
                 <CitySelect 
                   value={addForm.city} 
                   onValueChange={(value) => setAddForm({ ...addForm, city: value })}
+                  country={addCountry || undefined}
+                  onCountryChange={setAddCountry}
                   label="City"
                 />
               </div>
@@ -1778,7 +1790,7 @@ const ClinicPatients = () => {
               </div>
               <div>
                 <Label>Phone *</Label>
-                <Input
+                <PhoneInput
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: handlePhoneInput(e) })}
                   placeholder="Enter phone number"
@@ -1787,11 +1799,11 @@ const ClinicPatients = () => {
                 {editFormErrors.phone && <p className="text-sm text-destructive">{editFormErrors.phone}</p>}
               </div>
               <div>
-                <Label>CNIC</Label>
+                <Label>{idLabel()}</Label>
                 <Input
                   value={editForm.cnic}
                   onChange={(e) => setEditForm({ ...editForm, cnic: handleCNICInput(e) })}
-                  placeholder="Enter CNIC (13 digits)"
+                  placeholder={idPlaceholder()}
                   maxLength={15}
                   className={editFormErrors.cnic ? "border-destructive" : ""}
                 />
@@ -1888,6 +1900,8 @@ const ClinicPatients = () => {
                 <CitySelect 
                   value={editForm.city} 
                   onValueChange={(value) => setEditForm({ ...editForm, city: value })}
+                  country={editCountry || undefined}
+                  onCountryChange={setEditCountry}
                   label="City"
                 />
               </div>

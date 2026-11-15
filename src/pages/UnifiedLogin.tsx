@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useMfaPrompt } from "@/hooks/useMfaPrompt";
+import { withDrTitle } from "@/lib/doctorName";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,7 @@ const UnifiedLogin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [ensureMfa, mfaDialog] = useMfaPrompt(); // H1: two-factor code after password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [bioAvailable, setBioAvailable] = useState(false);
@@ -75,6 +78,8 @@ const UnifiedLogin = () => {
       });
 
       if (authError) throw authError;
+
+      if (!(await ensureMfa())) { await supabase.auth.signOut(); setLoading(false); return; }
 
       const userId = authData.user.id;
 
@@ -288,7 +293,7 @@ const UnifiedLogin = () => {
 
     toast({
       title: "Login successful",
-      description: `Welcome back, Dr. ${profile?.full_name || ""}!`,
+      description: `Welcome back, ${withDrTitle(profile?.full_name) || "Doctor"}!`,
     });
     return { success: true };
   };
@@ -435,6 +440,8 @@ const UnifiedLogin = () => {
   };
 
   return (
+    <>
+    {mfaDialog}
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-info/5 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -607,6 +614,7 @@ const UnifiedLogin = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 };
 

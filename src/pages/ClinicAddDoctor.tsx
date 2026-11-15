@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { money, moneySymbol, licLabel } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -349,7 +351,7 @@ const ClinicAddDoctor = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="contactNumber">Contact Number *</Label>
-                <Input
+                <PhoneInput
                   id="contactNumber"
                   type="tel"
                   value={formData.contactNumber}
@@ -408,7 +410,7 @@ const ClinicAddDoctor = () => {
                   value={formData.consultationFee}
                   onChange={(e) => setFormData({ ...formData, consultationFee: e.target.value })}
                   required
-                  placeholder="PKR 2000"
+                  placeholder={`${moneySymbol()} 2000`}
                 />
               </div>
 
@@ -434,7 +436,7 @@ const ClinicAddDoctor = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="pmdcNumber">PMDC Number</Label>
+                <Label htmlFor="pmdcNumber">{licLabel()}</Label>
                 <Input
                   id="pmdcNumber"
                   value={formData.pmdcNumber}

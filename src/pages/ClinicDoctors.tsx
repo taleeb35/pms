@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { money, moneySymbol, licLabel } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -333,7 +335,7 @@ const ClinicDoctors = () => {
                     <TableHead>Specialization</TableHead>
                     <TableHead>Contact</TableHead>
                     <TableHead>Experience</TableHead>
-                    <TableHead>Fee (PKR)</TableHead>
+                    <TableHead>Fee ({moneySymbol()})</TableHead>
                     <TableHead>Clinic Share</TableHead>
                     <TableHead>Dr Share</TableHead>
                     <TableHead>Actions</TableHead>
@@ -365,7 +367,7 @@ const ClinicDoctors = () => {
                     <TableHead>Specialization</TableHead>
                     <TableHead>Contact</TableHead>
                     <TableHead>Experience</TableHead>
-                    <TableHead>Fee (PKR)</TableHead>
+                    <TableHead>Fee ({moneySymbol()})</TableHead>
                     <TableHead>Clinic Share</TableHead>
                     <TableHead>Dr Share</TableHead>
                     <TableHead>Actions</TableHead>
@@ -410,7 +412,7 @@ const ClinicDoctors = () => {
                       </TableCell>
                       <TableCell>
                         {doctor.consultation_fee ? (
-                          <span className="font-semibold">PKR {doctor.consultation_fee.toLocaleString()}</span>
+                          <span className="font-semibold">{money(doctor.consultation_fee)}</span>
                         ) : (
                           <span className="text-muted-foreground">-</span>
                         )}
@@ -515,7 +517,7 @@ const ClinicDoctors = () => {
               </div>
               <div>
                 <Label>Contact Number *</Label>
-                <Input
+                <PhoneInput
                   value={editForm.contact_number}
                   onChange={(e) => {
                     const value = handlePhoneInput(e);
@@ -565,7 +567,7 @@ const ClinicDoctors = () => {
                 />
               </div>
               <div>
-                <Label>Consultation Fee (PKR) *</Label>
+                <Label>Consultation Fee ({moneySymbol()}) *</Label>
                 <Input
                   type="number"
                   value={editForm.consultation_fee}
@@ -598,7 +600,7 @@ const ClinicDoctors = () => {
                 />
               </div>
               <div>
-                <Label>PMDC Number</Label>
+                <Label>{licLabel()}</Label>
                 <Input
                   value={editForm.pmdc_number}
                   onChange={(e) => setEditForm({ ...editForm, pmdc_number: e.target.value })}

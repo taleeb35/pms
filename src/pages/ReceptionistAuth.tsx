@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMfaPrompt } from "@/hooks/useMfaPrompt";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ const ReceptionistAuth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [ensureMfa, mfaDialog] = useMfaPrompt(); // H1: two-factor code after password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [clinicInactiveDialog, setClinicInactiveDialog] = useState(false);
@@ -42,6 +44,8 @@ const ReceptionistAuth = () => {
       });
 
       if (error) throw error;
+
+      if (!(await ensureMfa())) { await supabase.auth.signOut(); setLoading(false); return; }
 
       // Check if user is a receptionist
       const { data: receptionistData, error: receptionistError } = await supabase
@@ -97,6 +101,8 @@ const ReceptionistAuth = () => {
   };
 
   return (
+    <>
+    {mfaDialog}
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-info/5 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -203,6 +209,7 @@ const ReceptionistAuth = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 };
 

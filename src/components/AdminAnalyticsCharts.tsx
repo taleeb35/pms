@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -215,7 +216,7 @@ const AdminAnalyticsCharts = () => {
       Object.entries(doctorGrouped).forEach(([doctorId, totalRevenue]) => {
         sourceGrouped.push({
           sourceId: doctorId,
-          sourceName: `Dr. ${doctorMap.get(doctorId) || "Unknown"}`,
+          sourceName: doctorMap.get(doctorId) ? withDrTitle(doctorMap.get(doctorId)) : "Unknown",
           sourceType: 'doctor',
           totalRevenue,
         });

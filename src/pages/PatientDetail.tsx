@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -483,7 +484,7 @@ const PatientDetail = () => {
               </div>
               {patient.cnic && (
                 <div>
-                  <Label className="text-muted-foreground">CNIC</Label>
+                  <Label className="text-muted-foreground">{idLabel()}</Label>
                   <p className="font-medium">{patient.cnic}</p>
                 </div>
               )}
@@ -787,11 +788,11 @@ const PatientDetail = () => {
               />
             </div>
             <div>
-              <Label>CNIC</Label>
+              <Label>{idLabel()}</Label>
               <Input
                 value={editForm.cnic}
                 onChange={(e) => setEditForm({ ...editForm, cnic: e.target.value })}
-                placeholder="Enter CNIC (e.g., 12345-1234567-1)"
+                placeholder={idPlaceholder()}
               />
             </div>
             <div>

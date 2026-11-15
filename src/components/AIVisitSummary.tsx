@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { AiDisclosure } from "@/components/AiDisclosure";
+import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -163,6 +165,7 @@ export const AIVisitSummary = ({
   };
 
   const handleCopy = async () => {
+    logAi("visit_summary", "copied", summary);
     await navigator.clipboard.writeText(summary);
     setCopied(true);
     toast({ title: "Copied to clipboard" });
@@ -243,6 +246,7 @@ export const AIVisitSummary = ({
             AI Visit Summary
             <Badge variant="secondary" className="text-[10px]">AI Generated</Badge>
           </CardTitle>
+            <AiDisclosure />
           <div className="flex items-center gap-1">
             {loading && (
               <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={handleCancel}>

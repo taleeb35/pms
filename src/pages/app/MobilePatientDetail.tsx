@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileScreen from "@/components/mobile/MobileScreen";
@@ -174,7 +175,7 @@ const MobilePatientDetail = () => {
               <InfoRow icon={AlertCircle} label="Allergies" value={patient.allergies} />
               <InfoRow icon={Activity} label="Major diseases" value={patient.major_diseases} />
               <InfoRow icon={FileText} label="Medical history" value={patient.medical_history} />
-              <InfoRow icon={User} label="CNIC" value={patient.cnic} />
+              <InfoRow icon={User} label={idLabel()} value={patient.cnic} />
               <InfoRow icon={Heart} label="Marital status" value={patient.marital_status} />
             </CardContent>
           </Card>

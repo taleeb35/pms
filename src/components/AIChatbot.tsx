@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import { AiDisclosure } from "@/components/AiDisclosure";
+import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -201,6 +203,7 @@ const AIChatbot = ({ role }: AIChatbotProps) => {
                   </div>
                   <div>
                     <CardTitle className="text-sm font-semibold">AI Assistant</CardTitle>
+            <AiDisclosure />
                     <p className="text-[10px] text-muted-foreground">
                       {role === "clinic" ? "Clinic Intelligence" : "Doctor Assistant"}
                     </p>

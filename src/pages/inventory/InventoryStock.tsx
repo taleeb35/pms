@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { zonedNow } from "@/lib/region";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,7 +48,7 @@ export default function InventoryStock() {
     return m;
   }, [batches]);
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = zonedNow().ymd;
   const in30 = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
 
   const stockRows = products

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -223,7 +224,7 @@ const AdminDoctorPatients = () => {
           </Button>
           <div>
             <h2 className="text-3xl font-bold">
-              {doctor ? `Dr. ${doctor.full_name}'s Patients` : "Doctor's Patients"}
+              {doctor ? `${withDrTitle(doctor.full_name)}'s Patients` : "Doctor's Patients"}
             </h2>
             <p className="text-muted-foreground">
               {doctor && `Specialization: ${doctor.specialization}`}

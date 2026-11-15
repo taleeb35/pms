@@ -32,8 +32,11 @@ serve(async (req) => {
     const url = new URL(req.url);
     const path = url.searchParams.get("path") || "";
     
-    // Parse doctor profile URL pattern: /doctors/:city/:specialty/:doctorSlug
-    const doctorProfileMatch = path.match(/^\/doctors\/([^\/]+)\/([^\/]+)\/([^\/]+)$/);
+    // Doctor profile URL: /doctors/:country/:city/:specialty/:doctorSlug (A7),
+    // or the old /doctors/:city/:specialty/:doctorSlug
+    const doctorProfileMatch =
+      path.match(/^\/doctors\/[a-z]{2}\/([^\/]+)\/([^\/]+)\/([^\/]+)$/) ||
+      path.match(/^\/doctors\/([^\/]+)\/([^\/]+)\/([^\/]+)$/);
     
     if (!doctorProfileMatch) {
       return new Response(JSON.stringify({ error: "Invalid path" }), {
@@ -131,7 +134,7 @@ serve(async (req) => {
     
     const pageDescription = `${doctorData.full_name} is a ${doctorData.specialization} in ${doctorData.city}. ${doctorData.qualification}. ${doctorData.experience_years ? `${doctorData.experience_years}+ years experience.` : ""} ${doctorData.clinic_name ? `Available at ${doctorData.clinic_name}.` : ""} Book appointment now.`;
     
-    const canonicalUrl = `https://zonoir.com/doctors/${city}/${specialty}/${doctorSlug}`;
+    const canonicalUrl = `https://zonoir.com/doctors/pk/${city}/${specialty}/${doctorSlug}`;
     const ogImage = doctorData.avatar_url || "https://zonoir.com/og-image.png";
 
     const keywords = `${doctorData.full_name}, ${doctorData.specialization}, ${doctorData.city}, doctor in ${doctorData.city}, best ${doctorData.specialization} ${doctorData.city}, book appointment ${doctorData.city}, ${doctorData.qualification}`;

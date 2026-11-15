@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -118,7 +119,7 @@ const DoctorAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [dateFilter, setDateFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [isGynecologist, setIsGynecologist] = useState(false);
@@ -526,8 +527,10 @@ const DoctorAppointments = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, apt?: any) => {
+    if (apt && needsStatusUpdate(apt)) return <Badge className={NEEDS_UPDATE_BADGE.className}>{NEEDS_UPDATE_BADGE.label}</Badge>;
     const config: any = {
+      no_show: NO_SHOW_BADGE,
       scheduled: { label: "Scheduled", className: "bg-blue-500/10 text-blue-500 border-blue-500/20" },
       start: { label: "Started", className: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20" },
       cancelled: { label: "Cancelled", className: "bg-red-500/10 text-red-500 border-red-500/20" },
@@ -561,7 +564,7 @@ const DoctorAppointments = () => {
 
     // Apply status filter
     if (statusFilter && statusFilter !== "all") {
-      filtered = filtered.filter((apt) => apt.status === statusFilter);
+      filtered = filtered.filter((apt) => (statusFilter === "needs_update" ? needsStatusUpdate(apt) : apt.status === statusFilter));
     }
 
     // Apply date filter
@@ -855,6 +858,8 @@ const DoctorAppointments = () => {
               <SelectItem value="start">Started</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="no_show">No-show</SelectItem>
+              <SelectItem value="needs_update">Needs update</SelectItem>
             </SelectContent>
           </Select>
 
@@ -1001,7 +1006,7 @@ const DoctorAppointments = () => {
                           <span className="text-sm text-muted-foreground">{apt.appointment_time}</span>
                         </TableCell>
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
-                        <TableCell>{getStatusBadge(apt.status)}</TableCell>
+                        <TableCell>{getStatusBadge(apt.status, apt)}</TableCell>
                       </TableRow>
                     ))
                   )}

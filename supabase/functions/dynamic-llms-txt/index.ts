@@ -180,7 +180,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
           specialization: doc.specialization,
           city: doc.city,
           qualification: doc.qualification || "",
-          url: `${BASE_URL}/doctors/${urlKey}`,
+          url: `${BASE_URL}/doctors/pk/${urlKey}`,
         });
       }
     }
@@ -201,7 +201,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
           specialization: doc.specialization,
           city: doc.city,
           qualification: doc.qualification || "",
-          url: `${BASE_URL}/doctors/${urlKey}`,
+          url: `${BASE_URL}/doctors/pk/${urlKey}`,
         });
       }
     }

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { money, moneySymbol } from "@/lib/region";
 import { format } from "date-fns";
 
 export interface SalesInvoiceData {
@@ -45,7 +46,7 @@ const escapeHtml = (s: any) =>
 const fmtMoney = (n: any) => {
   const v = typeof n === "string" ? parseFloat(n) : n;
   if (!v || isNaN(v)) return "0";
-  return new Intl.NumberFormat("en-PK").format(Math.round(Number(v)));
+  return new Intl.NumberFormat("en").format(Math.round(Number(v)));
 };
 
 export async function printSalesInvoice(opts: {
@@ -188,8 +189,8 @@ export async function printSalesInvoice(opts: {
         <th>#</th>
         <th>Product</th>
         <th class="qty">Qty</th>
-        <th class="amt">Unit Price (Rs)</th>
-        <th class="amt">Line Total (Rs)</th>
+        <th class="amt">Unit Price (${moneySymbol()})</th>
+        <th class="amt">Line Total (${moneySymbol()})</th>
       </tr>
     </thead>
     <tbody>
@@ -209,14 +210,14 @@ export async function printSalesInvoice(opts: {
   }
 
   <div class="totals">
-    <div class="row sub"><span>Subtotal</span><span>Rs ${fmtMoney(subtotal)}</span></div>
-    ${tax > 0 ? `<div class="row"><span>Tax</span><span>Rs ${fmtMoney(tax)}</span></div>` : ""}
-    ${discount > 0 ? `<div class="row"><span>Discount</span><span>- Rs ${fmtMoney(discount)}</span></div>` : ""}
-    <div class="row total"><span>Total</span><span>Rs ${fmtMoney(total)}</span></div>
+    <div class="row sub"><span>Subtotal</span><span>${moneySymbol()} ${fmtMoney(subtotal)}</span></div>
+    ${tax > 0 ? `<div class="row"><span>Tax</span><span>${moneySymbol()} ${fmtMoney(tax)}</span></div>` : ""}
+    ${discount > 0 ? `<div class="row"><span>Discount</span><span>- ${moneySymbol()} ${fmtMoney(discount)}</span></div>` : ""}
+    <div class="row total"><span>Total</span><span>${moneySymbol()} ${fmtMoney(total)}</span></div>
     ${
       totalRefunded > 0
-        ? `<div class="row refund" style="margin-top:6px;"><span>Refunded</span><span>- Rs ${fmtMoney(totalRefunded)}</span></div>
-           <div class="row net"><span>Net Payable</span><span>Rs ${fmtMoney(netPayable)}</span></div>`
+        ? `<div class="row refund" style="margin-top:6px;"><span>Refunded</span><span>- ${moneySymbol()} ${fmtMoney(totalRefunded)}</span></div>
+           <div class="row net"><span>Net Payable</span><span>${moneySymbol()} ${fmtMoney(netPayable)}</span></div>`
         : ""
     }
   </div>
@@ -230,7 +231,7 @@ export async function printSalesInvoice(opts: {
           <th>Return #</th>
           <th>Date</th>
           <th>Notes</th>
-          <th class="amt">Refund (Rs)</th>
+          <th class="amt">Refund (${moneySymbol()})</th>
         </tr>
       </thead>
       <tbody>
@@ -240,7 +241,7 @@ export async function printSalesInvoice(opts: {
               <td>${escapeHtml(r.return_number || r.id?.slice(0, 8).toUpperCase() || "—")}</td>
               <td>${escapeHtml(r.return_date ? format(new Date(r.return_date), "dd MMM yyyy") : r.created_at ? format(new Date(r.created_at), "dd MMM yyyy") : "—")}</td>
               <td>${escapeHtml(r.notes || "—")}</td>
-              <td class="amt">- Rs ${fmtMoney(r.refund_amount)}</td>
+              <td class="amt">- ${moneySymbol()} ${fmtMoney(r.refund_amount)}</td>
             </tr>`
           )
           .join("")}

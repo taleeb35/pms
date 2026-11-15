@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { licLabel } from "@/lib/region";
+import RegionSettingsCard from "@/components/RegionSettingsCard";
+import TwoFactorCard from "@/components/TwoFactorCard";
+import SessionsCard from "@/components/SessionsCard";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -522,7 +526,7 @@ const DoctorProfile = () => {
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  PMDC Number
+                  {licLabel()}
                 </Label>
                 <Input
                   value={profile.pmdc_number}
@@ -661,6 +665,9 @@ const DoctorProfile = () => {
 
         {/* Right Column */}
         <div className="space-y-6">
+          <RegionSettingsCard />
+          <TwoFactorCard />
+          <SessionsCard />
           {/* Password Change Card */}
           <Card className="border-accent/20 shadow-lg">
             <CardHeader className="bg-gradient-to-r from-accent/10 to-accent/5">

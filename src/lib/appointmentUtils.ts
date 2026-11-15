@@ -1,5 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 
+// Daytime (06:00-23:59) first, night slots last, so 5:45 PM is offered before 5:45 AM.
+const byDaytime = (a: { value: string }, b: { value: string }) => {
+  const m = (t: string) => { const v = Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5)); return v < 360 ? v + 1440 : v; };
+  return m(a.value) - m(b.value);
+};
+
 /**
  * Check if a time slot is already booked for a doctor
  * @param doctorId - The doctor's ID
@@ -213,13 +219,14 @@ export const getAvailableTimeSlots = async (
       const time24 = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       const period = hours >= 12 ? 'PM' : 'AM';
       const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-      const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+      const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}${hours < 6 ? " · night" : ""}`;
       allSlots.push({ value: time24, label: time12 });
     }
+    allSlots.sort(byDaytime);
 
     // If no schedule is set, return all slots (default behavior)
     if (!schedule) {
-      return allSlots;
+      return allSlots.sort(byDaytime);
     }
 
     // If doctor is marked unavailable for this day
@@ -268,9 +275,9 @@ export const getAvailableTimeSlots = async (
       const time24 = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
       const period = hours >= 12 ? 'PM' : 'AM';
       const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-      const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+      const time12 = `${hours12}:${minutes.toString().padStart(2, '0')} ${period}${hours < 6 ? " · night" : ""}`;
       allSlots.push({ value: time24, label: time12 });
     }
-    return allSlots;
+    return allSlots.sort(byDaytime);
   }
 };

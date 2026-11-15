@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -411,13 +412,13 @@ export default function ClinicFinance() {
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(16, 185, 129); // Green
-    doc.text(`PKR ${totalRevenue.toLocaleString()}`, col1, boxY + 10);
+    doc.text(`${money(totalRevenue)}`, col1, boxY + 10);
     
     doc.setTextColor(79, 70, 229); // Indigo
-    doc.text(`PKR ${clinicShare.toLocaleString()}`, col2, boxY + 10);
+    doc.text(`${money(clinicShare)}`, col2, boxY + 10);
     
     doc.setTextColor(59, 130, 246); // Blue
-    doc.text(`PKR ${doctorsShare.toLocaleString()}`, col3, boxY + 10);
+    doc.text(`${money(doctorsShare)}`, col3, boxY + 10);
     
     // Table
     const tableData = appointments.map((apt) => {
@@ -427,9 +428,9 @@ export default function ClinicFinance() {
         apt.patient_name,
         apt.doctor_name,
         format(new Date(apt.appointment_date), "MMM d, yyyy"),
-        `PKR ${apt.total_fee.toLocaleString()}`,
-        `PKR ${aptClinicShare.toLocaleString()}`,
-        `PKR ${aptDrShare.toLocaleString()}`,
+        `${money(apt.total_fee)}`,
+        `${money(aptClinicShare)}`,
+        `${money(aptDrShare)}`,
       ];
     });
 
@@ -594,7 +595,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {totalRevenue.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {totalRevenue.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
@@ -612,7 +613,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              -{totalDiscount.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              -{totalDiscount.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
@@ -633,7 +634,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {clinicShare.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {clinicShare.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
@@ -654,7 +655,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {doctorsShare.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {doctorsShare.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
@@ -672,7 +673,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              -{totalExpenses.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              -{totalExpenses.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
@@ -695,7 +696,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(clinicShare - totalExpenses).toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {(clinicShare - totalExpenses).toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </div>
           </CardContent>
         </Card>
@@ -759,19 +760,19 @@ export default function ClinicFinance() {
                           <TableCell>{apt.doctor_name}</TableCell>
                           <TableCell>{format(new Date(apt.appointment_date), "MMM d, yyyy")}</TableCell>
                           <TableCell className="text-right text-muted-foreground">
-                            {apt.sub_total.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                            {apt.sub_total.toLocaleString("en", { minimumFractionDigits: 0 })}
                           </TableCell>
                           <TableCell className="text-right text-red-600 dark:text-red-400">
-                            {apt.refund > 0 ? `-${apt.refund.toLocaleString('en-PK', { minimumFractionDigits: 0 })}` : '-'}
+                            {apt.refund > 0 ? `-${apt.refund.toLocaleString("en", { minimumFractionDigits: 0 })}` : '-'}
                           </TableCell>
                           <TableCell className="text-right font-semibold">
-                            {apt.total_fee.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                            {apt.total_fee.toLocaleString("en", { minimumFractionDigits: 0 })}
                           </TableCell>
                           <TableCell className="text-right text-primary font-medium">
-                            {aptClinicShare.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                            {aptClinicShare.toLocaleString("en", { minimumFractionDigits: 0 })}
                           </TableCell>
                           <TableCell className="text-right text-info font-medium">
-                            {aptDrShare.toLocaleString('en-PK', { minimumFractionDigits: 0 })}
+                            {aptDrShare.toLocaleString("en", { minimumFractionDigits: 0 })}
                           </TableCell>
                           <TableCell className="text-center">
                             <Button

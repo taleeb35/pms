@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -577,7 +578,7 @@ const DoctorHeroCard = ({
                       <Label htmlFor="hero-phone" className="text-xs">
                         Phone number *
                       </Label>
-                      <Input
+                      <PhoneInput
                         id="hero-phone"
                         value={phone}
                         onChange={(e) => setPhone(handlePhoneInput(e))}

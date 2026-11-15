@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -232,7 +233,7 @@ const ClinicPatientDetail = () => {
 
                   {patient.cnic && (
                     <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">CNIC</p>
+                      <p className="text-sm text-muted-foreground">{idLabel()}</p>
                       <p className="font-medium">{patient.cnic}</p>
                     </div>
                   )}

@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import PhoneInput from "@/components/PhoneInput";
+import { idLabel, idPlaceholder } from "@/lib/region";
+import { withDrTitle } from "@/lib/doctorName";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileFormScreen from "@/components/mobile/MobileFormScreen";
@@ -181,7 +184,7 @@ const MobileWalkIn = () => {
 
         <div className="grid grid-cols-2 gap-3">
           <Field label="Phone" required error={errors.phone}>
-            <Input
+            <PhoneInput
               value={form.phone}
               onChange={(e) => update("phone", handlePhoneInput(e))}
               className="h-11 rounded-lg"
@@ -227,8 +230,8 @@ const MobileWalkIn = () => {
           <Input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="h-11 rounded-lg" />
         </Field>
 
-        <Field label="CNIC" error={errors.cnic}>
-          <Input value={form.cnic} onChange={(e) => update("cnic", handleCNICInput(e))} className="h-11 rounded-lg" placeholder="35201-1234567-1" />
+        <Field label={idLabel()} error={errors.cnic}>
+          <Input value={form.cnic} onChange={(e) => update("cnic", handleCNICInput(e))} className="h-11 rounded-lg" placeholder={idPlaceholder()} />
         </Field>
 
         <Field label="City">
@@ -270,7 +273,7 @@ const MobileWalkIn = () => {
               <SelectContent>
                 {doctors.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
-                    Dr. {d.profiles?.full_name} {d.specialization && <span className="text-muted-foreground">· {d.specialization}</span>}
+                    {withDrTitle(d.profiles?.full_name)} {d.specialization && <span className="text-muted-foreground">· {d.specialization}</span>}
                   </SelectItem>
                 ))}
               </SelectContent>

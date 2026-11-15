@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -368,7 +369,7 @@ export default function ClinicExpenses() {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold">
-            PKR {totalExpenses.toLocaleString('en-PK', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            {money(totalExpenses)}
           </div>
         </CardContent>
       </Card>
@@ -432,7 +433,7 @@ export default function ClinicExpenses() {
                         {expense.description || "-"}
                       </TableCell>
                       <TableCell className="text-right font-semibold text-red-600 dark:text-red-400">
-                        PKR {Number(expense.amount).toLocaleString('en-PK')}
+                        {money(Number(expense.amount))}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
@@ -538,7 +539,7 @@ export default function ClinicExpenses() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Amount (PKR) *</Label>
+              <Label>Amount ({moneySymbol()}) *</Label>
               <Input
                 type="number"
                 placeholder="0"

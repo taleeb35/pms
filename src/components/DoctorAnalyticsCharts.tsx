@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isRevenueAppointment, grossFee, netFee } from "@/lib/revenue";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -139,7 +140,7 @@ const DoctorAnalyticsCharts = () => {
       
       let query = supabase
         .from("appointments")
-        .select("appointment_date, total_fee")
+        .select("appointment_date, status, consultation_fee, procedure_fee, other_fee, refund")
         .eq("doctor_id", user.id)
         .eq("status", "completed")
         .order("appointment_date", { ascending: true });
@@ -162,7 +163,7 @@ const DoctorAnalyticsCharts = () => {
         const grouped: { [key: string]: number } = {};
         (data || []).forEach(apt => {
           if (apt.appointment_date) {
-            grouped[apt.appointment_date] = (grouped[apt.appointment_date] || 0) + (apt.total_fee || 0);
+            grouped[apt.appointment_date] = (grouped[apt.appointment_date] || 0) + netFee(apt);
           }
         });
         const result = Object.entries(grouped)
@@ -187,7 +188,7 @@ const DoctorAnalyticsCharts = () => {
       // Sum revenue by date
       (data || []).forEach(apt => {
         if (apt.appointment_date && grouped[apt.appointment_date] !== undefined) {
-          grouped[apt.appointment_date] += apt.total_fee || 0;
+          grouped[apt.appointment_date] += netFee(apt);
         }
       });
 

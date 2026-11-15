@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PhoneInput from "@/components/PhoneInput";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -133,15 +134,10 @@ const DoctorAuth = () => {
       }
 
       // Fetch monthly fee from system settings
-      const { data: feeData } = await supabase
-        .from("system_settings")
-        .select("value")
-        .eq("key", "doctor_monthly_fee")
-        .maybeSingle();
-      
-      if (feeData) {
-        setMonthlyFee(parseFloat(feeData.value) || 0);
-      }
+      // Logged-out visitors can't read system_settings directly; use the public settings function.
+      const { data: pub } = await supabase.rpc("get_public_settings" as any);
+      const fee = (pub as any)?.doctor_monthly_fee;
+      if (fee) setMonthlyFee(parseFloat(fee) || 0);
     };
     fetchData();
   }, []);
@@ -374,7 +370,7 @@ const DoctorAuth = () => {
 
               <div className="space-y-1">
                 <Label htmlFor="contactNumber" className="text-xs">Contact Number *</Label>
-                <Input
+                <PhoneInput
                   id="contactNumber"
                   type="tel"
                   value={signupData.contactNumber}
@@ -516,7 +512,7 @@ const DoctorAuth = () => {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="pmdcNumber" className="text-xs">PMDC Number</Label>
+                <Label htmlFor="pmdcNumber" className="text-xs">Medical licence number</Label>
                 <Input
                   id="pmdcNumber"
                   value={signupData.pmdcNumber}

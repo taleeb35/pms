@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { isRevenueAppointment, grossFee } from "@/lib/revenue";
+import { money, moneySymbol } from "@/lib/region";
+import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { supabase } from "@/integrations/supabase/client";
 import MobileAppShell from "@/components/MobileAppShell";
 import { Card } from "@/components/ui/card";
@@ -84,8 +87,8 @@ const MobileReports = () => {
     const months = eachMonthOfInterval({ start: dateFrom, end: dateTo });
     return months.map((month) => {
       const monthStr = format(month, "yyyy-MM");
-      const ma = appointments.filter((a) => a.appointment_date?.startsWith(monthStr) && a.status !== "cancelled");
-      const revenue = ma.reduce((s, a) => s + (Number(a.total_fee) || 0), 0);
+      const ma = appointments.filter((a) => a.appointment_date?.startsWith(monthStr) && isRevenueAppointment(a));
+      const revenue = ma.reduce((s, a) => s + grossFee(a), 0);
       const refunds = ma.reduce((s, a) => s + (Number(a.refund) || 0), 0);
       const consultation = ma.reduce((s, a) => s + (Number(a.consultation_fee) || 0), 0);
       const procedures = ma.reduce((s, a) => s + (Number(a.procedure_fee) || 0), 0);
@@ -258,7 +261,7 @@ const MobileReports = () => {
       const ma = appointments.filter((a) => a.appointment_date?.startsWith(monthStr) && a.started_at && a.completed_at && a.status === "completed");
       const durations = ma
         .map((a) => Math.max(0, (new Date(a.completed_at).getTime() - new Date(a.started_at).getTime()) / 60000))
-        .filter((d) => d > 0 && d < 300);
+        .filter((d) => d > 0 && d <= MAX_CONSULT_MINUTES);
       const avg = durations.length ? parseFloat((durations.reduce((s, d) => s + d, 0) / durations.length).toFixed(1)) : 0;
       return { month: format(month, "MMM yy"), avg };
     });
@@ -268,8 +271,8 @@ const MobileReports = () => {
     const all = appointments
       .filter((a) => a.started_at && a.completed_at && a.status === "completed")
       .map((a) => Math.max(0, (new Date(a.completed_at).getTime() - new Date(a.started_at).getTime()) / 60000))
-      .filter((d) => d > 0 && d < 300);
-    return all.length ? parseFloat((all.reduce((s, d) => s + d, 0) / all.length).toFixed(1)) : 0;
+      .filter((d) => d > 0 && d <= MAX_CONSULT_MINUTES);
+    return all.length >= MIN_CONSULT_SAMPLE ? parseFloat((all.reduce((s, d) => s + d, 0) / all.length).toFixed(1)) : 0;
   }, [appointments]);
 
   // Peak hours heatmap
@@ -379,7 +382,7 @@ const MobileReports = () => {
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 8);
   }, [patients]);
 
-  const fmtPKR = (n: number) => `Rs ${n.toLocaleString()}`;
+  const fmtPKR = (n: number) => money(n);
   const tickFont = { fontSize: 10 };
 
   return (
@@ -606,7 +609,7 @@ const MobileReports = () => {
           <Clock className="h-4 w-4 text-primary" />
           <h3 className="text-sm font-semibold">Avg Consultation Time</h3>
         </div>
-        <p className="text-[11px] text-muted-foreground mb-2">Overall: <span className="font-semibold text-foreground">{overallAvgTime} min</span></p>
+        <p className="text-[11px] text-muted-foreground mb-2">Overall: <span className="font-semibold text-foreground">{overallAvgTime > 0 ? `${overallAvgTime} min` : "Not enough data yet"}</span></p>
         <div className="h-[180px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={consultationTimeData}>

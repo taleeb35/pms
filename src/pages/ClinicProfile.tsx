@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import { money, moneySymbol } from "@/lib/region";
+import RegionSettingsCard from "@/components/RegionSettingsCard";
+import TwoFactorCard from "@/components/TwoFactorCard";
+import SessionsCard from "@/components/SessionsCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -301,6 +305,12 @@ const ClinicProfile = () => {
         </CardContent>
       </Card>
 
+      <RegionSettingsCard />
+
+      <TwoFactorCard />
+
+      <SessionsCard />
+
       {/* Personal Information */}
       <Card className="border-border/40">
         <CardHeader>
@@ -379,7 +389,7 @@ const ClinicProfile = () => {
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Monthly Fee</p>
                 <p className="font-semibold text-2xl text-success">
-                  PKR {(doctorMonthlyFee * clinic.requested_doctors).toLocaleString()}
+                  {money((doctorMonthlyFee * clinic.requested_doctors))}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {doctorMonthlyFee.toLocaleString()} × {clinic.requested_doctors} doctors

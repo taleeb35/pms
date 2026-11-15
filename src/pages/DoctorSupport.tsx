@@ -69,15 +69,10 @@ const DoctorSupport = () => {
   }, []);
 
   const fetchSupportEmail = async () => {
-    const { data } = await supabase
-      .from("system_settings")
-      .select("value")
-      .eq("key", "support_email")
-      .single();
-
-    if (data) {
-      setSupportEmail(data.value);
-    }
+    // Doctors can't read system_settings directly; public values come from get_public_settings.
+    const { data } = await supabase.rpc("get_public_settings" as any);
+    const email = (data as any)?.support_email;
+    if (email) setSupportEmail(email);
   };
 
   useEffect(() => {

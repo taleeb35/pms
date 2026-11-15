@@ -1,18 +1,20 @@
 name: Deploy app.zonoir.com
 
-# The VPS pulls main, builds the SPA and switches the live release
-# (see /home/zonoir/deploy.sh on the server). nginx serves the build and
-# proxies /rest, /auth, /storage, /functions to self-hosted Supabase.
+# main    -> live site   (/home/zonoir/deploy.sh)
+# staging -> staging site https://staging.72-62-45-147.sslip.io (/home/zonoir/deploy-staging.sh)
+# Both use the same self-hosted Supabase backend. nginx serves the build and
+# proxies /rest, /auth, /storage, /functions to it.
 # Edge functions are synced separately by root: /opt/zonoir-supabase/sync-functions.sh
 
 on:
   push:
     branches:
       - main
+      - staging
   workflow_dispatch:
 
 concurrency:
-  group: deploy-zonoir
+  group: deploy-zonoir-${{ github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -29,6 +31,11 @@ jobs:
           command_timeout: 20m
           script: |
             set -e
-            bash ~/deploy.sh
-            curl -fsS -o /dev/null https://app.zonoir.com/
+            if [ "${{ github.ref_name }}" = "staging" ]; then
+              bash ~/deploy-staging.sh
+              curl -fsS -o /dev/null https://staging.72-62-45-147.sslip.io/
+            else
+              bash ~/deploy.sh
+              curl -fsS -o /dev/null https://app.zonoir.com/
+            fi
             echo "Health OK"
