@@ -1,12 +1,24 @@
-import { MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useLocation } from "react-router-dom";
 import { isStandalonePWA } from "@/lib/pwaUtils";
 import { isAuthRoute } from "@/lib/authRoutes";
 
 const FloatingWhatsApp = () => {
-  const phoneNumber = "923004313139";
-  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  // Number comes from Admin → Settings → Support WhatsApp (empty hides the button).
+  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    let alive = true;
+    supabase.rpc("get_public_settings" as any).then(({ data }) => {
+      if (alive) setPhoneNumber(((data as any)?.support_whatsapp ?? "").replace(/\D/g, ""));
+    });
+    return () => { alive = false; };
+  }, []);
+
+  if (!phoneNumber) return null;
+  const whatsappUrl = `https://wa.me/${phoneNumber}`;
 
   // Hide inside the mobile app shell or when running as installed PWA
   if (location.pathname.startsWith("/app") || isStandalonePWA()) return null;

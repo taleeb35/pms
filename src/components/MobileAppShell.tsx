@@ -1,4 +1,5 @@
 import { ReactNode, useEffect } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Calendar, Users, Wallet, Menu, Bell } from "lucide-react";
 import clinicLogo from "@/assets/main-logo.webp";
@@ -60,7 +61,7 @@ const MobileAppShell = ({ children, title }: MobileAppShellProps) => {
             <h1 className="text-2xl font-bold leading-tight text-white">{title}</h1>
             {name && (
               <p className="text-sm text-white/90 mt-0.5 font-medium">
-                {role === "clinic" ? `Hi, ${name}` : `Hi, Dr. ${name}`}
+                {role === "clinic" ? `Hi, ${name}` : `Hi, ${withDrTitle(name)}`}
               </p>
             )}
           </div>

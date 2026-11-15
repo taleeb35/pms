@@ -174,6 +174,7 @@ import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import StandaloneRedirect from "./components/StandaloneRedirect";
+import PortalPageTitle from "./components/PortalPageTitle";
 
 const queryClient = new QueryClient();
 
@@ -185,6 +186,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <PortalPageTitle />
           <StandaloneRedirect />
           <FloatingWhatsApp />
           <PublicDoctorFinderChat />

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { supabase } from "@/integrations/supabase/client";
 import MobileScreen from "@/components/mobile/MobileScreen";
 import MobileEmptyState from "@/components/mobile/MobileEmptyState";
@@ -116,7 +117,7 @@ const MobileDoctorSchedules = () => {
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="min-w-0 flex-1">
                     <h3 className="text-sm font-semibold truncate">
-                      Dr. {d.profiles?.full_name ?? "—"}
+                      {d.profiles?.full_name ? withDrTitle(d.profiles.full_name) : "—"}
                     </h3>
                     <p className="text-xs text-muted-foreground truncate">
                       {d.specialization}

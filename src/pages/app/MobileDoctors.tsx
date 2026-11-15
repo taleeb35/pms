@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { Link } from "react-router-dom";
 import MobileScreen from "@/components/mobile/MobileScreen";
 import MobileFAB from "@/components/mobile/MobileFAB";
@@ -123,7 +124,7 @@ const MobileDoctors = () => {
                   {(d.profile?.full_name ?? "Dr").charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">Dr. {d.profile?.full_name ?? "—"}</p>
+                  <p className="font-semibold text-sm truncate">{d.profile?.full_name ? withDrTitle(d.profile.full_name) : "—"}</p>
                   <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                     <Badge variant="secondary" className="text-[10px] h-4">{d.specialization}</Badge>
                     {d.experience_years != null && (

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -239,7 +240,7 @@ export default function DoctorFinance() {
     
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Dr. ${doctorDetails?.full_name || ""}`, 14, 26);
+    doc.text(withDrTitle(doctorDetails?.full_name), 14, 26);
     doc.text(doctorDetails?.specialization || "", 14, 32);
     doc.text(doctorDetails?.clinic_address || "", 14, 38);
     
@@ -496,7 +497,7 @@ export default function DoctorFinance() {
               Doctor Share
             </CardTitle>
             <CardDescription className="text-cyan-100">
-              {doctorPct}% for Dr. {doctorDetails?.full_name}
+              {doctorPct}% for {withDrTitle(doctorDetails?.full_name)}
             </CardDescription>
           </CardHeader>
           <CardContent>

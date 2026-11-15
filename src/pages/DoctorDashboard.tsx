@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Calendar, Clock, UserPlus, ClipboardList, Activity, CreditCard } from "lucide-react";
@@ -94,7 +95,7 @@ const DoctorDashboard = () => {
               </Badge>
             )}
           </div>
-          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight mb-1 truncate">Welcome Dr. {doctorName}</h2>
+          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight mb-1 truncate">Welcome {withDrTitle(doctorName)}</h2>
           <p className="text-muted-foreground text-sm sm:text-base">
             Overview of your patients, appointments & waitlist in one glance.
           </p>

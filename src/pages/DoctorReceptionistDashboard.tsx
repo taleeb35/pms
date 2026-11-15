@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -150,7 +151,7 @@ const DoctorReceptionistDashboard = () => {
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome! You're managing patients for Dr. {doctorName}
+          Welcome! You're managing patients for {withDrTitle(doctorName)}
         </p>
       </div>
 

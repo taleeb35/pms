@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { withDrTitle } from "@/lib/doctorName";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileFormScreen from "@/components/mobile/MobileFormScreen";
@@ -270,7 +271,7 @@ const MobileWalkIn = () => {
               <SelectContent>
                 {doctors.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
-                    Dr. {d.profiles?.full_name} {d.specialization && <span className="text-muted-foreground">· {d.specialization}</span>}
+                    {withDrTitle(d.profiles?.full_name)} {d.specialization && <span className="text-muted-foreground">· {d.specialization}</span>}
                   </SelectItem>
                 ))}
               </SelectContent>

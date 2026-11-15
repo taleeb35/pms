@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Banknote, Trash2, Loader2 } from "lucide-react";
+import { Mail, Banknote, Trash2, Loader2, MessageCircle } from "lucide-react";
 
 const AdminSettings = () => {
   const [supportEmail, setSupportEmail] = useState("");
+  const [supportWhatsapp, setSupportWhatsapp] = useState("");
+  const [savingWhatsapp, setSavingWhatsapp] = useState(false);
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState("");
   const [singleDoctorMonthlyFee, setSingleDoctorMonthlyFee] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,6 +35,17 @@ const AdminSettings = () => {
       setSupportEmail(emailData.value);
     }
 
+    // Fetch support WhatsApp number (shown on the floating WhatsApp button)
+    const { data: waData } = await supabase
+      .from("system_settings")
+      .select("value")
+      .eq("key", "support_whatsapp")
+      .maybeSingle();
+
+    if (waData) {
+      setSupportWhatsapp(waData.value);
+    }
+
     // Fetch doctor monthly fee
     const { data: feeData } = await supabase
       .from("system_settings")
@@ -54,6 +67,25 @@ const AdminSettings = () => {
     if (singleFeeData) {
       setSingleDoctorMonthlyFee(singleFeeData.value);
     }
+  };
+
+  const handleSaveWhatsapp = async () => {
+    const digits = supportWhatsapp.replace(/\D/g, "");
+    if (digits && (digits.length < 8 || digits.length > 15)) {
+      toast({ title: "Check the number", description: "Use the full international number with country code, digits only (8 to 15 digits).", variant: "destructive" });
+      return;
+    }
+    setSavingWhatsapp(true);
+    const { error } = await supabase
+      .from("system_settings")
+      .upsert({ key: "support_whatsapp", value: digits, updated_at: new Date().toISOString() });
+    setSavingWhatsapp(false);
+    if (error) {
+      toast({ title: "Error", description: "Failed to update the WhatsApp number", variant: "destructive" });
+      return;
+    }
+    setSupportWhatsapp(digits);
+    toast({ title: "Saved", description: digits ? "The WhatsApp button now uses this number." : "The WhatsApp button is hidden." });
   };
 
   const handleSave = async () => {
@@ -271,6 +303,33 @@ const AdminSettings = () => {
           </div>
           <Button onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Save Changes"}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" />
+            Support WhatsApp
+          </CardTitle>
+          <CardDescription>
+            Number used by the floating WhatsApp button. Leave empty to hide the button.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="support-whatsapp">WhatsApp number with country code</Label>
+            <Input
+              id="support-whatsapp"
+              inputMode="tel"
+              placeholder="e.g. 971501234567"
+              value={supportWhatsapp}
+              onChange={(e) => setSupportWhatsapp(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleSaveWhatsapp} disabled={savingWhatsapp}>
+            {savingWhatsapp ? "Saving..." : "Save Number"}
           </Button>
         </CardContent>
       </Card>

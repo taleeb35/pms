@@ -71,6 +71,7 @@ interface MedicalHistoryEntry {
 
 const DoctorPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [patientsLoading, setPatientsLoading] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [deliveryLocationDialogOpen, setDeliveryLocationDialogOpen] = useState(false);
   const [pendingDeliveryPatient, setPendingDeliveryPatient] = useState<Patient | null>(null);
@@ -334,7 +335,7 @@ const DoctorPatients = () => {
 
   const fetchPatients = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setPatientsLoading(false); return; }
 
     try {
       // Build the query with search term
@@ -498,6 +499,10 @@ const DoctorPatients = () => {
     } catch (error) {
       console.error("Error fetching patients:", error);
       toast({ title: "Error fetching patients", variant: "destructive" });
+    } finally {
+      setPatientsLoading(false);
+    } finally {
+      setPatientsLoading(false);
     }
   };
 
@@ -1390,7 +1395,13 @@ const DoctorPatients = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredPatients.length === 0 ? (
+                {patientsLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={`sk-${i}`}>
+                      <TableCell colSpan={7}><div className="h-6 w-full animate-pulse rounded bg-muted" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : filteredPatients.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center text-muted-foreground">
                       No patients found
