@@ -175,6 +175,7 @@ import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import StandaloneRedirect from "./components/StandaloneRedirect";
 import PortalPageTitle from "./components/PortalPageTitle";
+import { IdleLogoutWatcher } from "./lib/idleLogout";
 import LegacyDoctorRedirect from "./components/public/LegacyDoctorRedirect";
 import { RegionProvider } from "./contexts/RegionContext";
 
@@ -190,6 +191,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <PortalPageTitle />
+          <IdleLogoutWatcher />
           <StandaloneRedirect />
           <FloatingWhatsApp />
           <PublicDoctorFinderChat />

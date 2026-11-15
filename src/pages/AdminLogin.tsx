@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMfaPrompt } from "@/hooks/useMfaPrompt";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [ensureMfa, mfaDialog] = useMfaPrompt(); // H1: two-factor code after password
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -28,6 +30,8 @@ const AdminLogin = () => {
       });
 
       if (authError) throw authError;
+
+      if (!(await ensureMfa())) { await supabase.auth.signOut(); setLoading(false); return; }
 
       // Check if user has admin or content_writer role
       const { data: roleData, error: roleError } = await supabase
@@ -65,6 +69,8 @@ const AdminLogin = () => {
   };
 
   return (
+    <>
+    {mfaDialog}
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/10 p-4 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -180,6 +186,7 @@ const AdminLogin = () => {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 };
 

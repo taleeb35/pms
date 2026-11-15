@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { AiDisclosure } from "@/components/AiDisclosure";
+import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -146,6 +148,7 @@ const AIPatientInsights = ({ patientId, patientName }: AIPatientInsightsProps) =
               <Brain className="h-5 w-5 text-primary" />
               AI Patient Insights
             </CardTitle>
+            <AiDisclosure />
             <div className="flex items-center gap-2">
               <Button
                 size="sm"

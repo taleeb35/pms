@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { AiDisclosure } from "@/components/AiDisclosure";
+import { logAi } from "@/lib/aiAudit";
 import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -194,6 +196,7 @@ export const AIRevenueForecast = ({ role }: AIRevenueForecastProps) => {
             <Sparkles className="h-5 w-5 text-primary" />
             AI Revenue Forecast
           </CardTitle>
+            <AiDisclosure />
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="sm" onClick={fetchForecast} disabled={loading} className="gap-1">
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />

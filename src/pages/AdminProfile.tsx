@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import TwoFactorCard from "@/components/TwoFactorCard";
+import SessionsCard from "@/components/SessionsCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -315,6 +317,9 @@ const AdminProfile = () => {
           {saving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
+
+      <TwoFactorCard />
+      <SessionsCard />
     </div>
   );
 };
