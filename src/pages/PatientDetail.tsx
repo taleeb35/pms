@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PatientTimeline from "@/components/patients/PatientTimeline";
+import LabOrdersCard from "@/components/labs/LabOrdersCard";
+import TestTrends from "@/components/labs/TestTrends";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +42,7 @@ interface Patient {
   medical_history: string | null;
   city: string | null;
   major_diseases: string | null;
+  created_by?: string | null;
 }
 
 interface Document {
@@ -61,6 +64,7 @@ const PatientDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [labsKey, setLabsKey] = useState(0);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [medicalHistory, setMedicalHistory] = useState<MedicalHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -463,6 +467,7 @@ const PatientDetail = () => {
       <Tabs defaultValue="timeline" className="space-y-4">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="tests">Tests &amp; Trends</TabsTrigger>
           <TabsTrigger value="info">Patient Information</TabsTrigger>
           <TabsTrigger value="history">Medical History</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
@@ -470,6 +475,13 @@ const PatientDetail = () => {
 
         <TabsContent value="timeline">
           <PatientTimeline patientId={patient.id} base="/doctor" />
+        </TabsContent>
+
+        <TabsContent value="tests" className="space-y-4">
+          <TestTrends patientId={patient.id} refreshKey={labsKey} />
+          {patient.created_by && (
+            <LabOrdersCard patientId={patient.id} doctorId={patient.created_by} patientName={patient.full_name} onChange={() => setLabsKey((k) => k + 1)} />
+          )}
         </TabsContent>
 
         <TabsContent value="info">

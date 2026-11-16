@@ -984,16 +984,12 @@ const ClinicPatients = () => {
           Back to Dashboard
         </Button>
         <div className="flex gap-2 flex-wrap">
-          {selectedDoctor !== "all" && (
-            <PatientImportExport 
-              createdBy={selectedDoctor} 
-              onImportComplete={fetchPatients} 
-            />
-          )}
-          {selectedDoctor === "all" && doctors.length > 0 && (
-            <PatientImportExport 
-              createdBy={doctors[0].id} 
-              onImportComplete={fetchPatients} 
+          {doctors.length > 0 && (
+            <PatientImportExport
+              key={selectedDoctor}
+              createdBy={selectedDoctor !== "all" ? selectedDoctor : doctors[0].id}
+              doctors={doctors.map((d) => ({ id: d.id, name: d.profiles?.full_name || "Doctor" }))}
+              onImportComplete={fetchPatients}
             />
           )}
           <Button onClick={() => setIsAddDialogOpen(true)}>

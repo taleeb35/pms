@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { DEFAULT_CONSENT } from "@/lib/intake";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -41,6 +42,7 @@ const DoctorProfile = () => {
     pmdc_number: "",
     facebook_url: "",
     review_url: "",
+    intake_consent_text: "",
     instagram_url: "",
     youtube_url: "",
     tiktok_url: "",
@@ -110,6 +112,7 @@ const DoctorProfile = () => {
         pmdc_number: doctorData.pmdc_number || "",
         facebook_url: doctorData.facebook_url || "",
         review_url: (doctorData as any).review_url || "",
+        intake_consent_text: (doctorData as any).intake_consent_text || "",
         instagram_url: doctorData.instagram_url || "",
         youtube_url: doctorData.youtube_url || "",
         tiktok_url: doctorData.tiktok_url || "",
@@ -175,6 +178,7 @@ const DoctorProfile = () => {
           pmdc_number: profile.pmdc_number || null,
           facebook_url: profile.facebook_url?.trim() || null,
           review_url: profile.review_url?.trim() || null,
+          intake_consent_text: profile.intake_consent_text?.trim() || null,
           instagram_url: profile.instagram_url?.trim() || null,
           youtube_url: profile.youtube_url?.trim() || null,
           tiktok_url: profile.tiktok_url?.trim() || null,
@@ -602,6 +606,13 @@ const DoctorProfile = () => {
                 <Input id="review-url" type="url" value={profile.review_url} onChange={(e) => setProfile({ ...profile, review_url: e.target.value })}
                   placeholder="https://g.page/r/... (your Google review link)" className="border-primary/20 focus:border-primary" />
                 <p className="text-xs text-muted-foreground">After a visit, "Ask for a review" sends this link to the patient on WhatsApp.</p>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="intake-consent">Consent text on intake forms (optional)</Label>
+                <Textarea id="intake-consent" rows={3} value={profile.intake_consent_text} onChange={(e) => setProfile({ ...profile, intake_consent_text: e.target.value })}
+                  placeholder={DEFAULT_CONSENT} className="border-primary/20 focus:border-primary" />
+                <p className="text-xs text-muted-foreground">Patients read and sign this when they fill in the intake form before a visit. Leave empty to use the text shown.</p>
               </div>
 
               <div className="space-y-4 pt-2">

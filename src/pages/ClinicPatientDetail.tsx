@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import AIPatientInsights from "@/components/AIPatientInsights";
 import PatientTimeline from "@/components/patients/PatientTimeline";
+import LabOrdersCard from "@/components/labs/LabOrdersCard";
+import TestTrends from "@/components/labs/TestTrends";
 import { Sparkles, Printer } from "lucide-react";
 import { useActiveMembership } from "@/hooks/useActiveMembership";
 import { useClinicId } from "@/hooks/useClinicId";
@@ -44,6 +46,7 @@ const ClinicPatientDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [labsKey, setLabsKey] = useState(0);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { clinicId } = useClinicId();
@@ -314,6 +317,11 @@ const ClinicPatientDetail = () => {
             </Tabs>
           </CardContent>
         </Card>
+        <TestTrends patientId={patient.id} refreshKey={labsKey} />
+        {patient.created_by && (
+          <LabOrdersCard patientId={patient.id} doctorId={patient.created_by} patientName={patient.full_name}
+            canUseFiles={window.location.pathname.startsWith("/receptionist")} onChange={() => setLabsKey((k) => k + 1)} />
+        )}
         <PatientTimeline patientId={patient.id} base={window.location.pathname.startsWith("/receptionist") ? "/receptionist" : "/clinic"} showDocuments={false} />
       </div>
     </div>

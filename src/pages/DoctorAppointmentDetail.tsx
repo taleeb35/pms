@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import IssueCertificateDialog from "@/components/IssueCertificateDialog";
+import LabOrdersCard from "@/components/labs/LabOrdersCard";
+import IntakeFormCard from "@/components/intake/IntakeFormCard";
 import PrescriptionWriter from "@/components/prescription/PrescriptionWriter";
 import PostVisitDialog, { type PostVisitInfo } from "@/components/visit/PostVisitDialog";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
@@ -1592,6 +1594,9 @@ const DoctorAppointmentDetail = () => {
                 />
               </CardContent>
             </Card>
+
+            <IntakeFormCard appointmentId={appointment.id} doctorId={appointment.doctor_id} appointmentDate={appointment.appointment_date} appointmentTime={appointment.appointment_time} patient={appointment.patients} />
+            <LabOrdersCard patientId={appointment.patient_id} doctorId={appointment.doctor_id} appointmentId={appointment.id} patientName={appointment.patients.full_name} />
 
             {/* Next Visit */}
             <Card>

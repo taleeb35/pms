@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import LabOrdersCard from "@/components/labs/LabOrdersCard";
+import IntakeFormCard from "@/components/intake/IntakeFormCard";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { money, moneySymbol } from "@/lib/region";
 import { confirmUnusualFee } from "@/lib/feeCheck";
@@ -1298,6 +1300,10 @@ const ClinicAppointmentDetail = () => {
                 />
               </CardContent>
             </Card>
+
+            <IntakeFormCard appointmentId={appointment.id} doctorId={appointment.doctor_id} appointmentDate={appointment.appointment_date} appointmentTime={appointment.appointment_time} patient={appointment.patients} />
+            <LabOrdersCard patientId={appointment.patient_id} doctorId={appointment.doctor_id} appointmentId={appointment.id} patientName={appointment.patients.full_name}
+              canUseFiles={window.location.pathname.startsWith("/receptionist")} />
 
             {/* Next Visit */}
             <Card>

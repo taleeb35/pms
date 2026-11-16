@@ -4,6 +4,18 @@
 export type WhatsNewEntry = { id: string; date: string; title: string; body: string; link?: string; roles?: string[] };
 
 export const WHATS_NEW: WhatsNewEntry[] = [
+  { id: "2026-11-16-labs", date: "2026-11-16", title: "Lab and imaging orders",
+    body: "On a visit, add tests under Lab and imaging orders and print the order slip. Add results later (a number, findings or a file). The patient page's Tests & Trends tab charts repeat results, blood pressure and weight.",
+    roles: ["/doctor", "/clinic", "/receptionist"] },
+  { id: "2026-11-16-intake", date: "2026-11-16", title: "Intake forms with signed consent",
+    body: "On a visit, Create intake form gives a link to send on WhatsApp. The patient fills in their history and signs consent on their phone, and the answers appear on the visit. Doctors can set their own consent text in Profile.",
+    roles: ["/doctor", "/clinic", "/receptionist"] },
+  { id: "2026-11-16-import", date: "2026-11-16", title: "Import patients from any system",
+    body: "Patients → Import/Export accepts CSV or Excel files, including exports from other clinic software. Match the columns, check the result, then import.",
+    roles: ["/doctor", "/clinic", "/receptionist"], link: "patients" },
+  { id: "2026-11-16-calendar", date: "2026-11-16", title: "One calendar",
+    body: "Calendar now shows your appointments and leave days next to your private tasks. Use the chips to hide any of them.",
+    roles: ["/doctor"], link: "calendar" },
   { id: "2026-11-16-balance", date: "2026-11-16", title: "Part payments and balances",
     body: "In Appointments, click a fee and enter the amount paid. The list shows what is still due, and the patient page shows the total balance.",
     roles: ["/doctor", "/clinic"], link: "appointments" },
