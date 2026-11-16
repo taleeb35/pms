@@ -1039,6 +1039,7 @@ const DoctorAppointments = () => {
             appointments={appointments}
             onAppointmentClick={openVisitPage}
             doctorId={doctorId}
+            onRescheduled={fetchAppointments}
           />
         </TabsContent>
       </Tabs>

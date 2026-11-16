@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { Users as UsersIcon } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
+import { PatientCards } from "@/components/patients/PatientCards";
 import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { DuplicatePatientHint, AgeQuickPick } from "@/components/patients/PatientFormHelpers";
@@ -1170,6 +1173,8 @@ const ClinicPatients = () => {
           ) : (
             <>
               <div className="rounded-md border">
+                <PatientCards items={patients as any[]} loading={loading} onOpen={(p) => navigate(`${window.location.pathname.startsWith("/receptionist") ? "/receptionist" : "/clinic"}/patients/${p.id}`)} empty={<EmptyState icon={UsersIcon} title="No patients found" text="Add a patient, or change the search and filters." />} />
+                <div className="hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -1484,6 +1489,7 @@ const ClinicPatients = () => {
                     ))}
                   </TableBody>
                 </Table>
+                </div>
               </div>
 
               {/* Pagination */}

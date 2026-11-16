@@ -6,6 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { ChevronLeft, ChevronRight, GripVertical } from "lucide-react";
+import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
+import { logActivity } from "@/lib/activityLogger";
+import { useToast } from "@/hooks/use-toast";
+import { zonedNow } from "@/lib/region";
 
 interface Appointment {
   id: string;
@@ -13,6 +18,7 @@ interface Appointment {
   appointment_time: string;
   status: string;
   reason: string | null;
+  doctor_id?: string;
   patients: { full_name: string; phone: string; patient_id: string };
 }
 
@@ -32,14 +38,19 @@ interface ImprovedAppointmentCalendarProps {
   onAppointmentClick: (appointment: Appointment) => void;
   doctorId?: string; // For single doctor view (doctor dashboard)
   doctors?: DoctorInfo[]; // For multi-doctor view (clinic/receptionist dashboard)
+  onRescheduled?: () => void; // called after an appointment is dragged to another day
 }
 
 export const ImprovedAppointmentCalendar = ({ 
   appointments, 
   onAppointmentClick,
   doctorId,
-  doctors = []
+  doctors = [],
+  onRescheduled,
 }: ImprovedAppointmentCalendarProps) => {
+  const { toast } = useToast();
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dropDay, setDropDay] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [unavailableDates, setUnavailableDates] = useState<UnavailableDate[]>([]);
@@ -225,12 +236,50 @@ export const ImprovedAppointmentCalendar = ({
     u => u.date === format(selectedDate, "yyyy-MM-dd")
   );
 
+  // Drag a booked appointment from the list onto another day to move it (same time, same doctor).
+  const dayFromEvent = (e: React.DragEvent) => {
+    const btn = (e.target as HTMLElement).closest("button");
+    return btn?.querySelector("[data-day]")?.getAttribute("data-day") || null;
+  };
+  const moveTo = async (aptId: string, newDate: string) => {
+    const apt = appointments.find((a) => a.id === aptId);
+    if (!apt || apt.appointment_date === newDate) return;
+    if (newDate < zonedNow().ymd) { toast({ title: "Pick today or a later day", variant: "destructive" }); return; }
+    const off = unavailableDates.find((u) => u.date === newDate);
+    if (off && (doctorId || doctors.length === 1)) { toast({ title: "Doctor is not available that day", description: off.reason, variant: "destructive" }); return; }
+    const docId = apt.doctor_id || doctorId;
+    if (!docId) return;
+    const { available } = await isTimeSlotAvailable(docId, newDate, apt.appointment_time, apt.id);
+    if (!available) { toast({ title: "That time is already booked", description: `${friendlyTime(apt.appointment_time)} on ${friendlyDate(newDate)} is taken. Open the appointment to pick another time.`, variant: "destructive" }); return; }
+    const oldDate = apt.appointment_date;
+    const { error } = await supabase.from("appointments").update({ appointment_date: newDate }).eq("id", apt.id);
+    if (error) { toast({ title: "Could not move", description: error.message, variant: "destructive" }); return; }
+    logActivity({ action: "appointment_updated", entityType: "appointment", entityId: apt.id, details: { field: "appointment_date", patient_name: apt.patients.full_name, old_value: oldDate, new_value: newDate } });
+    const [y, m, d] = newDate.split("-").map(Number);
+    setSelectedDate(new Date(y, m - 1, d));
+    onRescheduled?.();
+    toast({ title: "Appointment moved", description: `${apt.patients.full_name}: ${friendlyDate(newDate)} at ${friendlyTime(apt.appointment_time)}` });
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardContent className="p-6">
           <h3 className="text-lg font-semibold mb-4">Select Date</h3>
+          <div
+            onDragOver={(e) => { if (!dragId) return; const d = dayFromEvent(e); if (d) { e.preventDefault(); setDropDay(d); } }}
+            onDragLeave={() => setDropDay(null)}
+            onDrop={(e) => { e.preventDefault(); const d = dayFromEvent(e); const id = e.dataTransfer.getData("text/appointment-id") || dragId; setDropDay(null); setDragId(null); if (d && id) moveTo(id, d); }}
+          >
           <Calendar
+            components={{
+              IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+              IconRight: () => <ChevronRight className="h-4 w-4" />,
+              DayContent: ({ date }) => {
+                const key = format(date, "yyyy-MM-dd");
+                return <span data-day={key} className={cn(dropDay === key && "rounded ring-2 ring-primary ring-offset-1")}>{date.getDate()}</span>;
+              },
+            }}
             mode="single"
             selected={selectedDate}
             onSelect={(date) => date && setSelectedDate(date)}
@@ -239,6 +288,8 @@ export const ImprovedAppointmentCalendar = ({
             modifiersClassNames={modifiersClassNames}
             className="rounded-md border"
           />
+          </div>
+          {dragId && <p className="mt-2 text-xs font-medium text-primary">Drop on a day to move the appointment.</p>}
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-4 flex-wrap text-sm">
               <div className="flex items-center gap-2">
@@ -263,6 +314,7 @@ export const ImprovedAppointmentCalendar = ({
           <h3 className="text-lg font-semibold mb-4">
             Appointments on {format(selectedDate, "MMMM do, yyyy")}
           </h3>
+          {selectedDateAppointments.some((a) => a.status === "scheduled") && <p className="-mt-3 mb-3 hidden text-xs text-muted-foreground lg:block">Tip: drag a booked appointment onto another day to move it.</p>}
           
           {selectedDateUnavailable && (
             <div className={cn(
@@ -286,12 +338,16 @@ export const ImprovedAppointmentCalendar = ({
                 .map((apt) => (
                   <div
                     key={apt.id}
-                    className="p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors"
+                    draggable={apt.status === "scheduled"}
+                    onDragStart={(e) => { e.dataTransfer.setData("text/appointment-id", apt.id); e.dataTransfer.effectAllowed = "move"; setDragId(apt.id); }}
+                    onDragEnd={() => { setDragId(null); setDropDay(null); }}
+                    className={cn("p-4 border rounded-lg hover:bg-accent/50 cursor-pointer transition-colors", apt.status === "scheduled" && "active:cursor-grabbing", dragId === apt.id && "opacity-50")}
                     onClick={() => onAppointmentClick(apt)}
+                    title={apt.status === "scheduled" ? "Drag onto a day in the calendar to move" : undefined}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h4 className="font-semibold">{apt.patients.full_name}</h4>
+                        <h4 className="font-semibold flex items-center gap-1">{apt.status === "scheduled" && <GripVertical className="h-4 w-4 text-muted-foreground hidden lg:inline" />}{apt.patients.full_name}</h4>
                         <p className="text-sm text-muted-foreground">ID: {apt.patients.patient_id}</p>
                       </div>
                       <Badge className={getStatusColor(apt.status)}>

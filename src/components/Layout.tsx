@@ -1,4 +1,5 @@
 import styles from "./Layout.module.css";
+import { History as HistoryIcon, User as UserIcon } from "lucide-react";
 import { NotificationBell, HelpLink, ThemeToggle } from "@/components/header/HeaderTools";
 import GlobalSearch from "@/components/GlobalSearch";
 import { ReactNode, useEffect, useState, useRef } from "react";
@@ -265,104 +266,73 @@ const Layout = ({ children }: LayoutProps) => {
     }
   }, [user, userRole]);
 
-  // Doctor menu - grouped (conditionally include receptionists for single doctors only)
-  const doctorSettingsItems = [
-    // Only show Receptionists for single doctors (not linked to a clinic)
-    ...(doctorClinicId ? [] : [{ path: "/doctor/receptionists", icon: UserCog, label: "Receptionists" }]),
-    { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
-    { path: "/doctor/finance", icon: Banknote, label: "Finance" },
-    // Only show Subscription for single doctors (not linked to a clinic)
-    ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
-    { path: "/doctor/profile", icon: UserCog, label: "Profile" },
-    { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
-    { path: "/doctor/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
-  ];
-
   const doctorMenuGroups: MenuGroup[] = [
     {
       label: "Patient Care",
       icon: Users,
       items: [
-        { path: "/doctor/patients", icon: Users, label: "Patients" },
-        { path: "/doctor/waitlist", icon: Clock, label: "Waitlist" },
         { path: "/doctor/appointments", icon: Calendar, label: "Appointments" },
-        { path: "/doctor/leads", icon: Target, label: "Leads" },
-        { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In" },
-      ],
-    },
-    {
-      label: "Clinical Data",
-      icon: Database,
-      items: [
-        { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
-        { path: "/doctor/medicines", icon: Pill, label: "Medicines" },
-        { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
-        { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
-        { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
-        { path: "/doctor/templates", icon: Layers, label: "Templates" },
-      ],
-    },
-    {
-      label: "Calendar",
-      icon: CalendarDays,
-      items: [
+        { path: "/doctor/patients", icon: Users, label: "Patients" },
         { path: "/doctor/calendar", icon: CalendarDays, label: "Calendar" },
+        { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In" },
+        { path: "/doctor/waitlist", icon: Clock, label: "Waitlist" },
+        { path: "/doctor/leads", icon: Target, label: "Leads" },
       ],
     },
     {
-      label: "My Reports",
+      label: "Money & Reports",
       icon: BarChart3,
       items: [
+        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
         { path: "/doctor/summary", icon: BarChart3, label: "Daily Summary" },
         { path: "/doctor/reports", icon: BarChart3, label: "My Reports" },
         { path: "/doctor/medicine-report", icon: Pill, label: "Medicine Report" },
       ],
     },
     {
-      label: "Settings",
+      label: "Practice Setup",
       icon: Settings,
-      items: doctorSettingsItems,
+      items: [
+        { path: "/doctor/profile", icon: UserCog, label: "Profile & Fees" },
+        { path: "/doctor/schedule", icon: Clock, label: "Timing & Schedule" },
+        ...(doctorClinicId ? [] : [{ path: "/doctor/receptionists", icon: UserCog, label: "Receptionists" }]),
+        { path: "/doctor/medicines", icon: Pill, label: "Medicines" },
+        { path: "/doctor/templates", icon: Layers, label: "Templates" },
+        { path: "/doctor/diseases", icon: HeartPulse, label: "Diseases" },
+        { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
+        { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
+        ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
+      ],
+    },
+    {
+      label: "Help",
+      icon: LifeBuoy,
+      items: [
+        { path: "/doctor/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
+        { path: "/doctor/support", icon: LifeBuoy, label: "Support" },
+      ],
     },
   ];
 
   // Clinic menu - grouped
   const clinicMenuGroups: MenuGroup[] = [
     {
-      label: "Staff",
-      icon: Stethoscope,
-      items: [
-        { path: "/clinic/doctors", icon: Stethoscope, label: "Doctors" },
-        { path: "/clinic/schedules", icon: Clock, label: "Schedules" },
-        { path: "/clinic/receptionists", icon: UserCog, label: "Receptionists" },
-      ],
-    },
-    {
       label: "Patient Care",
       icon: Users,
       items: [
-        { path: "/clinic/patients", icon: Users, label: "Patients" },
         { path: "/clinic/appointments", icon: Calendar, label: "Appointments" },
-        { path: "/clinic/leads", icon: Target, label: "Leads" },
+        { path: "/clinic/patients", icon: Users, label: "Patients" },
         { path: "/clinic/walk-in", icon: Sparkles, label: "Walk-In" },
+        { path: "/clinic/leads", icon: Target, label: "Leads" },
       ],
     },
     {
-      label: "Clinical Data",
-      icon: Database,
+      label: "Money & Reports",
+      icon: Banknote,
       items: [
-        { path: "/clinic/specializations", icon: Building2, label: "Specializations" },
-        { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
-        { path: "/clinic/medicines", icon: Pill, label: "Medicines" },
-        { path: "/clinic/diseases", icon: HeartPulse, label: "Diseases" },
-        { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
-        { path: "/clinic/procedures", icon: Settings, label: "Procedures" },
-        { path: "/clinic/templates", icon: Layers, label: "Templates" },
-      ],
-    },
-    {
-      label: "My Reports",
-      icon: BarChart3,
-      items: [
+        { path: "/clinic/finance", icon: Banknote, label: "Finance" },
+        { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
         { path: "/clinic/reports", icon: BarChart3, label: "My Reports" },
       ],
     },
@@ -388,15 +358,29 @@ const Layout = ({ children }: LayoutProps) => {
       ],
     },
     {
-      label: "Finance & Settings",
-      icon: Banknote,
+      label: "Clinic Setup",
+      icon: Settings,
       items: [
-        { path: "/clinic/finance", icon: Banknote, label: "Finance" },
-        { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
+        { path: "/clinic/profile", icon: UserCog, label: "Clinic Profile" },
+        { path: "/clinic/doctors", icon: Stethoscope, label: "Doctors" },
+        { path: "/clinic/schedules", icon: Clock, label: "Schedules" },
+        { path: "/clinic/receptionists", icon: UserCog, label: "Receptionists" },
+        { path: "/clinic/specializations", icon: Building2, label: "Specializations" },
+        { path: "/clinic/medicines", icon: Pill, label: "Medicines" },
+        { path: "/clinic/templates", icon: Layers, label: "Templates" },
+        { path: "/clinic/diseases", icon: HeartPulse, label: "Diseases" },
+        { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
+        { path: "/clinic/procedures", icon: Stethoscope, label: "Procedures" },
+        { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
         { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
-        { path: "/clinic/profile", icon: UserCog, label: "Profile" },
-        { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
+      ],
+    },
+    {
+      label: "Help",
+      icon: LifeBuoy,
+      items: [
         { path: "/clinic/knowledge-base", icon: BookOpen, label: "Knowledge Base" },
+        { path: "/clinic/support", icon: LifeBuoy, label: "Support" },
       ],
     },
   ];
@@ -507,7 +491,7 @@ const Layout = ({ children }: LayoutProps) => {
     },
   ];
 
-  const menuGroups =
+  const baseMenuGroups =
     userRole === "doctor"
       ? doctorMenuGroups
       : userRole === "clinic"
@@ -519,6 +503,15 @@ const Layout = ({ children }: LayoutProps) => {
             : userRole === "content_writer"
               ? contentWriterMenuGroups
               : adminMenuGroups;
+
+  // Patients opened recently on this device (same list as the search box), for one-click return.
+  const roleBase = userRole === "doctor" ? "/doctor" : userRole === "clinic" ? "/clinic" : userRole === "receptionist" ? "/receptionist" : userRole === "doctor_receptionist" ? "/doctor-receptionist" : null;
+  const recentPatients: { id: string; full_name: string; base: string }[] = (() => {
+    try { return JSON.parse(localStorage.getItem("zonoir.recentPatients") || "[]"); } catch { return []; }
+  })().filter((r: any) => r.base === roleBase).slice(0, 5);
+  const menuGroups: MenuGroup[] = recentPatients.length
+    ? [...baseMenuGroups, { label: "Recent Patients", icon: HistoryIcon, items: recentPatients.map((r) => ({ path: `${r.base}/patients/${r.id}`, icon: UserIcon, label: r.full_name })) }]
+    : baseMenuGroups;
 
   // Dashboard item (shown at top)
   const getDashboardItem = () => {

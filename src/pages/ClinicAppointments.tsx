@@ -951,6 +951,7 @@ const ClinicAppointments = () => {
             appointments={appointments} 
             onAppointmentClick={openVisitDialog}
             doctors={doctors.map(d => ({ id: d.id, name: d.profiles?.full_name || 'Unknown' }))}
+            onRescheduled={fetchAppointments}
           />
         </TabsContent>
       </Tabs>

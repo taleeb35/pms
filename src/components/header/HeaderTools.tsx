@@ -31,11 +31,45 @@ export const ThemeToggle = () => {
   );
 };
 
+// The guide that matches the page you are on (first matching path part wins).
+const PAGE_GUIDE: [string, string, string][] = [
+  ["/appointments/", "visit-records", "Help: writing a visit"],
+  ["/appointments", "book-appointments", "Help: booking appointments"],
+  ["/calendar", "appointment-calendar", "Help: the calendar"],
+  ["/walk-in", "walk-ins", "Help: walk-in patients"],
+  ["/patients/", "visit-timeline", "Help: the patient timeline"],
+  ["/patients", "add-patients", "Help: adding patients"],
+  ["/schedule", "doctor-schedule", "Help: your schedule"],
+  ["/schedules", "weekly-availability", "Help: doctor schedules"],
+  ["/templates", "prescription-templates", "Help: prescription templates"],
+  ["/medicines", "clinical-catalogs", "Help: medicine list"],
+  ["/diseases", "clinical-catalogs", "Help: clinical lists"],
+  ["/allergies", "clinical-catalogs", "Help: clinical lists"],
+  ["/procedures", "clinical-catalogs", "Help: clinical lists"],
+  ["/icd-codes", "clinical-catalogs", "Help: clinical lists"],
+  ["/finance", "payment-tracking", "Help: finance"],
+  ["/expenses", "expenses", "Help: expenses"],
+  ["/reports", "financial-reports", "Help: reports"],
+  ["/receptionists", "manage-receptionists", "Help: receptionists"],
+  ["/doctors", "add-doctors", "Help: adding doctors"],
+  ["/add-doctor", "add-doctors", "Help: adding doctors"],
+  ["/specializations", "specializations", "Help: specializations"],
+  ["/subscription", "subscription", "Help: subscription"],
+  ["/activity-logs", "activity-logs", "Help: activity logs"],
+  ["/profile", "clinic-profile", "Help: profile and settings"],
+  ["/dashboard", "dashboard-overview", "Help: the dashboard"],
+];
+
 export const HelpLink = () => {
   const base = useBase();
-  const to = base === "/clinic" || base === "/receptionist" ? "/clinic/knowledge-base" : base === "/doctor" || base === "/doctor-receptionist" ? "/doctor/knowledge-base" : "/knowledge-base";
+  const { pathname } = useLocation();
+  const kb = base === "/clinic" || base === "/receptionist" ? "/clinic/knowledge-base" : base === "/doctor" || base === "/doctor-receptionist" ? "/doctor/knowledge-base" : "/knowledge-base";
+  const rest = base && base !== "/admin" ? pathname.slice(base.length) : "";
+  const hit = rest && !rest.startsWith("/knowledge-base") ? PAGE_GUIDE.find(([p]) => (p.endsWith("/") ? rest.startsWith(p) : rest === p || rest.startsWith(p + "/"))) : undefined;
+  const to = hit ? `${kb}/${hit[1]}` : kb;
+  const label = hit ? hit[2] : "Help and guides";
   return (
-    <Button variant="ghost" size="icon" asChild aria-label="Help and guides" title="Help and guides">
+    <Button variant="ghost" size="icon" asChild aria-label={label} title={label}>
       <Link to={to}><HelpCircle className="h-5 w-5" /></Link>
     </Button>
   );

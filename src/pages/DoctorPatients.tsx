@@ -1,4 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
+import { Users as UsersIcon } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
+import { PatientCards } from "@/components/patients/PatientCards";
 import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { DuplicatePatientHint, AgeQuickPick } from "@/components/patients/PatientFormHelpers";
@@ -1358,6 +1361,8 @@ const DoctorPatients = () => {
         </CardHeader>
         <CardContent className="p-0">
           <div className="rounded-md border-x border-t">
+            <PatientCards items={filteredPatients as any[]} loading={patientsLoading} onOpen={(p) => navigate(`/doctor/patients/${p.id}`)} empty={<EmptyState icon={UsersIcon} title="No patients found" text="Add a patient, or change the search and filters." />} />
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -1890,6 +1895,7 @@ const DoctorPatients = () => {
                 )}
               </TableBody>
             </Table>
+            </div>
           </div>
           <div className="flex items-center justify-between px-4 py-4 border-t">
             <div className="flex items-center gap-2 flex-wrap">
