@@ -282,9 +282,9 @@ const KnowledgeBase = () => {
       
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-28">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
+        <div className="pointer-events-none absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+        <div className="pointer-events-none absolute bottom-10 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         
         <div className="container relative mx-auto px-4 text-center">
           <Badge variant="secondary" className="mb-4 px-4 py-1.5">
@@ -350,7 +350,7 @@ const KnowledgeBase = () => {
       </section>
 
       {/* Quick Links */}
-      <section className="container mx-auto px-4 -mt-6 mb-12">
+      <section className="container relative z-10 mx-auto px-4 -mt-6 mb-12">
         <div className="flex flex-wrap justify-center gap-3">
           {["Getting Started", "Appointments", "Billing", "Troubleshooting"].map((tag) => (
             <button key={tag} type="button" onClick={() => { setSearchQuery(tag === "Troubleshooting" ? "troubleshoot" : tag); window.scrollTo({ top: 0, behavior: "smooth" }); }}
