@@ -1,4 +1,5 @@
 import { MarketingRedirect, AppHomeGate } from "@/components/MarketingRedirect";
+import { ThemeProvider } from "next-themes";
 import { lazy, Suspense } from "react";
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
@@ -191,6 +192,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="zonoir-theme">
     <GeoLocationProvider>
       <RegionProvider>
       <TooltipProvider>
@@ -1081,6 +1083,7 @@ const App = () => (
     </TooltipProvider>
       </RegionProvider>
     </GeoLocationProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

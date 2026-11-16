@@ -24,6 +24,12 @@ const PAGES: { label: string; path: string; icon: typeof Search; roles: string[]
   { label: "Profile and settings", path: "/profile", icon: UserCircle, roles: ["/doctor", "/clinic"] },
 ];
 
+// Recently opened patients (this device), shown when the search box opens with nothing typed.
+const RECENT_KEY = "zonoir.recentPatients";
+type Recent = { id: string; full_name: string; base: string };
+const readRecent = (): Recent[] => { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch { return []; } };
+const pushRecent = (r: Recent) => { try { localStorage.setItem(RECENT_KEY, JSON.stringify([r, ...readRecent().filter((x) => x.id !== r.id)].slice(0, 6))); } catch { /* ignore */ } };
+
 export const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -33,6 +39,17 @@ export const GlobalSearch = () => {
   const { pathname } = useLocation();
   const base = useMemo(() => ROLE_BASES.find((b) => pathname === b || pathname.startsWith(b + "/")) || null, [pathname]);
   const seq = useRef(0);
+  const [recent, setRecent] = useState<Recent[]>(readRecent);
+
+  // Remember patients as they are opened.
+  useEffect(() => {
+    const m = pathname.match(new RegExp("^(/(?:doctor-receptionist|receptionist|doctor|clinic))/patients/([0-9a-f-]{36})$"));
+    if (!m) return;
+    const [, b, id] = m;
+    supabase.from("patients").select("full_name").eq("id", id).maybeSingle().then(({ data }) => {
+      if (data?.full_name) { pushRecent({ id, full_name: data.full_name, base: b }); setRecent(readRecent()); }
+    });
+  }, [pathname]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -84,6 +101,15 @@ export const GlobalSearch = () => {
                   <User className="mr-2 h-4 w-4" />
                   <span className="truncate">{h.full_name}</span>
                   <span className="ml-auto text-xs text-muted-foreground">{h.phone || h.patient_id}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {q.trim().length < 2 && recent.filter((r) => r.base === base).length > 0 && (
+            <CommandGroup heading="Recent patients">
+              {recent.filter((r) => r.base === base).map((r) => (
+                <CommandItem key={r.id} value={`recent ${r.full_name} ${r.id}`} onSelect={() => go(`${base}/patients/${r.id}`)}>
+                  <User className="mr-2 h-4 w-4" />{r.full_name}
                 </CommandItem>
               ))}
             </CommandGroup>
