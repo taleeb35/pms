@@ -57,7 +57,7 @@ export function InlineStatus({ apt, badge, onSaved }: { apt: Apt; badge: ReactNo
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button type="button" disabled={busy} aria-label="Change status" title="Change status"
-            className="inline-flex items-center gap-1 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60">
+            className="inline-flex items-center gap-1 whitespace-nowrap rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60">
             {badge}
             {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
           </button>
@@ -122,7 +122,7 @@ export function InlineFee({ apt, onSaved }: { apt: Apt; onSaved: (id: string, pa
       <Popover open={open} onOpenChange={openChange}>
         <PopoverTrigger asChild>
           <button type="button" aria-label="Edit fee" title="Edit fee"
-            className="group inline-flex items-center gap-1 rounded-md px-1 py-0.5 text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
+            className="group inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-0.5 text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
             {gross > 0 ? <span className="font-medium tabular-nums">{money(gross - refund)}</span> : <span className="text-muted-foreground">Add fee</span>}
             <Pencil className="h-3 w-3 text-muted-foreground opacity-60 group-hover:opacity-100" />
           </button>
