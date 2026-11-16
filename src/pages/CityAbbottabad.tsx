@@ -43,7 +43,7 @@ const CityAbbottabad = () => {
       "offers": {
         "@type": "Offer",
         "price": "0",
-        "priceCurrency": "PKR",
+        "priceCurrency": "USD",
         "availability": "https://schema.org/InStock"
       },
       "aggregateRating": {

@@ -4,7 +4,7 @@ import MobileScreen from "@/components/mobile/MobileScreen";
 import MobileSection from "@/components/mobile/MobileSection";
 import { useMobileRole } from "@/hooks/useMobileRole";
 import { supabase } from "@/integrations/supabase/client";
-import { PKR_DISCOUNTED_PRICE, PKR_YEARLY_RATE } from "@/lib/pricingConfig";
+import { PRICE_MONTHLY, PRICE_YEARLY, usd } from "@/lib/pricingConfig";
 import { differenceInDays, format, parseISO, addMonths, addYears } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -55,8 +55,8 @@ const MobileSubscription = () => {
   })();
 
   const docCount = role === "clinic" ? Math.max(1, data?.no_of_doctors ?? 1) : 1;
-  const monthlyTotal = PKR_DISCOUNTED_PRICE * docCount;
-  const yearlyTotal = PKR_YEARLY_RATE * docCount;
+  const monthlyTotal = PRICE_MONTHLY * docCount;
+  const yearlyTotal = PRICE_YEARLY * docCount;
   const isYearly = data?.payment_plan === "yearly";
 
   const nextRenewal = (() => {
@@ -94,7 +94,7 @@ const MobileSubscription = () => {
             </div>
             <div className="pt-3 border-t border-primary-foreground/20">
               <p className="text-3xl font-bold">
-                Rs {(isYearly ? yearlyTotal : monthlyTotal).toLocaleString("en-PK")}
+                {usd(isYearly ? yearlyTotal : monthlyTotal)}
               </p>
               <p className="text-xs opacity-80 mt-0.5">
                 per {isYearly ? "year" : "month"}

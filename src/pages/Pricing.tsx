@@ -33,7 +33,7 @@ const Pricing = () => {
       brand: { "@type": "Brand", name: "Zonoir" },
       offers: {
         "@type": "AggregateOffer",
-        priceCurrency: "PKR",
+        priceCurrency: "USD",
         lowPrice: "5999",
         highPrice: "59988",
         offerCount: "4",
@@ -70,7 +70,7 @@ const Pricing = () => {
     {
       question: "How does the pricing work?",
       answer:
-        "Our standard rate is PKR 23,999 per doctor per month, but with our 75% launch discount, you only pay PKR 5,999. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
+        "Our standard rate is $49 per practitioner per month, but with our limited-time price you only pay $35. Whether you're a single doctor or a clinic with multiple doctors, the rate stays the same.",
     },
     {
       question: "Is there a free trial?",
@@ -79,7 +79,7 @@ const Pricing = () => {
     {
       question: "What's the yearly discount?",
       answer:
-        "When you choose annual billing, you get an additional 17% off — that's PKR 4,979 per doctor per month instead of PKR 5,999.",
+        "When you choose annual billing, you get an additional 17% off — that's $29.05 per practitioner per month instead of $35.",
     },
     {
       question: "Can I switch between monthly and yearly?",

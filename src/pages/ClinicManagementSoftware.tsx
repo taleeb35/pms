@@ -425,9 +425,9 @@ const ClinicManagementSoftware = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
                 <p className="text-xs text-muted-foreground mt-4">
-                  Clinics in Pakistan are billed in rupees —{" "}
+                  One price worldwide: $35 per practitioner per month —{" "}
                   <Link to="/pricing" className="underline">
-                    see PKR pricing
+                    see pricing
                   </Link>
                   .
                 </p>

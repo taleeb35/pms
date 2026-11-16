@@ -17,6 +17,8 @@ interface DoctorSignupEmailRequest {
   monthlyFee?: number;
 }
 
+const usd = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }); // Zonoir price in USD
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -65,7 +67,7 @@ const handler = async (req: Request): Promise<Response> => {
         ? Number(feeData.value)
         : typeof monthlyFee === "number" && !isNaN(monthlyFee)
           ? monthlyFee
-          : 6000;
+          : 35;
     
     const adminEmail = adminEmailData?.value || "hello@zonoir.com";
 
@@ -145,7 +147,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                           <td style="padding: 8px 0; color: #78350f; font-size: 14px; width: 40%;">Monthly Fee:</td>
-                          <td style="padding: 8px 0; color: #78350f; font-size: 20px; font-weight: 700;">PKR ${resolvedMonthlyFee.toLocaleString('en-PK')}</td>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 20px; font-weight: 700;">${usd(resolvedMonthlyFee)}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78350f; font-size: 14px;">Billing Cycle:</td>
@@ -290,7 +292,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                           <td style="padding: 8px 0; color: #065f46; font-size: 14px;">Monthly Fee:</td>
-                          <td style="padding: 8px 0; color: #065f46; font-size: 22px; font-weight: 700;">PKR ${resolvedMonthlyFee.toLocaleString('en-PK')}</td>
+                          <td style="padding: 8px 0; color: #065f46; font-size: 22px; font-weight: 700;">${usd(resolvedMonthlyFee)}</td>
                         </tr>
                       </table>
                     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -184,7 +185,7 @@ const ClinicMonthlyPayments = ({
                 updated_at: new Date().toISOString()
               }).eq("id", partner.id);
               
-              toast.success(`Commission of PKR ${commission.toLocaleString()} added to referral partner`);
+              toast.success(`Commission of ${usd(commission)} added to referral partner`);
             }
           }
         }
@@ -313,10 +314,10 @@ const ClinicMonthlyPayments = ({
                   </TableCell>
                   <TableCell className="text-sm py-2">
                     {payment ? (
-                      `PKR ${payment.amount.toLocaleString()}`
+                      `${usd(payment.amount)}`
                     ) : (
                       <span className="text-muted-foreground">
-                        PKR {(Math.max(doctorLimit, 1) * monthlyFeePerDoctor).toLocaleString()}
+                        {usd((Math.max(doctorLimit, 1) * monthlyFeePerDoctor))}
                       </span>
                     )}
                   </TableCell>
@@ -367,7 +368,7 @@ const ClinicMonthlyPayments = ({
       </div>
       
       <p className="text-xs text-muted-foreground">
-        Rate: PKR {monthlyFeePerDoctor.toLocaleString()} × {Math.max(doctorLimit, 1)} doctor(s) = PKR{" "}
+        Rate: {usd(monthlyFeePerDoctor)} × {Math.max(doctorLimit, 1)} doctor(s) = 
         {(Math.max(doctorLimit, 1) * monthlyFeePerDoctor).toLocaleString()}/month
       </p>
     </div>

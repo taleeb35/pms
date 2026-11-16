@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -371,7 +372,7 @@ const AdminReferralPartners = () => {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-purple-700">Total Payouts</p>
-                <p className="text-3xl font-bold text-purple-700">PKR {stats.totalEarnings.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-purple-700">{usd(stats.totalEarnings)}</p>
               </div>
               <Coins className="h-8 w-8 text-purple-600" />
             </div>
@@ -452,7 +453,7 @@ const AdminReferralPartners = () => {
                           {partner.total_referrals}
                         </div>
                       </TableCell>
-                      <TableCell>PKR {partner.total_earnings.toLocaleString()}</TableCell>
+                      <TableCell>{usd(partner.total_earnings)}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {format(new Date(partner.created_at), "MMM d, yyyy")}
                       </TableCell>
@@ -552,7 +553,7 @@ const AdminReferralPartners = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Earnings</p>
-                  <p className="font-medium">PKR {selectedPartner.total_earnings.toLocaleString()}</p>
+                  <p className="font-medium">{usd(selectedPartner.total_earnings)}</p>
                 </div>
               </div>
 
@@ -613,7 +614,7 @@ const AdminReferralPartners = () => {
                                 : commission.doctor_name}
                             </TableCell>
                             <TableCell className="capitalize">{commission.entity_type}</TableCell>
-                            <TableCell className="font-medium">PKR {commission.amount.toLocaleString()}</TableCell>
+                            <TableCell className="font-medium">{usd(commission.amount)}</TableCell>
                             <TableCell>
                               {commission.status === "paid" ? (
                                 <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
@@ -651,8 +652,8 @@ const AdminReferralPartners = () => {
                       </TableBody>
                     </Table>
                     <div className="mt-2 pt-2 border-t text-sm text-muted-foreground flex justify-between">
-                      <span>Pending: PKR {partnerCommissions.filter(c => c.status === "pending").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
-                      <span>Paid: PKR {partnerCommissions.filter(c => c.status === "paid").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                      <span>Pending: {usd(partnerCommissions.filter(c => c.status === "pending").reduce((sum, c) => sum + c.amount, 0))}</span>
+                      <span>Paid: {usd(partnerCommissions.filter(c => c.status === "paid").reduce((sum, c) => sum + c.amount, 0))}</span>
                     </div>
                   </div>
                 )}

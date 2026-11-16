@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -228,7 +229,7 @@ const AdminSettings = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="doctor-fee">Monthly Fee Per Doctor (PKR)</Label>
+            <Label htmlFor="doctor-fee">Monthly Fee Per Practitioner (USD)</Label>
             <Input
               id="doctor-fee"
               type="number"
@@ -238,7 +239,7 @@ const AdminSettings = () => {
             />
             {doctorMonthlyFee && !isNaN(Number(doctorMonthlyFee)) && (
               <p className="text-sm text-muted-foreground">
-                Example: A clinic with 5 doctors will pay PKR {(Number(doctorMonthlyFee) * 5).toLocaleString()} per month
+                Example: A clinic with 5 doctors will pay {usd((Number(doctorMonthlyFee) * 5))} per month
               </p>
             )}
           </div>
@@ -260,17 +261,17 @@ const AdminSettings = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="single-doctor-fee">Monthly Fee Per Single Doctor (PKR)</Label>
+            <Label htmlFor="single-doctor-fee">Monthly Fee Per Solo Practitioner (USD)</Label>
             <Input
               id="single-doctor-fee"
               type="number"
-              placeholder="6000"
+              placeholder="35"
               value={singleDoctorMonthlyFee}
               onChange={(e) => setSingleDoctorMonthlyFee(e.target.value)}
             />
             {singleDoctorMonthlyFee && !isNaN(Number(singleDoctorMonthlyFee)) && (
               <p className="text-sm text-muted-foreground">
-                Single doctors will pay PKR {Number(singleDoctorMonthlyFee).toLocaleString()} per month
+                Single doctors will pay {usd(Number(singleDoctorMonthlyFee))} per month
               </p>
             )}
           </div>

@@ -240,7 +240,7 @@ Zonoir is Pakistan's leading EMR (Electronic Medical Record) and clinic manageme
 Zonoir is built for solo doctors, multi-doctor clinics, hospitals, receptionists, and healthcare administrators across Pakistan. It also helps patients discover and book verified doctors online.
 
 ### How much does Zonoir cost?
-Zonoir offers a 14-day free trial for clinics. Paid plans start at PKR 5,999 per doctor per year (launch pricing). Pricing is in Pakistani Rupees (PKR) — see ${BASE_URL}/pricing for current plans.
+Zonoir offers a 14-day free trial with no credit card. After the trial it costs $35 per practitioner per month (limited-time price, down from $49). Staff accounts are free and unlimited.
 
 ### Is there a free trial?
 Yes. Every new clinic gets a 14-day free trial with full access to all features. No credit card is required to start.

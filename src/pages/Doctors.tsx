@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -726,7 +727,7 @@ const Doctors = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Consultation Fee</p>
-                    <p className="text-sm">{selectedDoctor.consultation_fee ? `PKR ${selectedDoctor.consultation_fee.toLocaleString()}` : "N/A"}</p>
+                    <p className="text-sm">{selectedDoctor.consultation_fee ? money(selectedDoctor.consultation_fee) : "N/A"}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">License Number</p>
@@ -754,8 +755,8 @@ const Doctors = () => {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="monthly">Monthly (PKR 5,999)</SelectItem>
-                              <SelectItem value="yearly">Yearly (PKR 4,979 - 17% off)</SelectItem>
+                              <SelectItem value="monthly">Monthly ($35)</SelectItem>
+                              <SelectItem value="yearly">Yearly ($29.05/month - 17% off)</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

@@ -62,7 +62,7 @@ const Index = () => {
         offers: {
           "@type": "Offer",
           price: "0",
-          priceCurrency: "PKR",
+          priceCurrency: "USD",
           description: "Free trial available",
         },
       },

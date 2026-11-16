@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PRICE_ORIGINAL, PRICE_MONTHLY, PRICE_DISCOUNT_PERCENT, PRICE_YEARLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -73,10 +74,10 @@ const ClinicSubscription = () => {
 
   const trialStatus = clinic ? getTrialStatus() : null;
   const nextRenewal = getNextRenewalDate();
-  const originalRate = 23999;
-  const discountPercent = 75;
-  const monthlyRate = 5999;
-  const yearlyRate = Math.round(5999 * 12 * 0.83); // 17% discount
+  const originalRate = PRICE_ORIGINAL; // USD, see pricingConfig
+  const discountPercent = PRICE_DISCOUNT_PERCENT;
+  const monthlyRate = PRICE_MONTHLY;
+  const yearlyRate = PRICE_YEARLY; // 17% off the monthly price
 
   if (loading) {
     return (
@@ -121,8 +122,8 @@ const ClinicSubscription = () => {
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              <span className="line-through mr-1">PKR {originalRate.toLocaleString()}</span>
-              PKR {clinic.payment_plan === "yearly" ? yearlyRate.toLocaleString() : monthlyRate.toLocaleString()} per doctor / {clinic.payment_plan === "yearly" ? "year" : "month"}
+              <span className="line-through mr-1">{usd(originalRate)}</span>
+              {usd(clinic.payment_plan === "yearly" ? yearlyRate : monthlyRate)} per doctor / {clinic.payment_plan === "yearly" ? "year" : "month"}
               <span className="ml-1 text-red-500 font-semibold">{discountPercent}% OFF</span>
             </p>
           </CardContent>
@@ -251,15 +252,15 @@ const ClinicSubscription = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b">
               <span className="text-muted-foreground">Original rate per doctor</span>
-              <span className="font-medium line-through text-muted-foreground/60">PKR {originalRate.toLocaleString()} / month</span>
+              <span className="font-medium line-through text-muted-foreground/60">{usd(originalRate)} / month</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b text-red-600">
               <span>Launch discount ({discountPercent}% OFF)</span>
-              <span className="font-medium">- PKR {(originalRate - monthlyRate).toLocaleString()}</span>
+              <span className="font-medium">- {usd((originalRate - monthlyRate))}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
               <span className="text-muted-foreground">Discounted rate per doctor</span>
-              <span className="font-medium">PKR 5,999 / month</span>
+              <span className="font-medium">{usd(monthlyRate)} / month</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b">
               <span className="text-muted-foreground">Doctor limit</span>
@@ -269,16 +270,16 @@ const ClinicSubscription = () => {
               <div className="flex justify-between items-center py-2 border-b text-success">
                 <span>Yearly discount (17%)</span>
                 <span className="font-medium">
-                  - PKR {Math.round(5999 * 12 * clinic.requested_doctors * 0.17).toLocaleString()}
+                  - {usd(Math.round(PRICE_MONTHLY * 12 * clinic.requested_doctors * 0.17 * 100) / 100)}
                 </span>
               </div>
             )}
             <div className="flex justify-between items-center py-2 text-lg font-bold">
               <span>Total {clinic.payment_plan === "yearly" ? "Yearly" : "Monthly"}</span>
               <span>
-                PKR {clinic.payment_plan === "yearly" 
-                  ? (yearlyRate * clinic.requested_doctors).toLocaleString()
-                  : (monthlyRate * clinic.requested_doctors).toLocaleString()}
+                {usd(clinic.payment_plan === "yearly" 
+                  ? (yearlyRate * clinic.requested_doctors)
+                  : (monthlyRate * clinic.requested_doctors))}
               </span>
             </div>
           </div>

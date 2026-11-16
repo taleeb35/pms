@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -156,9 +157,9 @@ const AdminFinance = () => {
       
       const allPayments: ClinicPayment[] = [];
       
-      // Fixed pricing: 5999 monthly, 4979 yearly (17% discount)
-      const MONTHLY_FEE = 5999;
-      const YEARLY_FEE = 4979;
+      // Zonoir pricing in USD (pricingConfig): $35 monthly, yearly 17% off
+      const MONTHLY_FEE = PRICE_MONTHLY;
+      const YEARLY_FEE = PRICE_YEARLY_MONTHLY;
       
       for (const clinic of eligibleClinics) {
         // Use requested_doctors for billing, not actual doctor count
@@ -255,9 +256,9 @@ const AdminFinance = () => {
       
       const allPayments: DoctorPayment[] = [];
       
-      // Fixed pricing: 5999 monthly, 4979 yearly (17% discount)
-      const MONTHLY_FEE = 5999;
-      const YEARLY_FEE = 4979;
+      // Zonoir pricing in USD (pricingConfig): $35 monthly, yearly 17% off
+      const MONTHLY_FEE = PRICE_MONTHLY;
+      const YEARLY_FEE = PRICE_YEARLY_MONTHLY;
       
       for (const doctor of eligibleDoctors) {
         const existingPayment = paymentsMap.get(doctor.id);
@@ -445,7 +446,7 @@ const AdminFinance = () => {
             <Banknote className="h-5 w-5 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-primary">{displayEstimated.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-primary">{usd(displayEstimated)}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -456,7 +457,7 @@ const AdminFinance = () => {
             <CheckCircle2 className="h-5 w-5 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-success">{displayPaid.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-success">{usd(displayPaid)}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -467,7 +468,7 @@ const AdminFinance = () => {
             <Clock className="h-5 w-5 text-amber-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-amber-600">{displayPending.toLocaleString()}</div>
+            <div className="text-3xl font-bold text-amber-600">{usd(displayPending)}</div>
             <p className="text-xs text-muted-foreground">For {format(new Date(selectedMonth), "MMM yyyy")}</p>
           </CardContent>
         </Card>
@@ -600,7 +601,7 @@ const AdminFinance = () => {
                               )}
                             </TableCell>
                             <TableCell className="text-right font-semibold">
-                              {payment.amount.toLocaleString()}
+                              {usd(payment.amount)}
                             </TableCell>
                             <TableCell className="text-center">
                               {payment.status === "paid" ? (
@@ -701,7 +702,7 @@ const AdminFinance = () => {
                                 <Badge variant="outline">Monthly</Badge>
                               )}
                             </TableCell>
-                            <TableCell className="text-right font-semibold">{payment.amount.toLocaleString()}</TableCell>
+                            <TableCell className="text-right font-semibold">{usd(payment.amount)}</TableCell>
                             <TableCell className="text-center">
                               {payment.status === "paid" ? (
                                 <Badge className="bg-success/10 text-success border-success/20 gap-1">

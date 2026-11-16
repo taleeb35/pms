@@ -17,6 +17,8 @@ interface WelcomeEmailRequest {
   requestedDoctors: number;
 }
 
+const usd = (n: number) => "$" + n.toLocaleString("en-US", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 }); // Zonoir price in USD
+
 const handler = async (req: Request): Promise<Response> => {
   console.log("=== send-clinic-welcome-email function invoked ===");
   console.log("Request method:", req.method);
@@ -88,7 +90,7 @@ const handler = async (req: Request): Promise<Response> => {
     const feeData = settingsData?.find(s => s.key === "doctor_monthly_fee");
     const adminEmailData = settingsData?.find(s => s.key === "support_email") || settingsData?.find(s => s.key === "admin_email");
 
-    const feePerDoctor = feeData ? parseInt(feeData.value) : 6000;
+    const feePerDoctor = feeData ? Number(feeData.value) || 35 : 35;
     const numberOfDoctors = requestedDoctors || 1;
     const totalMonthlyFee = feePerDoctor * numberOfDoctors;
     const adminEmail = adminEmailData?.value || "hello@zonoir.com";
@@ -178,7 +180,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                           <td style="padding: 8px 0; color: #78350f; font-size: 14px; width: 50%;">Fee per Doctor (Monthly):</td>
-                          <td style="padding: 8px 0; color: #78350f; font-size: 16px; font-weight: 600;">PKR ${feePerDoctor.toLocaleString('en-PK')}</td>
+                          <td style="padding: 8px 0; color: #78350f; font-size: 16px; font-weight: 600;">${usd(feePerDoctor)}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #78350f; font-size: 14px;">Number of Doctors:</td>
@@ -186,7 +188,7 @@ const handler = async (req: Request): Promise<Response> => {
                         </tr>
                         <tr style="border-top: 2px solid #f59e0b;">
                           <td style="padding: 12px 0 8px; color: #78350f; font-size: 16px; font-weight: 700;">Total Monthly Fee:</td>
-                          <td style="padding: 12px 0 8px; color: #78350f; font-size: 22px; font-weight: 700;">PKR ${totalMonthlyFee.toLocaleString('en-PK')}</td>
+                          <td style="padding: 12px 0 8px; color: #78350f; font-size: 22px; font-weight: 700;">${usd(totalMonthlyFee)}</td>
                         </tr>
                       </table>
                       <p style="margin: 15px 0 0; color: #92400e; font-size: 13px; line-height: 1.5;">
@@ -354,7 +356,7 @@ const handler = async (req: Request): Promise<Response> => {
                       <table style="width: 100%; border-collapse: collapse;">
                         <tr>
                           <td style="padding: 8px 0; color: #065f46; font-size: 14px;">Fee per Doctor:</td>
-                          <td style="padding: 8px 0; color: #065f46; font-size: 16px; font-weight: 600;">PKR ${feePerDoctor.toLocaleString('en-PK')}</td>
+                          <td style="padding: 8px 0; color: #065f46; font-size: 16px; font-weight: 600;">${usd(feePerDoctor)}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #065f46; font-size: 14px;">Number of Doctors:</td>
@@ -362,7 +364,7 @@ const handler = async (req: Request): Promise<Response> => {
                         </tr>
                         <tr style="border-top: 2px solid #10b981;">
                           <td style="padding: 12px 0 8px; color: #065f46; font-size: 16px; font-weight: 700;">Total Monthly:</td>
-                          <td style="padding: 12px 0 8px; color: #065f46; font-size: 22px; font-weight: 700;">PKR ${totalMonthlyFee.toLocaleString('en-PK')}</td>
+                          <td style="padding: 12px 0 8px; color: #065f46; font-size: 22px; font-weight: 700;">${usd(totalMonthlyFee)}</td>
                         </tr>
                       </table>
                     </div>

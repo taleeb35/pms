@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { money } from "@/lib/region";
 import { withDrTitle } from "@/lib/doctorName";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -353,7 +354,7 @@ const AdminAnalyticsCharts = () => {
         },
         ticks: {
           callback: function(value: any) {
-            return 'PKR ' + value.toLocaleString();
+            return money(value);
           }
         }
       },
@@ -390,7 +391,7 @@ const AdminAnalyticsCharts = () => {
         },
         ticks: {
           callback: function(value: any) {
-            return 'PKR ' + value.toLocaleString();
+            return money(value);
           }
         }
       },
@@ -423,7 +424,7 @@ const AdminAnalyticsCharts = () => {
             const value = context.parsed;
             const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
             const percentage = ((value / total) * 100).toFixed(1);
-            return `PKR ${value.toLocaleString()} (${percentage}%)`;
+            return `${money(value)} (${percentage}%)`;
           }
         }
       }
@@ -447,7 +448,7 @@ const AdminAnalyticsCharts = () => {
         },
         ticks: {
           callback: function(value: any) {
-            return 'PKR ' + value.toLocaleString();
+            return money(value);
           }
         }
       },
@@ -563,28 +564,28 @@ const AdminAnalyticsCharts = () => {
                 <Banknote className="h-5 w-5 text-primary" />
                 <span className="text-sm text-muted-foreground">Total Revenue</span>
               </div>
-              <p className="text-2xl font-bold text-primary">PKR {totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-primary">{money(totalRevenue)}</p>
             </div>
             <div className="p-4 rounded-xl bg-gradient-to-br from-success/5 to-success/10 border border-success/20">
               <div className="flex items-center gap-2 mb-2">
                 <Building2 className="h-5 w-5 text-success" />
                 <span className="text-sm text-muted-foreground">From Clinics</span>
               </div>
-              <p className="text-2xl font-bold text-success">PKR {totalClinicRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-success">{money(totalClinicRevenue)}</p>
             </div>
             <div className="p-4 rounded-xl bg-gradient-to-br from-indigo-500/5 to-indigo-500/10 border border-indigo-500/20">
               <div className="flex items-center gap-2 mb-2">
                 <Stethoscope className="h-5 w-5 text-indigo-500" />
                 <span className="text-sm text-muted-foreground">From Single Drs</span>
               </div>
-              <p className="text-2xl font-bold text-indigo-500">PKR {totalDoctorRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-indigo-500">{money(totalDoctorRevenue)}</p>
             </div>
             <div className="p-4 rounded-xl bg-gradient-to-br from-amber-500/5 to-amber-500/10 border border-amber-500/20">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="h-5 w-5 text-amber-500" />
                 <span className="text-sm text-muted-foreground">Avg/Month</span>
               </div>
-              <p className="text-2xl font-bold text-amber-500">PKR {avgRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-amber-500">{money(avgRevenue)}</p>
             </div>
           </div>
 

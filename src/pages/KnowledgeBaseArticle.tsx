@@ -3297,7 +3297,7 @@ const AIDoctorFinderArticle = () => {
                   { icon: MapPin, label: "Browse by city", desc: "Pick from popular Pakistani cities (Lahore, Karachi, Islamabad, Rawalpindi, Faisalabad, Multan, Peshawar, and more), then narrow by specialty." },
                   { icon: Stethoscope, label: "Browse by specialty", desc: "Choose from 12+ popular specialties — General Physician, Dermatologist, Gynecologist, Cardiologist, Pediatrician, Dentist, and more." },
                   { icon: Search, label: "Search by doctor name", desc: "Type any part of a doctor's name and the bot pulls matching profiles from across all cities." },
-                  { icon: DollarSign, label: "Search by budget", desc: "Filter doctors by maximum consultation fee, and optionally by gender (e.g. female gynecologist under PKR 1,500 in Lahore)." },
+                  { icon: DollarSign, label: "Search by budget", desc: "Filter doctors by maximum consultation fee, and optionally by gender (e.g. female gynecologist under Rs. 1,500 in Lahore)." },
                 ].map((item, idx) => (
                   <Card key={idx} className="border-border/50">
                     <CardContent className="pt-4 pb-4">
@@ -3391,7 +3391,7 @@ const AIDoctorFinderArticle = () => {
                   { icon: User, label: "Photo, name, specialization" },
                   { icon: Briefcase, label: "Qualification & years of experience" },
                   { icon: Building2, label: "Clinic name and location" },
-                  { icon: DollarSign, label: "Consultation fee (in PKR)" },
+                  { icon: DollarSign, label: "Consultation fee (in your clinic's currency)" },
                   { icon: Clock, label: "Today's timing if available" },
                   { icon: Star, label: "Patient rating & verified badge" },
                 ].map((item, idx) => (
@@ -7703,7 +7703,7 @@ const SubscriptionArticle = () => {
                 {[
                   "How the 14-day free trial works",
                   "Difference between Monthly and Yearly plans",
-                  "Reading the launch discount (75% OFF)",
+                  "Reading the limited-time price",
                   "Where to see your next renewal date",
                   "Payment status: Paid, Unpaid, Action Required",
                   "What happens if a payment fails",
@@ -7732,7 +7732,7 @@ const SubscriptionArticle = () => {
               <div className="grid sm:grid-cols-3 gap-4 mt-6">
                 {[
                   { icon: Gift, title: "14-day free trial", desc: "Full access — no card required to start" },
-                  { icon: Sparkles, title: "75% launch discount", desc: "PKR 23,999 → PKR 5,999 / month" },
+                  { icon: Sparkles, title: "limited-time price", desc: "$49 → $35 / month" },
                   { icon: TrendingDown, title: "17% off yearly", desc: "Save two months when you pay annually" },
                 ].map((b, i) => (
                   <Card key={i} className="border-border/50">
@@ -7803,8 +7803,8 @@ const SubscriptionArticle = () => {
                       <Calendar className="w-5 h-5 text-primary" />
                       <h4 className="font-semibold m-0">Monthly</h4>
                     </div>
-                    <p className="text-2xl font-bold m-0">PKR 5,999<span className="text-sm font-normal text-muted-foreground"> / month</span></p>
-                    <p className="text-xs text-muted-foreground mt-1 line-through">PKR 23,999 / month</p>
+                    <p className="text-2xl font-bold m-0">$35<span className="text-sm font-normal text-muted-foreground"> / month</span></p>
+                    <p className="text-xs text-muted-foreground mt-1 line-through">$49 / month</p>
                     <p className="text-sm text-muted-foreground mt-3 m-0">Billed every 30 days. Cancel anytime — you keep access until the end of the paid period.</p>
                   </CardContent>
                 </Card>
@@ -7815,8 +7815,8 @@ const SubscriptionArticle = () => {
                       <h4 className="font-semibold m-0">Yearly</h4>
                       <Badge className="ml-auto">Save 17%</Badge>
                     </div>
-                    <p className="text-2xl font-bold m-0">PKR 59,710<span className="text-sm font-normal text-muted-foreground"> / year</span></p>
-                    <p className="text-xs text-muted-foreground mt-1">≈ PKR 4,976 / month — two months free</p>
+                    <p className="text-2xl font-bold m-0">$348.60<span className="text-sm font-normal text-muted-foreground"> / year</span></p>
+                    <p className="text-xs text-muted-foreground mt-1">≈ $29.05 / month — two months free</p>
                     <p className="text-sm text-muted-foreground mt-3 m-0">Billed once a year. Best for established clinics with predictable budgets.</p>
                   </CardContent>
                 </Card>
@@ -7837,14 +7837,14 @@ const SubscriptionArticle = () => {
                   3
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold m-0">The 75% launch discount</h2>
+                  <h2 className="text-2xl font-bold m-0">The limited-time price</h2>
                   <p className="text-muted-foreground m-0">Locked in for as long as you stay subscribed</p>
                 </div>
               </div>
               <p>
-                Our standard rate is <strong>PKR 23,999 / month</strong>. As part of our launch in
-                Pakistan, every clinic and doctor that signs up today gets a <strong>75% discount</strong>,
-                bringing the price down to <strong>PKR 5,999 / month</strong>. This rate is locked
+                Our standard rate is <strong>$49 / month</strong>. As part of our launch in
+                Pakistan, every clinic and doctor that signs up today gets a <strong>limited-time price of $35</strong> (down from $49),
+                bringing the price down to <strong>$35 / month</strong>. This rate is locked
                 to your account — as long as you don't cancel and re-subscribe later, you keep
                 paying the discounted price even after the launch period ends.
               </p>
@@ -7853,7 +7853,7 @@ const SubscriptionArticle = () => {
                   <div className="flex items-start gap-3">
                     <Lightbulb className="w-5 h-5 text-cyan-600 shrink-0 mt-0.5" />
                     <p className="text-sm m-0">
-                      The Subscription page shows the original price <span className="line-through">PKR 23,999</span> next
+                      The Subscription page shows the original price <span className="line-through">$49</span> next
                       to the discounted rate so you can always see the value you're getting.
                     </p>
                   </div>
@@ -7876,7 +7876,7 @@ const SubscriptionArticle = () => {
               </div>
               <div className="space-y-3">
                 {[
-                  { icon: CreditCard, title: "Current Plan", desc: "Shows Monthly or Yearly, the discounted price, and the original PKR 23,999 rate struck through." },
+                  { icon: CreditCard, title: "Current Plan", desc: "Shows Monthly or Yearly, the discounted price, and the original $49 rate struck through." },
                   { icon: Calendar, title: "Billing Cycle", desc: "Confirms whether you're billed monthly or annually, and the savings on yearly." },
                   { icon: Clock, title: "Trial Status", desc: "Days remaining in your free trial, or 'Expired' once it ends." },
                   { icon: Wallet, title: "Payment Status", desc: "Paid (green) means you're good. Unpaid means action is required to keep access." },
@@ -7917,23 +7917,23 @@ const SubscriptionArticle = () => {
               <div className="not-prose mt-4 rounded-lg border bg-card">
                 <div className="px-5 py-3 flex justify-between text-sm border-b">
                   <span className="text-muted-foreground">Original rate</span>
-                  <span className="line-through text-muted-foreground">PKR 23,999 / month</span>
+                  <span className="line-through text-muted-foreground">$49 / month</span>
                 </div>
                 <div className="px-5 py-3 flex justify-between text-sm border-b text-red-600">
-                  <span>Launch discount (75% OFF)</span>
-                  <span>− PKR 18,000</span>
+                  <span>Limited-time price ($49 → $35)</span>
+                  <span>− $14 / month</span>
                 </div>
                 <div className="px-5 py-3 flex justify-between text-sm border-b">
                   <span className="text-muted-foreground">Discounted rate</span>
-                  <span>PKR 5,999 / month</span>
+                  <span>$35 / month</span>
                 </div>
                 <div className="px-5 py-3 flex justify-between text-sm border-b text-green-600">
                   <span>Yearly discount (17%) — yearly plan only</span>
-                  <span>− PKR 12,238</span>
+                  <span>− $71.40 / year</span>
                 </div>
                 <div className="px-5 py-4 flex justify-between font-bold">
                   <span>Total (Yearly)</span>
-                  <span>PKR 59,710</span>
+                  <span>$348.60</span>
                 </div>
               </div>
             </div>
@@ -8061,9 +8061,9 @@ const SubscriptionArticle = () => {
                   <div>
                     <h4 className="font-semibold mb-2">Pricing & currency</h4>
                     <p className="text-sm text-muted-foreground m-0">
-                      All prices are in <strong>Pakistani Rupees (PKR)</strong>. We do not bill in
-                      USD or any other currency. The launch discount is time-limited — once it
-                      ends, new sign-ups will pay the standard PKR 23,999 / month rate.
+                      All Zonoir prices are in <strong>US dollars (USD)</strong>. The $35 price is a
+                      limited-time price — once it
+                      ends, new sign-ups will pay the standard $49 / month rate.
                     </p>
                   </div>
                 </div>
@@ -8445,7 +8445,7 @@ const PaymentTrackingArticle = () => {
                       </li>
                       <li className="flex items-start gap-2">
                         <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
-                        <span>All amounts are in <strong>PKR</strong>. Don't enter dollars or any other currency.</span>
+                        <span>All amounts are in <strong>your clinic's currency</strong> (set under Profile → Country, currency and timezone).</span>
                       </li>
                     </ul>
                   </div>
@@ -8650,7 +8650,7 @@ const ManagingExpensesArticle = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Wallet className="w-4 h-4 text-primary mt-1 shrink-0" />
-                  <span><strong>Amount (PKR)</strong> — whole or decimal rupees. No currency symbols.</span>
+                  <span><strong>Amount</strong> — a whole or decimal number in your clinic's currency. No currency symbols.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <FileText className="w-4 h-4 text-primary mt-1 shrink-0" />
@@ -8836,7 +8836,7 @@ const ManagingExpensesArticle = () => {
                       </li>
                       <li className="flex items-start gap-2">
                         <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
-                        <span>All amounts are in <strong>PKR</strong>. Don't enter dollars or any other currency.</span>
+                        <span>All amounts are in <strong>your clinic's currency</strong> (set under Profile → Country, currency and timezone).</span>
                       </li>
                     </ul>
                   </div>
@@ -10195,7 +10195,7 @@ const FreeTrialArticle = () => {
                       <h4 className="font-semibold m-0">Monthly Plan</h4>
                     </div>
                     <p className="text-sm text-muted-foreground m-0">
-                      PKR <strong>5,999</strong> per doctor per month. Billed monthly on your
+                      $<strong>35</strong> per doctor per month. Billed monthly on your
                       clinic's billing date. Best for trying Zonoir with no long-term commitment.
                     </p>
                   </CardContent>
@@ -10207,7 +10207,7 @@ const FreeTrialArticle = () => {
                       <h4 className="font-semibold m-0">Yearly Plan</h4>
                     </div>
                     <p className="text-sm text-muted-foreground m-0">
-                      PKR <strong>59,700</strong> per doctor per year (a total of 12 months with an
+                      $<strong>348.60</strong> per doctor per year ($29.05/month) (a total of 12 months with an
                       extra 17% discount applied). Billed once annually. Best value for established
                       clinics.
                     </p>
@@ -11039,7 +11039,7 @@ const DoctorLimitsArticle = () => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-muted-foreground">Discounted rate per doctor</span>
-                      <span className="font-medium">PKR 5,999 / month</span>
+                      <span className="font-medium">$35 / month</span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b">
                       <span className="text-muted-foreground">Yearly plan discount</span>
@@ -11060,7 +11060,7 @@ const DoctorLimitsArticle = () => {
               <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
                 <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <p className="text-sm m-0">
-                  <strong>Example:</strong> If you are on a monthly plan with 3 doctors, your bill is PKR 17,997/month. Adding 2 more doctors raises it to PKR 29,995/month. On a yearly plan, those same 5 doctors cost roughly PKR 29,800/year per doctor after the 17% discount.
+                  <strong>Example:</strong> If you are on a monthly plan with 3 doctors, your bill is $105/month. Adding 2 more doctors raises it to $175/month. On a yearly plan, each doctor costs $348.60/year ($29.05/month) after the 17% discount.
                 </p>
               </div>
             </div>
@@ -12022,7 +12022,7 @@ const ClinicalCatalogsArticle = () => {
               </div>
 
               <p className="mb-6">
-                The Procedures catalog is where you define every billable service — from consultations and ECGs to injections and wound dressing. Each procedure carries a price in PKR. When you select a procedure during a patient visit, the fee auto-populates, eliminating manual calculation errors.
+                The Procedures catalog is where you define every billable service — from consultations and ECGs to injections and wound dressing. Each procedure carries a price in your clinic's currency. When you select a procedure during a patient visit, the fee auto-populates, eliminating manual calculation errors.
               </p>
 
               <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -12220,7 +12220,7 @@ const ClinicalCatalogsArticle = () => {
                     <h4 className="font-semibold mb-2">Important Notes</h4>
                     <ul className="text-sm text-muted-foreground space-y-1 list-none pl-0">
                       <li>• Deleting a catalog entry does not remove it from historical patient records — it only prevents future selection</li>
-                      <li>• Procedure prices are stored in PKR (Rs). Always use local currency — never USD</li>
+                      <li>• Procedure prices use your clinic's currency (set under Profile)</li>
                       <li>• Clinic owners can view and manage all doctor-level catalogs from the admin panel</li>
                       <li>• ICD codes follow the WHO standard. Using outdated or incorrect codes may cause claim rejections</li>
                     </ul>
@@ -18555,8 +18555,8 @@ const MonthlyVsYearlyArticle = () => {
               </div>
 
               <p className="mb-6">
-                Zonoir's standard rate is <strong>Rs. 23,999 per doctor per month</strong>. With our 75% launch discount,
-                every doctor — whether on monthly or yearly billing — pays only <strong>Rs. 5,999 per month</strong> as the base price.
+                Zonoir's standard rate is <strong>$49 per doctor per month</strong>. With our limited-time price,
+                every doctor — whether on monthly or yearly billing — pays only <strong>$35 per month</strong> as the base price.
               </p>
 
               <Card className="mb-6 border-border/50">
@@ -18564,12 +18564,12 @@ const MonthlyVsYearlyArticle = () => {
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
                       <p className="text-sm text-muted-foreground mb-1">Standard Rate</p>
-                      <p className="text-2xl font-bold text-muted-foreground line-through">Rs. 23,999</p>
+                      <p className="text-2xl font-bold text-muted-foreground line-through">$49</p>
                       <p className="text-xs text-muted-foreground">per doctor / month</p>
                     </div>
                     <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/20">
                       <p className="text-sm text-primary mb-1">Launch Discounted Rate</p>
-                      <p className="text-2xl font-bold text-primary">Rs. 5,999</p>
+                      <p className="text-2xl font-bold text-primary">$35</p>
                       <p className="text-xs text-muted-foreground">per doctor / month</p>
                     </div>
                   </div>
@@ -18579,8 +18579,8 @@ const MonthlyVsYearlyArticle = () => {
               <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
                 <Lightbulb className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <p className="text-sm m-0">
-                  <strong>Pro Tip:</strong> The 75% launch discount is applied before any yearly savings. This means
-                  the yearly discount is calculated on the already-discounted Rs. 5,999 rate — not the original Rs. 23,999.
+                  <strong>Pro Tip:</strong> The limited-time price is applied before any yearly savings. This means
+                  the yearly discount is calculated on the already-discounted $35 rate — not the original $49.
                 </p>
               </div>
             </div>
@@ -18601,7 +18601,7 @@ const MonthlyVsYearlyArticle = () => {
 
               <p className="mb-6">
                 When you choose yearly billing, you receive an <strong>extra 17% discount</strong> on top of the launch price.
-                This brings the effective monthly cost down from Rs. 5,999 to approximately <strong>Rs. 4,979 per doctor per month</strong>.
+                This brings the effective monthly cost down from $35 to approximately <strong>$29.05 per doctor per month</strong>.
               </p>
 
               <Card className="mb-6 border-primary/20">
@@ -18613,7 +18613,7 @@ const MonthlyVsYearlyArticle = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Monthly rate after launch discount</span>
-                      <span>Rs. 5,999</span>
+                      <span>$35</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Yearly discount (17%)</span>
@@ -18622,7 +18622,7 @@ const MonthlyVsYearlyArticle = () => {
                     <Separator />
                     <div className="flex justify-between font-semibold">
                       <span>Effective monthly rate (yearly)</span>
-                      <span className="text-primary">Rs. 4,979</span>
+                      <span className="text-primary">$29.05</span>
                     </div>
                     <div className="flex justify-between font-semibold">
                       <span>Total yearly cost</span>
@@ -18630,7 +18630,7 @@ const MonthlyVsYearlyArticle = () => {
                     </div>
                     <div className="flex justify-between text-green-600">
                       <span>Your yearly savings vs. monthly</span>
-                      <span className="font-semibold">Rs. 12,228</span>
+                      <span className="font-semibold">$71.40</span>
                     </div>
                   </div>
                 </CardContent>
@@ -18642,7 +18642,7 @@ const MonthlyVsYearlyArticle = () => {
                   <p className="text-sm m-0 font-medium">Key Takeaway</p>
                   <p className="text-sm m-0 text-muted-foreground">
                     On yearly billing, you save Rs. 1,020 every single month. Over 12 months, that adds up to
-                    Rs. 12,228 saved per doctor — nearly enough to cover 2 extra months of service.
+                    $71.40 saved per doctor — nearly enough to cover 2 extra months of service.
                   </p>
                 </div>
               </div>
@@ -18679,17 +18679,17 @@ const MonthlyVsYearlyArticle = () => {
                   </thead>
                   <tbody>
                     {[
-                      { docs: 1, monthly: "71,988", yearly: "59,748", save: "12,228" },
-                      { docs: 2, monthly: "143,976", yearly: "119,496", save: "24,456" },
-                      { docs: 3, monthly: "215,964", yearly: "179,244", save: "36,684" },
-                      { docs: 5, monthly: "359,940", yearly: "298,740", save: "61,200" },
-                      { docs: 10, monthly: "719,880", yearly: "597,480", save: "122,400" },
+                      { docs: 1, monthly: "420", yearly: "348.60", save: "71.40" },
+                      { docs: 2, monthly: "840", yearly: "697.20", save: "142.80" },
+                      { docs: 3, monthly: "1,260", yearly: "1,045.80", save: "214.20" },
+                      { docs: 5, monthly: "2,100", yearly: "1,743", save: "357" },
+                      { docs: 10, monthly: "4,200", yearly: "3,486", save: "714" },
                     ].map((row, idx) => (
                       <tr key={idx} className="border-b border-muted last:border-0">
                         <td className="py-3 px-4 font-medium">{row.docs} Doctor{row.docs > 1 ? "s" : ""}</td>
-                        <td className="py-3 px-4 text-right text-muted-foreground">Rs. {row.monthly}</td>
-                        <td className="py-3 px-4 text-right font-semibold text-primary">Rs. {row.yearly}</td>
-                        <td className="py-3 px-4 text-right text-green-600 font-semibold">Rs. {row.save}</td>
+                        <td className="py-3 px-4 text-right text-muted-foreground">${row.monthly}</td>
+                        <td className="py-3 px-4 text-right font-semibold text-primary">${row.yearly}</td>
+                        <td className="py-3 px-4 text-right text-green-600 font-semibold">${row.save}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -19004,7 +19004,7 @@ const MonthlyFinancialReportsArticle = () => {
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
-                <span>All figures use PKR (Rs) and include appointment revenue, inventory sales, refunds, and recorded expenses.</span>
+                <span>All figures use your clinic's currency and include appointment revenue, inventory sales, refunds, and recorded expenses.</span>
               </li>
             </ul>
           </div>

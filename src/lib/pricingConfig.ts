@@ -1,19 +1,30 @@
-// Centralized pricing configuration
-// Original price with launch discount applied across the system
+// Centralized Zonoir subscription pricing (matches zonoir.com):
+// $35 per practitioner per month, limited-time price down from $49. Staff accounts are free.
+// Use these everywhere Zonoir's own price is shown (signup, subscription pages, admin, emails).
 
-// USD pricing (for public-facing pages)
-export const USD_ORIGINAL_PRICE = 80; // Original price per doctor per month
-export const USD_DISCOUNT_PERCENT = 75; // Launch discount percentage
-export const USD_DISCOUNTED_PRICE = 19.99; // Final price after discount
-export const USD_YEARLY_DISCOUNT = 0.17; // Additional 17% off for yearly
+export const PRICE_CURRENCY = "USD";
+export const PRICE_ORIGINAL = 49;            // regular price per practitioner per month
+export const PRICE_MONTHLY = 35;             // current price per practitioner per month
+export const PRICE_DISCOUNT_PERCENT = Math.round((1 - PRICE_MONTHLY / PRICE_ORIGINAL) * 100);
+export const YEARLY_DISCOUNT = 0.17;         // extra saving on the yearly plan
+export const PRICE_YEARLY_MONTHLY = Math.round(PRICE_MONTHLY * (1 - YEARLY_DISCOUNT) * 100) / 100; // per month, billed yearly
+export const PRICE_YEARLY = Math.round(PRICE_MONTHLY * 12 * (1 - YEARLY_DISCOUNT) * 100) / 100;     // per year
 
-// PKR pricing (for doctor/clinic internal pages)  
-export const PKR_ORIGINAL_PRICE = 23999; // Original price per doctor per month
-export const PKR_DISCOUNT_PERCENT = 75; // Launch discount percentage
-export const PKR_DISCOUNTED_PRICE = 5999; // Final price after discount
-export const PKR_YEARLY_DISCOUNT = 0.17; // Additional 17% off for yearly
+/** "$35", "$29.05", "$1,050" */
+export const usd = (n: number | string | null | undefined): string => {
+  const v = Number(n) || 0;
+  return "$" + v.toLocaleString("en-US", { minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 });
+};
 
-// Computed yearly rates
-export const USD_YEARLY_MONTHLY_RATE = Math.round((USD_DISCOUNTED_PRICE * (1 - USD_YEARLY_DISCOUNT)) * 100) / 100;
-export const PKR_YEARLY_MONTHLY_RATE = Math.round(PKR_DISCOUNTED_PRICE * (1 - PKR_YEARLY_DISCOUNT));
-export const PKR_YEARLY_RATE = Math.round(PKR_DISCOUNTED_PRICE * 12 * (1 - PKR_YEARLY_DISCOUNT));
+// Older names kept so existing imports keep working; all now point at the USD prices.
+export const USD_ORIGINAL_PRICE = PRICE_ORIGINAL;
+export const USD_DISCOUNT_PERCENT = PRICE_DISCOUNT_PERCENT;
+export const USD_DISCOUNTED_PRICE = PRICE_MONTHLY;
+export const USD_YEARLY_DISCOUNT = YEARLY_DISCOUNT;
+export const USD_YEARLY_MONTHLY_RATE = PRICE_YEARLY_MONTHLY;
+export const PKR_ORIGINAL_PRICE = PRICE_ORIGINAL;
+export const PKR_DISCOUNT_PERCENT = PRICE_DISCOUNT_PERCENT;
+export const PKR_DISCOUNTED_PRICE = PRICE_MONTHLY;
+export const PKR_YEARLY_DISCOUNT = YEARLY_DISCOUNT;
+export const PKR_YEARLY_MONTHLY_RATE = PRICE_YEARLY_MONTHLY;
+export const PKR_YEARLY_RATE = PRICE_YEARLY;

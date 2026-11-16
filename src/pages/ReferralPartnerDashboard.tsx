@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -258,7 +259,7 @@ const ReferralPartnerDashboard = () => {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-emerald-100 text-sm font-medium">Total Earnings</p>
-                  <p className="text-3xl font-bold mt-1">PKR {partner.total_earnings.toLocaleString()}</p>
+                  <p className="text-3xl font-bold mt-1">{usd(partner.total_earnings)}</p>
                 </div>
                 <div className="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
                   <Coins className="h-6 w-6 text-white" />
@@ -362,7 +363,7 @@ const ReferralPartnerDashboard = () => {
             {selectedMonth !== "all" && (
               <div className="mb-4 p-4 bg-emerald-50 rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  Filtered Earnings: <span className="font-bold text-emerald-600">PKR {filteredEarnings.toLocaleString()}</span>
+                  Filtered Earnings: <span className="font-bold text-emerald-600">{usd(filteredEarnings)}</span>
                 </p>
               </div>
             )}
@@ -424,7 +425,7 @@ const ReferralPartnerDashboard = () => {
                           )}
                         </TableCell>
                         <TableCell className="text-right font-semibold text-emerald-600">
-                          PKR {commission.amount.toLocaleString()}
+                          {usd(commission.amount)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -433,12 +434,12 @@ const ReferralPartnerDashboard = () => {
                 {filteredCommissions.length > 0 && (
                   <div className="mt-4 pt-4 border-t flex justify-between items-center">
                     <p className="text-sm text-muted-foreground">
-                      Paid: <span className="text-green-600 font-medium">PKR {filteredCommissions.filter(c => c.status === "paid").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                      Paid: <span className="text-green-600 font-medium">{usd(filteredCommissions.filter(c => c.status === "paid").reduce((sum, c) => sum + c.amount, 0))}</span>
                       {" • "}
-                      Pending: <span className="text-yellow-600 font-medium">PKR {filteredCommissions.filter(c => c.status === "pending").reduce((sum, c) => sum + c.amount, 0).toLocaleString()}</span>
+                      Pending: <span className="text-yellow-600 font-medium">{usd(filteredCommissions.filter(c => c.status === "pending").reduce((sum, c) => sum + c.amount, 0))}</span>
                     </p>
                     <p className="text-sm font-medium">
-                      Total: <span className="text-emerald-600 font-bold">PKR {filteredEarnings.toLocaleString()}</span>
+                      Total: <span className="text-emerald-600 font-bold">{usd(filteredEarnings)}</span>
                     </p>
                   </div>
                 )}

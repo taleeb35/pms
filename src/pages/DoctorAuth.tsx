@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PRICE_ORIGINAL, PRICE_MONTHLY, PRICE_DISCOUNT_PERCENT, PRICE_YEARLY_MONTHLY, PRICE_YEARLY, YEARLY_DISCOUNT as PRICE_YEARLY_DISCOUNT, usd } from "@/lib/pricingConfig";
 import PhoneInput from "@/components/PhoneInput";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,10 +46,10 @@ const pakistanCities = [
 import { validateName, validatePhone, validateEmail, validatePassword, handleNameInput, handlePhoneInput } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 
-const PKR_ORIGINAL_PRICE = 23999;
-const PKR_DISCOUNT_PERCENT = 75;
-const MONTHLY_PRICE_PER_DOCTOR = 5999;
-const YEARLY_DISCOUNT = 0.17; // 17% discount
+const PKR_ORIGINAL_PRICE = PRICE_ORIGINAL; // Zonoir price in USD (see pricingConfig)
+const PKR_DISCOUNT_PERCENT = PRICE_DISCOUNT_PERCENT;
+const MONTHLY_PRICE_PER_DOCTOR = PRICE_MONTHLY;
+const YEARLY_DISCOUNT = PRICE_YEARLY_DISCOUNT;
 
 const DoctorAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -58,16 +59,11 @@ const DoctorAuth = () => {
   const { toast } = useToast();
 
   // Pricing calculations
-  const yearlyMonthlyRate = Math.round(MONTHLY_PRICE_PER_DOCTOR * (1 - YEARLY_DISCOUNT));
+  const yearlyMonthlyRate = PRICE_YEARLY_MONTHLY;
   const yearlySavings = (MONTHLY_PRICE_PER_DOCTOR - yearlyMonthlyRate) * 12;
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-PK', {
-      style: 'currency',
-      currency: 'PKR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
+    return usd(price);
   };
 
   // Signup form state
@@ -498,7 +494,7 @@ const DoctorAuth = () => {
               </div>
 
               <div className="space-y-1">
-                <Label htmlFor="consultationFee" className="text-xs">Consultation Fee (PKR) *</Label>
+                <Label htmlFor="consultationFee" className="text-xs">Consultation Fee *</Label>
                 <Input
                   id="consultationFee"
                   type="number"

@@ -44,7 +44,7 @@ const CityQuetta = () => {
       offers: {
         "@type": "Offer",
         price: "0",
-        priceCurrency: "PKR",
+        priceCurrency: "USD",
       },
       areaServed: {
         "@type": "City",
