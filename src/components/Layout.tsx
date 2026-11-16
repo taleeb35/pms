@@ -67,6 +67,14 @@ interface MenuGroup {
 const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  // Sidebar links can point at a tab (/doctor/reports?tab=money); match the tab, and treat no tab as the first one.
+  const isNavActive = (path: string) => {
+    const [p, q] = path.split("?");
+    if (location.pathname !== p) return false;
+    const want = new URLSearchParams(q || "").get("tab");
+    const have = new URLSearchParams(location.search).get("tab");
+    return (want || null) === (have || null);
+  };
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -284,10 +292,11 @@ const Layout = ({ children }: LayoutProps) => {
       label: "Money & Reports",
       icon: BarChart3,
       items: [
-        { path: "/doctor/finance", icon: Banknote, label: "Finance" },
-        { path: "/doctor/summary", icon: BarChart3, label: "Daily Summary" },
-        { path: "/doctor/reports", icon: BarChart3, label: "My Reports" },
-        { path: "/doctor/medicine-report", icon: Pill, label: "Medicine Report" },
+        { path: "/doctor/reports", icon: BarChart3, label: "Overview" },
+        { path: "/doctor/reports?tab=money", icon: Banknote, label: "Finance" },
+        { path: "/doctor/reports?tab=today", icon: CalendarDays, label: "Daily Summary" },
+        { path: "/doctor/reports?tab=analytics", icon: Users, label: "Patients & Visits" },
+        { path: "/doctor/reports?tab=medicines", icon: Pill, label: "Medicines" },
       ],
     },
     {
@@ -332,9 +341,10 @@ const Layout = ({ children }: LayoutProps) => {
       label: "Money & Reports",
       icon: Banknote,
       items: [
-        { path: "/clinic/finance", icon: Banknote, label: "Finance" },
-        { path: "/clinic/expenses", icon: FileText, label: "Expenses" },
-        { path: "/clinic/reports", icon: BarChart3, label: "My Reports" },
+        { path: "/clinic/reports", icon: BarChart3, label: "Overview" },
+        { path: "/clinic/reports?tab=money", icon: Banknote, label: "Finance" },
+        { path: "/clinic/reports?tab=expenses", icon: FileText, label: "Expenses" },
+        { path: "/clinic/reports?tab=analytics", icon: Users, label: "Doctors & Patients" },
       ],
     },
     {
@@ -475,13 +485,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   // Content writer menu - Doctors with sub-items
   const contentWriterMenuGroups: MenuGroup[] = [
-    {
-      label: "Blogs",
-      icon: FileText,
-      items: [
-        { path: "/content-writer/blogs", icon: FileText, label: "All Blogs" },
-      ],
-    },
     {
       label: "Doctors",
       icon: Stethoscope,
@@ -681,13 +684,13 @@ const Layout = ({ children }: LayoutProps) => {
             {menuGroups.map((group) => {
               const GroupIcon = group.icon;
               const isOpen = openGroups[group.label] ?? false;
-              const hasActiveItem = group.items.some((item) => location.pathname === item.path);
+              const hasActiveItem = group.items.some((item) => isNavActive(item.path));
 
               // For single-item groups, render directly without collapsible
               if (group.items.length === 1) {
                 const item = group.items[0];
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+                const isActive = isNavActive(item.path);
                 return (
                   <Link key={item.path} to={item.path} title={sidebarCollapsed ? item.label : undefined}>
                     <Button
@@ -712,7 +715,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <div key={group.label} className="space-y-1">
                     {group.items.map((item) => {
                       const Icon = item.icon;
-                      const isActive = location.pathname === item.path;
+                      const isActive = isNavActive(item.path);
                       return (
                         <Link key={item.path} to={item.path} title={item.label}>
                           <Button

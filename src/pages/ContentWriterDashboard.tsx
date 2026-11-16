@@ -95,7 +95,7 @@ const ContentWriterDashboard = () => {
                 Welcome, {userName || "Content Writer"}
               </h2>
               <p className="text-muted-foreground text-base max-w-2xl">
-                Manage doctor profiles and blog content
+                Manage doctor profiles
               </p>
             </div>
           </div>
@@ -117,31 +117,6 @@ const ContentWriterDashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/content-writer/blogs")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Blogs</CardTitle>
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{totalBlogs}</div>
-            <p className="text-xs text-muted-foreground">Blog posts</p>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/content-writer/blogs")}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Published</CardTitle>
-            <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center">
-              <FileText className="h-5 w-5 text-success" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold mb-1">{publishedBlogs}</div>
-            <p className="text-xs text-muted-foreground">Live articles</p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Quick Actions */}
@@ -154,22 +129,6 @@ const ContentWriterDashboard = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate("/content-writer/blogs")} 
-              className="w-full justify-start h-auto py-4 hover:bg-accent/50 transition-colors"
-            >
-              <div className="flex items-center gap-3 w-full">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <FileText className="h-5 w-5 text-primary" />
-                </div>
-                <div className="text-left flex-1">
-                  <div className="font-semibold text-base">Manage Blogs</div>
-                  <div className="text-sm text-muted-foreground">Create and edit blog posts</div>
-                </div>
-              </div>
-            </Button>
-
             <Button
               variant="outline" 
               onClick={() => navigate("/content-writer/doctors")} 

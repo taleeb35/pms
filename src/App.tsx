@@ -6,7 +6,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import KeyedByParam from "./components/routing/KeyedByParam";
 import { GeoLocationProvider } from "@/contexts/GeoLocationContext";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { PublicDoctorFinderChat } from "@/components/PublicDoctorFinderChat";
@@ -35,8 +36,8 @@ const CitySargodha = lazy(() => import("./pages/CitySargodha"));
 const CitySukkur = lazy(() => import("./pages/CitySukkur"));
 const CityAbbottabad = lazy(() => import("./pages/CityAbbottabad"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const DoctorAuth = lazy(() => import("./pages/DoctorAuth"));
-const Auth = lazy(() => import("./pages/Auth"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const ReportsHub = lazy(() => import("./pages/ReportsHub"));
 const ReceptionistAuth = lazy(() => import("./pages/ReceptionistAuth"));
 const UnifiedLogin = lazy(() => import("./pages/UnifiedLogin"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -269,7 +270,7 @@ const App = () => (
           <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
           <Route path="/doctors/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/doctors/:city/:specialty/:doctorSlug" element={<LegacyDoctorRedirect />} />
-          <Route path="/doctors/:country/:city/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
+          <Route path="/doctors/:country/:city/:specialty/:doctorSlug" element={<LegacyDoctorRedirect />} />
           <Route path="/referral-partner/login" element={<ReferralPartnerAuth />} />
           <Route path="/referral-partner/dashboard" element={<ReferralPartnerDashboard />} />
           <Route path="/blog" element={<MarketingRedirect><Blogs /></MarketingRedirect>} />
@@ -285,8 +286,8 @@ const App = () => (
           <Route path="/queue" element={<QueueDisplay />} />
           <Route path="/verify/:code" element={<VerifyCertificate />} />
           <Route path="/intake/:token" element={<IntakeForm />} />
-          <Route path="/doctor-auth" element={<DoctorAuth />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/doctor-auth" element={<SignUp />} />
+          <Route path="/auth" element={<SignUp />} />
           <Route path="/receptionist-auth" element={<ReceptionistAuth />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -374,7 +375,7 @@ const App = () => (
               path="/doctor/appointments/:id"
               element={
                 <Layout>
-                  <DoctorAppointmentDetail />
+                  <KeyedByParam><DoctorAppointmentDetail /></KeyedByParam>
                 </Layout>
               }
             />
@@ -437,35 +438,23 @@ const App = () => (
             />
             <Route
               path="/doctor/finance"
-              element={
-                <Layout>
-                  <DoctorFinance />
-                </Layout>
-              }
+              element={<Navigate to="/doctor/reports?tab=money" replace />}
             />
             <Route
               path="/doctor/reports"
               element={
                 <Layout>
-                  <DoctorReports />
+                  <ReportsHub scope="doctor" />
                 </Layout>
               }
             />
             <Route
               path="/doctor/summary"
-              element={
-                <Layout>
-                  <DoctorSummary />
-                </Layout>
-              }
+              element={<Navigate to="/doctor/reports?tab=today" replace />}
             />
             <Route
               path="/doctor/medicine-report"
-              element={
-                <Layout>
-                  <DoctorMedicineReport />
-                </Layout>
-              }
+              element={<Navigate to="/doctor/reports?tab=medicines" replace />}
             />
             <Route
               path="/doctor/walk-in"
@@ -614,11 +603,7 @@ const App = () => (
             />
             <Route
               path="/content-writer/blogs"
-              element={
-                <Layout>
-                  <ContentWriterBlogs />
-                </Layout>
-              }
+              element={<Navigate to="/content-writer/dashboard" replace />}
             />
             <Route
               path="/content-writer/doctors"
@@ -688,7 +673,7 @@ const App = () => (
               path="/clinic/appointments/:id"
               element={
                 <Layout>
-                  <ClinicAppointmentDetail />
+                  <KeyedByParam><ClinicAppointmentDetail /></KeyedByParam>
                 </Layout>
               }
             />
@@ -710,27 +695,19 @@ const App = () => (
             />
             <Route
               path="/clinic/finance"
-              element={
-                <Layout>
-                  <ClinicFinance />
-                </Layout>
-              }
+              element={<Navigate to="/clinic/reports?tab=money" replace />}
             />
             <Route
               path="/clinic/reports"
               element={
                 <Layout>
-                  <ClinicReports />
+                  <ReportsHub scope="clinic" />
                 </Layout>
               }
             />
             <Route
               path="/clinic/expenses"
-              element={
-                <Layout>
-                  <ClinicExpenses />
-                </Layout>
-              }
+              element={<Navigate to="/clinic/reports?tab=expenses" replace />}
             />
             <Route
               path="/clinic/support"
@@ -894,7 +871,7 @@ const App = () => (
               path="/receptionist/appointments/:id"
               element={
                 <Layout>
-                  <ClinicAppointmentDetail />
+                  <KeyedByParam><ClinicAppointmentDetail /></KeyedByParam>
                 </Layout>
               }
             />

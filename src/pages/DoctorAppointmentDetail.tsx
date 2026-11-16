@@ -1513,7 +1513,7 @@ const DoctorAppointmentDetail = () => {
             </Card>
 
             {/* Visit History - Moved below Contact Information */}
-            <VisitHistory patientId={appointment.patient_id} />
+            <VisitHistory patientId={appointment.patient_id} currentAppointmentId={appointment.id} />
 
             {/* Pregnancy Tracking - For Gynecologists */}
             {isGynecologist && (

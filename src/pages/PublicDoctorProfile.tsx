@@ -111,14 +111,6 @@ const PublicDoctorProfile = () => {
         });
 
         if (matchedSeo) {
-          const matchedSeoCitySlug = generateCitySlug(matchedSeo.city || "");
-          if (matchedSeoCitySlug && city !== matchedSeoCitySlug) {
-            navigate(
-              generateDoctorProfileUrl(matchedSeo.city || "", matchedSeo.specialization, matchedSeo.full_name),
-              { replace: true }
-            );
-            return;
-          }
 
           setDoctor({
             id: matchedSeo.id,
@@ -194,13 +186,6 @@ const PublicDoctorProfile = () => {
         if (matchedDoctor) {
           const profile = matchedDoctor.profiles as any;
 
-          if ((matchedDoctor.city || "") && city !== generateCitySlug(matchedDoctor.city || "")) {
-            navigate(
-              generateDoctorProfileUrl(matchedDoctor.city || "", matchedDoctor.specialization, profile?.full_name || ""),
-              { replace: true }
-            );
-            return;
-          }
 
           setDoctor({
             id: matchedDoctor.id,
@@ -408,7 +393,7 @@ const PublicDoctorProfile = () => {
     ? `Book appointment with ${doctor.full_name}, ${doctor.qualification}. ${doctor.experience_years ? `${doctor.experience_years}+ years experience` : ''} ${doctor.specialization} in ${doctor.city}. ${doctor.clinic_name ? `Available at ${doctor.clinic_name}.` : ''}`
     : `Find the best ${specialtyDisplay} doctors in ${cityDisplay}, Pakistan.`;
 
-  const canonicalUrl = `https://zonoir.com/doctors/${city}/${specialty}/${doctorSlug}`;
+  const canonicalUrl = `https://app.zonoir.com/doctors/${specialty}/${doctorSlug}`;
 
   const jsonLd = doctor ? {
     "@context": "https://schema.org",
@@ -615,8 +600,8 @@ const PublicDoctorProfile = () => {
           <ChevronRight className="h-4 w-4 flex-shrink-0" />
           <Link to="/find-doctors" className="hover:text-primary transition-colors whitespace-nowrap">Find Doctors</Link>
           <ChevronRight className="h-4 w-4 flex-shrink-0" />
-          <Link to={`/doctors/${specialty}?city=${cityDisplay}`} className="hover:text-primary transition-colors whitespace-nowrap">
-            {specialtyDisplay}s in {cityDisplay}
+          <Link to={`/doctors/${specialty}?city=${doctor?.city || cityDisplay}`} className="hover:text-primary transition-colors whitespace-nowrap">
+            {specialtyDisplay}s in {doctor?.city || cityDisplay}
           </Link>
           <ChevronRight className="h-4 w-4 flex-shrink-0" />
           <span className="text-foreground font-medium truncate">{doctor.full_name}</span>

@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDoctorProfileUrl, generateDoctorSlug } from "@/lib/slugUtils";
 import { useNavigate } from "react-router-dom";
-import { isAuthRoute } from "@/lib/authRoutes";
+import { hideFloatingHelpers } from "@/lib/authRoutes";
 
 interface DoctorClinic {
   clinic_name: string;
@@ -603,7 +603,7 @@ export const PublicDoctorFinderChat = () => {
   };
 
   // Never show the doctor-finder launcher on sign-in / registration screens
-  if (isAuthRoute(location.pathname) || location.pathname === "/queue" || location.pathname.startsWith("/verify/") || location.pathname.startsWith("/intake/")) return null; // not on sign-in screens or the waiting-room TV
+  if (hideFloatingHelpers(location.pathname)) return null; // not on sign-in screens, inside the portals, or the waiting-room TV
 
   return (
     <>

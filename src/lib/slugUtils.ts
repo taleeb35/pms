@@ -59,15 +59,10 @@ export const generateDoctorProfileUrl = (
   city: string,
   specialty: string,
   fullName: string,
-  country: string = "PK" // A7: country is part of the URL (all current listings are in Pakistan)
+  _country: string = "PK"
 ): string => {
-  const specialtySlug = generateSpecialtySlug(specialty);
-  const doctorSlug = generateDoctorSlug(fullName);
-  const citySlug = generateCitySlug(city);
-
-  if (!citySlug) {
-    return `/doctors/${specialtySlug}/${doctorSlug}`;
-  }
-
-  return `/doctors/${(country || "PK").toLowerCase()}/${citySlug}/${specialtySlug}/${doctorSlug}`;
+  // City and country are no longer part of the address: /doctors/<specialty>/<name>.
+  // Old addresses with city/country redirect here (LegacyDoctorRedirect + nginx 301).
+  void city; void _country;
+  return `/doctors/${generateSpecialtySlug(specialty)}/${generateDoctorSlug(fullName)}`;
 };

@@ -129,7 +129,7 @@ const MobileFinance = () => {
 
   const net = revenue - expenses;
   const monthLabel = format(new Date(), "MMMM yyyy");
-  const webPath = role === "clinic" ? "/clinic/finance" : "/doctor/finance";
+  const webPath = role === "clinic" ? "/clinic/reports?tab=money" : "/doctor/reports?tab=money";
 
   return (
     <MobileScreen title="Finance" subtitle={monthLabel} back="/app">

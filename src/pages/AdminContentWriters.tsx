@@ -227,7 +227,7 @@ const AdminContentWriters = () => {
             Team Members
           </CardTitle>
           <CardDescription>
-            Content writers can manage blogs and doctors profiles
+            Content writers can manage doctor profiles
           </CardDescription>
         </CardHeader>
         <CardContent>

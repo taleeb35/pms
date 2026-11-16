@@ -188,7 +188,7 @@ serve(async (req) => {
         const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${APP_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
+    <loc>${APP_URL}/doctors/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -212,7 +212,7 @@ serve(async (req) => {
       const addedUrls = new Set(
         seoListings?.map(doc => {
           if (!doc.city || !doc.specialization || !doc.full_name) return '';
-          return `${generateCitySlug(doc.city)}/${generateSpecialtySlug(doc.specialization)}/${generateDoctorSlug(doc.full_name)}`;
+          return `${generateSpecialtySlug(doc.specialization)}/${generateDoctorSlug(doc.full_name)}`;
         }).filter(Boolean) || []
       );
 
@@ -225,15 +225,16 @@ serve(async (req) => {
         const citySlug = generateCitySlug(doc.city);
         const specialtySlug = generateSpecialtySlug(doc.specialization);
         const doctorSlug = generateDoctorSlug(profile.full_name);
-        const urlKey = `${citySlug}/${specialtySlug}/${doctorSlug}`;
+        const urlKey = `${specialtySlug}/${doctorSlug}`;
 
         // Skip if already added from SEO listings
         if (addedUrls.has(urlKey)) continue;
+        addedUrls.add(urlKey);
 
         const lastmod = doc.updated_at ? `\n    <lastmod>${doc.updated_at.split('T')[0]}</lastmod>` : '';
 
         sitemap += `  <url>
-    <loc>${APP_URL}/doctors/pk/${citySlug}/${specialtySlug}/${doctorSlug}</loc>${lastmod}
+    <loc>${APP_URL}/doctors/${specialtySlug}/${doctorSlug}</loc>${lastmod}
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

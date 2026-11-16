@@ -4,6 +4,12 @@
 export type WhatsNewEntry = { id: string; date: string; title: string; body: string; link?: string; roles?: string[] };
 
 export const WHATS_NEW: WhatsNewEntry[] = [
+  { id: "2026-11-17-reports", date: "2026-11-17", title: "Reports in one place",
+    body: "Money & Reports now opens one Reports page with tabs. Overview shows revenue, collections, visits, new patients and no-shows compared with the previous period, plus top procedures, diagnoses and busiest days. Finance, daily summary and the detailed charts are the other tabs.",
+    roles: ["/doctor", "/clinic"], link: "reports" },
+  { id: "2026-11-17-past-visits", date: "2026-11-17", title: "Open past visits from a visit",
+    body: "On a visit, click any entry in Visit History to open that visit.",
+    roles: ["/doctor", "/clinic", "/receptionist"] },
   { id: "2026-11-16-labs", date: "2026-11-16", title: "Lab and imaging orders",
     body: "On a visit, add tests under Lab and imaging orders and print the order slip. Add results later (a number, findings or a file). The patient page's Tests & Trends tab charts repeat results, blood pressure and weight.",
     roles: ["/doctor", "/clinic", "/receptionist"] },

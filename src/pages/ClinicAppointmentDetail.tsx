@@ -1364,7 +1364,7 @@ const ClinicAppointmentDetail = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <VisitHistory patientId={appointment.patient_id} />
+                  <VisitHistory patientId={appointment.patient_id} currentAppointmentId={appointment.id} />
                   <PatientMedicalDocsView patientId={appointment.patient_id} />
                 </div>
               </CardContent>

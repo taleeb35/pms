@@ -554,7 +554,7 @@ const UnifiedLogin = () => {
               </p>
               <Button
                 variant="outline"
-                onClick={() => navigate("/auth?tab=signup")}
+                onClick={() => navigate("/auth")}
                 className="w-full border-2"
               >
                 Register

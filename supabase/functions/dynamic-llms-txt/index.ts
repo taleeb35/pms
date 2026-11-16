@@ -174,7 +174,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
         const citySlug = generateCitySlug(doc.city);
         const specialtySlug = generateSpecialtySlug(doc.specialization);
         const doctorSlug = generateDoctorSlug(doc.full_name);
-        const urlKey = `${citySlug}/${specialtySlug}/${doctorSlug}`;
+        const urlKey = `${specialtySlug}/${doctorSlug}`;
         if (addedUrls.has(urlKey)) continue;
         addedUrls.add(urlKey);
         allDoctors.push({
@@ -182,7 +182,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
           specialization: doc.specialization,
           city: doc.city,
           qualification: doc.qualification || "",
-          url: `${APP_URL}/doctors/pk/${urlKey}`,
+          url: `${APP_URL}/doctors/${urlKey}`,
         });
       }
     }
@@ -195,7 +195,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
         const citySlug = generateCitySlug(doc.city);
         const specialtySlug = generateSpecialtySlug(doc.specialization);
         const doctorSlug = generateDoctorSlug(profile.full_name);
-        const urlKey = `${citySlug}/${specialtySlug}/${doctorSlug}`;
+        const urlKey = `${specialtySlug}/${doctorSlug}`;
         if (addedUrls.has(urlKey)) continue;
         addedUrls.add(urlKey);
         allDoctors.push({
@@ -203,7 +203,7 @@ Zonoir provides a comprehensive healthcare management solution designed specific
           specialization: doc.specialization,
           city: doc.city,
           qualification: doc.qualification || "",
-          url: `${APP_URL}/doctors/pk/${urlKey}`,
+          url: `${APP_URL}/doctors/${urlKey}`,
         });
       }
     }

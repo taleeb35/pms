@@ -1277,7 +1277,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
               {appointment && <PatientMedicalDocsView patientId={appointment.patient_id} />}
               
               {/* Visit History */}
-              {appointment && <VisitHistory patientId={appointment.patient_id} />}
+              {appointment && <VisitHistory patientId={appointment.patient_id} currentAppointmentId={appointment.id} />}
 
               {/* Pregnancy Start Date - Only for Gynecologists */}
               {isGynecologist && (

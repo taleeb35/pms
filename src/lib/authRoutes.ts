@@ -17,3 +17,14 @@ export const isAuthRoute = (pathname: string) => {
   const path = pathname.replace(/\/+$/, "") || "/";
   return AUTH_ROUTES.includes(path);
 };
+
+// Signed-in portal areas, plus pages where floating helpers get in the way.
+const PORTAL_PREFIXES = ["/doctor/", "/clinic/", "/receptionist/", "/doctor-receptionist/", "/admin/", "/content-writer/", "/referral-partner/", "/app/", "/verify/", "/intake/"];
+const PORTAL_EXACT = ["/dashboard", "/doctors", "/patients", "/appointments", "/support-tickets", "/queue", "/pending-doctors", "/waitlist"];
+
+// True where the "Find a Doctor" chat and the WhatsApp bubble must not show:
+// sign-in screens, every page inside a doctor / clinic / staff / admin login, and kiosk pages.
+export const hideFloatingHelpers = (pathname: string) => {
+  const path = pathname.replace(/\/+$/, "") || "/";
+  return isAuthRoute(path) || PORTAL_EXACT.includes(path) || PORTAL_PREFIXES.some((p) => (path + "/").startsWith(p));
+};
