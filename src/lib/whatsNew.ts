@@ -4,6 +4,12 @@
 export type WhatsNewEntry = { id: string; date: string; title: string; body: string; link?: string; roles?: string[] };
 
 export const WHATS_NEW: WhatsNewEntry[] = [
+  { id: "2026-11-16-certificates", date: "2026-11-16", title: "Certificates with a QR code",
+    body: "On a visit, Certificate prints a sick-leave, work-leave or fitness certificate from your templates. The QR code lets anyone check it is real, and you can cancel one later.",
+    roles: ["/doctor"] },
+  { id: "2026-11-16-merge", date: "2026-11-16", title: "Merge duplicate patients",
+    body: "On a patient page, Merge duplicate moves the other record's appointments, visits, prescriptions and documents onto this patient and deletes the duplicate.",
+    roles: ["/doctor", "/clinic"] },
   { id: "2026-11-16-queue", date: "2026-11-16", title: "Waiting-room queue screen",
     body: "Walk-In page → Queue screen opens today's queue with token numbers for a TV or tablet. It refreshes by itself and can show token numbers only.",
     link: "/queue" },

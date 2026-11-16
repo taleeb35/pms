@@ -50,7 +50,8 @@ export type ActivityAction =
   | "specialization_created"
   | "specialization_updated"
   | "specialization_deleted"
-  | "data_exported";
+  | "data_exported"
+  | "patient_merged";
 
 export type EntityType = "patient" | "appointment" | "visit_record" | "waitlist" | "procedure" | "doctor" | "receptionist" | "document" | "schedule" | "leave" | "allergy" | "disease" | "icd_code" | "template" | "expense" | "specialization" | "account";
 
@@ -112,6 +113,7 @@ export const logActivity = async ({
 export const getActionLabel = (action: string): string => {
   const labels: Record<string, string> = {
     data_exported: "Downloaded All Data",
+    patient_merged: "Merged Patients",
     patient_created: "Added Patient",
     patient_updated: "Updated Patient",
     patient_deleted: "Deleted Patient",

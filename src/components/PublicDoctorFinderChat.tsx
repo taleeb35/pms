@@ -603,7 +603,7 @@ export const PublicDoctorFinderChat = () => {
   };
 
   // Never show the doctor-finder launcher on sign-in / registration screens
-  if (isAuthRoute(location.pathname) || location.pathname === "/queue") return null; // not on sign-in screens or the waiting-room TV
+  if (isAuthRoute(location.pathname) || location.pathname === "/queue" || location.pathname.startsWith("/verify/")) return null; // not on sign-in screens or the waiting-room TV
 
   return (
     <>

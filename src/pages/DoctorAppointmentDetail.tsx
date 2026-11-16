@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import IssueCertificateDialog from "@/components/IssueCertificateDialog";
 import PrescriptionWriter from "@/components/prescription/PrescriptionWriter";
 import PostVisitDialog, { type PostVisitInfo } from "@/components/visit/PostVisitDialog";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
@@ -1070,6 +1071,7 @@ const DoctorAppointmentDetail = () => {
             <Printer className="h-4 w-4 mr-2" />
             Print Prescription
           </Button>
+          <IssueCertificateDialog appointmentId={appointment.id} doctorId={appointment.doctor_id} visitDate={appointment.appointment_date} patient={appointment.patients} />
           <Button variant="outline" size="sm" onClick={() => setShowReportDialog(true)} className="border-teal-600 text-teal-700 hover:bg-teal-600 hover:text-white">
             <FileBarChart className="h-4 w-4 mr-2" />
             Generate Report

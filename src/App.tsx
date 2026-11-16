@@ -62,6 +62,7 @@ const DoctorSummary = lazy(() => import("./pages/DoctorSummary"));
 const DoctorMedicineReport = lazy(() => import("./pages/DoctorMedicineReport"));
 const DoctorWalkIn = lazy(() => import("./pages/DoctorWalkIn"));
 const QueueDisplay = lazy(() => import("./pages/QueueDisplay"));
+const VerifyCertificate = lazy(() => import("./pages/VerifyCertificate"));
 const DoctorProcedures = lazy(() => import("./pages/DoctorProcedures"));
 const DoctorAllergies = lazy(() => import("./pages/DoctorAllergies"));
 const DoctorMedicines = lazy(() => import("./pages/DoctorMedicines"));
@@ -280,6 +281,7 @@ const App = () => (
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/queue" element={<QueueDisplay />} />
+          <Route path="/verify/:code" element={<VerifyCertificate />} />
           <Route path="/doctor-auth" element={<DoctorAuth />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/receptionist-auth" element={<ReceptionistAuth />} />

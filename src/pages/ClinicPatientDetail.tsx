@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MergePatientDialog from "@/components/MergePatientDialog";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,10 +107,15 @@ const ClinicPatientDetail = () => {
 
   return (
     <div className="space-y-6">
-      <Button variant="ghost" onClick={() => navigate("/clinic/patients")} className="gap-2">
-        <ArrowLeft className="h-4 w-4" />
-        Back to Patients
-      </Button>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Button variant="ghost" onClick={() => navigate("/clinic/patients")} className="gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Patients
+        </Button>
+        {window.location.pathname.startsWith("/clinic/") && (
+          <MergePatientDialog patient={patient} scope="clinic" onMerged={fetchPatientDetails} />
+        )}
+      </div>
 
       <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
 

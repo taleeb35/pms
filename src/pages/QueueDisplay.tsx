@@ -91,7 +91,11 @@ export default function QueueDisplay() {
       next: mine.filter((r) => r.status === "scheduled"),
       done: mine.filter((r) => r.status === "completed").length,
     };
-  }), [doctors, rows]);
+  }), [doctors, rows]).filter((q, _i, all) => {
+    // In a clinic, hide doctors with nobody today once anyone has patients.
+    const busy = all.filter((x) => x.now.length || x.next.length || x.done);
+    return !busy.length || busy.includes(q);
+  });
 
   const label = (r: { token: number; patients?: { full_name?: string | null } | null }) =>
     hideNames ? "" : shortName(r.patients?.full_name);
