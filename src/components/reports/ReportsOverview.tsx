@@ -124,7 +124,7 @@ export default function ReportsOverview({ scope }: Props) {
     { label: "Completed visits", key: "visits", fmt: (v) => v.toLocaleString() },
     { label: "Patients seen", key: "patientsSeen", fmt: (v) => v.toLocaleString() },
     { label: "New patients", key: "newPatients", fmt: (v) => v.toLocaleString(), hint: "Added in this period" },
-    { label: "Average per visit", key: "avgFee", fmt: (v) => money(v) },
+    { label: "Average per visit", key: "avgFee", fmt: (v) => money(Math.round(v)) },
     { label: "No-show rate", key: "noShowRate", fmt: (v) => `${v.toFixed(1)}%`, lowerIsBetter: true, hint: `${k.noShows} no-shows` },
   ];
 
@@ -163,8 +163,12 @@ export default function ReportsOverview({ scope }: Props) {
                     <p className="text-xs text-muted-foreground">{c.label}</p>
                     <p className="mt-1 text-xl font-bold tabular-nums">{cur == null ? "—" : c.fmt(cur)}</p>
                     <p className={`mt-1 flex items-center gap-1 text-xs ${good == null ? "text-muted-foreground" : good ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
-                      {ch == null || ch === 0 ? <Minus className="h-3 w-3" /> : ch > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                      {fmtPct(ch)} <span className="text-muted-foreground">vs previous</span>
+                      {ch == null ? <span>No earlier figure to compare</span> : (
+                        <>
+                          {ch === 0 ? <Minus className="h-3 w-3" /> : ch > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                          {fmtPct(ch)} <span className="text-muted-foreground">vs previous</span>
+                        </>
+                      )}
                     </p>
                     {c.hint && <p className="text-[11px] text-muted-foreground">{c.hint}</p>}
                   </CardContent>
