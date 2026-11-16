@@ -22,8 +22,8 @@ type Issued = { id: string; code: string; title: string; body: string; issued_at
 
 const selectCls = "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm";
 const DEFAULT_BODY: Record<CertType, string> = {
-  sick_leave: "[Patient Name], aged [Age], was seen on [Visit Date] and is advised rest from [From] to [To] ([Days] days).",
-  work_leave: "[Patient Name], aged [Age], was seen on [Visit Date] and is advised to stay away from work from [From] to [To] ([Days] days).",
+  sick_leave: "[Patient Name], aged [Age], was seen on [Visit Date] and is advised rest from [From] to [To] ([Days] day(s)).",
+  work_leave: "[Patient Name], aged [Age], was seen on [Visit Date] and is advised to stay away from work from [From] to [To] ([Days] day(s)).",
   fitness: "[Patient Name], aged [Age], was examined on [Visit Date] and found fit.",
   other: "[Patient Name], aged [Age], was seen on [Visit Date].",
 };

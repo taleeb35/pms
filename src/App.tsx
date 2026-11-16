@@ -63,6 +63,7 @@ const DoctorMedicineReport = lazy(() => import("./pages/DoctorMedicineReport"));
 const DoctorWalkIn = lazy(() => import("./pages/DoctorWalkIn"));
 const QueueDisplay = lazy(() => import("./pages/QueueDisplay"));
 const VerifyCertificate = lazy(() => import("./pages/VerifyCertificate"));
+const AdminFeedback = lazy(() => import("./pages/AdminFeedback"));
 const DoctorProcedures = lazy(() => import("./pages/DoctorProcedures"));
 const DoctorAllergies = lazy(() => import("./pages/DoctorAllergies"));
 const DoctorMedicines = lazy(() => import("./pages/DoctorMedicines"));
@@ -565,6 +566,14 @@ const App = () => (
               element={
                 <Layout>
                   <AdminFinance />
+                </Layout>
+              }
+            />
+            <Route
+              path="/admin/feedback"
+              element={
+                <Layout>
+                  <AdminFeedback />
                 </Layout>
               }
             />

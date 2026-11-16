@@ -40,6 +40,7 @@ const DoctorProfile = () => {
     contact_number: "",
     pmdc_number: "",
     facebook_url: "",
+    review_url: "",
     instagram_url: "",
     youtube_url: "",
     tiktok_url: "",
@@ -108,6 +109,7 @@ const DoctorProfile = () => {
         contact_number: doctorData.contact_number || "",
         pmdc_number: doctorData.pmdc_number || "",
         facebook_url: doctorData.facebook_url || "",
+        review_url: (doctorData as any).review_url || "",
         instagram_url: doctorData.instagram_url || "",
         youtube_url: doctorData.youtube_url || "",
         tiktok_url: doctorData.tiktok_url || "",
@@ -172,6 +174,7 @@ const DoctorProfile = () => {
           contact_number: profile.contact_number,
           pmdc_number: profile.pmdc_number || null,
           facebook_url: profile.facebook_url?.trim() || null,
+          review_url: profile.review_url?.trim() || null,
           instagram_url: profile.instagram_url?.trim() || null,
           youtube_url: profile.youtube_url?.trim() || null,
           tiktok_url: profile.tiktok_url?.trim() || null,
@@ -592,6 +595,13 @@ const DoctorProfile = () => {
                     Open Google Maps, find your clinic, click Share → Copy Link, and paste it here.
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <Label htmlFor="review-url">Review link (optional)</Label>
+                <Input id="review-url" type="url" value={profile.review_url} onChange={(e) => setProfile({ ...profile, review_url: e.target.value })}
+                  placeholder="https://g.page/r/... (your Google review link)" className="border-primary/20 focus:border-primary" />
+                <p className="text-xs text-muted-foreground">After a visit, "Ask for a review" sends this link to the patient on WhatsApp.</p>
               </div>
 
               <div className="space-y-4 pt-2">

@@ -4,6 +4,9 @@
 export type WhatsNewEntry = { id: string; date: string; title: string; body: string; link?: string; roles?: string[] };
 
 export const WHATS_NEW: WhatsNewEntry[] = [
+  { id: "2026-11-16-review", date: "2026-11-16", title: "Ask patients for a review",
+    body: "Add your Google (or other) review link in Profile. After you save a visit, Ask for a review sends it to the patient on WhatsApp.",
+    roles: ["/doctor"], link: "profile" },
   { id: "2026-11-16-certificates", date: "2026-11-16", title: "Certificates with a QR code",
     body: "On a visit, Certificate prints a sick-leave, work-leave or fitness certificate from your templates. The QR code lets anyone check it is real, and you can cancel one later.",
     roles: ["/doctor"] },

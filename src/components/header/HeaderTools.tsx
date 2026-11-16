@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { zonedNow } from "@/lib/region";
 import { friendlyTime } from "@/lib/datetime";
 import { entriesFor } from "@/lib/whatsNew";
+import { FeedbackDialog } from "@/components/Feedback";
 
 // Header tools: dark mode switch, help link to the matching knowledge-base area, notification bell.
 const ROLE_BASES = ["/doctor-receptionist", "/receptionist", "/doctor", "/clinic"];
@@ -157,6 +158,7 @@ const SEEN_KEY = "zonoir_whats_new_seen";
 export function WhatsNewButton() {
   const base = useBase();
   const entries = useMemo(() => entriesFor(base), [base]);
+  const [fbOpen, setFbOpen] = useState(false);
   const [seen, setSeen] = useState<string | null>(() => { try { return localStorage.getItem(SEEN_KEY); } catch { return null; } });
   const unread = entries.length > 0 && entries[0].id !== seen;
   const onOpen = (o: boolean) => {
@@ -171,6 +173,7 @@ export function WhatsNewButton() {
     return `${base}/${l}`;
   };
   return (
+    <>
     <Popover onOpenChange={onOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="What's new" title="What's new" className="relative">
@@ -197,7 +200,12 @@ export function WhatsNewButton() {
             );
           })}
         </ul>
+        <div className="border-t px-4 py-2.5">
+          <button type="button" onClick={() => setFbOpen(true)} className="text-sm font-medium text-primary hover:underline">Send feedback or an idea</button>
+        </div>
       </PopoverContent>
     </Popover>
+    <FeedbackDialog open={fbOpen} onOpenChange={setFbOpen} />
+    </>
   );
 }

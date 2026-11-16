@@ -237,6 +237,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/admin/content-writers", icon: PenLine, label: "Content Writers" },
         { path: "/admin/finance", icon: Banknote, label: "Payment Tracking" },
         { path: "/admin/chatbot-leads", icon: MessageSquareText, label: "Chatbot Leads" },
+        { path: "/admin/feedback", icon: MessageSquareText, label: "Feedback" },
         { path: "/support-tickets", icon: LifeBuoy, label: "Support Tickets" },
       ],
     },

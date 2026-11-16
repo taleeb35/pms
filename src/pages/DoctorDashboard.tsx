@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { NpsPrompt } from "@/components/Feedback";
 import TodayBoard from "@/components/dashboard/TodayBoard";
 import GettingStarted from "@/components/onboarding/GettingStarted";
 import { withDrTitle } from "@/lib/doctorName";
@@ -86,6 +87,7 @@ const DoctorDashboard = () => {
       <TrialBanner userType="doctor" />
       <StaleAppointmentsPrompt to="/doctor/appointments" />
       <GettingStarted role="doctor" />
+      <NpsPrompt />
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">

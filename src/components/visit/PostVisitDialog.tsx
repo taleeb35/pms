@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addDays, addMonths, format } from "date-fns";
-import { CheckCircle2, Printer, Receipt, MessageCircle, CalendarPlus, ArrowRight, Loader2 } from "lucide-react";
+import { CheckCircle2, Printer, Receipt, MessageCircle, CalendarPlus, ArrowRight, Loader2, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -44,11 +44,14 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
   const [booking, setBooking] = useState(false);
   const [booked, setBooked] = useState<{ date: string; time: string } | null>(null);
   const [nextPatient, setNextPatient] = useState<{ id: string; name: string; time: string } | null>(null);
+  const [reviewUrl, setReviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
     setBooked(info?.followUp || null);
     setFuDate(undefined); setFuTime("");
+    supabase.from("doctors").select("review_url").eq("id", appointment.doctor_id).maybeSingle()
+      .then(({ data }) => setReviewUrl(((data as any)?.review_url || "").trim() || null));
     const { ymd } = zonedNow();
     supabase.from("appointments").select("id, appointment_time, patients(full_name)")
       .eq("doctor_id", appointment.doctor_id).eq("appointment_date", ymd).in("status", ["scheduled", "start"])
@@ -67,6 +70,8 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
   ];
   if (booked) lines.push(`Next visit: ${friendlyDate(booked.date)} at ${friendlyTime(booked.time)}`);
   const wa = whatsappLink(appointment.patients.phone, lines.join("\n\n"));
+  const reviewWa = reviewUrl ? whatsappLink(appointment.patients.phone,
+    `Hello ${first}, thank you for visiting${doctorName ? ` ${doctorName}` : ""}. If you have a moment, please leave a review: ${reviewUrl}`) : null;
 
   const book = async () => {
     if (!fuDate || !fuTime) return;
@@ -106,6 +111,11 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
             </Button>
           ) : (
             <p className="col-span-2 text-xs text-muted-foreground">Add a valid phone number to the patient to send the prescription on WhatsApp.</p>
+          )}
+          {reviewWa && (
+            <Button variant="outline" className="col-span-2 h-12 justify-start" asChild>
+              <a href={reviewWa} target="_blank" rel="noopener noreferrer"><Star className="mr-2 h-4 w-4 text-amber-500" /> Ask for a review on WhatsApp</a>
+            </Button>
           )}
         </div>
 
