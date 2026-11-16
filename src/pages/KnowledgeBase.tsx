@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  Search, 
+  Search,
+  X,
   Building2, 
   Stethoscope, 
   Users, 
@@ -210,9 +211,49 @@ const categories = [
   },
 ];
 
+// Full-text search: public/kb-search-index.json is built from the articles before each build.
+type KBDoc = { slug: string; title: string; headings: string[]; text: string };
+let kbIndex: Promise<KBDoc[]> | null = null;
+const loadKBIndex = () => (kbIndex ??= fetch("/kb-search-index.json").then((r) => (r.ok ? r.json() : [])).catch(() => { kbIndex = null; return []; }));
+
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const countOf = (hay: string, t: string) => { let n = 0, i = hay.indexOf(t); while (i !== -1 && n < 5) { n++; i = hay.indexOf(t, i + t.length); } return n; };
+
+const searchKB = (docs: KBDoc[], q: string) => {
+  const terms = q.toLowerCase().split(/\s+/).filter((t) => t.length >= 2);
+  if (!terms.length) return [];
+  return docs.map((d) => {
+    const title = d.title.toLowerCase(), heads = d.headings.join(" · ").toLowerCase(), text = d.text.toLowerCase();
+    let score = title.includes(q.toLowerCase().trim()) ? 30 : 0;
+    for (const t of terms) {
+      const s = (title.includes(t) ? 10 : 0) + (heads.includes(t) ? 4 : 0) + countOf(text, t);
+      if (!s) return null; // every word must appear somewhere
+      score += s;
+    }
+    const section = d.headings.find((h) => terms.some((t) => h.toLowerCase().includes(t)) && h !== d.title);
+    const at = Math.min(...terms.map((t) => text.indexOf(t)).filter((i) => i >= 0), Number.MAX_SAFE_INTEGER);
+    const snippet = at === Number.MAX_SAFE_INTEGER ? d.text.slice(0, 160)
+      : (at > 70 ? "…" : "") + d.text.slice(Math.max(0, at - 70), at + 110).trim() + (at + 110 < d.text.length ? "…" : "");
+    return { doc: d, score, section, snippet };
+  }).filter(Boolean).sort((a, b) => b!.score - a!.score).slice(0, 8) as { doc: KBDoc; score: number; section?: string; snippet: string }[];
+};
+
+const Highlight = ({ text, q }: { text: string; q: string }) => {
+  const terms = q.split(/\s+/).filter((t) => t.length >= 2).map(escapeRe);
+  if (!terms.length) return <>{text}</>;
+  const re = new RegExp(`(${terms.join("|")})`, "gi");
+  return <>{text.split(re).map((p, i) => (i % 2 ? <mark key={i} className="rounded bg-primary/15 px-0.5 text-foreground">{p}</mark> : p))}</>;
+};
+
 const KnowledgeBase = () => {
   const kbBase = useKBBase();
   const [searchQuery, setSearchQuery] = useState("");
+  const [docs, setDocs] = useState<KBDoc[] | null>(null);
+  const q = searchQuery.trim();
+  const searching = q.length >= 2;
+  useEffect(() => { if (searching && !docs) loadKBIndex().then(setDocs); }, [searching, docs]);
+  const results = useMemo(() => (searching && docs ? searchKB(docs, q) : []), [searching, docs, q]);
+  const hitSlugs = useMemo(() => new Set(results.map((r) => r.doc.slug)), [results]);
 
   useSEO({
     title: "Knowledge Base — Help, Guides & Tutorials | Zonoir",
@@ -229,7 +270,7 @@ const KnowledgeBase = () => {
   const filteredCategories = categories.map(category => ({
     ...category,
     articles: category.articles.filter(article =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase())
+      article.title.toLowerCase().includes(searchQuery.toLowerCase()) || hitSlugs.has(article.slug)
     )
   })).filter(category => 
     searchQuery === "" || category.articles.length > 0
@@ -265,9 +306,46 @@ const KnowledgeBase = () => {
               placeholder="Search for articles, guides, tutorials..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 text-lg bg-background/80 backdrop-blur-sm border-border/50 shadow-lg"
+              onFocus={() => { loadKBIndex(); }}
+              onKeyDown={(e) => { if (e.key === "Escape") setSearchQuery(""); }}
+              aria-label="Search the knowledge base"
+              className="pl-12 pr-12 h-14 text-lg bg-background/80 backdrop-blur-sm border-border/50 shadow-lg"
             />
+            {searchQuery && (
+              <button type="button" onClick={() => setSearchQuery("")} aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
+
+          {searching && (
+            <div className="mx-auto mt-4 max-w-xl text-left" aria-live="polite">
+              <Card className="overflow-hidden border-border/60 shadow-lg">
+                {!docs ? (
+                  <p className="px-4 py-5 text-sm text-muted-foreground">Searching…</p>
+                ) : results.length === 0 ? (
+                  <div className="px-4 py-5 text-sm">
+                    <p className="font-medium">No articles match “{q}”.</p>
+                    <p className="mt-1 text-muted-foreground">Try a shorter word, or <Link to="/contact" className="text-primary underline-offset-2 hover:underline">contact support</Link>.</p>
+                  </div>
+                ) : (
+                  <ul className="divide-y">
+                    <li className="bg-muted/40 px-4 py-2 text-xs text-muted-foreground">{results.length} article{results.length > 1 ? "s" : ""} found</li>
+                    {results.map((r) => (
+                      <li key={r.doc.slug}>
+                        <Link to={`${kbBase}/${r.doc.slug}`} className="block px-4 py-3 hover:bg-muted/50">
+                          <p className="font-medium"><Highlight text={r.doc.title} q={q} /></p>
+                          {r.section && <p className="mt-0.5 text-xs text-primary">Section: <Highlight text={r.section} q={q} /></p>}
+                          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground"><Highlight text={r.snippet} q={q} /></p>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            </div>
+          )}
         </div>
       </section>
 
@@ -275,9 +353,10 @@ const KnowledgeBase = () => {
       <section className="container mx-auto px-4 -mt-6 mb-12">
         <div className="flex flex-wrap justify-center gap-3">
           {["Getting Started", "Appointments", "Billing", "Troubleshooting"].map((tag) => (
-            <Badge key={tag} variant="outline" className="px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
+            <button key={tag} type="button" onClick={() => { setSearchQuery(tag === "Troubleshooting" ? "troubleshoot" : tag); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              className={`${badgeVariants({ variant: "outline" })} px-4 py-2 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors`}>
               {tag}
-            </Badge>
+            </button>
           ))}
         </div>
       </section>
