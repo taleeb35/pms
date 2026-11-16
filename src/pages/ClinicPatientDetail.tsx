@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PatientBalance from "@/components/PatientBalance";
 import MergePatientDialog from "@/components/MergePatientDialog";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate, useParams } from "react-router-dom";
@@ -117,6 +118,7 @@ const ClinicPatientDetail = () => {
         )}
       </div>
 
+      <PatientBalance patientId={patient.id} />
       <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
 
       {/* Membership status */}

@@ -29,3 +29,17 @@ describe("subscription price", () => {
     expect(usd(35)).toContain("35");
   });
 });
+
+import { balanceDue } from "@/lib/revenue";
+describe("balance due per visit", () => {
+  it("is zero when nothing was recorded (paid in full)", () => {
+    expect(balanceDue({ consultation_fee: 2000, amount_paid: null })).toBe(0);
+  });
+  it("is fees minus refund minus what was paid", () => {
+    expect(balanceDue({ consultation_fee: 2000, procedure_fee: 1000, refund: 500, amount_paid: 1500 })).toBe(1000);
+  });
+  it("never goes negative and ignores cancelled visits", () => {
+    expect(balanceDue({ consultation_fee: 1000, amount_paid: 1200 })).toBe(0);
+    expect(balanceDue({ status: "cancelled", consultation_fee: 1000, amount_paid: 0 })).toBe(0);
+  });
+});

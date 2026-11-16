@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PatientBalance from "@/components/PatientBalance";
 import MergePatientDialog from "@/components/MergePatientDialog";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useParams, useNavigate } from "react-router-dom";
@@ -456,6 +457,7 @@ const PatientDetail = () => {
         </div>
       </div>
 
+      <PatientBalance patientId={patient.id} />
       <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
 
       <Tabs defaultValue="timeline" className="space-y-4">

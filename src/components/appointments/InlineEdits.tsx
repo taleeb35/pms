@@ -9,11 +9,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { logActivity } from "@/lib/activityLogger";
 import { money, moneySymbol } from "@/lib/region";
 import { useToast } from "@/hooks/use-toast";
+import { balanceDue } from "@/lib/revenue";
 
 // Change an appointment's status or fee right in the list, without opening the visit.
 type Apt = {
   id: string; status: string; doctor_id?: string | null;
   consultation_fee?: number | null; other_fee?: number | null; procedure_fee?: number | null; refund?: number | null;
+  amount_paid?: number | null;
   patients?: { full_name?: string | null } | null;
 };
 type Patch = Record<string, unknown>;
@@ -85,22 +87,33 @@ export function InlineFee({ apt, onSaved }: { apt: Apt; onSaved: (id: string, pa
   const [open, setOpen] = useState(false);
   const [consult, setConsult] = useState("");
   const [other, setOther] = useState("");
+  const [paid, setPaid] = useState("");
   const [busy, setBusy] = useState(false);
   const gross = grossFee(apt);
   const refund = num(apt.refund);
+  const due = balanceDue(apt);
 
   const openChange = (o: boolean) => {
     setOpen(o);
-    if (o) { setConsult(apt.consultation_fee ? String(apt.consultation_fee) : ""); setOther(apt.other_fee ? String(apt.other_fee) : ""); }
+    if (o) {
+      setConsult(apt.consultation_fee ? String(apt.consultation_fee) : ""); setOther(apt.other_fee ? String(apt.other_fee) : "");
+      setPaid(apt.amount_paid === null || apt.amount_paid === undefined ? "" : String(apt.amount_paid));
+    }
   };
 
   const valid = (v: string) => v === "" || (/^\d+(\.\d{1,2})?$/.test(v.trim()) && Number(v) >= 0);
-  const ok = valid(consult) && valid(other);
+  const ok = valid(consult) && valid(other) && valid(paid);
+  const newNet = (consult === "" ? 0 : Number(consult)) + (other === "" ? 0 : Number(other)) + num(apt.procedure_fee) - refund;
+  const newDue = paid === "" || !ok ? 0 : Math.max(0, newNet - Number(paid));
 
   const save = async () => {
     if (!ok) return;
-    const patch: Patch = { consultation_fee: consult === "" ? 0 : Number(consult), other_fee: other === "" ? 0 : Number(other) };
-    if (patch.consultation_fee === num(apt.consultation_fee) && patch.other_fee === num(apt.other_fee)) { setOpen(false); return; }
+    const patch: Patch = {
+      consultation_fee: consult === "" ? 0 : Number(consult), other_fee: other === "" ? 0 : Number(other),
+      amount_paid: paid === "" ? null : Number(paid),
+    };
+    const oldPaid = apt.amount_paid === undefined ? null : apt.amount_paid === null ? null : Number(apt.amount_paid);
+    if (patch.consultation_fee === num(apt.consultation_fee) && patch.other_fee === num(apt.other_fee) && patch.amount_paid === oldPaid) { setOpen(false); return; }
     setBusy(true);
     const { error } = await supabase.from("appointments").update(patch as any).eq("id", apt.id);
     setBusy(false);
@@ -108,11 +121,11 @@ export function InlineFee({ apt, onSaved }: { apt: Apt; onSaved: (id: string, pa
     onSaved(apt.id, patch);
     setOpen(false);
     const total = Number(patch.consultation_fee) + Number(patch.other_fee) + num(apt.procedure_fee);
-    toast({ title: "Fee saved", description: `${apt.patients?.full_name ? `${apt.patients.full_name}: ` : ""}${money(total)}` });
+    toast({ title: "Fee saved", description: `${apt.patients?.full_name ? `${apt.patients.full_name}: ` : ""}${money(total - refund)}${newDue > 0 ? `, ${money(newDue)} still to pay` : ""}` });
     try {
       await logActivity({
         action: "appointment_updated", entityType: "appointment", entityId: apt.id,
-        details: { doctorId: apt.doctor_id, patient_name: apt.patients?.full_name || "Unknown", consultation_fee: patch.consultation_fee, other_fee: patch.other_fee },
+        details: { doctorId: apt.doctor_id, patient_name: apt.patients?.full_name || "Unknown", consultation_fee: patch.consultation_fee, other_fee: patch.other_fee, amount_paid: patch.amount_paid },
       });
     } catch { /* logging is best effort */ }
   };
@@ -124,6 +137,7 @@ export function InlineFee({ apt, onSaved }: { apt: Apt; onSaved: (id: string, pa
           <button type="button" aria-label="Edit fee" title="Edit fee"
             className="group inline-flex items-center gap-1 whitespace-nowrap rounded-md px-1 py-0.5 text-sm outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">
             {gross > 0 ? <span className="font-medium tabular-nums">{money(gross - refund)}</span> : <span className="text-muted-foreground">Add fee</span>}
+            {due > 0 && <span className="rounded bg-destructive/10 px-1.5 text-xs font-medium text-destructive tabular-nums">Due {money(due)}</span>}
             <Pencil className="h-3 w-3 text-muted-foreground opacity-60 group-hover:opacity-100" />
           </button>
         </PopoverTrigger>
@@ -137,6 +151,13 @@ export function InlineFee({ apt, onSaved }: { apt: Apt; onSaved: (id: string, pa
             <div className="space-y-1">
               <Label htmlFor={`of-${apt.id}`} className="text-xs">Other fee ({moneySymbol()})</Label>
               <Input id={`of-${apt.id}`} inputMode="decimal" value={other} onChange={(e) => setOther(e.target.value)} placeholder="0" />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor={`pd-${apt.id}`} className="text-xs">Amount paid ({moneySymbol()})</Label>
+              <Input id={`pd-${apt.id}`} inputMode="decimal" value={paid} onChange={(e) => setPaid(e.target.value)} placeholder="Paid in full" />
+              <p className={`text-xs ${newDue > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                {paid === "" ? "Leave empty if the patient paid in full." : newDue > 0 ? `Still to pay: ${money(newDue)}` : "Nothing left to pay."}
+              </p>
             </div>
             {(num(apt.procedure_fee) > 0 || refund > 0) && (
               <p className="text-xs text-muted-foreground">

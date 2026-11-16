@@ -29,3 +29,12 @@ export const pctChange = (current: number, previous: number): number | null =>
 /** "+12.5%", "-3.0%" or "—" when there is nothing to compare with. */
 export const fmtPct = (x: number | null | undefined): string =>
   x == null || !Number.isFinite(x) ? "—" : `${x >= 0 ? "+" : ""}${x.toFixed(1)}%`;
+
+// F3: what the patient still owes for a visit. amount_paid empty = paid in full (every visit before part
+// payments were recorded), so only visits where someone typed a smaller amount show a balance.
+// Cancelled and no-show visits never owe anything.
+export const balanceDue = (a: FeeRow & { amount_paid?: number | string | null }) => {
+  if (a.amount_paid === null || a.amount_paid === undefined || a.amount_paid === "") return 0;
+  if (a.status === "cancelled" || a.status === "no_show") return 0;
+  return Math.max(0, Math.round((netFee(a) - n(a.amount_paid)) * 100) / 100);
+};

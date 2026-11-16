@@ -161,7 +161,9 @@ export function WhatsNewButton() {
   const [fbOpen, setFbOpen] = useState(false);
   const [seen, setSeen] = useState<string | null>(() => { try { return localStorage.getItem(SEEN_KEY); } catch { return null; } });
   const unread = entries.length > 0 && entries[0].id !== seen;
+  const [popOpen, setPopOpen] = useState(false);
   const onOpen = (o: boolean) => {
+    setPopOpen(o);
     if (o && entries[0]) { try { localStorage.setItem(SEEN_KEY, entries[0].id); } catch { /* ignore */ } setSeen(entries[0].id); }
   };
   if (!base || base === "/admin" || !entries.length) return null;
@@ -174,7 +176,7 @@ export function WhatsNewButton() {
   };
   return (
     <>
-    <Popover onOpenChange={onOpen}>
+    <Popover open={popOpen} onOpenChange={onOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="What's new" title="What's new" className="relative">
           <Sparkles className="h-5 w-5" />
@@ -201,7 +203,7 @@ export function WhatsNewButton() {
           })}
         </ul>
         <div className="border-t px-4 py-2.5">
-          <button type="button" onClick={() => setFbOpen(true)} className="text-sm font-medium text-primary hover:underline">Send feedback or an idea</button>
+          <button type="button" onClick={() => { setPopOpen(false); setFbOpen(true); }} className="text-sm font-medium text-primary hover:underline">Send feedback or an idea</button>
         </div>
       </PopoverContent>
     </Popover>
