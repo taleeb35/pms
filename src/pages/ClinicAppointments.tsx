@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { AppointmentCards } from "@/components/appointments/AppointmentCards";
+import { InlineStatus, InlineFee } from "@/components/appointments/InlineEdits";
 import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
@@ -99,6 +100,9 @@ const ClinicAppointments = () => {
   const location = useLocation();
   const { clinicId, isReceptionist, loading: clinicLoading } = useClinicId();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  // Inline edits in the list update the row in place, no reload.
+  const patchAppointment = (id: string, patch: Record<string, unknown>) =>
+    setAppointments((prev) => prev.map((a) => (a.id === id ? ({ ...a, ...patch } as Appointment) : a)));
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -809,7 +813,7 @@ const ClinicAppointments = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <AppointmentCards items={paginatedAppointments} loading={loading} onOpen={(apt) => openVisitDialog(apt)} badge={(apt) => getStatusBadge(apt.status, apt)} showDoctor empty={<EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />} />
+              <AppointmentCards items={paginatedAppointments} loading={loading} onOpen={(apt) => openVisitDialog(apt)} badge={(apt) => <InlineStatus apt={apt} badge={getStatusBadge(apt.status, apt)} onSaved={patchAppointment} />} showDoctor empty={<EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />} />
               <div className="hidden md:block">
               <Table>
                 <TableHeader>
@@ -825,16 +829,17 @@ const ClinicAppointments = () => {
                     <TableHead>Phone</TableHead>
                     <TableHead>Date & Time</TableHead>
                     <TableHead>Created By</TableHead>
+                    <TableHead>Fee</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {loading ? (
-                    <TableSkeleton columns={8} rows={5} columnWidths={["w-[40px]", "w-[120px]", "w-[150px]", "w-[100px]", "w-[120px]", "w-[100px]", "w-[80px]"]} />
+                    <TableSkeleton columns={9} rows={5} columnWidths={["w-[40px]", "w-[120px]", "w-[150px]", "w-[100px]", "w-[120px]", "w-[100px]", "w-[80px]", "w-[80px]"]} />
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                      <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
                         <EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />
                       </TableCell>
                     </TableRow>
@@ -869,7 +874,8 @@ const ClinicAppointments = () => {
                           <span className="text-sm text-muted-foreground">{friendlyTime(apt.appointment_time)}</span>
                         </TableCell>
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
-                        <TableCell>{getStatusBadge(apt.status, apt)}</TableCell>
+                        <TableCell><InlineFee apt={apt} onSaved={patchAppointment} /></TableCell>
+                        <TableCell><InlineStatus apt={apt} badge={getStatusBadge(apt.status, apt)} onSaved={patchAppointment} /></TableCell>
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
