@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useAiEnabled } from "@/hooks/usePublicSettings";
 import { AiDisclosure } from "@/components/AiDisclosure";
 import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ interface AIPatientInsightsProps {
   patientName: string;
 }
 
-const AIPatientInsights = ({ patientId, patientName }: AIPatientInsightsProps) => {
+const AIPatientInsightsInner = ({ patientId, patientName }: AIPatientInsightsProps) => {
   const [insights, setInsights] = useState("");
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -213,4 +214,11 @@ const AIPatientInsights = ({ patientId, patientName }: AIPatientInsightsProps) =
   );
 };
 
+
+
+// Hidden until an AI key is configured (system setting "ai_enabled").
+const AIPatientInsights = (props: React.ComponentProps<typeof AIPatientInsightsInner>) => {
+  const aiOn = useAiEnabled();
+  return aiOn ? <AIPatientInsightsInner {...props} /> : null;
+};
 export default AIPatientInsights;

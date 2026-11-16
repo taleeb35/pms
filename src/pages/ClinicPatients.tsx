@@ -106,6 +106,7 @@ const ClinicPatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   // A6: patient country (empty = clinic's country, filled in by the database)
   const [addCountry, setAddCountry] = useState("");
+  const [showMoreAdd, setShowMoreAdd] = useState(false); // Add Patient: optional fields collapsed
   const [editCountry, setEditCountry] = useState("");
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1533,7 +1534,7 @@ const ClinicPatients = () => {
                 />
                 {formErrors.full_name && <p className="text-sm text-destructive">{formErrors.full_name}</p>}
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Father / Husband Name</Label>
                 <Input
                   value={addForm.father_name}
@@ -1543,7 +1544,7 @@ const ClinicPatients = () => {
                 />
                 {formErrors.father_name && <p className="text-sm text-destructive">{formErrors.father_name}</p>}
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Email</Label>
                 <Input
                   type="email"
@@ -1564,7 +1565,7 @@ const ClinicPatients = () => {
                 />
                 {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>{idLabel()}</Label>
                 <Input
                   value={addForm.cnic}
@@ -1610,7 +1611,7 @@ const ClinicPatients = () => {
                   </PopoverContent>
                 </Popover>
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Added Date</Label>
                 <Popover open={addedDatePopoverOpen} onOpenChange={setAddedDatePopoverOpen}>
                   <PopoverTrigger asChild>
@@ -1658,7 +1659,7 @@ const ClinicPatients = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Blood Group</Label>
                 <Select
                   value={addForm.blood_group}
@@ -1679,7 +1680,7 @@ const ClinicPatients = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Marital Status</Label>
                 <Select
                   value={addForm.marital_status}
@@ -1694,7 +1695,7 @@ const ClinicPatients = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className={showMoreAdd ? "" : "hidden"}>
                 <CitySelect 
                   value={addForm.city} 
                   onValueChange={(value) => setAddForm({ ...addForm, city: value })}
@@ -1703,7 +1704,7 @@ const ClinicPatients = () => {
                   label="City"
                 />
               </div>
-              <div className="col-span-2">
+              <div className={showMoreAdd ? "col-span-2" : "hidden"}>
                 <Label>Allergies</Label>
                 <MultiSelectSearchable
                   options={allergyOptions}
@@ -1712,7 +1713,7 @@ const ClinicPatients = () => {
                   placeholder="Select allergies..."
                 />
               </div>
-              <div className="col-span-2">
+              <div className={showMoreAdd ? "col-span-2" : "hidden"}>
                 <Label>Major Diseases</Label>
                 <MultiSelectSearchable
                   options={diseaseOptions}
@@ -1721,7 +1722,7 @@ const ClinicPatients = () => {
                   placeholder="Select diseases..."
                 />
               </div>
-              <div className="col-span-2">
+              <div className={showMoreAdd ? "col-span-2" : "hidden"}>
                 <Label>Confidential Notes <span className="text-xs text-muted-foreground font-normal">(visible to doctor & staff only)</span></Label>
                 <Textarea
                   value={addForm.confidential_notes}
@@ -1731,7 +1732,7 @@ const ClinicPatients = () => {
                   className="bg-amber-50 border-amber-200"
                 />
               </div>
-              <div className="col-span-2">
+              <div className={showMoreAdd ? "col-span-2" : "hidden"}>
                 <Label>Address</Label>
                 <Textarea
                   value={addForm.address}
@@ -1740,6 +1741,11 @@ const ClinicPatients = () => {
                   rows={2}
                 />
               </div>
+            <div className="col-span-2">
+              <Button type="button" variant="ghost" size="sm" className="px-0 text-primary" onClick={() => setShowMoreAdd((v) => !v)}>
+                {showMoreAdd ? "Fewer details" : "More details (email, ID, blood group, city, allergies, notes...)"}
+              </Button>
+            </div>
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>

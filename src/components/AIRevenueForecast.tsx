@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAiEnabled } from "@/hooks/usePublicSettings";
 import { AiDisclosure } from "@/components/AiDisclosure";
 import { logAi } from "@/lib/aiAudit";
 import { money, moneySymbol } from "@/lib/region";
@@ -55,7 +56,7 @@ const getMonthLabel = (monthStr: string) => {
   return `${months[parseInt(month) - 1]} ${year}`;
 };
 
-export const AIRevenueForecast = ({ role }: AIRevenueForecastProps) => {
+const AIRevenueForecastInner = ({ role }: AIRevenueForecastProps) => {
   const [data, setData] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
@@ -319,4 +320,10 @@ export const AIRevenueForecast = ({ role }: AIRevenueForecastProps) => {
       </CardContent>
     </Card>
   );
+};
+
+// Hidden until an AI key is configured (system setting "ai_enabled").
+export const AIRevenueForecast = (props: React.ComponentProps<typeof AIRevenueForecastInner>) => {
+  const aiOn = useAiEnabled();
+  return aiOn ? <AIRevenueForecastInner {...props} /> : null;
 };

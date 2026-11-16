@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -1001,9 +1002,9 @@ const DoctorAppointments = () => {
                           </TableCell>
                         )}
                         <TableCell>
-                          {format(new Date(apt.appointment_date), "PPP")}
+                          {friendlyDate(apt.appointment_date)}
                           <br />
-                          <span className="text-sm text-muted-foreground">{apt.appointment_time}</span>
+                          <span className="text-sm text-muted-foreground">{friendlyTime(apt.appointment_time)}</span>
                         </TableCell>
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                         <TableCell>{getStatusBadge(apt.status, apt)}</TableCell>

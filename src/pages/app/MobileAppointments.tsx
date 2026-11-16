@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import MobileAppShell from "@/components/MobileAppShell";
@@ -231,7 +232,7 @@ const MobileAppointments = () => {
                   <div className="font-semibold text-sm truncate">{a.patients?.full_name || "Unknown patient"}</div>
                   <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-1">
                     <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{format(new Date(a.appointment_date), "dd MMM")}</span>
-                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{a.appointment_time?.slice(0,5)}</span>
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{friendlyTime(a.appointment_time)}</span>
                     {a.patients?.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{a.patients.phone}</span>}
                   </div>
                   {a.reason && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{a.reason}</p>}

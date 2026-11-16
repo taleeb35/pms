@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -269,9 +270,9 @@ const DoctorReceptionistAppointments = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {format(new Date(appt.appointment_date), "MMM d, yyyy")}
+                          {friendlyDate(appt.appointment_date)}
                         </TableCell>
-                        <TableCell>{appt.appointment_time}</TableCell>
+                        <TableCell>{friendlyTime(appt.appointment_time)}</TableCell>
                         <TableCell>
                           <Badge variant="outline">{appt.appointment_type || "new"}</Badge>
                         </TableCell>

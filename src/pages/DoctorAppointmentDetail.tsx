@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { money, moneySymbol } from "@/lib/region";
 import { confirmUnusualFee } from "@/lib/feeCheck";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -1008,7 +1009,7 @@ const DoctorAppointmentDetail = () => {
               {appointment.status.replace("_", " ")}
             </Badge>
             <span className="text-muted-foreground">
-              {format(new Date(appointment.appointment_date), "MMMM d, yyyy")} at {appointment.appointment_time}
+              {friendlyDate(appointment.appointment_date)} at {friendlyTime(appointment.appointment_time)}
             </span>
           </div>
         </div>

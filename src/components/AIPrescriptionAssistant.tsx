@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAiEnabled } from "@/hooks/usePublicSettings";
 import { AiDisclosure } from "@/components/AiDisclosure";
 import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ interface AIPrescriptionAssistantProps {
   onApplySuggestion: (text: string) => void;
 }
 
-export const AIPrescriptionAssistant = ({
+const AIPrescriptionAssistantInner = ({
   chiefComplaint,
   diagnosis,
   patientAge,
@@ -197,4 +198,10 @@ export const AIPrescriptionAssistant = ({
       )}
     </div>
   );
+};
+
+// Hidden until an AI key is configured (system setting "ai_enabled").
+export const AIPrescriptionAssistant = (props: React.ComponentProps<typeof AIPrescriptionAssistantInner>) => {
+  const aiOn = useAiEnabled();
+  return aiOn ? <AIPrescriptionAssistantInner {...props} /> : null;
 };

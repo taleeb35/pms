@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useAiEnabled } from "@/hooks/usePublicSettings";
 import { AiDisclosure } from "@/components/AiDisclosure";
 import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
@@ -37,7 +38,7 @@ const DOCTOR_SUGGESTIONS = [
   "How many pending appointments do I have?",
 ];
 
-const AIChatbot = ({ role }: AIChatbotProps) => {
+const AIChatbotInner = ({ role }: AIChatbotProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -306,4 +307,11 @@ const AIChatbot = ({ role }: AIChatbotProps) => {
   );
 };
 
+
+
+// Hidden until an AI key is configured (system setting "ai_enabled").
+const AIChatbot = (props: React.ComponentProps<typeof AIChatbotInner>) => {
+  const aiOn = useAiEnabled();
+  return aiOn ? <AIChatbotInner {...props} /> : null;
+};
 export default AIChatbot;

@@ -595,7 +595,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {totalRevenue.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {money(totalRevenue)}
             </div>
           </CardContent>
         </Card>
@@ -613,7 +613,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              -{totalDiscount.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              -{money(totalDiscount)}
             </div>
           </CardContent>
         </Card>
@@ -634,7 +634,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {clinicShare.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {money(clinicShare)}
             </div>
           </CardContent>
         </Card>
@@ -655,7 +655,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {doctorsShare.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {money(doctorsShare)}
             </div>
           </CardContent>
         </Card>
@@ -673,7 +673,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              -{totalExpenses.toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              -{money(totalExpenses)}
             </div>
           </CardContent>
         </Card>
@@ -696,7 +696,7 @@ export default function ClinicFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {(clinicShare - totalExpenses).toLocaleString("en", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {money((clinicShare - totalExpenses))}
             </div>
           </CardContent>
         </Card>

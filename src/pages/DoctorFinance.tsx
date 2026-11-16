@@ -453,7 +453,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {totalRevenue.toLocaleString("en")}
+              {money(totalRevenue)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">{REVENUE_DEFINITION}</p>
           </CardContent>
@@ -471,7 +471,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              -{totalDiscount.toLocaleString("en")}
+              -{money(totalDiscount)}
             </div>
           </CardContent>
         </Card>
@@ -488,7 +488,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {clinicShare.toLocaleString("en")}
+              {money(clinicShare)}
             </div>
           </CardContent>
         </Card>
@@ -505,7 +505,7 @@ export default function DoctorFinance() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {doctorShare.toLocaleString("en")}
+              {money(doctorShare)}
             </div>
           </CardContent>
         </Card>

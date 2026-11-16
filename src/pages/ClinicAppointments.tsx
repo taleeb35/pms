@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -832,7 +833,11 @@ const ClinicAppointments = () => {
                     </TableRow>
                   ) : (
                     paginatedAppointments.map((apt) => (
-                      <TableRow key={apt.id} className={cn("hover:bg-accent/50", selectedIds.has(apt.id) && "bg-primary/10 hover:bg-primary/15")}>
+                      <TableRow
+                        key={apt.id}
+                        className={cn("hover:bg-accent/50 cursor-pointer transition-colors", selectedIds.has(apt.id) && "bg-primary/10 hover:bg-primary/15")}
+                        onClick={() => openVisitDialog(apt)}
+                      >
                         <TableCell onClick={(e) => e.stopPropagation()}>
                           <Checkbox
                             checked={selectedIds.has(apt.id)}
@@ -852,13 +857,13 @@ const ClinicAppointments = () => {
                         </TableCell>
                         <TableCell>{apt.patients.phone}</TableCell>
                         <TableCell>
-                          {format(new Date(apt.appointment_date), "PPP")}
+                          {friendlyDate(apt.appointment_date)}
                           <br />
-                          <span className="text-sm text-muted-foreground">{apt.appointment_time}</span>
+                          <span className="text-sm text-muted-foreground">{friendlyTime(apt.appointment_time)}</span>
                         </TableCell>
                         <TableCell>{apt.creator?.full_name || "-"}</TableCell>
                         <TableCell>{getStatusBadge(apt.status, apt)}</TableCell>
-                        <TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button variant="ghost" size="sm" className="h-8 w-8 p-0">

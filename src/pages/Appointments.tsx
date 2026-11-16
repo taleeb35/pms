@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -104,8 +105,8 @@ const Appointments = () => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                     <span>
-                      {new Date(appointment.appointment_date).toLocaleDateString()} at{" "}
-                      {appointment.appointment_time}
+                      {friendlyDate(appointment.appointment_date)} at{" "}
+                      {friendlyTime(appointment.appointment_time)}
                     </span>
                   </div>
                   <div>

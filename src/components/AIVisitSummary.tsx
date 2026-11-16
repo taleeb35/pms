@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useAiEnabled } from "@/hooks/usePublicSettings";
 import { AiDisclosure } from "@/components/AiDisclosure";
 import { logAi } from "@/lib/aiAudit";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ interface AIVisitSummaryProps {
   nextVisitDate?: string;
 }
 
-export const AIVisitSummary = ({
+const AIVisitSummaryInner = ({
   patientName,
   patientAge,
   patientGender,
@@ -298,4 +299,10 @@ export const AIVisitSummary = ({
       </CardContent>
     </Card>
   );
+};
+
+// Hidden until an AI key is configured (system setting "ai_enabled").
+export const AIVisitSummary = (props: React.ComponentProps<typeof AIVisitSummaryInner>) => {
+  const aiOn = useAiEnabled();
+  return aiOn ? <AIVisitSummaryInner {...props} /> : null;
 };

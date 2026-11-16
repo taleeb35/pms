@@ -1,4 +1,5 @@
 import styles from "./Layout.module.css";
+import GlobalSearch from "@/components/GlobalSearch";
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -624,7 +625,8 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <span className="new_bg hidden text-sm md:inline px-3 py-1.5 rounded-full max-w-[220px] truncate">{user.email}</span>
+            <GlobalSearch />
+            <span className="new_bg hidden text-sm lg:inline px-3 py-1.5 rounded-full max-w-[220px] truncate">{user.email}</span>
             <Button
               variant="ghost"
               size="icon"

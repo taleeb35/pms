@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -298,7 +299,7 @@ export const ImprovedAppointmentCalendar = ({
                       </Badge>
                     </div>
                     <div className="flex items-center gap-4 text-sm">
-                      <span className="font-medium">{apt.appointment_time}</span>
+                      <span className="font-medium">{friendlyTime(apt.appointment_time)}</span>
                       <span className="text-muted-foreground">•</span>
                       <span className="text-muted-foreground">{apt.reason || "General checkup"}</span>
                     </div>

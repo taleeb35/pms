@@ -1,4 +1,5 @@
 import { Calendar } from "@/components/ui/calendar";
+import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format, isSameDay, parseISO } from "date-fns";
@@ -95,7 +96,7 @@ export const AppointmentCalendarView = ({ appointments, onAppointmentClick }: Ap
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">{apt.appointment_time}</span>
+                      <span className="font-medium">{friendlyTime(apt.appointment_time)}</span>
                       {apt.reason && (
                         <span className="text-muted-foreground">• {apt.reason}</span>
                       )}
