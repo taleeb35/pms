@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
@@ -119,16 +120,16 @@ const DoctorAppointments = () => {
   const [datePopoverOpen, setDatePopoverOpen] = useState(false);
   const [editDatePopoverOpen, setEditDatePopoverOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
-  const [dateFilter, setDateFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
+  const [pageSize, setPageSize] = useStickyState("doctorAppts.pageSize", 25);
+  const [dateFilter, setDateFilter] = useStickyState("doctorAppts.date", "all");
+  const [statusFilter, setStatusFilter] = useStickyState("doctorAppts.status", "all", urlParam("status"));
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [isGynecologist, setIsGynecologist] = useState(false);
   const [selectedTime, setSelectedTime] = useState("");
   const [editSelectedTime, setEditSelectedTime] = useState("");
   const [icdCodes, setIcdCodes] = useState<ICDCode[]>([]);
-  const [icdCodeFilter, setIcdCodeFilter] = useState("all");
+  const [icdCodeFilter, setIcdCodeFilter] = useStickyState("doctorAppts.icd", "all");
   const [selectedAppointmentType, setSelectedAppointmentType] = useState("new");
   const [isVideoConsultation, setIsVideoConsultation] = useState(false);
   const [doctorId, setDoctorId] = useState<string>("");

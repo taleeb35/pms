@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { DuplicatePatientHint, AgeQuickPick } from "@/components/patients/PatientFormHelpers";
 import PhoneInput from "@/components/PhoneInput";
@@ -116,7 +117,7 @@ const ClinicPatients = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<string>(doctorIdFromParams || "all");
   const [selectedGender, setSelectedGender] = useState<string>("all");
   const [selectedCity, setSelectedCity] = useState<string>("all");
-  const [ageFilter, setAgeFilter] = useState<string>("all");
+  const [ageFilter, setAgeFilter] = useStickyState<string>("clinicPatients.age", "all");
   const [trimesterFilter, setTrimesterFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();
@@ -124,7 +125,7 @@ const ClinicPatients = () => {
   const [addedDateFromPopoverOpen, setAddedDateFromPopoverOpen] = useState(false);
   const [addedDateToPopoverOpen, setAddedDateToPopoverOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useStickyState("clinicPatients.pageSize", 25);
   const [doctorIds, setDoctorIds] = useState<string[]>([]);
   const { toast } = useToast();
 

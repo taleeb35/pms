@@ -1,4 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
+import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { DuplicatePatientHint, AgeQuickPick } from "@/components/patients/PatientFormHelpers";
 import PhoneInput from "@/components/PhoneInput";
@@ -155,11 +156,11 @@ const DoctorPatients = () => {
     }
   }, [addedDate]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useStickyState("doctorPatients.pageSize", 25);
   const [totalCount, setTotalCount] = useState(0);
   const [filterAge, setFilterAge] = useState("");
-  const [filterGender, setFilterGender] = useState("");
-  const [filterCity, setFilterCity] = useState("");
+  const [filterGender, setFilterGender] = useStickyState("doctorPatients.gender", "");
+  const [filterCity, setFilterCity] = useStickyState("doctorPatients.city", "");
   const [filterDelivery, setFilterDelivery] = useState("");
   const [filterTrimester, setFilterTrimester] = useState("");
   const [filterAddedDateFrom, setFilterAddedDateFrom] = useState<Date>();

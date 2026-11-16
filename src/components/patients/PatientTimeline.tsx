@@ -22,6 +22,9 @@ const FILTERS: { id: "all" | Kind; label: string }[] = [
   { id: "doc", label: "Documents" }, { id: "pay", label: "Payments" },
 ];
 
+// Ignore placeholder text such as "." or "•" left in old records.
+const real = (s?: string | null) => !!s && /[a-z0-9؀-ۿ]/i.test(s);
+
 const ICON: Record<Kind, typeof Pill> = { visit: Stethoscope, rx: Pill, doc: FileText, pay: Wallet };
 const DOT: Record<Kind, string> = {
   visit: "bg-primary text-primary-foreground", rx: "bg-violet-600 text-white",
@@ -71,7 +74,7 @@ export const PatientTimeline = ({ patientId, base, showDocuments = true }: Props
         const statusLabel: Record<string, string> = { completed: "Completed", scheduled: "Booked", start: "In progress", cancelled: "Cancelled", no_show: "No-show" };
         out.push({
           key: `v${a.id}`, kind: "visit", date: a.appointment_date, time: a.appointment_time, apptId: a.id,
-          title: v?.chief_complaint || a.reason || (a.appointment_type === "walk_in" ? "Walk-in visit" : "Visit"),
+          title: (real(v?.chief_complaint) && v.chief_complaint) || (real(a.reason) && a.reason) ||(a.appointment_type === "walk_in" ? "Walk-in visit" : "Visit"),
           sub: [doc, vitals].filter(Boolean).join(" — "),
           badge: statusLabel[a.status] || a.status,
           tone: a.status === "completed" ? "done" : a.status === "cancelled" || a.status === "no_show" ? "bad" : "open",
@@ -81,9 +84,9 @@ export const PatientTimeline = ({ patientId, base, showDocuments = true }: Props
           out.push({ key: `r${a.id}`, kind: "rx", date: a.appointment_date, time: a.appointment_time, apptId: a.id,
             title: `${rx.length} medicine${rx.length > 1 ? "s" : ""} prescribed`,
             lines: rx.map((m) => [m.medicine_name, m.dosage, m.frequency, m.duration].filter(Boolean).join(" · ")) });
-        } else if (v?.current_prescription?.trim()) {
+        } else if (real(v?.current_prescription)) {
           out.push({ key: `r${a.id}`, kind: "rx", date: a.appointment_date, time: a.appointment_time, apptId: a.id,
-            title: "Prescription", lines: v.current_prescription.trim().split("\n").filter(Boolean).slice(0, 8) });
+            title: "Prescription", lines: v.current_prescription.trim().split("\n").filter(real).slice(0, 8) });
         }
         if (a.status === "completed") {
           const gross = Number(a.consultation_fee || 0) + Number(a.other_fee || 0) + Number(a.procedure_fee || 0);

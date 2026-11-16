@@ -934,9 +934,15 @@ const DoctorAppointmentDetail = () => {
         const followUpDate = format(nextVisitDate, "yyyy-MM-dd");
         const followUpTime = nextVisitTime || appointment.appointment_time;
 
-        const { available } = await isTimeSlotAvailable(appointment.doctor_id, followUpDate, followUpTime);
+        // Saving the visit again must not book a second follow-up for the same day.
+        const { data: already } = await supabase.from("appointments").select("appointment_time")
+          .eq("patient_id", appointment.patient_id).eq("doctor_id", appointment.doctor_id)
+          .eq("appointment_date", followUpDate).eq("status", "scheduled").neq("id", appointment.id).limit(1);
+        const { available } = already?.length ? { available: false } : await isTimeSlotAvailable(appointment.doctor_id, followUpDate, followUpTime);
 
-        if (available) {
+        if (already?.length) {
+          fuBooked = { date: followUpDate, time: (already[0] as any).appointment_time };
+        } else if (available) {
           await supabase.from("appointments").insert({
             patient_id: appointment.patient_id,
             doctor_id: appointment.doctor_id,
