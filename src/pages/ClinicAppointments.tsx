@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { CalendarDays } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
+import { AppointmentCards } from "@/components/appointments/AppointmentCards";
 import { useStickyState, urlParam } from "@/hooks/useStickyState";
 import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
@@ -806,6 +809,8 @@ const ClinicAppointments = () => {
               </div>
             </CardHeader>
             <CardContent>
+              <AppointmentCards items={paginatedAppointments} loading={loading} onOpen={(apt) => openVisitDialog(apt)} badge={(apt) => getStatusBadge(apt.status, apt)} showDoctor empty={<EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />} />
+              <div className="hidden md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -830,7 +835,7 @@ const ClinicAppointments = () => {
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                        No appointments scheduled
+                        <EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -930,6 +935,7 @@ const ClinicAppointments = () => {
                   )}
                 </TableBody>
               </Table>
+              </div>
               <TablePagination
                 currentPage={currentPage}
                 totalPages={totalPages}

@@ -91,7 +91,7 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg overflow-x-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-emerald-600" /> Visit saved</DialogTitle>
           <DialogDescription>{appointment.patients.full_name} — what would you like to do next?</DialogDescription>
@@ -143,8 +143,8 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Stay on this visit</Button>
           {nextPatient ? (
-            <Button onClick={() => { onOpenChange(false); navigate(`/doctor/appointments/${nextPatient.id}`); }}>
-              Next patient: {nextPatient.name} · {friendlyTime(nextPatient.time)} <ArrowRight className="ml-2 h-4 w-4" />
+            <Button className="min-w-0 max-w-full sm:max-w-[65%]" onClick={() => { onOpenChange(false); navigate(`/doctor/appointments/${nextPatient.id}`); }}>
+              <span className="truncate">Next: {nextPatient.name} · {friendlyTime(nextPatient.time)}</span> <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
             </Button>
           ) : (
             <Button onClick={() => { onOpenChange(false); navigate("/doctor/dashboard"); }}>Back to today <ArrowRight className="ml-2 h-4 w-4" /></Button>
