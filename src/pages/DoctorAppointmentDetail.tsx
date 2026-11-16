@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import PrescriptionWriter from "@/components/prescription/PrescriptionWriter";
+import PostVisitDialog, { type PostVisitInfo } from "@/components/visit/PostVisitDialog";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { money, moneySymbol } from "@/lib/region";
 import { confirmUnusualFee } from "@/lib/feeCheck";
@@ -152,6 +153,7 @@ const DoctorAppointmentDetail = () => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
   const [rxReady, setRxReady] = useState(false); // prescription writer waits until the saved visit is loaded
+  const [postVisit, setPostVisit] = useState<PostVisitInfo | null>(null); // "Visit saved" next-steps dialog
   
   // Doctor specialization
   const [isGynecologist, setIsGynecologist] = useState(false);
@@ -926,6 +928,8 @@ const DoctorAppointmentDetail = () => {
       }
 
       // Create follow-up appointment if next visit date is set
+      let fuBooked: PostVisitInfo["followUp"] = null;
+      let fuBusy = false;
       if (nextVisitDate) {
         const followUpDate = format(nextVisitDate, "yyyy-MM-dd");
         const followUpTime = nextVisitTime || appointment.appointment_time;
@@ -943,6 +947,9 @@ const DoctorAppointmentDetail = () => {
             reason: "Follow-up visit",
             notes: formData.next_visit_notes || null,
           });
+          fuBooked = { date: followUpDate, time: followUpTime };
+        } else {
+          fuBusy = true;
         }
       }
 
@@ -950,6 +957,7 @@ const DoctorAppointmentDetail = () => {
         title: "Success",
         description: `Visit record ${existingRecord ? 'updated' : 'saved'} successfully`,
       });
+      setPostVisit({ followUp: fuBooked, followUpBusy: fuBusy });
 
       fetchAppointmentDetails();
     } catch (error: any) {
@@ -1630,6 +1638,16 @@ const DoctorAppointmentDetail = () => {
           </div>
         </div>
       </form>
+      <PostVisitDialog
+        open={!!postVisit}
+        onOpenChange={(o) => { if (!o) setPostVisit(null); }}
+        info={postVisit}
+        appointment={appointment}
+        doctorName={(appointment as any)?.doctors?.profiles?.full_name}
+        prescriptionText={formData.current_prescription}
+        onPrint={handlePrint}
+        onPrintInvoice={handlePrintInvoice}
+      />
       <PrintReportDialog
         open={showReportDialog}
         onOpenChange={setShowReportDialog}

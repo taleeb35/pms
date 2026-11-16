@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import AIPatientInsights from "@/components/AIPatientInsights";
+import PatientTimeline from "@/components/patients/PatientTimeline";
 import { Sparkles, Printer } from "lucide-react";
 import { useActiveMembership } from "@/hooks/useActiveMembership";
 import { useClinicId } from "@/hooks/useClinicId";
@@ -305,6 +306,7 @@ const ClinicPatientDetail = () => {
             </Tabs>
           </CardContent>
         </Card>
+        <PatientTimeline patientId={patient.id} base={window.location.pathname.startsWith("/receptionist") ? "/receptionist" : "/clinic"} showDocuments={false} />
       </div>
     </div>
   );

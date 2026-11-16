@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PatientTimeline from "@/components/patients/PatientTimeline";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -453,12 +454,17 @@ const PatientDetail = () => {
 
       <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
 
-      <Tabs defaultValue="info" className="space-y-4">
-        <TabsList>
+      <Tabs defaultValue="timeline" className="space-y-4">
+        <TabsList className="flex-wrap h-auto">
+          <TabsTrigger value="timeline">Timeline</TabsTrigger>
           <TabsTrigger value="info">Patient Information</TabsTrigger>
           <TabsTrigger value="history">Medical History</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="timeline">
+          <PatientTimeline patientId={patient.id} base="/doctor" />
+        </TabsContent>
 
         <TabsContent value="info">
           <Card>
