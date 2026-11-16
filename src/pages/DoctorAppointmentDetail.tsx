@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import PrescriptionWriter from "@/components/prescription/PrescriptionWriter";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { money, moneySymbol } from "@/lib/region";
 import { confirmUnusualFee } from "@/lib/feeCheck";
@@ -150,6 +151,7 @@ const DoctorAppointmentDetail = () => {
   const [saving, setSaving] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [existingRecord, setExistingRecord] = useState<any>(null);
+  const [rxReady, setRxReady] = useState(false); // prescription writer waits until the saved visit is loaded
   
   // Doctor specialization
   const [isGynecologist, setIsGynecologist] = useState(false);
@@ -216,6 +218,7 @@ const DoctorAppointmentDetail = () => {
     setNextId(snap.nextId);
     setFormData(snap.formData);
     setExistingRecord(snap.existingRecord);
+    setRxReady(true);
     setSelectedProcedure(snap.selectedProcedure);
     setProcedureFee(snap.procedureFee);
     setSelectedICDCode(snap.selectedICDCode);
@@ -525,6 +528,7 @@ const DoctorAppointmentDetail = () => {
   };
 
   const fetchExistingRecord = async (appointmentId: string): Promise<boolean> => {
+    setRxReady(false);
     const { data, error } = await supabase
       .from("visit_records")
       .select("*")
@@ -533,6 +537,7 @@ const DoctorAppointmentDetail = () => {
 
     if (error && error.code !== 'PGRST116') {
       console.error("Error fetching visit record:", error);
+      setRxReady(true);
       return false;
     }
 
@@ -587,8 +592,10 @@ const DoctorAppointmentDetail = () => {
       if (data.next_visit_date) {
         setNextVisitDate(new Date(data.next_visit_date));
       }
+      setRxReady(true);
       return true;
     }
+    setRxReady(true);
     return false;
   };
 
@@ -816,7 +823,7 @@ const DoctorAppointmentDetail = () => {
       if (error) throw error;
 
       // Save structured prescribed medicines for reporting
-      if (stagedMedicines.length > 0) {
+      {
         await supabase
           .from("appointment_prescribed_medicines")
           .delete()
@@ -1281,19 +1288,6 @@ const DoctorAppointmentDetail = () => {
                 {/* Prescription */}
                 <div>
                   <Label className="text-xs text-muted-foreground uppercase tracking-wide">Current Prescription</Label>
-                  {diseaseTemplates.length > 0 && (
-                    <Select value={selectedTemplate || "none"} onValueChange={handleTemplateChange}>
-                      <SelectTrigger className="mt-2 mb-2">
-                        <SelectValue placeholder="Append a template..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">-- Append Template (pick multiple) --</SelectItem>
-                        {diseaseTemplates.map((t) => (
-                          <SelectItem key={t.id} value={t.id}>{t.disease_name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
                   <AIPrescriptionAssistant
                     chiefComplaint={formData.chief_complaint}
                     diagnosis={icdCodes.find(c => c.id === selectedICDCode)?.description}
@@ -1309,12 +1303,17 @@ const DoctorAppointmentDetail = () => {
                     ].filter(Boolean).join(", ") || undefined}
                     onApplySuggestion={(text) => setFormData(prev => ({ ...prev, current_prescription: text }))}
                   />
-                  <Textarea
-                    placeholder="Medications, dosage, and instructions..."
-                    value={formData.current_prescription}
-                    onChange={(e) => setFormData({...formData, current_prescription: e.target.value})}
-                    rows={8}
-                    className="font-mono text-sm"
+                  <PrescriptionWriter
+                    key={appointment?.id || "new"}
+                    ready={rxReady}
+                    appointmentId={appointment?.id}
+                    doctorId={appointment?.doctor_id}
+                    patientId={appointment?.patient_id}
+                    allergies={appointment?.patients?.allergies}
+                    rows={stagedMedicines as any}
+                    onRowsChange={(r) => setStagedMedicines(r as any)}
+                    text={formData.current_prescription}
+                    onTextChange={(text) => setFormData((prev) => ({ ...prev, current_prescription: text }))}
                   />
                 </div>
               </CardContent>
