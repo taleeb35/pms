@@ -75,6 +75,8 @@ export default function QueueDisplay() {
     return () => { clearInterval(t); clearInterval(r); };
   }, [doctors, load]);
 
+  useEffect(() => { document.title = "Patient queue | Zonoir"; }, []);
+
   useEffect(() => {
     const onFs = () => setFull(!!document.fullscreenElement);
     document.addEventListener("fullscreenchange", onFs);
