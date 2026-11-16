@@ -1403,7 +1403,7 @@ const DoctorAppointmentDetail = () => {
                   value={formData.confidential_notes}
                   onChange={(e) => setFormData({...formData, confidential_notes: e.target.value})}
                   rows={4}
-                  className="bg-amber-50 border-amber-200"
+                  className="bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800"
                 />
               </CardContent>
             </Card>

@@ -899,7 +899,7 @@ const PatientDetail = () => {
                 onChange={(e) => setEditForm({ ...editForm, confidential_notes: e.target.value })}
                 placeholder="Private notes about this patient — shared across all visits"
                 rows={3}
-                className="bg-amber-50 border-amber-200"
+                className="bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800"
               />
             </div>
           </div>
