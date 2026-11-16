@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import TodayBoard from "@/components/dashboard/TodayBoard";
+import GettingStarted from "@/components/onboarding/GettingStarted";
 import { withDrTitle } from "@/lib/doctorName";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,6 +85,7 @@ const DoctorDashboard = () => {
       {/* Trial Banner for Single Doctors */}
       <TrialBanner userType="doctor" />
       <StaleAppointmentsPrompt to="/doctor/appointments" />
+      <GettingStarted role="doctor" />
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -110,6 +113,8 @@ const DoctorDashboard = () => {
         </div>
       </div>
 
+      <TodayBoard role="doctor" />
+      
       {/* Stats Grid */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="cursor-pointer hover:shadow-md transition-all border-border/40" onClick={() => navigate("/doctor/patients")}>

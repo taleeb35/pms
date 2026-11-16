@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import TodayBoard from "@/components/dashboard/TodayBoard";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -152,6 +153,8 @@ const ReceptionistDashboard = () => {
         </div>
       </div>
 
+      <TodayBoard role="receptionist" />
+      
       {/* Stats Grid */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         <Card className="hover:shadow-md transition-all border-border/40">

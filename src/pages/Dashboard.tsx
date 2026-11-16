@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import clinicLogo from "@/assets/main-logo.webp";
 import AdminAnalyticsCharts from "@/components/AdminAnalyticsCharts";
+import AdminAttention from "@/components/dashboard/AdminAttention";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
 
 const Dashboard = () => {
@@ -153,6 +154,7 @@ const Dashboard = () => {
       </div>
 
       {/* Revenue Analytics */}
+      <AdminAttention />
       <AdminAnalyticsCharts />
 
       {/* Quick Actions */}
