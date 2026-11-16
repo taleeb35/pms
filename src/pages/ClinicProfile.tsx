@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { money, moneySymbol } from "@/lib/region";
 import RegionSettingsCard from "@/components/RegionSettingsCard";
+import DataExportCard from "@/components/DataExportCard";
 import TwoFactorCard from "@/components/TwoFactorCard";
 import SessionsCard from "@/components/SessionsCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -306,6 +307,8 @@ const ClinicProfile = () => {
       </Card>
 
       <RegionSettingsCard />
+
+      <DataExportCard scope="clinic" />
 
       <TwoFactorCard />
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import QueueScreenButton from "@/components/QueueScreenButton";
 import { zonedNow } from "@/lib/region";
 import PhoneInput from "@/components/PhoneInput";
 import { money, moneySymbol } from "@/lib/region";
@@ -149,9 +150,12 @@ const DoctorReceptionistWalkIn = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
         <h1 className="text-2xl font-bold">Walk-In Registration</h1>
         <p className="text-muted-foreground">Quick patient registration for walk-in visits</p>
+      </div>
+      <QueueScreenButton />
       </div>
 
       <Card className="max-w-2xl">

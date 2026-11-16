@@ -5,7 +5,7 @@ import { withDrTitle } from "@/lib/doctorName";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Banknote, Calendar as CalendarIcon, Download, Building2, Stethoscope, Search, Eye } from "lucide-react";
+import { Banknote, Calendar as CalendarIcon, Download, FileSpreadsheet, Building2, Stethoscope, Search, Eye } from "lucide-react";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
@@ -18,6 +18,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { TablePagination } from "@/components/TablePagination";
+import { downloadSheets } from "@/lib/exportSheet";
 
 interface AppointmentRevenue {
   id: string;
@@ -364,6 +365,39 @@ export default function DoctorFinance() {
   const clinicPct = doctorDetails?.clinic_percentage || 0;
   const doctorPct = 100 - clinicPct;
 
+  const exportExcel = async () => {
+    const range = startDate && endDate ? `${format(startDate, "yyyy-MM-dd")}_to_${format(endDate, "yyyy-MM-dd")}` : "All_Time";
+    const r2 = (n: number) => Math.round(n * 100) / 100;
+    const rows = appointments.map((a) => ({
+      "Date": a.appointment_date,
+      "Time": a.appointment_time?.slice(0, 5) || "",
+      "Patient": a.patient_name,
+      "Patient ID": a.patient_id,
+      "Consultation fee": a.consultation_fee,
+      "Other fee": a.other_fee,
+      "Procedure fee": a.procedure_fee,
+      "Sub total": a.sub_total,
+      "Refund / discount": a.refund,
+      "Total": a.total_fee,
+      [`Clinic share (${clinicPct}%)`]: r2(a.clinic_share),
+      [`Doctor share (${doctorPct}%)`]: r2(a.doctor_share),
+    }));
+    const summary = [
+      { Item: "Period", Value: startDate && endDate ? `${format(startDate, "PP")} to ${format(endDate, "PP")}` : "All time" },
+      { Item: "Completed visits", Value: appointments.length },
+      { Item: "Total revenue", Value: r2(totalRevenue) },
+      { Item: "Refunds / discounts", Value: r2(totalDiscount) },
+      { Item: `Clinic share (${clinicPct}%)`, Value: r2(clinicShare) },
+      { Item: `Doctor share (${doctorPct}%)`, Value: r2(doctorShare) },
+    ];
+    try {
+      await downloadSheets(`Revenue_${range}`, [{ name: "Summary", rows: summary }, { name: "Visits", rows }]);
+      toast({ title: "Excel downloaded", description: `${appointments.length} visits exported.` });
+    } catch (e: any) {
+      toast({ title: "Could not export", description: e?.message || String(e), variant: "destructive" });
+    }
+  };
+
   // Remove full-page loading - we'll use skeleton in the table instead
 
   return (
@@ -426,6 +460,10 @@ export default function DoctorFinance() {
               Clear
             </Button>
           )}
+          <Button variant="outline" onClick={exportExcel} disabled={appointments.length === 0} className="gap-2">
+            <FileSpreadsheet className="h-4 w-4" />
+            Export Excel
+          </Button>
           <Button onClick={generatePDF} className="gap-2">
             <Download className="h-4 w-4" />
             Download PDF

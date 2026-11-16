@@ -1,6 +1,6 @@
 import styles from "./Layout.module.css";
 import { History as HistoryIcon, User as UserIcon } from "lucide-react";
-import { NotificationBell, HelpLink, ThemeToggle } from "@/components/header/HeaderTools";
+import { NotificationBell, HelpLink, ThemeToggle, WhatsNewButton } from "@/components/header/HeaderTools";
 import GlobalSearch from "@/components/GlobalSearch";
 import { ReactNode, useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -621,6 +621,7 @@ const Layout = ({ children }: LayoutProps) => {
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <GlobalSearch />
             <div className="flex items-center">
+              <WhatsNewButton />
               <NotificationBell />
               <HelpLink />
               <ThemeToggle />

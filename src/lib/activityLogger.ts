@@ -49,9 +49,10 @@ export type ActivityAction =
   | "expense_deleted"
   | "specialization_created"
   | "specialization_updated"
-  | "specialization_deleted";
+  | "specialization_deleted"
+  | "data_exported";
 
-export type EntityType = "patient" | "appointment" | "visit_record" | "waitlist" | "procedure" | "doctor" | "receptionist" | "document" | "schedule" | "leave" | "allergy" | "disease" | "icd_code" | "template" | "expense" | "specialization";
+export type EntityType = "patient" | "appointment" | "visit_record" | "waitlist" | "procedure" | "doctor" | "receptionist" | "document" | "schedule" | "leave" | "allergy" | "disease" | "icd_code" | "template" | "expense" | "specialization" | "account";
 
 interface LogActivityParams {
   action: ActivityAction;
@@ -110,6 +111,7 @@ export const logActivity = async ({
 
 export const getActionLabel = (action: string): string => {
   const labels: Record<string, string> = {
+    data_exported: "Downloaded All Data",
     patient_created: "Added Patient",
     patient_updated: "Updated Patient",
     patient_deleted: "Deleted Patient",

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { Bell, Moon, Sun, HelpCircle, CalendarClock, UserPlus, LifeBuoy, AlertTriangle, UserCheck, Receipt } from "lucide-react";
+import { Bell, Moon, Sun, Sparkles, HelpCircle, CalendarClock, UserPlus, LifeBuoy, AlertTriangle, UserCheck, Receipt } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { zonedNow } from "@/lib/region";
 import { friendlyTime } from "@/lib/datetime";
+import { entriesFor } from "@/lib/whatsNew";
 
 // Header tools: dark mode switch, help link to the matching knowledge-base area, notification bell.
 const ROLE_BASES = ["/doctor-receptionist", "/receptionist", "/doctor", "/clinic"];
@@ -150,3 +151,53 @@ export const NotificationBell = () => {
     </Popover>
   );
 };
+
+// "What's new": recent changes, with a dot until the newest one has been seen.
+const SEEN_KEY = "zonoir_whats_new_seen";
+export function WhatsNewButton() {
+  const base = useBase();
+  const entries = useMemo(() => entriesFor(base), [base]);
+  const [seen, setSeen] = useState<string | null>(() => { try { return localStorage.getItem(SEEN_KEY); } catch { return null; } });
+  const unread = entries.length > 0 && entries[0].id !== seen;
+  const onOpen = (o: boolean) => {
+    if (o && entries[0]) { try { localStorage.setItem(SEEN_KEY, entries[0].id); } catch { /* ignore */ } setSeen(entries[0].id); }
+  };
+  if (!base || base === "/admin" || !entries.length) return null;
+  const href = (l?: string) => {
+    if (!l) return null;
+    if (l.startsWith("/")) return l;
+    // The knowledge base sits inside the portal only for doctors and clinics.
+    if (l === "knowledge-base" && base !== "/doctor" && base !== "/clinic") return "/knowledge-base";
+    return `${base}/${l}`;
+  };
+  return (
+    <Popover onOpenChange={onOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="What's new" title="What's new" className="relative">
+          <Sparkles className="h-5 w-5" />
+          {unread && <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background" />}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-80 p-0">
+        <p className="border-b px-4 py-2.5 text-sm font-semibold">What's new</p>
+        <ul className="max-h-[60vh] overflow-y-auto divide-y">
+          {entries.map((e) => {
+            const to = href(e.link);
+            return (
+              <li key={e.id} className="px-4 py-3 space-y-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-sm font-medium">{e.title}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{new Date(e.date + "T00:00:00").toLocaleDateString(undefined, { day: "numeric", month: "short" })}</span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{e.body}</p>
+                {to && (to === "/queue"
+                  ? <a href={to} target="_blank" rel="noopener" className="text-xs font-medium text-primary hover:underline">Open</a>
+                  : <Link to={to} className="text-xs font-medium text-primary hover:underline">Open</Link>)}
+              </li>
+            );
+          })}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}

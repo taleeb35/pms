@@ -3,7 +3,7 @@ import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, Receipt, TrendingUp, TrendingDown, Search, Eye } from "lucide-react";
+import { Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, FileSpreadsheet, Receipt, TrendingUp, TrendingDown, Search, Eye } from "lucide-react";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
@@ -17,6 +17,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { VisitRecordDialog } from "@/components/VisitRecordDialog";
 import { TablePagination } from "@/components/TablePagination";
+import { downloadSheets } from "@/lib/exportSheet";
 
 interface AppointmentRevenue {
   id: string;
@@ -82,6 +83,7 @@ export default function ClinicFinance() {
   const [clinicShare, setClinicShare] = useState(0);
   const [doctorsShare, setDoctorsShare] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
+  const [expenseRows, setExpenseRows] = useState<{ expense_date: string; category: string; description: string | null; amount: number }[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [searchPatient, setSearchPatient] = useState("");
@@ -121,8 +123,9 @@ export default function ClinicFinance() {
 
       let query = supabase
         .from("clinic_expenses")
-        .select("amount")
-        .eq("clinic_id", clinicId);
+        .select("expense_date, category, description, amount")
+        .eq("clinic_id", clinicId)
+        .order("expense_date", { ascending: false });
 
       if (startDate) {
         query = query.gte("expense_date", format(startDate, "yyyy-MM-dd"));
@@ -137,6 +140,7 @@ export default function ClinicFinance() {
 
       const total = (data || []).reduce((sum, exp) => sum + Number(exp.amount), 0);
       setTotalExpenses(total);
+      setExpenseRows((data || []) as any);
     } catch (error: any) {
       console.error("Error fetching expenses:", error);
     }
@@ -483,6 +487,53 @@ export default function ClinicFinance() {
     });
   };
 
+  const exportExcel = async () => {
+    const r2 = (n: number) => Math.round(n * 100) / 100;
+    const range = startDate && endDate ? `${format(startDate, "yyyy-MM-dd")}_to_${format(endDate, "yyyy-MM-dd")}` : "All_Time";
+    const doctorName = selectedDoctor === "all" ? "All doctors" : doctors.find((d) => d.id === selectedDoctor)?.name || "";
+    const visits = appointments.map((a) => {
+      const cs = (a.total_fee * a.clinic_percentage) / 100;
+      return {
+        "Date": a.appointment_date,
+        "Time": a.appointment_time?.slice(0, 5) || "",
+        "Patient": a.patient_name,
+        "Patient ID": a.patient_id,
+        "Doctor": a.doctor_name,
+        "Consultation fee": a.consultation_fee,
+        "Other fee": a.other_fee,
+        "Procedure fee": a.procedure_fee,
+        "Sub total": a.sub_total,
+        "Refund / discount": a.refund,
+        "Total": a.total_fee,
+        "Clinic %": a.clinic_percentage,
+        "Clinic share": r2(cs),
+        "Doctor share": r2(a.total_fee - cs),
+      };
+    });
+    const expenses = expenseRows.map((e) => ({ "Date": e.expense_date, "Category": e.category, "Description": e.description || "", "Amount": Number(e.amount) }));
+    const summary = [
+      { Item: "Period", Value: startDate && endDate ? `${format(startDate, "PP")} to ${format(endDate, "PP")}` : "All time" },
+      { Item: "Doctor", Value: doctorName },
+      { Item: "Completed visits", Value: appointments.length },
+      { Item: "Total revenue", Value: r2(totalRevenue) },
+      { Item: "Refunds / discounts", Value: r2(totalDiscount) },
+      { Item: "Clinic share", Value: r2(clinicShare) },
+      { Item: "Doctors' share", Value: r2(doctorsShare) },
+      { Item: "Expenses", Value: r2(totalExpenses) },
+      { Item: "Net (clinic share minus expenses)", Value: r2(clinicShare - totalExpenses) },
+    ];
+    try {
+      await downloadSheets(`Clinic_Finance_${range}`, [
+        { name: "Summary", rows: summary },
+        { name: "Visits", rows: visits },
+        { name: "Expenses", rows: expenses },
+      ]);
+      toast({ title: "Excel downloaded", description: `${visits.length} visits and ${expenses.length} expenses exported.` });
+    } catch (e: any) {
+      toast({ title: "Could not export", description: e?.message || String(e), variant: "destructive" });
+    }
+  };
+
   // Remove full-page loading - we'll use skeleton in the table instead
 
   return (
@@ -563,6 +614,15 @@ export default function ClinicFinance() {
               <X className="h-4 w-4" />
             </Button>
           )}
+          <Button
+            variant="outline"
+            onClick={exportExcel}
+            disabled={appointments.length === 0 && expenseRows.length === 0}
+            className="gap-2"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            Export Excel
+          </Button>
           <Button
             onClick={generatePDF}
             disabled={appointments.length === 0}

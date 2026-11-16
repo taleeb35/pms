@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import QueueScreenButton from "@/components/QueueScreenButton";
 import PhoneInput from "@/components/PhoneInput";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
@@ -332,7 +333,7 @@ const ClinicWalkIn = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Button variant="ghost" onClick={() => navigate("/clinic/dashboard")} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Back
@@ -341,6 +342,7 @@ const ClinicWalkIn = () => {
           <h1 className="text-2xl font-bold">Walk-In Appointment</h1>
           <p className="text-muted-foreground">Register emergency or walk-in patients for today</p>
         </div>
+        <div className="ml-auto"><QueueScreenButton /></div>
       </div>
 
       <form onSubmit={handleSubmit}>

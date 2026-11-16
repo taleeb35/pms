@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { licLabel } from "@/lib/region";
 import RegionSettingsCard from "@/components/RegionSettingsCard";
+import DataExportCard from "@/components/DataExportCard";
 import TwoFactorCard from "@/components/TwoFactorCard";
 import SessionsCard from "@/components/SessionsCard";
 import { useNavigate } from "react-router-dom";
@@ -666,6 +667,7 @@ const DoctorProfile = () => {
         {/* Right Column */}
         <div className="space-y-6">
           <RegionSettingsCard />
+          <DataExportCard scope="doctor" />
           <TwoFactorCard />
           <SessionsCard />
           {/* Password Change Card */}
