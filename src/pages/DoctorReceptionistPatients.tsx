@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import PhoneInput from "@/components/PhoneInput";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
@@ -460,7 +461,7 @@ const DoctorReceptionistPatients = () => {
                     <TableRow key={patient.id}>
                       <TableCell className="font-mono text-sm">{patient.patient_id}</TableCell>
                       <TableCell className="font-medium">{patient.full_name}</TableCell>
-                      <TableCell>{patient.phone}</TableCell>
+                      <TableCell><PhoneWithActions phone={patient.phone} /></TableCell>
                       <TableCell>
                         {calculateAge(patient.date_of_birth)} yrs / {patient.gender === "male" ? "M" : patient.gender === "female" ? "F" : "O"}
                       </TableCell>

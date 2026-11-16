@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PhoneWithActions } from "@/components/patients/PhoneActions";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -855,7 +856,7 @@ const ClinicAppointments = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>{apt.patients.phone}</TableCell>
+                        <TableCell><PhoneWithActions phone={apt.patients.phone} /></TableCell>
                         <TableCell>
                           {friendlyDate(apt.appointment_date)}
                           <br />

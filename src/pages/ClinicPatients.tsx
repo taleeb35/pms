@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { PhoneWithActions } from "@/components/patients/PhoneActions";
+import { DuplicatePatientHint, AgeQuickPick } from "@/components/patients/PatientFormHelpers";
 import PhoneInput from "@/components/PhoneInput";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -1195,7 +1197,7 @@ const ClinicPatients = () => {
                           <TableCell className="font-mono text-sm">{patient.patient_id}</TableCell>
                           <TableCell className="font-semibold">{patient.full_name}</TableCell>
                           <TableCell>{patient.email || "-"}</TableCell>
-                          <TableCell>{patient.phone}</TableCell>
+                          <TableCell><PhoneWithActions phone={patient.phone} /></TableCell>
                           <TableCell className="capitalize">{patient.gender}</TableCell>
                           <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                           <TableCell>{patient.blood_group || "-"}</TableCell>
@@ -1563,6 +1565,7 @@ const ClinicPatients = () => {
                   placeholder="Enter phone number"
                   className={formErrors.phone ? "border-destructive" : ""}
                 />
+                <DuplicatePatientHint phone={addForm.phone} base={location.pathname.startsWith("/receptionist") ? "/receptionist" : "/clinic"} />
                 {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
               </div>
               <div className={showMoreAdd ? "" : "hidden"}>
@@ -1610,6 +1613,7 @@ const ClinicPatients = () => {
                     />
                   </PopoverContent>
                 </Popover>
+                <AgeQuickPick onPick={(d) => setDobDate(d)} />
               </div>
               <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Added Date</Label>

@@ -1,4 +1,6 @@
 import { useState, useEffect, Fragment } from "react";
+import { PhoneWithActions } from "@/components/patients/PhoneActions";
+import { DuplicatePatientHint, AgeQuickPick } from "@/components/patients/PatientFormHelpers";
 import PhoneInput from "@/components/PhoneInput";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useNavigate } from "react-router-dom";
@@ -1448,7 +1450,7 @@ const DoctorPatients = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>{patient.phone}</TableCell>
+                        <TableCell><PhoneWithActions phone={patient.phone} /></TableCell>
                         <TableCell className="capitalize">{patient.gender}</TableCell>
                         <TableCell>{calculateAge(patient.date_of_birth)} years</TableCell>
                         <TableCell>{format(new Date(patient.created_at), "PP")}</TableCell>
@@ -1988,6 +1990,7 @@ const DoctorPatients = () => {
                   placeholder="Enter phone number"
                   className={addFormErrors.phone ? "border-destructive" : ""}
                 />
+                <DuplicatePatientHint phone={addForm.phone} base={"/doctor"} />
                 {addFormErrors.phone && <p className="text-sm text-destructive">{addFormErrors.phone}</p>}
               </div>
               <div className={showMoreAdd ? "" : "hidden"}>
@@ -2043,6 +2046,7 @@ const DoctorPatients = () => {
                     />
                   </PopoverContent>
                 </Popover>
+                <AgeQuickPick onPick={(d) => setDobDate(d)} />
               </div>
               <div className={showMoreAdd ? "" : "hidden"}>
                 <Label>Added Date</Label>
