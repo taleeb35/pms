@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseBP, buildTrends } from "@/lib/labs";
-import { cleanAnswers, newAllergies } from "@/lib/intake";
+import { cleanAnswers, newAllergies, visitDay, whoLabel } from "@/lib/intake";
 import { guessMapping, parseDate, parseGender, detectDateOrder, dryRun, personKey, mapRow } from "@/lib/patientImport";
 import { buildCalendarDays } from "@/lib/calendarItems";
 
@@ -36,6 +36,12 @@ describe("lab trends", () => {
 describe("intake form", () => {
   it("keeps only known, non-empty answers", () => {
     expect(cleanAnswers({ reason: "  cough ", allergies: "", hack: "x", notes: 5 })).toEqual({ reason: "cough" });
+  });
+  it("writes a real date and does not repeat the doctor's name", () => {
+    expect(visitDay("2026-11-16")).toBe("Monday 16 November");
+    expect(whoLabel("Dr. Sarah Asif", "Dr. Sarah Asif ALGYNA")).toBe("Dr. Sarah Asif ALGYNA");
+    expect(whoLabel("Dr. Ali", "City Clinic")).toBe("Dr. Ali, City Clinic");
+    expect(whoLabel(null, "City Clinic")).toBe("City Clinic");
   });
   it("finds allergies the record does not already have", () => {
     expect(newAllergies("Penicillin, dust", "penicillin")).toBe("dust");

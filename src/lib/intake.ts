@@ -17,6 +17,21 @@ export const intakeUrl = (token: string) => `${window.location.origin}/intake/${
 
 export type IntakeAnswers = Record<string, string>;
 
+// "Monday 16 November" — a real date, never "Today", because the patient may read it on another day.
+export function visitDay(ymd?: string | null): string {
+  if (!ymd) return "";
+  const [y, m, d] = ymd.slice(0, 10).split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return isNaN(dt.getTime()) ? "" : dt.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+}
+
+// Doctor and clinic for the patient's page; the clinic alone when its name already contains the doctor's.
+export function whoLabel(doctor?: string | null, clinic?: string | null): string {
+  const d = (doctor || "").trim(), c = (clinic || "").trim();
+  if (d && c && c.toLowerCase().includes(d.toLowerCase())) return c;
+  return [d, c].filter(Boolean).join(", ");
+}
+
 // Trim answers, drop empty ones and anything that is not a known question; cap each at 2,000 characters.
 export function cleanAnswers(raw: Record<string, unknown>): IntakeAnswers {
   const out: IntakeAnswers = {};

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { whatsappLink } from "@/lib/phoneLinks";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
-import { DEFAULT_CONSENT, INTAKE_QUESTIONS, intakeUrl, newAllergies } from "@/lib/intake";
+import { DEFAULT_CONSENT, INTAKE_QUESTIONS, intakeUrl, newAllergies, visitDay } from "@/lib/intake";
 
 // Pre-visit intake form for one appointment: send the link, see the answers and signed consent.
 type Props = {
@@ -100,7 +100,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 
   const first = patient.full_name.split(" ")[0];
   const wa = form && form.status === "sent"
-    ? whatsappLink(patient.phone, `Hello ${first}, please fill in this form before your visit${appointmentDate ? ` on ${friendlyDate(appointmentDate)}` : ""}: ${intakeUrl(form.token)}`)
+    ? whatsappLink(patient.phone, `Hello ${first}, please fill in this form before your visit${appointmentDate ? ` on ${visitDay(appointmentDate)}` : ""}: ${intakeUrl(form.token)}`)
     : null;
   const expired = form && form.status === "sent" && new Date(form.expires_at) < new Date();
   const allergyAdd = form?.status === "completed" ? newAllergies(form.answers?.allergies, allergies) : "";

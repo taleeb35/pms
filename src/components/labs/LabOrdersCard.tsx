@@ -134,8 +134,10 @@ ${section("lab", "Lab tests")}${section("imaging", "Imaging")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void add(); }}>
-          <Input list="zonoir-common-tests" value={name} onChange={(e) => setName(e.target.value)} placeholder="Add a test, e.g. HbA1c" aria-label="Test name" className="min-w-0" />
+        {/* Not a <form>: this card sits inside the visit page's form, and nested forms submit the page. */}
+        <div className="flex gap-2">
+          <Input list="zonoir-common-tests" value={name} onChange={(e) => setName(e.target.value)} placeholder="Add a test, e.g. HbA1c" aria-label="Test name" className="min-w-0"
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); void add(); } }} />
           <datalist id="zonoir-common-tests">
             {COMMON_TESTS.map((t) => <option key={t.name} value={t.name} />)}
           </datalist>
@@ -145,10 +147,10 @@ ${section("lab", "Lab tests")}${section("imaging", "Imaging")}
               <option value="imaging">Imaging</option>
             </select>
           )}
-          <Button type="submit" size="icon" disabled={!name.trim() || adding} aria-label="Add test">
+          <Button type="button" size="icon" disabled={!name.trim() || adding} aria-label="Add test" onClick={() => void add()}>
             {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
           </Button>
-        </form>
+        </div>
 
         {loading ? (
           <p className="text-xs text-muted-foreground">Loading...</p>

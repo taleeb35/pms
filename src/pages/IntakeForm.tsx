@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { friendlyDate, friendlyTime } from "@/lib/datetime";
-import { INTAKE_QUESTIONS, cleanAnswers } from "@/lib/intake";
+import { friendlyTime } from "@/lib/datetime";
+import { INTAKE_QUESTIONS, cleanAnswers, visitDay, whoLabel } from "@/lib/intake";
 
 // Public page the patient opens from the link: answer a few questions and sign consent. No sign-in.
 type Info = {
@@ -95,7 +95,7 @@ export default function IntakeForm() {
     window.scrollTo({ top: 0 });
   };
 
-  const who = info?.doctor ? `${info.doctor}${info.clinic ? `, ${info.clinic}` : ""}` : info?.clinic || "";
+  const who = whoLabel(info?.doctor, info?.clinic);
 
   return (
     <div className="min-h-screen bg-muted/40 px-4 py-6 sm:py-10">
@@ -128,7 +128,7 @@ export default function IntakeForm() {
                 <h1 className="text-xl font-semibold">Hello {info.patient}</h1>
                 <p className="text-sm text-muted-foreground">
                   Please fill in this form before your visit{who ? ` with ${who}` : ""}
-                  {info.appointment_date ? ` on ${friendlyDate(info.appointment_date)}${info.appointment_time ? ` at ${friendlyTime(info.appointment_time)}` : ""}` : ""}.
+                  {info.appointment_date ? ` on ${visitDay(info.appointment_date)}${info.appointment_time ? ` at ${friendlyTime(info.appointment_time)}` : ""}` : ""}.
                   Leave out anything that does not apply.
                 </p>
               </div>

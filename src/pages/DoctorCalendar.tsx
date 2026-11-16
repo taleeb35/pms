@@ -201,7 +201,7 @@ const DoctorCalendar = () => {
         <div onClick={(e) => { e.stopPropagation(); openAppt(it.id); }} title={`${it.title} · ${STATUS_LABEL[it.status] || it.status}`}
           className={`flex items-center gap-1 rounded border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 ${size} text-blue-700 dark:text-blue-300 cursor-pointer hover:bg-blue-500/20 ${it.status === "completed" ? "opacity-60" : ""}`}>
           <User className="h-2.5 w-2.5 shrink-0" />
-          <span className="truncate">{it.time ? `${friendlyTime(it.time)} ` : ""}{it.title}</span>
+          <span className="truncate">{it.time ? `${compact ? friendlyTime(it.time).replace(/\s?([ap])\.?m\.?$/i, (_, x) => x.toLowerCase()) : friendlyTime(it.time)} ` : ""}{it.title}</span>
         </div>
       );
     }
