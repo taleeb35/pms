@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import IssueCertificateDialog from "@/components/IssueCertificateDialog";
+import AskReviewButton from "@/components/AskReviewButton";
 import LabOrdersCard from "@/components/labs/LabOrdersCard";
 import IntakeFormCard from "@/components/intake/IntakeFormCard";
 import PrescriptionWriter from "@/components/prescription/PrescriptionWriter";
@@ -1074,6 +1075,7 @@ const DoctorAppointmentDetail = () => {
             Print Prescription
           </Button>
           <IssueCertificateDialog appointmentId={appointment.id} doctorId={appointment.doctor_id} visitDate={appointment.appointment_date} patient={appointment.patients} />
+          <AskReviewButton doctorId={appointment.doctor_id} patient={appointment.patients} />
           <Button variant="outline" size="sm" onClick={() => setShowReportDialog(true)} className="border-teal-600 text-teal-700 hover:bg-teal-600 hover:text-white">
             <FileBarChart className="h-4 w-4 mr-2" />
             Generate Report
@@ -1144,6 +1146,8 @@ const DoctorAppointmentDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Intake form first, so it is easy to find before the visit */}
+            <IntakeFormCard appointmentId={appointment.id} doctorId={appointment.doctor_id} appointmentDate={appointment.appointment_date} appointmentTime={appointment.appointment_time} patient={appointment.patients} />
             {/* Visit Details Card */}
             <Card>
               <CardHeader className="pb-3">
@@ -1595,7 +1599,6 @@ const DoctorAppointmentDetail = () => {
               </CardContent>
             </Card>
 
-            <IntakeFormCard appointmentId={appointment.id} doctorId={appointment.doctor_id} appointmentDate={appointment.appointment_date} appointmentTime={appointment.appointment_time} patient={appointment.patients} />
             <LabOrdersCard patientId={appointment.patient_id} doctorId={appointment.doctor_id} appointmentId={appointment.id} patientName={appointment.patients.full_name} />
 
             {/* Next Visit */}

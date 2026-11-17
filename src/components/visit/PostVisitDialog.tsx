@@ -10,6 +10,7 @@ import { isTimeSlotAvailable } from "@/lib/appointmentUtils";
 import { whatsappLink } from "@/lib/phoneLinks";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { zonedNow } from "@/lib/region";
+import AskReviewButton from "@/components/AskReviewButton";
 import { useToast } from "@/hooks/use-toast";
 
 // Shown right after a visit is saved: the next things a doctor usually does, one click each.
@@ -112,11 +113,9 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
           ) : (
             <p className="col-span-2 text-xs text-muted-foreground">Add a valid phone number to the patient to send the prescription on WhatsApp.</p>
           )}
-          {reviewWa && (
-            <Button variant="outline" className="col-span-2 h-12 justify-start" asChild>
-              <a href={reviewWa} target="_blank" rel="noopener noreferrer"><Star className="mr-2 h-4 w-4 text-amber-500" /> Ask for a review on WhatsApp</a>
-            </Button>
-          )}
+          <div className="col-span-2 [&>button]:h-12 [&>button]:w-full [&>button]:justify-start">
+            <AskReviewButton doctorId={appointment.doctor_id} patient={appointment.patients} size="default" />
+          </div>
         </div>
 
         <div className="rounded-lg border p-3">

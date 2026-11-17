@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ClipboardList, Copy, Loader2, MessageCircle, Printer, Ban, Plus } from "lucide-react";
+import { ClipboardList, Copy, Loader2, MessageCircle, Printer, Ban, Plus, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,16 +17,18 @@ type Props = {
   appointmentDate?: string;
   appointmentTime?: string;
   patient: { id: string; full_name: string; phone?: string | null; allergies?: string | null };
+  canUseFiles?: boolean; // clinic accounts cannot open patient files
 };
 type Form = {
   id: string; token: string; status: "sent" | "completed" | "cancelled"; answers: Record<string, string> | null;
   consent_text: string | null; signed_name: string | null; signature: string | null; signed_at: string | null;
   expires_at: string; created_at: string;
+  attachments?: { path: string; name: string; type: string; uploaded_at?: string }[] | null;
 };
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 
-export default function IntakeFormCard({ appointmentId, doctorId, appointmentDate, appointmentTime, patient }: Props) {
+export default function IntakeFormCard({ appointmentId, doctorId, appointmentDate, appointmentTime, patient, canUseFiles = true }: Props) {
   const { toast } = useToast();
   const [form, setForm] = useState<Form | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ export default function IntakeFormCard({ appointmentId, doctorId, appointmentDat
 
   const load = useCallback(async () => {
     const { data } = await (supabase as any).from("intake_forms")
-      .select("id, token, status, answers, consent_text, signed_name, signature, signed_at, expires_at, created_at")
+      .select("id, token, status, answers, consent_text, signed_name, signature, signed_at, expires_at, created_at, attachments")
       .eq("appointment_id", appointmentId).neq("status", "cancelled").order("created_at", { ascending: false }).limit(1);
     setForm(((data || [])[0] as Form) || null);
     setLoading(false);
@@ -78,6 +80,12 @@ export default function IntakeFormCard({ appointmentId, doctorId, appointmentDat
     if (error) { toast({ title: "Could not update allergies", description: error.message, variant: "destructive" }); return; }
     setAllergies(next);
     toast({ title: "Allergies added to the patient record", description: add });
+  };
+
+  const openFile = async (path: string) => {
+    const { data, error } = await supabase.storage.from("medical-documents").createSignedUrl(path, 60);
+    if (error || !data) { toast({ title: "Could not open the file", variant: "destructive" }); return; }
+    window.open(data.signedUrl, "_blank");
   };
 
   const print = () => {
@@ -159,6 +167,22 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
               Consent signed by <span className="font-medium text-foreground">{form.signed_name}</span> on {format(new Date(form.signed_at!), "d MMM yyyy, h:mm a")}.
             </p>
             {form.signature && <img src={form.signature} alt="Patient signature" className="h-14 rounded border bg-white p-1" />}
+            {(form.attachments || []).length > 0 && (
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Files from the patient (also in their documents)</p>
+                <ul className="space-y-1">
+                  {(form.attachments || []).map((a, i) => (
+                    <li key={i}>
+                      {canUseFiles ? (
+                        <button type="button" onClick={() => openFile(a.path)} className="flex items-center gap-2 text-sm text-primary hover:underline"><FileText className="h-4 w-4" /> {a.name}</button>
+                      ) : (
+                        <span className="flex items-center gap-2 text-sm"><FileText className="h-4 w-4" /> {a.name}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="flex flex-wrap gap-2">
               <Button type="button" variant="outline" size="sm" onClick={print}><Printer className="mr-1.5 h-3.5 w-3.5" /> Print</Button>
               {allergyAdd && (

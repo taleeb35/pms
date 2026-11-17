@@ -4,6 +4,18 @@
 export type WhatsNewEntry = { id: string; date: string; title: string; body: string; link?: string; roles?: string[] };
 
 export const WHATS_NEW: WhatsNewEntry[] = [
+  { id: "2026-11-17-review-button", date: "2026-11-17", title: "Ask for review, from any visit or patient",
+    body: "Ask for review is now a button on every visit and patient page. The first time, paste your Google (or other) review link and it is saved. Clinics can set one link for all their doctors in Profile.",
+    roles: ["/doctor", "/clinic", "/receptionist"] },
+  { id: "2026-11-17-progress", date: "2026-11-17", title: "Progress on the dashboard",
+    body: "Your dashboard now shows revenue, visits, new patients and no-shows for today, the last 7, 30 or 90 days, this or last month, or this year, compared with the period before.",
+    roles: ["/doctor", "/clinic"] },
+  { id: "2026-11-17-export-patients", date: "2026-11-17", title: "Export all patients",
+    body: "Patients → Import/Export → Export all patients downloads every patient to one Excel file.",
+    roles: ["/doctor", "/clinic", "/receptionist"], link: "patients" },
+  { id: "2026-11-17-intake-files", date: "2026-11-17", title: "Patients can attach reports to intake forms",
+    body: "The intake form is now at the top of the visit. Patients can attach photos or PDFs of earlier reports, which go to their documents, and the visit timeline shows when the form was sent and signed.",
+    roles: ["/doctor", "/clinic", "/receptionist"] },
   { id: "2026-11-17-reports", date: "2026-11-17", title: "Reports in one place",
     body: "Money & Reports now opens one Reports page with tabs. Overview shows revenue, collections, visits, new patients and no-shows compared with the previous period, plus top procedures, diagnoses and busiest days. Finance, daily summary and the detailed charts are the other tabs.",
     roles: ["/doctor", "/clinic"], link: "reports" },

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PatientBalance from "@/components/PatientBalance";
 import MergePatientDialog from "@/components/MergePatientDialog";
+import AskReviewButton from "@/components/AskReviewButton";
 import { idLabel, idPlaceholder } from "@/lib/region";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -453,6 +454,7 @@ const PatientDetail = () => {
           <p className="text-muted-foreground">Patient ID: {patient.patient_id}</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {patient.created_by && <AskReviewButton doctorId={patient.created_by} patient={patient} size="default" />}
           <MergePatientDialog patient={patient} scope="doctor" onMerged={() => { fetchPatient(); fetchDocuments(); }} />
           <Button onClick={handleEditPatient}>
             <Edit className="mr-2 h-4 w-4" />

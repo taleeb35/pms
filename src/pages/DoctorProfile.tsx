@@ -533,22 +533,6 @@ const DoctorProfile = () => {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  {licLabel()}
-                </Label>
-                <Input
-                  value={profile.pmdc_number}
-                  onChange={(e) => setProfile({ ...profile, pmdc_number: e.target.value })}
-                  placeholder="e.g., 12345-P"
-                  className="border-primary/20 focus:border-primary"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Pakistan Medical & Dental Council registration number
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
                   Introduction
                 </Label>
@@ -578,7 +562,7 @@ const DoctorProfile = () => {
                     value={profile.clinic_address}
                     onChange={(e) => setProfile({ ...profile, clinic_address: e.target.value })}
                     rows={2}
-                    placeholder="e.g., 123 Main Street, Block A, Lahore"
+                    placeholder="e.g., 123 Main Street, Suite 4"
                     className="border-primary/20 focus:border-primary"
                   />
                 </div>

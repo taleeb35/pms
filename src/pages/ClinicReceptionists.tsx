@@ -476,7 +476,7 @@ const ClinicReceptionists = () => {
                       setFormErrors((prev) => ({ ...prev, phone: "" }));
                     }
                   }}
-                  placeholder="+92 300 1234567"
+                  placeholder="Mobile number"
                   className={formErrors.phone ? "border-destructive" : ""}
                 />
                 {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
@@ -681,7 +681,7 @@ const ClinicReceptionists = () => {
                     setEditFormErrors((prev) => ({ ...prev, phone: "" }));
                   }
                 }}
-                placeholder="+92 300 1234567"
+                placeholder="Mobile number"
                 className={editFormErrors.phone ? "border-destructive" : ""}
               />
               {editFormErrors.phone && <p className="text-sm text-destructive">{editFormErrors.phone}</p>}

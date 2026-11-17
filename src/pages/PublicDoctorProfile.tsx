@@ -3,8 +3,16 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { slugToDisplayName, generateDoctorSlug, generateCitySlug, generateSpecialtySlug, generateDoctorProfileUrl } from "@/lib/slugUtils";
-import PublicHeader from "@/components/PublicHeader";
-import PublicFooter from "@/components/PublicFooter";
+import zonoirLogo from "@/assets/main-logo.webp";
+
+// Headless profile page: no website header or footer, just the Zonoir logo linking to the main site.
+const ProfileTopBar = () => (
+  <header className="border-b bg-background">
+    <div className="container mx-auto flex h-14 items-center px-4">
+      <a href="https://zonoir.com" aria-label="Zonoir home"><img src={zonoirLogo} alt="Zonoir" className="h-8 w-auto" /></a>
+    </div>
+  </header>
+);
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronRight } from "lucide-react";
@@ -154,7 +162,6 @@ const PublicDoctorProfile = () => {
           setFaqs(faqsRes.data ?? []);
           
           setLoading(false);
-          fetchRelatedDoctors(matchedSeo.specialization, matchedSeo.city || "", matchedSeo.id);
           return;
         }
       }
@@ -249,7 +256,6 @@ const PublicDoctorProfile = () => {
             setApprovedSchedule(fullSchedule);
           }
 
-          fetchRelatedDoctors(matchedDoctor.specialization, matchedDoctor.city || "", matchedDoctor.id);
         }
       }
 
@@ -546,7 +552,7 @@ const PublicDoctorProfile = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <PublicHeader />
+        <ProfileTopBar />
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-5xl mx-auto space-y-6">
             <Skeleton className="h-6 w-64" />
@@ -568,7 +574,6 @@ const PublicDoctorProfile = () => {
             </Card>
           </div>
         </main>
-        <PublicFooter />
       </div>
     );
   }
@@ -576,7 +581,7 @@ const PublicDoctorProfile = () => {
   if (!doctor) {
     return (
       <div className="min-h-screen bg-background">
-        <PublicHeader />
+        <ProfileTopBar />
         <main className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-3xl font-bold text-foreground mb-4">Doctor Not Found</h1>
           <p className="text-muted-foreground mb-8">
@@ -586,7 +591,6 @@ const PublicDoctorProfile = () => {
             <Link to="/find-doctors">Find Other Doctors</Link>
           </Button>
         </main>
-        <PublicFooter />
       </div>
     );
   }
@@ -599,12 +603,12 @@ const PublicDoctorProfile = () => {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
-      <PublicHeader />
+      <ProfileTopBar />
       
       <main className="container mx-auto px-4 py-6 md:py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-6 overflow-x-auto pb-2" aria-label="Breadcrumb">
-          <Link to="/" className="hover:text-primary transition-colors whitespace-nowrap">Home</Link>
+          <a href="https://zonoir.com" className="hover:text-primary transition-colors whitespace-nowrap">Home</a>
           <ChevronRight className="h-4 w-4 flex-shrink-0" />
           <Link to="/find-doctors" className="hover:text-primary transition-colors whitespace-nowrap">Find Doctors</Link>
           <ChevronRight className="h-4 w-4 flex-shrink-0" />
@@ -693,26 +697,9 @@ const PublicDoctorProfile = () => {
             );
           })()}
 
-          {/* Related Doctors Section */}
-          {relatedDoctors.length > 0 && (
-            <section className="mt-12 pt-8 border-t">
-              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                Similar Doctors You May Like
-              </h2>
-              <p className="text-muted-foreground mb-6">
-                Other {doctor.specialization}s and specialists in {doctor.city}
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {relatedDoctors.map((related) => (
-                  <RelatedDoctorCard key={related.id} doctor={related} />
-                ))}
-              </div>
-            </section>
-          )}
         </div>
       </main>
 
-      <PublicFooter />
     </div>
   );
 };

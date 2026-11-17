@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DashboardProgress from "@/components/reports/DashboardProgress";
 import { NpsPrompt } from "@/components/Feedback";
 import TodayBoard from "@/components/dashboard/TodayBoard";
 import GettingStarted from "@/components/onboarding/GettingStarted";
@@ -202,6 +203,7 @@ const ClinicDashboard = () => {
       </div>
 
       <TodayBoard role="clinic" doctorIds={doctors.map((d) => d.id)} />
+      <DashboardProgress scope="clinic" />
       
       {/* Stats Grid */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">

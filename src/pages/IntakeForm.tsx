@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { CheckCircle2, HelpCircle, Loader2, Eraser } from "lucide-react";
+import { CheckCircle2, HelpCircle, Loader2, Eraser, Paperclip, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,27 @@ export default function IntakeForm() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const [signed, setSigned] = useState(false);
+  const [files, setFiles] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [fileErr, setFileErr] = useState("");
+
+  // Reports or test results the patient wants the doctor to see; saved straight to their documents.
+  const FILE_ERRORS: Record<string, string> = {
+    too_large: "That file is too large. The limit is 10 MB.", bad_type: "Please choose a photo or a PDF.",
+    too_many: "You can attach up to 5 files.", expired: ERRORS.expired, already_done: ERRORS.already_done,
+  };
+  const attach = async (list: FileList | null) => {
+    if (!list || !list.length) return;
+    setFileErr(""); setUploading(true);
+    for (const file of Array.from(list).slice(0, 5 - files.length)) {
+      if (file.size > 10 * 1024 * 1024) { setFileErr(FILE_ERRORS.too_large); continue; }
+      const fd = new FormData(); fd.append("token", token); fd.append("file", file);
+      const { data, error } = await (supabase as any).functions.invoke("intake-upload", { body: fd });
+      if (error || !data?.ok) { setFileErr(FILE_ERRORS[data?.error] || "Could not attach that file. Please try again."); continue; }
+      setFiles((f) => [...f, data.name]);
+    }
+    setUploading(false);
+  };
 
   useEffect(() => {
     document.title = "Before your visit | Zonoir";
@@ -141,6 +162,22 @@ export default function IntakeForm() {
                 </div>
               ))}
 
+              <div className="space-y-2 rounded-lg border p-4">
+                <p className="text-sm font-medium">Reports or test results <span className="font-normal text-muted-foreground">(optional)</span></p>
+                <p className="text-xs text-muted-foreground">Attach photos or PDFs of earlier reports, prescriptions or test results. They are added to your record for the doctor.</p>
+                {files.length > 0 && (
+                  <ul className="space-y-1 text-sm">{files.map((f, i) => <li key={i} className="flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> {f}</li>)}</ul>
+                )}
+                {files.length < 5 && (
+                  <label className={`inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted ${uploading ? "pointer-events-none opacity-60" : ""}`}>
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                    {uploading ? "Attaching..." : files.length ? "Attach another file" : "Attach a file"}
+                    <input type="file" className="hidden" accept="image/*,application/pdf" multiple onChange={(e) => { void attach(e.target.files); e.target.value = ""; }} />
+                  </label>
+                )}
+                {fileErr && <p className="text-xs text-destructive">{fileErr}</p>}
+              </div>
+
               <div className="space-y-3 rounded-lg border p-4">
                 <p className="text-sm font-medium">Consent</p>
                 <p className="whitespace-pre-wrap text-sm text-muted-foreground">{info.consent_text}</p>
@@ -163,7 +200,7 @@ export default function IntakeForm() {
               </div>
 
               {err && <p className="text-sm text-destructive">{err}</p>}
-              <Button type="submit" className="w-full" size="lg" disabled={busy}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}</Button>
+              <Button type="submit" className="w-full" size="lg" disabled={busy || uploading}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}</Button>
             </form>
           )}
         </CardContent>

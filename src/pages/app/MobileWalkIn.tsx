@@ -188,7 +188,7 @@ const MobileWalkIn = () => {
               value={form.phone}
               onChange={(e) => update("phone", handlePhoneInput(e))}
               className="h-11 rounded-lg"
-              placeholder="03001234567"
+              placeholder="Mobile number"
               inputMode="tel"
             />
           </Field>

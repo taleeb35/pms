@@ -14,7 +14,8 @@ import {
 import { useStickyState } from "@/hooks/useStickyState";
 
 // The first tab of Reports: the key numbers for a period, compared with the period before.
-type Props = { scope: "doctor" | "clinic" };
+// compact: the dashboard version (period buttons, key numbers and the revenue chart, with a link to Reports).
+type Props = { scope: "doctor" | "clinic"; compact?: boolean };
 type Doc = { id: string; name: string };
 
 const selectCls = "h-9 rounded-md border border-input bg-background px-2 text-sm";
@@ -30,7 +31,7 @@ async function fetchAll<T>(build: (from: number, to: number) => any): Promise<T[
   return out;
 }
 
-export default function ReportsOverview({ scope }: Props) {
+export default function ReportsOverview({ scope, compact = false }: Props) {
   const [period, setPeriod] = useStickyState<PeriodKey>(`reports.${scope}.period`, "30d");
   const [doctorFilter, setDoctorFilter] = useState("all");
   const [doctors, setDoctors] = useState<Doc[]>([]);
@@ -113,7 +114,7 @@ export default function ReportsOverview({ scope }: Props) {
   const docName = (id: string) => doctors.find((d) => d.id === id)?.name || "Doctor";
   const showClinic = scope === "clinic" && doctorFilter === "all";
 
-  const cards: { label: string; key: keyof Kpis; fmt: (v: number) => string; lowerIsBetter?: boolean; hint?: string }[] = [
+  const allCards: { label: string; key: keyof Kpis; fmt: (v: number) => string; lowerIsBetter?: boolean; hint?: string }[] = [
     { label: "Revenue", key: "revenue", fmt: (v) => money(v), hint: "Completed visits" },
     { label: "Collected", key: "collected", fmt: (v) => money(v) },
     { label: "Still to collect", key: "due", fmt: (v) => money(v), lowerIsBetter: true, hint: "Part payments" },
@@ -127,6 +128,8 @@ export default function ReportsOverview({ scope }: Props) {
     { label: "Average per visit", key: "avgFee", fmt: (v) => money(Math.round(v)) },
     { label: "No-show rate", key: "noShowRate", fmt: (v) => `${v.toFixed(1)}%`, lowerIsBetter: true, hint: `${k.noShows} no-shows` },
   ];
+
+  const cards = compact ? allCards.filter((c) => ["revenue", "collected", "visits", "newPatients", "noShowRate", "profit"].includes(c.key)) : allCards;
 
   return (
     <div className="space-y-4">
@@ -151,7 +154,7 @@ export default function ReportsOverview({ scope }: Props) {
         <div className="flex items-center gap-2 py-16 justify-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /> Loading reports...</div>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+          <div className={`grid grid-cols-2 gap-3 md:grid-cols-3 ${compact ? "xl:grid-cols-6" : "xl:grid-cols-5"}`}>
             {cards.map((c) => {
               const cur = k[c.key] as number | null;
               const prev = p[c.key] as number | null;
@@ -181,7 +184,7 @@ export default function ReportsOverview({ scope }: Props) {
             <CardHeader className="pb-2"><CardTitle className="text-base">Revenue</CardTitle></CardHeader>
             <CardContent>
               {k.visits === 0 ? <p className="py-10 text-center text-sm text-muted-foreground">No completed visits in this period.</p> : (
-                <div className="h-64">
+                <div className={compact ? "h-48" : "h-64"}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={trend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
@@ -196,6 +199,7 @@ export default function ReportsOverview({ scope }: Props) {
             </CardContent>
           </Card>
 
+          {!compact && (<>
           <div className="grid gap-4 lg:grid-cols-2">
             {showClinic && (
               <TopList title="Revenue by doctor" rows={byDoctor.map((r) => ({ label: docName(r.key), count: r.count, revenue: r.revenue }))} />
@@ -220,6 +224,7 @@ export default function ReportsOverview({ scope }: Props) {
           </div>
 
           <p className="text-xs text-muted-foreground">Revenue: {REVENUE_DEFINITION} Still to collect counts visits where a part payment was entered.</p>
+          </>)}
         </>
       )}
     </div>

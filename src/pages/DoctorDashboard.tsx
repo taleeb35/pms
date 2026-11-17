@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DashboardProgress from "@/components/reports/DashboardProgress";
 import { NpsPrompt } from "@/components/Feedback";
 import TodayBoard from "@/components/dashboard/TodayBoard";
 import GettingStarted from "@/components/onboarding/GettingStarted";
@@ -116,6 +117,7 @@ const DoctorDashboard = () => {
       </div>
 
       <TodayBoard role="doctor" />
+      <DashboardProgress scope="doctor" />
       
       {/* Stats Grid */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">

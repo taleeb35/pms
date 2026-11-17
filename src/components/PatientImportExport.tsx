@@ -51,6 +51,40 @@ export default function PatientImportExport({ createdBy, onImportComplete, docto
   const [progress, setProgress] = useState(0);
   const [summary, setSummary] = useState<{ added: number; failed: RowResult[] } | null>(null);
 
+  // Export every patient (for a clinic: all its doctors' patients) to one Excel file.
+  const [exporting, setExporting] = useState(false);
+  const exportAll = async () => {
+    setExporting(true);
+    try {
+      const ids = doctors && doctors.length ? doctors.map((d) => d.id) : [createdBy];
+      const names = Object.fromEntries((doctors || []).map((d) => [d.id, d.name]));
+      const rows: any[] = [];
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await supabase.from("patients")
+          .select("patient_id, full_name, phone, email, gender, date_of_birth, cnic, father_name, blood_group, city, address, allergies, major_diseases, marital_status, emergency_contact_name, emergency_contact_phone, created_by, created_at")
+          .in("created_by", ids).order("created_at", { ascending: true }).order("id").range(from, from + 999);
+        if (error) throw error;
+        rows.push(...(data || []));
+        if (!data || data.length < 1000) break;
+      }
+      const age = (dob?: string | null) => { if (!dob) return ""; const b = new Date(dob); const t = new Date(); let a = t.getFullYear() - b.getFullYear(); if (t < new Date(t.getFullYear(), b.getMonth(), b.getDate())) a--; return a >= 0 && a < 130 ? a : ""; };
+      await downloadSheets(`patients_${new Date().toISOString().slice(0, 10)}.xlsx`, [{ name: "Patients", rows: rows.map((r) => ({
+        "Patient ID": r.patient_id, Name: r.full_name, Phone: r.phone, Email: r.email || "", Gender: r.gender || "",
+        "Date of birth": r.date_of_birth || "", Age: age(r.date_of_birth), [idLabel()]: r.cnic || "", "Father / husband": r.father_name || "",
+        "Blood group": r.blood_group || "", City: r.city || "", Address: r.address || "", Allergies: r.allergies || "",
+        Conditions: r.major_diseases || "", "Marital status": r.marital_status || "",
+        "Emergency contact": r.emergency_contact_name || "", "Emergency phone": r.emergency_contact_phone || "",
+        ...(doctors && doctors.length > 1 ? { Doctor: names[r.created_by] || "" } : {}),
+        "Added on": (r.created_at || "").slice(0, 10),
+      })) }]);
+      toast({ title: `Exported ${rows.length} patient${rows.length === 1 ? "" : "s"}` });
+    } catch (err: any) {
+      toast({ title: "Could not export patients", description: err?.message || String(err), variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const downloadSample = async () => {
     await downloadSheets("patient_import_sample.xlsx", [{ name: "Patients", rows: SAMPLE }]);
     toast({ title: "Sample downloaded", description: "Fill it in, or use an export from your old system." });
@@ -148,7 +182,8 @@ export default function PatientImportExport({ createdBy, onImportComplete, docto
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => fileRef.current?.click()}><Upload className="h-4 w-4 mr-2" /> Import patients (CSV or Excel)</DropdownMenuItem>
-          <DropdownMenuItem onClick={downloadSample}><Download className="h-4 w-4 mr-2" /> Download sample file</DropdownMenuItem>
+          <DropdownMenuItem onClick={exportAll} disabled={exporting}>{exporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />} Export all patients (Excel)</DropdownMenuItem>
+          <DropdownMenuItem onClick={downloadSample}><FileSpreadsheet className="h-4 w-4 mr-2" /> Download sample file</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

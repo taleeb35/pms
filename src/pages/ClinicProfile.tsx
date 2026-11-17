@@ -42,6 +42,7 @@ const ClinicProfile = () => {
     status: "",
     no_of_doctors: 0,
     requested_doctors: 0,
+    review_url: "",
   });
 
   const [doctorMonthlyFee, setDoctorMonthlyFee] = useState(0);
@@ -90,6 +91,7 @@ const ClinicProfile = () => {
         status: clinicData.status || "",
         no_of_doctors: clinicData.no_of_doctors || 0,
         requested_doctors: clinicData.requested_doctors || 0,
+        review_url: (clinicData as any).review_url || "",
       });
 
       // Fetch doctor monthly fee from system settings
@@ -142,7 +144,8 @@ const ClinicProfile = () => {
           phone_number: clinic.phone_number,
           address: clinic.address,
           city: clinic.city,
-        })
+          review_url: clinic.review_url.trim() || null,
+        } as any)
         .eq("id", user.id);
 
       if (clinicError) throw clinicError;
@@ -276,6 +279,18 @@ const ClinicProfile = () => {
                 onChange={(e) => setClinic({ ...clinic, city: e.target.value })}
                 placeholder="Enter city"
               />
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="clinic_review">Review link (optional)</Label>
+              <Input
+                id="clinic_review"
+                type="url"
+                value={clinic.review_url}
+                onChange={(e) => setClinic({ ...clinic, review_url: e.target.value })}
+                placeholder="https://g.page/r/... (your Google review link)"
+              />
+              <p className="text-xs text-muted-foreground">Ask for review sends this link to patients on WhatsApp, for doctors who have not added their own.</p>
             </div>
 
             <div className="space-y-2">

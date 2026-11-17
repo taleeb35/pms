@@ -362,7 +362,7 @@ const ClinicAddDoctor = () => {
                     setFormErrors(prev => ({ ...prev, contactNumber: validation.isValid ? "" : validation.message }));
                   }}
                   required
-                  placeholder="+92 300 1234567"
+                  placeholder="Mobile number"
                   className={formErrors.contactNumber ? "border-destructive" : ""}
                 />
                 {formErrors.contactNumber && <p className="text-sm text-destructive">{formErrors.contactNumber}</p>}

@@ -7,13 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format, isToday, isYesterday } from "date-fns";
-import { MessageCircle, FileText, Calendar, DollarSign, UserPlus, Clock, CheckCircle, XCircle, Stethoscope } from "lucide-react";
+import { MessageCircle, FileText, Calendar, DollarSign, UserPlus, Clock, CheckCircle, XCircle, Stethoscope, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { logActivity } from "@/lib/activityLogger";
 
 interface TimelineEvent {
   id: string;
-  type: "comment" | "status_change" | "visit_record" | "fee_update" | "created" | "next_visit";
+  type: "comment" | "status_change" | "visit_record" | "fee_update" | "created" | "next_visit" | "intake";
   message: string;
   created_at: string;
   actor_name?: string;
@@ -161,6 +161,19 @@ export const AppointmentTimeline = ({
         });
       }
 
+      // Intake form: sent, signed by the patient, and any files the patient attached.
+      const { data: intakes } = await (supabase as any).from("intake_forms")
+        .select("id, created_at, status, signed_at, signed_name, attachments").eq("appointment_id", appointmentId);
+      for (const f of (intakes || []) as any[]) {
+        timelineEvents.push({ id: `intake-sent-${f.id}`, type: "intake", message: f.status === "cancelled" ? "Intake form link created (later cancelled)" : "Intake form link created for the patient", created_at: f.created_at, actor_name: "Staff", actor_initials: "ST" });
+        if (f.signed_at) {
+          timelineEvents.push({ id: `intake-signed-${f.id}`, type: "intake", message: `Intake form filled in and consent signed${f.signed_name ? ` by ${f.signed_name}` : ""}`, created_at: f.signed_at, actor_name: "Patient", actor_initials: "PT" });
+        }
+        for (const [i, a] of ((f.attachments || []) as any[]).entries()) {
+          if (a?.uploaded_at) timelineEvents.push({ id: `intake-file-${f.id}-${i}`, type: "intake", message: `Patient attached a file to the intake form: ${a.name}`, created_at: a.uploaded_at, actor_name: "Patient", actor_initials: "PT" });
+        }
+      }
+
       // Sort by date descending
       timelineEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
@@ -269,6 +282,8 @@ export const AppointmentTimeline = ({
         return <UserPlus className="h-4 w-4" />;
       case "next_visit":
         return <Calendar className="h-4 w-4" />;
+      case "intake":
+        return <ClipboardList className="h-4 w-4" />;
       default:
         return <FileText className="h-4 w-4" />;
     }
