@@ -284,8 +284,8 @@ const App = () => (
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/login" element={<UnifiedLogin />} />
           <Route path="/queue" element={<QueueDisplay />} />
-          <Route path="/verify" element={<VerifyCertificate />} />
-          <Route path="/verify/:code" element={<VerifyCertificate />} />
+          <Route path="/verify" element={<KeyedByParam param="code"><VerifyCertificate /></KeyedByParam>} />
+          <Route path="/verify/:code" element={<KeyedByParam param="code"><VerifyCertificate /></KeyedByParam>} />
           <Route path="/intake/:token" element={<IntakeForm />} />
           <Route path="/doctor-auth" element={<SignUp />} />
           <Route path="/auth" element={<SignUp />} />
