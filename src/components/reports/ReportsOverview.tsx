@@ -115,7 +115,7 @@ export default function ReportsOverview({ scope, compact = false }: Props) {
   const showClinic = scope === "clinic" && doctorFilter === "all";
 
   const allCards: { label: string; key: keyof Kpis; fmt: (v: number) => string; lowerIsBetter?: boolean; hint?: string }[] = [
-    { label: "Revenue", key: "revenue", fmt: (v) => money(v), hint: "Completed visits" },
+    { label: "Revenue", key: "revenue", fmt: (v) => money(v), hint: "From completed visits" },
     { label: "Collected", key: "collected", fmt: (v) => money(v) },
     { label: "Still to collect", key: "due", fmt: (v) => money(v), lowerIsBetter: true, hint: "Part payments" },
     ...(showClinic ? [

@@ -150,6 +150,9 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
                 )}
               </div>
             )}
+            {(form.attachments || []).length > 0 && (
+              <p className="text-xs text-muted-foreground">Files already attached by the patient: {(form.attachments || []).map((f) => f.name).join(", ")}</p>
+            )}
             <Button type="button" variant="ghost" size="sm" className="h-7 px-2 text-xs text-muted-foreground" onClick={cancel}><Ban className="mr-1 h-3.5 w-3.5" /> Cancel form</Button>
           </>
         ) : (
