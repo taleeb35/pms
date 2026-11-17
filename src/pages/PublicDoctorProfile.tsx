@@ -467,8 +467,6 @@ const PublicDoctorProfile = () => {
     jsonLd: combinedJsonLd.length > 0 ? combinedJsonLd : undefined,
     breadcrumbs: [
       { name: "Home", url: "https://zonoir.com/" },
-      { name: "Find Doctors", url: "https://zonoir.com/find-doctors" },
-      { name: specialtyDisplay, url: `https://zonoir.com/doctors/${specialty}` },
       { name: doctor?.full_name || doctorSlug || "Profile", url: canonicalUrl },
     ],
   });
@@ -606,18 +604,6 @@ const PublicDoctorProfile = () => {
       <ProfileTopBar />
       
       <main className="container mx-auto px-4 py-6 md:py-8">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-6 overflow-x-auto pb-2" aria-label="Breadcrumb">
-          <a href="https://zonoir.com" className="hover:text-primary transition-colors whitespace-nowrap">Home</a>
-          <ChevronRight className="h-4 w-4 flex-shrink-0" />
-          <Link to="/find-doctors" className="hover:text-primary transition-colors whitespace-nowrap">Find Doctors</Link>
-          <ChevronRight className="h-4 w-4 flex-shrink-0" />
-          <Link to={`/doctors/${specialty}?city=${doctor?.city || cityDisplay}`} className="hover:text-primary transition-colors whitespace-nowrap">
-            {specialtyDisplay}s in {doctor?.city || cityDisplay}
-          </Link>
-          <ChevronRight className="h-4 w-4 flex-shrink-0" />
-          <span className="text-foreground font-medium truncate">{doctor.full_name}</span>
-        </nav>
 
         <div className="max-w-5xl mx-auto space-y-8">
           {/* Hero: Profile + Inline booking widget */}
