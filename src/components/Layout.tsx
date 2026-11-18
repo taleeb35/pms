@@ -317,9 +317,9 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/doctor/allergies", icon: AlertTriangle, label: "Allergies" },
         { path: "/doctor/procedures", icon: Stethoscope, label: "Procedures" },
         { path: "/doctor/icd-codes", icon: FileCode, label: "ICD Codes" },
-        ...(doctorClinicId ? [] : [{ path: "/doctor/subscription", icon: CreditCard, label: "Subscription" }]),
       ],
     },
+    ...(doctorClinicId ? [] : [{ label: "Billing & Subscription", icon: CreditCard, items: [{ path: "/doctor/subscription", icon: CreditCard, label: "Billing & Subscription" }] }]),
     {
       label: "Help",
       icon: LifeBuoy,
@@ -390,9 +390,9 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/allergies", icon: AlertTriangle, label: "Allergies" },
         { path: "/clinic/procedures", icon: Stethoscope, label: "Procedures" },
         { path: "/clinic/icd-codes", icon: FileCode, label: "ICD Codes" },
-        { path: "/clinic/subscription", icon: CreditCard, label: "Subscription" },
       ],
     },
+    { label: "Billing & Subscription", icon: CreditCard, items: [{ path: "/clinic/subscription", icon: CreditCard, label: "Billing & Subscription" }] },
     {
       label: "Help",
       icon: LifeBuoy,

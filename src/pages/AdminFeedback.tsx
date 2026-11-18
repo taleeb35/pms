@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { npsOf } from "@/lib/nps";
 import { downloadSheets } from "@/lib/exportSheet";
+import CancelFeedbackList from "@/components/billing/CancelFeedbackList";
 
 // Admin → Feedback: recommend scores (NPS) and ideas/problems sent from inside the app.
 type Row = { id: string; user_id: string; kind: string; score: number | null; message: string | null; page: string | null; portal: string | null; created_at: string };
@@ -86,6 +87,8 @@ export default function AdminFeedback() {
           ))}
         </CardContent>
       </Card>
+
+      <CancelFeedbackList />
     </div>
   );
 }

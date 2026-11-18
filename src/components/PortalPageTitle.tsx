@@ -15,7 +15,7 @@ const LABELS: Record<string, string> = {
   procedures: "Procedures", allergies: "Allergies", medicines: "Medicines", diseases: "Diseases", templates: "Templates",
   "icd-codes": "ICD Codes", finance: "Finance", reports: "Reports", summary: "Summary", "medicine-report": "Medicine Report",
   "walk-in": "Walk-in", profile: "Profile", support: "Support", schedule: "Schedule", schedules: "Schedules",
-  "doctor-schedules": "Doctor Schedules", calendar: "Calendar", subscription: "Subscription", receptionists: "Receptionists",
+  "doctor-schedules": "Doctor Schedules", calendar: "Calendar", subscription: "Billing & Subscription", receptionists: "Receptionists",
   "activity-logs": "Activity Logs", doctors: "Doctors", "add-doctor": "Add Doctor", expenses: "Expenses",
   specializations: "Specializations", inventory: "Inventory", suppliers: "Suppliers", products: "Products",
   "purchase-orders": "Purchase Orders", invoices: "Invoices", stock: "Stock", adjustments: "Adjustments", ledger: "Ledger",

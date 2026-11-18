@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { usd } from "@/lib/pricingConfig";
 import { STATUS_LABEL, billingAction, trialDaysLeft, useBillingState } from "@/lib/billing";
+import CancelSubscriptionDialog from "@/components/billing/CancelSubscriptionDialog";
 
 type Status = { connected: boolean; price_usd: number; billable_doctors?: number };
 
@@ -16,7 +17,21 @@ export default function OnlineBillingCard() {
   const { toast } = useToast();
   const { state, loading, reload } = useBillingState(true);
   const [info, setInfo] = useState<Status | null>(null);
-  const [busy, setBusy] = useState<"checkout" | "portal" | null>(null);
+  const [busy, setBusy] = useState<"checkout" | "portal" | "resume" | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+
+  const resume = async () => {
+    setBusy("resume");
+    try {
+      await billingAction("resume");
+      toast({ title: "Subscription will continue", description: "The cancellation was undone." });
+      void reload();
+    } catch (e) {
+      toast({ title: "Could not undo the cancellation", description: (e as Error).message, variant: "destructive" });
+    } finally {
+      setBusy(null);
+    }
+  };
   const [params, setParams] = useSearchParams();
 
   useEffect(() => {
@@ -95,12 +110,23 @@ export default function OnlineBillingCard() {
             )}
             {(subscribed || state.status === "canceled") && (
               <Button variant="outline" onClick={() => go("portal")} disabled={!!busy}>
-                {busy === "portal" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />} Manage billing
+                {busy === "portal" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ExternalLink className="mr-2 h-4 w-4" />} Change card or billing details
+              </Button>
+            )}
+            {subscribed && !state.cancel_at_period_end && (
+              <Button variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setCancelOpen(true)} disabled={!!busy}>
+                Cancel subscription
+              </Button>
+            )}
+            {subscribed && state.cancel_at_period_end && (
+              <Button onClick={resume} disabled={!!busy}>
+                {busy === "resume" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Keep my subscription
               </Button>
             )}
           </div>
         )}
       </CardContent>
+      <CancelSubscriptionDialog open={cancelOpen} onOpenChange={setCancelOpen} periodEnd={state.current_period_end} onDone={() => void reload()} />
     </Card>
   );
 }

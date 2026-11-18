@@ -2,7 +2,9 @@
 // Actions (POST JSON {action}):
 //   status            signed-in user: billing state + whether online payment is available
 //   checkout          billing owner (clinic owner or single doctor): Stripe Checkout link
-//   portal            billing owner: Stripe customer portal link (card, invoices, cancel)
+//   portal            billing owner: Stripe customer portal link (change card, billing details)
+//   history           billing owner: past invoices and card payments
+//   cancel / resume   billing owner: cancel at period end with a reason (saved for admin), or undo
 //   admin-status      admin: connection details
 //   admin-connect     admin: {secret_key} saves the key, creates price, webhook and portal settings
 //   sync-all          service role (daily cron): update doctor counts on running subscriptions
@@ -71,6 +73,57 @@ serve(async (req: Request) => {
     const { data: acct } = await admin.from("billing_accounts").select("*").eq("owner_id", ownerId).maybeSingle();
     if (!acct) return json(400, { error: "No billing account for this login." });
     if (acct.exempt) return json(400, { error: "This account is billed manually. Please contact support." });
+
+    // Past invoices and card payments, read from Stripe for this customer only.
+    if (action === "history") {
+      if (!acct.stripe_customer_id) return json(200, { invoices: [], payments: [] });
+      const [inv, ch] = await Promise.all([
+        stripe(key, "GET", "invoices", { customer: acct.stripe_customer_id, limit: 24 }),
+        stripe(key, "GET", "charges", { customer: acct.stripe_customer_id, limit: 24 }),
+      ]);
+      const invoices = (inv?.data || []).filter((i: any) => i.status !== "draft").map((i: any) => ({
+        id: i.id, number: i.number, created: i.created, status: i.status,
+        total: i.total, amount_paid: i.amount_paid, amount_due: i.amount_due, currency: i.currency,
+        period_start: i.lines?.data?.[0]?.period?.start ?? i.period_start, period_end: i.lines?.data?.[0]?.period?.end ?? i.period_end,
+        hosted_invoice_url: i.hosted_invoice_url, invoice_pdf: i.invoice_pdf,
+      }));
+      const payments = (ch?.data || []).map((c: any) => ({
+        id: c.id, created: c.created, amount: c.amount, amount_refunded: c.amount_refunded, currency: c.currency,
+        status: c.status, paid: c.paid, refunded: c.refunded,
+        card: c.payment_method_details?.card ? `${c.payment_method_details.card.brand} •••• ${c.payment_method_details.card.last4}` : null,
+        failure: c.failure_message || null, receipt_url: c.receipt_url,
+      }));
+      return json(200, { invoices, payments });
+    }
+
+    // Cancel at the end of the paid period, with the reason the owner gave.
+    if (action === "cancel" || action === "resume") {
+      if (!acct.stripe_subscription_id || !["active", "trialing", "past_due", "unpaid"].includes(acct.status)) {
+        return json(400, { error: "There is no running subscription." });
+      }
+      if (action === "cancel") {
+        const reason = String(body?.reason || "").trim().slice(0, 100);
+        const comment = String(body?.comment || "").trim().slice(0, 2000);
+        if (!reason) return json(400, { error: "Please choose a reason." });
+        const sub = await stripe(key, "POST", `subscriptions/${acct.stripe_subscription_id}`, {
+          cancel_at_period_end: "true",
+          cancellation_details: { comment: `${reason}${comment ? `: ${comment}` : ""}`.slice(0, 500) },
+        });
+        await saveSubscription(admin, sub, ownerId);
+        const ends = sub?.current_period_end ?? sub?.items?.data?.[0]?.current_period_end;
+        await admin.from("billing_cancel_feedback").insert({
+          owner_id: ownerId, kind: state.kind, user_id: user.id, reason, comment: comment || null,
+          ends_at: ends ? new Date(ends * 1000).toISOString() : null,
+        });
+        return json(200, { ok: true, ends_at: ends ? new Date(ends * 1000).toISOString() : null });
+      }
+      const sub = await stripe(key, "POST", `subscriptions/${acct.stripe_subscription_id}`, { cancel_at_period_end: "false" });
+      await saveSubscription(admin, sub, ownerId);
+      const { data: last } = await admin.from("billing_cancel_feedback").select("id").eq("owner_id", ownerId).is("undone_at", null)
+        .order("created_at", { ascending: false }).limit(1);
+      if (last?.[0]) await admin.from("billing_cancel_feedback").update({ undone_at: new Date().toISOString() }).eq("id", last[0].id);
+      return json(200, { ok: true });
+    }
 
     let customerId: string | null = acct.stripe_customer_id;
     if (!customerId) {
@@ -192,7 +245,8 @@ async function adminConnect(admin: ReturnType<typeof adminClient>, key: string) 
       payment_method_update: { enabled: "true" },
       invoice_history: { enabled: "true" },
       customer_update: { enabled: "true", allowed_updates: ["email", "address", "name"] },
-      subscription_cancel: { enabled: "true", mode: "at_period_end" },
+      // Cancelling happens in the app so the reason is collected first.
+      subscription_cancel: { enabled: "false" },
     },
   });
 

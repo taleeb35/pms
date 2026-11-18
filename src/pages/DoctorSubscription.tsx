@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PRICE_ORIGINAL, PRICE_MONTHLY, PRICE_DISCOUNT_PERCENT, PRICE_YEARLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
 import OnlineBillingCard from "@/components/billing/OnlineBillingCard";
+import BillingHistory from "@/components/billing/BillingHistory";
 import { useBillingState } from "@/lib/billing";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -155,10 +156,11 @@ const DoctorSubscription = () => {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
-          <p className="text-muted-foreground">Manage your subscription and billing</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Billing & Subscription</h1>
+          <p className="text-muted-foreground">Your plan, payments, invoices and renewal date.</p>
         </div>
         <OnlineBillingCard />
+        <BillingHistory />
       </div>
     );
   }
@@ -166,8 +168,8 @@ const DoctorSubscription = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
-        <p className="text-muted-foreground">Manage your subscription and billing</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Billing & Subscription</h1>
+        <p className="text-muted-foreground">Your plan, payments and renewal date.</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -322,6 +324,8 @@ const DoctorSubscription = () => {
           </div>
         </CardContent>
       </Card>
+
+      <BillingHistory />
     </div>
   );
 };
