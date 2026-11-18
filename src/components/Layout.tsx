@@ -42,6 +42,8 @@ import {
   MessageSquareText,
   BookOpen,
   CalendarDays,
+  BellRing,
+  ShieldCheck,
   Boxes,
   Package,
   Truck,
@@ -285,6 +287,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/doctor/calendar", icon: CalendarDays, label: "Calendar" },
         { path: "/doctor/walk-in", icon: Sparkles, label: "Walk-In" },
         { path: "/doctor/waitlist", icon: Clock, label: "Waitlist" },
+        { path: "/doctor/reminders", icon: BellRing, label: "Reminders" },
         { path: "/doctor/leads", icon: Target, label: "Leads" },
       ],
     },
@@ -297,6 +300,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/doctor/reports?tab=today", icon: CalendarDays, label: "Daily Summary" },
         { path: "/doctor/reports?tab=analytics", icon: Users, label: "Patients & Visits" },
         { path: "/doctor/reports?tab=medicines", icon: Pill, label: "Medicines" },
+        { path: "/doctor/reports?tab=insurance", icon: ShieldCheck, label: "Insurance" },
       ],
     },
     {
@@ -335,6 +339,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/patients", icon: Users, label: "Patients" },
         { path: "/clinic/walk-in", icon: Sparkles, label: "Walk-In" },
         { path: "/clinic/leads", icon: Target, label: "Leads" },
+        { path: "/clinic/reminders", icon: BellRing, label: "Reminders" },
       ],
     },
     {
@@ -345,6 +350,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/reports?tab=money", icon: Banknote, label: "Finance" },
         { path: "/clinic/reports?tab=expenses", icon: FileText, label: "Expenses" },
         { path: "/clinic/reports?tab=analytics", icon: Users, label: "Doctors & Patients" },
+        { path: "/clinic/reports?tab=insurance", icon: ShieldCheck, label: "Insurance" },
       ],
     },
     {
@@ -414,6 +420,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/receptionist/appointments", icon: Calendar, label: "Appointments" },
         { path: "/receptionist/leads", icon: Target, label: "Leads" },
         { path: "/receptionist/walk-in", icon: Sparkles, label: "Walk-In" },
+        { path: "/receptionist/reminders", icon: BellRing, label: "Reminders" },
       ],
     },
     {
@@ -469,6 +476,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/doctor-receptionist/waitlist", icon: Clock, label: "Waitlist" },
         { path: "/doctor-receptionist/appointments", icon: Calendar, label: "Appointments" },
         { path: "/doctor-receptionist/walk-in", icon: Sparkles, label: "Walk-In" },
+        { path: "/doctor-receptionist/reminders", icon: BellRing, label: "Reminders" },
       ],
     },
     {

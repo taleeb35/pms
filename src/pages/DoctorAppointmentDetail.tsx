@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import IssueCertificateDialog from "@/components/IssueCertificateDialog";
 import AskReviewButton from "@/components/AskReviewButton";
+import ShareInvoiceButton from "@/components/ShareInvoiceButton";
+import VisitClaimCard from "@/components/insurance/VisitClaimCard";
+import AppointmentLocation from "@/components/AppointmentLocation";
 import LabOrdersCard from "@/components/labs/LabOrdersCard";
 import IntakeFormCard from "@/components/intake/IntakeFormCard";
 import PrescriptionWriter from "@/components/prescription/PrescriptionWriter";
@@ -1081,10 +1084,13 @@ const DoctorAppointmentDetail = () => {
             Generate Report
           </Button>
           {appointment.status === "completed" && (
+            <>
             <Button size="sm" onClick={handlePrintInvoice} className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <Receipt className="h-4 w-4 mr-2" />
               Print Invoice
             </Button>
+            <ShareInvoiceButton appointmentId={appointment.id} patient={appointment.patients} />
+            </>
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -1451,6 +1457,7 @@ const DoctorAppointmentDetail = () => {
 
           {/* Right Column - Patient Sidebar */}
           <div className="space-y-6">
+            <AppointmentLocation appointmentId={appointment.id} doctorId={appointment.doctor_id} />
             {/* Patient Card */}
             <Card>
               <CardHeader className="pb-3">
@@ -1600,6 +1607,7 @@ const DoctorAppointmentDetail = () => {
             </Card>
 
             <LabOrdersCard patientId={appointment.patient_id} doctorId={appointment.doctor_id} appointmentId={appointment.id} patientName={appointment.patients.full_name} />
+            <VisitClaimCard appointmentId={appointment.id} doctorId={appointment.doctor_id} patientId={appointment.patient_id} />
 
             {/* Next Visit */}
             <Card>

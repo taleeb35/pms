@@ -37,6 +37,8 @@ const CitySukkur = lazy(() => import("./pages/CitySukkur"));
 const CityAbbottabad = lazy(() => import("./pages/CityAbbottabad"));
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const SignUp = lazy(() => import("./pages/SignUp"));
+const SharedInvoice = lazy(() => import("./pages/SharedInvoice"));
+const Reminders = lazy(() => import("./pages/Reminders"));
 const ReportsHub = lazy(() => import("./pages/ReportsHub"));
 const ReceptionistAuth = lazy(() => import("./pages/ReceptionistAuth"));
 const UnifiedLogin = lazy(() => import("./pages/UnifiedLogin"));
@@ -287,6 +289,7 @@ const App = () => (
           <Route path="/verify" element={<KeyedByParam param="code"><VerifyCertificate /></KeyedByParam>} />
           <Route path="/verify/:code" element={<KeyedByParam param="code"><VerifyCertificate /></KeyedByParam>} />
           <Route path="/intake/:token" element={<IntakeForm />} />
+          <Route path="/invoice/:token" element={<SharedInvoice />} />
           <Route path="/doctor-auth" element={<SignUp />} />
           <Route path="/auth" element={<SignUp />} />
           <Route path="/receptionist-auth" element={<ReceptionistAuth />} />
@@ -353,6 +356,14 @@ const App = () => (
               element={
                 <Layout>
                   <PatientDetail />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor/reminders"
+              element={
+                <Layout>
+                  <Reminders />
                 </Layout>
               }
             />
@@ -687,6 +698,14 @@ const App = () => (
               }
             />
             <Route
+              path="/clinic/reminders"
+              element={
+                <Layout>
+                  <Reminders />
+                </Layout>
+              }
+            />
+            <Route
               path="/clinic/walk-in"
               element={
                 <Layout>
@@ -885,6 +904,14 @@ const App = () => (
               }
             />
             <Route
+              path="/receptionist/reminders"
+              element={
+                <Layout>
+                  <Reminders />
+                </Layout>
+              }
+            />
+            <Route
               path="/receptionist/walk-in"
               element={
                 <Layout>
@@ -1010,6 +1037,14 @@ const App = () => (
               element={
                 <Layout>
                   <DoctorReceptionistAppointments />
+                </Layout>
+              }
+            />
+            <Route
+              path="/doctor-receptionist/reminders"
+              element={
+                <Layout>
+                  <Reminders />
                 </Layout>
               }
             />

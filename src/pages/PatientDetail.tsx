@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PatientBalance from "@/components/PatientBalance";
+import PatientInsuranceCard from "@/components/insurance/PatientInsuranceCard";
 import MergePatientDialog from "@/components/MergePatientDialog";
 import AskReviewButton from "@/components/AskReviewButton";
 import { idLabel, idPlaceholder } from "@/lib/region";
@@ -464,6 +465,7 @@ const PatientDetail = () => {
       </div>
 
       <PatientBalance patientId={patient.id} />
+      <PatientInsuranceCard patientId={patient.id} />
       <AIPatientInsights patientId={patient.id} patientName={patient.full_name} />
 
       <Tabs defaultValue="timeline" className="space-y-4">

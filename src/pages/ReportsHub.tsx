@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { BarChart3, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReportsOverview from "@/components/reports/ReportsOverview";
+import ClaimsList from "@/components/insurance/ClaimsList";
 import { useSEO } from "@/hooks/useSEO";
 
 // One place for money and reports. Each tab is a sub-section; the sidebar links straight to tabs.
@@ -27,12 +28,14 @@ export default function ReportsHub({ scope }: { scope: "doctor" | "clinic" }) {
         { id: "today", label: "Daily summary", hint: "One day's patients and revenue", render: () => <DoctorSummary /> },
         { id: "analytics", label: "Patients & visits", hint: "Patient mix, appointment trends and peak hours", render: () => <DoctorReports /> },
         { id: "medicines", label: "Medicines", hint: "What you prescribe most", render: () => <DoctorMedicineReport /> },
+        { id: "insurance", label: "Insurance", hint: "Insurance claims by stage: waiting, approved, paid, rejected", render: () => <ClaimsList /> },
       ]
     : [
         { id: "overview", label: "Overview", hint: "Key numbers compared with the previous period", render: () => <ReportsOverview scope="clinic" /> },
         { id: "money", label: "Finance", hint: "Revenue by visit and doctor, with Excel and PDF export", render: () => <ClinicFinance /> },
         { id: "expenses", label: "Expenses", hint: "Record and review clinic expenses", render: () => <ClinicExpenses /> },
         { id: "analytics", label: "Doctors & patients", hint: "Profit and loss, doctor scorecard, patient mix and peak hours", render: () => <ClinicReports /> },
+        { id: "insurance", label: "Insurance", hint: "Insurance claims by stage: waiting, approved, paid, rejected", render: () => <ClaimsList /> },
       ];
 
   const active = tabs.some((t) => t.id === params.get("tab")) ? params.get("tab")! : "overview";

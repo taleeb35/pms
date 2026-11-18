@@ -491,9 +491,11 @@ const DoctorMedicineReport = () => {
           ) : filtered.length === 0 ? (
             <div className="p-10 text-center text-muted-foreground">
               <FileText className="h-10 w-10 mx-auto mb-2 opacity-50" />
-              <p>No medicines match the current filters.</p>
+              <p>{rows.length === 0 ? "No medicines were recorded in this period." : "No medicines match the current filters."}</p>
               <p className="text-xs mt-1">
-                Try clearing the filters, or load a disease template in an appointment so structured medicines get tracked.
+                {rows.length === 0
+                  ? "This report counts medicines added on the visit page (Prescription section). Visits saved with an empty prescription or just a dot are not counted."
+                  : "Try clearing the filters."}
               </p>
             </div>
           ) : (

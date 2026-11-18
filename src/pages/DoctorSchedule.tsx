@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import DoctorLocationsCard, { type DoctorLocation } from "@/components/DoctorLocationsCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +25,7 @@ interface DaySchedule {
   is_available: boolean;
   start_time: string;
   end_time: string;
+  location_id?: string | null;
 }
 
 interface Leave {
@@ -48,6 +50,9 @@ const DoctorSchedule = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [schedules, setSchedules] = useState<DaySchedule[]>([]);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [locations, setLocations] = useState<DoctorLocation[]>([]);
+  const onLocations = useCallback((l: DoctorLocation[]) => setLocations(l), []);
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [addLeaveOpen, setAddLeaveOpen] = useState(false);
   const [newLeave, setNewLeave] = useState({
@@ -65,6 +70,7 @@ const DoctorSchedule = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      setDoctorId(user.id);
 
       const { data, error } = await supabase
         .from("doctor_schedules")
@@ -87,6 +93,7 @@ const DoctorSchedule = () => {
             is_available: existing.is_available,
             start_time: existing.start_time || "09:00",
             end_time: existing.end_time || "17:00",
+            location_id: (existing as any).location_id || null,
           });
         } else {
           fullSchedule.push({
@@ -156,7 +163,8 @@ const DoctorSchedule = () => {
           end_time: schedule.end_time,
           break_start: null,
           break_end: null,
-        };
+          location_id: schedule.location_id || null,
+        } as any;
 
         if (schedule.id) {
           const { error } = await supabase
@@ -367,6 +375,7 @@ const DoctorSchedule = () => {
         </TabsList>
 
         <TabsContent value="weekly" className="space-y-6">
+          {doctorId && <DoctorLocationsCard doctorId={doctorId} onChange={onLocations} />}
           <Card>
             <CardHeader>
               <CardTitle>Weekly Availability</CardTitle>
@@ -418,6 +427,20 @@ const DoctorSchedule = () => {
                           }
                         />
                       </div>
+
+                      {locations.length > 0 && (
+                        <div className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Location</Label>
+                          <select
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            value={schedule.location_id || ""}
+                            onChange={(e) => handleScheduleChange(schedule.day_of_week, "location_id", e.target.value || null)}
+                          >
+                            <option value="">Main location</option>
+                            {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                          </select>
+                        </div>
+                      )}
                     </>
                   )}
 

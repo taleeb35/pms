@@ -19,7 +19,7 @@ export const isAuthRoute = (pathname: string) => {
 };
 
 // Signed-in portal areas, plus pages where floating helpers get in the way.
-const PORTAL_PREFIXES = ["/doctor/", "/clinic/", "/receptionist/", "/doctor-receptionist/", "/admin/", "/content-writer/", "/referral-partner/", "/app/", "/verify/", "/intake/"];
+const PORTAL_PREFIXES = ["/doctor/", "/clinic/", "/receptionist/", "/doctor-receptionist/", "/admin/", "/content-writer/", "/referral-partner/", "/app/", "/verify/", "/intake/", "/invoice/"];
 const PORTAL_EXACT = ["/dashboard", "/doctors", "/patients", "/appointments", "/support-tickets", "/queue", "/pending-doctors", "/waitlist"];
 
 // True where the "Find a Doctor" chat and the WhatsApp bubble must not show:

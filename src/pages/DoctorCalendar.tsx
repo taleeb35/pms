@@ -19,6 +19,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useSEO } from "@/hooks/useSEO";
 import { useStickyState } from "@/hooks/useStickyState";
+import CalendarSyncDialog from "@/components/CalendarSyncDialog";
 import { friendlyTime } from "@/lib/datetime";
 import { buildCalendarDays, leaveLabel, type CalAppt, type CalItem, type CalLeave } from "@/lib/calendarItems";
 
@@ -287,7 +288,8 @@ const DoctorCalendar = () => {
           </h1>
           <p className="text-sm text-muted-foreground">Appointments, leave days and your tasks in one place. Tasks are private to you.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <CalendarSyncDialog />
           <Button variant="outline" size="sm" onClick={() => setCursor(new Date())}>Today</Button>
           <Button variant="outline" size="icon" onClick={navPrev} aria-label="Previous"><ChevronLeft className="h-4 w-4" /></Button>
           <Button variant="outline" size="icon" onClick={navNext} aria-label="Next"><ChevronRight className="h-4 w-4" /></Button>
