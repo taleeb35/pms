@@ -34,7 +34,9 @@ serve(async (req: Request) => {
   if (token.length < 40 || !/^[0-9a-f]+$/.test(token)) return new Response("Not found", { status: 404 });
 
   const admin = adminClient();
-  const { data: doc } = await admin.from("doctors").select("id, timezone, calendar_show_names, profiles(full_name)").eq("calendar_token", token).maybeSingle();
+  const { data: link } = await admin.from("doctor_calendar_links").select("doctor_id").eq("token", token).maybeSingle();
+  if (!link) return new Response("Not found", { status: 404 });
+  const { data: doc } = await admin.from("doctors").select("id, timezone, calendar_show_names, profiles(full_name)").eq("id", link.doctor_id).maybeSingle();
   if (!doc) return new Response("Not found", { status: 404 });
 
   const tz = (doc as any).timezone || "Asia/Karachi";

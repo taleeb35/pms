@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { buildCorsHeaders, checkRateLimit, rateLimitResponse } from "../_shared/security.ts";
+import { requireUser, AuthError } from "../_shared/auth.ts";
 
 serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
@@ -8,6 +9,13 @@ serve(async (req) => {
 
   const rl = checkRateLimit(req, "ai-patient-insights", 15, 60_000);
   if (!rl.ok) return rateLimitResponse(rl, corsHeaders);
+
+  // Signed-in staff only, so nobody outside can run up the AI bill.
+
+  try { await requireUser(req); }
+
+  catch (e) { return new Response(JSON.stringify({ error: e instanceof AuthError ? e.message : "Not signed in" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }); }
+
 
   try {
     const { patientId } = await req.json();

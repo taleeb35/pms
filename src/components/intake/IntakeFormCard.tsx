@@ -26,6 +26,9 @@ type Form = {
   attachments?: { path: string; name: string; type: string; uploaded_at?: string }[] | null;
 };
 
+// Only a clean base64 PNG is ever used as the signature image.
+const SIG_RE = new RegExp("^data:image/png;base64,[A-Za-z0-9+/]+=*$");
+const safeSignature = (v?: string | null) => (v && SIG_RE.test(v) ? v : null);
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]!));
 
 export default function IntakeFormCard({ appointmentId, doctorId, appointmentDate, appointmentTime, patient, canUseFiles = true }: Props) {
@@ -101,7 +104,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
 <p>${appointmentDate ? `Visit ${esc(friendlyDate(appointmentDate))}${appointmentTime ? ` at ${esc(friendlyTime(appointmentTime))}` : ""}` : ""}</p>
 <table>${rows}</table>
 <div class="c"><b>Consent</b><p>${esc(form.consent_text || "")}</p>
-<div class="s">Signed by ${esc(form.signed_name || "")} on ${esc(format(new Date(form.signed_at!), "d MMM yyyy, h:mm a"))}${form.signature ? `<br><img src="${form.signature}" alt="Signature">` : ""}</div></div>
+<div class="s">Signed by ${esc(form.signed_name || "")} on ${esc(format(new Date(form.signed_at!), "d MMM yyyy, h:mm a"))}${safeSignature(form.signature) ? `<br><img src="${safeSignature(form.signature)}" alt="Signature">` : ""}</div></div>
 <script>window.onload=function(){window.print()}</script></body></html>`);
     w.document.close();
   };
@@ -169,7 +172,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}th,td{border:1px solid 
             <p className="rounded-md bg-muted/50 p-2 text-xs text-muted-foreground">
               Consent signed by <span className="font-medium text-foreground">{form.signed_name}</span> on {format(new Date(form.signed_at!), "d MMM yyyy, h:mm a")}.
             </p>
-            {form.signature && <img src={form.signature} alt="Patient signature" className="h-14 rounded border bg-white p-1" />}
+            {safeSignature(form.signature) && <img src={safeSignature(form.signature)!} alt="Patient signature" className="h-14 rounded border bg-white p-1" />}
             {(form.attachments || []).length > 0 && (
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground">Files from the patient (also in their documents)</p>

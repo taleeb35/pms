@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { buildCorsHeaders, checkRateLimit, rateLimitResponse } from "../_shared/security.ts";
+import { requireUser, AuthError } from "../_shared/auth.ts";
 
 serve(async (req) => {
   const corsHeaders = buildCorsHeaders(req);
@@ -8,6 +9,13 @@ serve(async (req) => {
   // Rate limit: 20 requests / minute / IP (prevents Gemini cost abuse)
   const rl = checkRateLimit(req, "ai-prescription", 20, 60_000);
   if (!rl.ok) return rateLimitResponse(rl, corsHeaders);
+
+  // Signed-in staff only, so nobody outside can run up the AI bill.
+
+  try { await requireUser(req); }
+
+  catch (e) { return new Response(JSON.stringify({ error: e instanceof AuthError ? e.message : "Not signed in" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }); }
+
 
   try {
     const { diagnosis, chiefComplaint, patientAge, patientGender, allergies, diseases, vitalSigns } = await req.json();

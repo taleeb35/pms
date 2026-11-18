@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { requireUser, authErrorResponse } from "../_shared/auth.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -24,8 +25,14 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Signed-in users only; the confirmation goes to their own account email, not an address from the request.
+  let callerEmail = "";
+  try { callerEmail = (await requireUser(req)).email || ""; }
+  catch (e) { return authErrorResponse(e, corsHeaders) ?? new Response("error", { status: 500, headers: corsHeaders }); }
+
   try {
-    const { ticketId, name, email, subject, message, entityType, entityName }: TicketNotificationRequest = await req.json();
+    const { ticketId, name, subject, message, entityType, entityName }: TicketNotificationRequest = await req.json();
+    const email = callerEmail;
 
     console.log("Sending ticket notification for ticket:", ticketId);
 

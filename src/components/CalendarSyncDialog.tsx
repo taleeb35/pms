@@ -26,9 +26,13 @@ export default function CalendarSyncDialog() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       setUserId(user.id);
-      const { data } = await supabase.from("doctors").select("calendar_token, calendar_show_names").eq("id", user.id).maybeSingle();
-      setToken((data as any)?.calendar_token || null);
-      setNames(!!(data as any)?.calendar_show_names);
+      // The link code lives in a private table only this doctor can read.
+      const [link, doc] = await Promise.all([
+        (supabase as any).from("doctor_calendar_links").select("token").eq("doctor_id", user.id).maybeSingle(),
+        supabase.from("doctors").select("calendar_show_names").eq("id", user.id).maybeSingle(),
+      ]);
+      setToken(link.data?.token || null);
+      setNames(!!(doc.data as any)?.calendar_show_names);
     })();
   }, [open]);
 
@@ -43,7 +47,15 @@ export default function CalendarSyncDialog() {
     return true;
   };
 
-  const create = async () => { const t = newToken(); if (await save({ calendar_token: t })) setToken(t); };
+  const create = async () => {
+    if (!userId) return;
+    const t = newToken();
+    setBusy(true);
+    const { error } = await (supabase as any).from("doctor_calendar_links").upsert({ doctor_id: userId, token: t, created_at: new Date().toISOString() });
+    setBusy(false);
+    if (error) { toast({ title: "Could not make the link", description: error.message, variant: "destructive" }); return; }
+    setToken(t);
+  };
   const replace = async () => {
     if (!confirm("Make a new link? Calendars using the old link will stop updating until you add the new one.")) return;
     await create();

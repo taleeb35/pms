@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/security.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -19,6 +20,10 @@ const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  // At most 5 emails per 15 minutes from one address.
+  const rl = checkRateLimit(req, "referral-email", 5, 15 * 60_000);
+  if (!rl.ok) return rateLimitResponse(rl, corsHeaders);
 
   try {
     const { full_name, email, referral_code, type }: ReferralPartnerEmailRequest = await req.json();

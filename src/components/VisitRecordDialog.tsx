@@ -515,6 +515,8 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
     const visitDate = appointment?.appointment_date ? format(new Date(appointment.appointment_date), "dd MMMM yyyy") : '';
     
     // Build HTML content for print - compact layout for single page with letterhead space
+    // Escape text before it goes into the print page (names can come from the public booking form).
+    const __h = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
     let printContent = `
       <!DOCTYPE html>
       <html>
@@ -690,22 +692,22 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       <body>
         <!-- Header with Date -->
         <div class="print-header">
-          <span class="print-date">Date: ${visitDate}</span>
+          <span class="print-date">Date: ${__h(visitDate)}</span>
         </div>
         
         <!-- Patient Information - Compact Inline -->
         <div class="patient-info">
           <div class="patient-item">
             <span class="patient-label">Name:</span>
-            <span class="patient-value">${patientName}</span>
+            <span class="patient-value">${__h(patientName)}</span>
           </div>
           <div class="patient-item">
             <span class="patient-label">ID:</span>
-            <span class="patient-value">${patientId}</span>
+            <span class="patient-value">${__h(patientId)}</span>
           </div>
           <div class="patient-item">
             <span class="patient-label">Age:</span>
-            <span class="patient-value">${patientAge} Yrs</span>
+            <span class="patient-value">${__h(patientAge)} Yrs</span>
           </div>
         </div>
         
@@ -715,27 +717,27 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           <div class="vitals-grid">
             <div class="vital-box">
               <div class="vital-label">BP</div>
-              <div class="vital-value">${formData.blood_pressure || '—'}</div>
+              <div class="vital-value">${__h(formData.blood_pressure || '—')}</div>
             </div>
             <div class="vital-box">
               <div class="vital-label">Temp</div>
-              <div class="vital-value">${formData.temperature || '—'}</div>
+              <div class="vital-value">${__h(formData.temperature || '—')}</div>
             </div>
             <div class="vital-box">
               <div class="vital-label">Pulse</div>
-              <div class="vital-value">${formData.pulse || '—'}</div>
+              <div class="vital-value">${__h(formData.pulse || '—')}</div>
             </div>
             <div class="vital-box">
               <div class="vital-label">Weight</div>
-              <div class="vital-value">${formData.weight || '—'}</div>
+              <div class="vital-value">${__h(formData.weight || '—')}</div>
             </div>
             <div class="vital-box">
               <div class="vital-label">Height</div>
-              <div class="vital-value">${formData.height || '—'}</div>
+              <div class="vital-value">${__h(formData.height || '—')}</div>
             </div>
             <div class="vital-box">
               <div class="vital-label">Pain</div>
-              <div class="vital-value">${formData.pain_scale ? formData.pain_scale + '/10' : '—'}</div>
+              <div class="vital-value">${__h(formData.pain_scale ? formData.pain_scale + '/10' : '—')}</div>
             </div>
           </div>
         </div>
@@ -746,7 +748,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       printContent += `
         <div class="content-section">
           <div class="content-title">Chief Complaint</div>
-          <div class="content-box">${formData.chief_complaint}</div>
+          <div class="content-box">${__h(formData.chief_complaint)}</div>
         </div>
       `;
     }
@@ -756,7 +758,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       printContent += `
         <div class="content-section">
           <div class="content-title prescription-title">℞ Prescription</div>
-          <div class="prescription-box">${formData.current_prescription}</div>
+          <div class="prescription-box">${__h(formData.current_prescription)}</div>
         </div>
       `;
     }
@@ -766,7 +768,7 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
       printContent += `
         <div class="content-section">
           <div class="content-title">Test Reports / Investigations</div>
-          <div class="content-box">${formData.test_reports}</div>
+          <div class="content-box">${__h(formData.test_reports)}</div>
         </div>
       `;
     }
@@ -778,10 +780,10 @@ export const VisitRecordDialog = ({ open, onOpenChange, appointment }: VisitReco
           <span class="next-visit-label">Next Visit:</span>
       `;
       if (nextVisitDate) {
-        printContent += `<span class="next-visit-date">${format(nextVisitDate, "EEEE, dd MMMM yyyy")}</span>`;
+        printContent += `<span class="next-visit-date">${__h(format(nextVisitDate, "EEEE, dd MMMM yyyy"))}</span>`;
       }
       if (formData.next_visit_notes) {
-        printContent += `<span class="next-visit-notes">${formData.next_visit_notes}</span>`;
+        printContent += `<span class="next-visit-notes">${__h(formData.next_visit_notes)}</span>`;
       }
       printContent += `</div>`;
     }

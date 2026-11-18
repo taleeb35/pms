@@ -177,11 +177,13 @@ const AIVisitSummaryInner = ({
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
+    // Escape text before it goes into the print page (names can come from the public booking form).
+    const __h = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
     const printContent = `
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Visit Summary - ${patientName}</title>
+          <title>Visit Summary - ${__h(patientName)}</title>
           <style>
             @page { margin: 2cm; size: A4; }
             body { font-family: 'Segoe UI', sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a2e; max-width: 700px; margin: 0 auto; padding: 20px; }
@@ -197,8 +199,8 @@ const AIVisitSummaryInner = ({
         </head>
         <body>
           <h1>Clinical Visit Summary</h1>
-          ${summary.replace(/\n/g, "<br/>")}
-          <div class="meta">Generated on ${new Date().toLocaleString()} — AI-assisted summary for doctor review</div>
+          ${__h(summary).replace(/\n/g, "<br/>")}
+          <div class="meta">Generated on ${__h(new Date().toLocaleString())} — AI-assisted summary for doctor review</div>
         </body>
       </html>
     `;
