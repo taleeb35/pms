@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
+import StripeSettingsCard from "@/components/billing/StripeSettingsCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -216,6 +217,8 @@ const AdminSettings = () => {
         <h2 className="text-2xl sm:text-3xl font-bold">Settings</h2>
         <p className="text-muted-foreground">Manage system configuration</p>
       </div>
+
+      <StripeSettingsCard />
 
       <Card>
         <CardHeader>

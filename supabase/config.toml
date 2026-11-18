@@ -44,3 +44,6 @@ verify_jwt = false
 
 [functions.send-trial-expired-notification]
 verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false

@@ -1,3 +1,4 @@
+import BillingBanner from "@/components/billing/BillingBanner";
 import styles from "./Layout.module.css";
 import { History as HistoryIcon, User as UserIcon } from "lucide-react";
 import { NotificationBell, HelpLink, ThemeToggle, WhatsNewButton } from "@/components/header/HeaderTools";
@@ -816,6 +817,9 @@ const Layout = ({ children }: LayoutProps) => {
 
         {/* Main Content */}
         <main className="flex-1 min-w-0 w-full overflow-x-hidden bg-gradient-to-br from-card via-card/50 to-primary/5 rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm border">
+          {(userRole === "clinic" || userRole === "doctor" || userRole === "receptionist" || userRole === "doctor_receptionist") && (
+            <BillingBanner portal={userRole as "clinic" | "doctor" | "receptionist" | "doctor_receptionist"} />
+          )}
           {children}
         </main>
       </div>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { PRICE_ORIGINAL, PRICE_MONTHLY, PRICE_DISCOUNT_PERCENT, PRICE_YEARLY, usd } from "@/lib/pricingConfig";
 import { supabase } from "@/integrations/supabase/client";
+import OnlineBillingCard from "@/components/billing/OnlineBillingCard";
+import { useBillingState } from "@/lib/billing";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,6 +20,7 @@ interface ClinicData {
 const ClinicSubscription = () => {
   const [clinic, setClinic] = useState<ClinicData | null>(null);
   const [loading, setLoading] = useState(true);
+  const billing = useBillingState(true);
 
   useEffect(() => {
     const fetchClinicData = async () => {
@@ -79,7 +82,7 @@ const ClinicSubscription = () => {
   const monthlyRate = PRICE_MONTHLY;
   const yearlyRate = PRICE_YEARLY; // 17% off the monthly price
 
-  if (loading) {
+  if (loading || billing.loading) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-10 w-64" />
@@ -96,6 +99,19 @@ const ClinicSubscription = () => {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">Unable to load subscription data.</p>
+      </div>
+    );
+  }
+
+  // Billed by card through Stripe: the card payment section replaces the manual billing boxes.
+  if (billing.state && !billing.state.exempt) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
+          <p className="text-muted-foreground">Manage your clinic subscription and billing</p>
+        </div>
+        <OnlineBillingCard />
       </div>
     );
   }

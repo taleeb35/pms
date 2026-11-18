@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Clock, AlertTriangle } from "lucide-react";
+import { useBillingState } from "@/lib/billing";
 
 interface TrialBannerProps {
   userType: "clinic" | "doctor";
@@ -10,6 +11,7 @@ interface TrialBannerProps {
 const TrialBanner = ({ userType }: TrialBannerProps) => {
   const [trialDaysRemaining, setTrialDaysRemaining] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+  const billing = useBillingState(true);
 
   useEffect(() => {
     const fetchTrialInfo = async () => {
@@ -65,6 +67,8 @@ const TrialBanner = ({ userType }: TrialBannerProps) => {
   }, [userType]);
 
   // Don't show banner if loading or no trial info (trial ended or never had one)
+  // Accounts billed by card through Stripe see BillingBanner instead.
+  if (billing.loading || (billing.state && !billing.state.exempt)) return null;
   if (loading || trialDaysRemaining === null) {
     return null;
   }

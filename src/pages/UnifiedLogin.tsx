@@ -161,6 +161,12 @@ const UnifiedLogin = () => {
     }
   };
 
+  // Accounts billed by card through Stripe may sign in after the trial (read-only until they subscribe).
+  const isStripeBilled = async () => {
+    const { data } = await (supabase as any).rpc("my_billing_state");
+    return !!data && !data.exempt;
+  };
+
   const handleClinicLogin = async (userId: string) => {
     const { data: clinicData, error: clinicError } = await supabase
       .from("clinics")
@@ -185,7 +191,7 @@ const UnifiedLogin = () => {
       const trialEnd = new Date(clinicData.trial_end_date + "T00:00:00");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (trialEnd < today) {
+      if (trialEnd < today && !(await isStripeBilled())) {
         await supabase.auth.signOut();
         setShowTrialExpiredDialog(true);
         return { success: false };
@@ -201,7 +207,7 @@ const UnifiedLogin = () => {
 
     // Billing cycle enforcement: require a paid invoice for the current cycle
     const cycleDay = (clinicData as any).billing_cycle_day as number | null;
-    if (cycleDay) {
+    if (cycleDay && !(await isStripeBilled())) {
       const today = new Date();
       const day = today.getDate();
       const target = new Date(today.getFullYear(), today.getMonth() + (day <= cycleDay ? 0 : 1), 1);
@@ -258,7 +264,7 @@ const UnifiedLogin = () => {
       const trialEnd = new Date(doctorData.trial_end_date + "T00:00:00");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (trialEnd < today) {
+      if (trialEnd < today && !(await isStripeBilled())) {
         await supabase.auth.signOut();
         setShowTrialExpiredDialog(true);
         return { success: false };
@@ -404,7 +410,7 @@ const UnifiedLogin = () => {
       const trialEnd = new Date(doctorData.trial_end_date + "T00:00:00");
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      if (trialEnd < today) {
+      if (trialEnd < today && !(await isStripeBilled())) {
         await supabase.auth.signOut();
         setShowTrialExpiredDialog(true);
         return { success: false };
