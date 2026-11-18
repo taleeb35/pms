@@ -12,11 +12,13 @@ import { whatsappLink } from "@/lib/phoneLinks";
 // patient on WhatsApp. When no link is saved yet, it asks for one first and saves it.
 type Props = {
   doctorId: string;
-  patient: { full_name: string; phone?: string | null };
+  patient: { id?: string; full_name: string; phone?: string | null };
   size?: "sm" | "default";
+  /** Visit to tag "Review asked". Without it, the patient's latest completed visit with this doctor is tagged. */
+  appointmentId?: string;
 };
 
-export default function AskReviewButton({ doctorId, patient, size = "sm" }: Props) {
+export default function AskReviewButton({ doctorId, patient, size = "sm", appointmentId }: Props) {
   const { toast } = useToast();
   const [link, setLink] = useState<string | null>(null);
   const [doctorName, setDoctorName] = useState("");
@@ -53,6 +55,18 @@ export default function AskReviewButton({ doctorId, patient, size = "sm" }: Prop
     const wa = whatsappLink(patient.phone, message(url));
     if (!wa) { toast({ title: "No valid phone number", description: "Add the patient's mobile number to send on WhatsApp.", variant: "destructive" }); return; }
     window.open(wa, "_blank", "noopener,noreferrer");
+    void markAsked();
+  };
+
+  // Record the request so appointment lists can show and filter "Review asked".
+  const markAsked = async () => {
+    let id = appointmentId;
+    if (!id && patient.id) {
+      const { data } = await supabase.from("appointments").select("id").eq("patient_id", patient.id).eq("doctor_id", doctorId)
+        .eq("status", "completed").order("appointment_date", { ascending: false }).limit(1);
+      id = (data || [])[0]?.id;
+    }
+    if (id) await supabase.from("appointments").update({ review_requested_at: new Date().toISOString() } as any).eq("id", id);
   };
 
   const click = () => { if (link) send(link); else { setDraft(""); setOpen(true); } };

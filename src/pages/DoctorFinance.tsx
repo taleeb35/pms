@@ -5,6 +5,7 @@ import { withDrTitle } from "@/lib/doctorName";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { Banknote, Calendar as CalendarIcon, Download, FileSpreadsheet, Building2, Stethoscope, Search, Eye } from "lucide-react";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Input } from "@/components/ui/input";
@@ -147,6 +148,7 @@ export default function DoctorFinance() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      const build = () => {
       let query = supabase
         .from("appointments")
         .select(`
@@ -171,8 +173,10 @@ export default function DoctorFinance() {
       if (endDate) {
         query = query.lte("appointment_date", format(endDate, "yyyy-MM-dd"));
       }
+      return query;
+      };
 
-      const { data, error } = await query;
+      const { data, error } = await fetchAllRows<any>(build);
 
       if (error) throw error;
 

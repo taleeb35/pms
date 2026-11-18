@@ -4,6 +4,7 @@ import { isRevenueAppointment, grossFee, pctChange, fmtPct, REVENUE_DEFINITION }
 import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { format, subMonths, eachMonthOfInterval, getDay, parseISO, differenceInDays } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -83,23 +84,26 @@ const ClinicReports = () => {
       // Fetch appointments, patients, expenses in parallel
       const [apptRes, patientRes, expenseRes] = await Promise.all([
         doctorIds.length > 0
-          ? supabase
+          ? fetchAllRows<any>(() => supabase
               .from("appointments")
               .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, doctor_id, duration_minutes, started_at, completed_at")
               .in("doctor_id", doctorIds)
               .gte("appointment_date", from)
               .lte("appointment_date", to)
-              .order("appointment_date")
-          : Promise.resolve({ data: [] }),
-        supabase
-          .from("patients")
-          .select("id, full_name, gender, date_of_birth, city, created_at, created_by"),
-        supabase
+              .order("appointment_date"))
+          : Promise.resolve({ data: [] as any[] }),
+        doctorIds.length > 0
+          ? fetchAllRows<any>(() => supabase
+              .from("patients")
+              .select("id, full_name, gender, date_of_birth, city, created_at, created_by")
+              .in("created_by", doctorIds))
+          : Promise.resolve({ data: [] as any[] }),
+        fetchAllRows<any>(() => supabase
           .from("clinic_expenses")
           .select("id, amount, category, expense_date")
           .eq("clinic_id", user.id)
           .gte("expense_date", from)
-          .lte("expense_date", to),
+          .lte("expense_date", to)),
       ]);
 
       // Filter patients belonging to clinic doctors

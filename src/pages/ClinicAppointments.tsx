@@ -9,6 +9,10 @@ import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AppointmentTagBadges, TagFilterSelect } from "@/components/AppointmentTags";
+import { useAppointmentTags } from "@/hooks/useAppointmentTags";
+import { tagsFor, matchesTagFilter } from "@/lib/appointmentTags";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar as CalendarIcon, Plus, Check, X, Edit, Search, Trash2, MoreVertical, FileText, Play, CheckCircle, XCircle, Loader2, Video } from "lucide-react";
@@ -120,6 +124,7 @@ const ClinicAppointments = () => {
   const [pageSize, setPageSize] = useStickyState("clinicAppts.pageSize", 25);
   const [dateFilter, setDateFilter] = useStickyState("clinicAppts.date", "all");
   const [statusFilter, setStatusFilter] = useStickyState("clinicAppts.status", "all", urlParam("status"));
+  const [tagFilter, setTagFilter] = useStickyState("clinicAppts.tag", "all", urlParam("tag"));
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [selectedDoctorId, setSelectedDoctorId] = useState("");
@@ -169,7 +174,7 @@ const ClinicAppointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await fetchAllRows<any>(() => supabase
         .from("appointments")
         .select(`
           *, 
@@ -180,7 +185,7 @@ const ClinicAppointments = () => {
         `)
         .in("doctor_id", doctors.map(d => d.id))
         .order("appointment_date", { ascending: false })
-        .order("appointment_time", { ascending: false });
+        .order("appointment_time", { ascending: false }));
 
       if (error) throw error;
       setAppointments(data || []);
@@ -549,10 +554,15 @@ const ClinicAppointments = () => {
     if (icdCodeFilter && icdCodeFilter !== "all") {
       filtered = filtered.filter(apt => apt.icd_code_id === icdCodeFilter);
     }
-    
+
+    if (tagFilter && tagFilter !== "all") {
+      filtered = filtered.filter((apt) => matchesTagFilter(apt as any, tagsFor(apt as any, tagExtras), tagFilter));
+    }
+
     return filtered;
   };
 
+  const tagExtras = useAppointmentTags([...new Set(appointments.map((a: any) => a.doctor_id).filter(Boolean))] as string[], appointments);
   const filteredAppointments = getFilteredAppointments();
   const paginatedAppointments = filteredAppointments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const totalPages = Math.ceil(filteredAppointments.length / pageSize);
@@ -751,6 +761,8 @@ const ClinicAppointments = () => {
             </SelectContent>
           </Select>
           
+          <TagFilterSelect value={tagFilter} onChange={setTagFilter} />
+
           <Select value={dateFilter || "all"} onValueChange={setDateFilter}>
             <SelectTrigger className="w-[180px] bg-background">
               <SelectValue placeholder="Filter by date" />
@@ -860,6 +872,7 @@ const ClinicAppointments = () => {
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span>{apt.patients.full_name}</span>
+                            <AppointmentTagBadges tags={tagsFor(apt as any, tagExtras)} />
                             {apt.appointment_type === "video_consultation" && (
                               <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
                                 <Video className="h-3 w-3" />

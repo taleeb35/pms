@@ -114,7 +114,7 @@ export const PostVisitDialog = ({ open, onOpenChange, info, appointment, doctorN
             <p className="col-span-2 text-xs text-muted-foreground">Add a valid phone number to the patient to send the prescription on WhatsApp.</p>
           )}
           <div className="col-span-2 [&>button]:h-12 [&>button]:w-full [&>button]:justify-start">
-            <AskReviewButton doctorId={appointment.doctor_id} patient={appointment.patients} size="default" />
+            <AskReviewButton doctorId={appointment.doctor_id} patient={appointment.patients} size="default" appointmentId={appointment.id} />
           </div>
         </div>
 

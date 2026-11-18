@@ -5,6 +5,7 @@ import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { calculatePregnancyWeeks, calculateExpectedDueDate, getTrimester, getTrimesterLabel } from "@/lib/pregnancyUtils";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { format, subMonths, startOfMonth, endOfMonth, subDays, parseISO, eachDayOfInterval, eachMonthOfInterval, getDay, differenceInDays, subYears } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -50,27 +51,27 @@ const DoctorReports = () => {
       const to = format(dateTo, "yyyy-MM-dd");
 
       const [apptRes, patientRes, allApptRes, medRecRes, icdRes, doctorRes] = await Promise.all([
-        supabase
+        fetchAllRows<any>(() => supabase
           .from("appointments")
           .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, duration_minutes, started_at, completed_at, icd_code_id")
           .eq("doctor_id", user.id)
           .gte("appointment_date", from)
           .lte("appointment_date", to)
-          .order("appointment_date"),
-        supabase
+          .order("appointment_date")),
+        fetchAllRows<any>(() => supabase
           .from("patients")
           .select("id, full_name, gender, date_of_birth, city, created_at, allergies, pregnancy_start_date")
-          .eq("created_by", user.id),
-        supabase
+          .eq("created_by", user.id)),
+        fetchAllRows<any>(() => supabase
           .from("appointments")
           .select("id, appointment_date, patient_id, status")
           .eq("doctor_id", user.id)
-          .order("appointment_date"),
-        supabase
+          .order("appointment_date")),
+        fetchAllRows<any>(() => supabase
           .from("medical_records")
           .select("id, diagnosis, patient_id, visit_date")
           .eq("doctor_id", user.id)
-          .order("visit_date", { ascending: false }),
+          .order("visit_date", { ascending: false })),
         supabase
           .from("clinic_icd_codes")
           .select("id, code, description"),

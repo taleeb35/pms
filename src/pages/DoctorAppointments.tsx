@@ -9,6 +9,10 @@ import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { needsStatusUpdate, NO_SHOW_BADGE, NEEDS_UPDATE_BADGE, initialStatusFilter } from "@/lib/appointmentStatus";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { AppointmentTagBadges, TagFilterSelect } from "@/components/AppointmentTags";
+import { useAppointmentTags } from "@/hooks/useAppointmentTags";
+import { tagsFor, matchesTagFilter } from "@/lib/appointmentTags";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -130,6 +134,7 @@ const DoctorAppointments = () => {
   const [pageSize, setPageSize] = useStickyState("doctorAppts.pageSize", 25);
   const [dateFilter, setDateFilter] = useStickyState("doctorAppts.date", "all");
   const [statusFilter, setStatusFilter] = useStickyState("doctorAppts.status", "all", urlParam("status"));
+  const [tagFilter, setTagFilter] = useStickyState("doctorAppts.tag", "all", urlParam("tag"));
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPatientId, setSelectedPatientId] = useState("");
   const [isGynecologist, setIsGynecologist] = useState(false);
@@ -195,7 +200,7 @@ const DoctorAppointments = () => {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await fetchAllRows<any>(() => supabase
         .from("appointments")
         .select(
           `
@@ -208,7 +213,7 @@ const DoctorAppointments = () => {
         .eq("doctor_id", user.id)
         .neq("source", "public_profile")
         .order("appointment_date", { ascending: false })
-        .order("appointment_time", { ascending: false });
+        .order("appointment_time", { ascending: false }));
 
       if (error) throw error;
 
@@ -628,8 +633,14 @@ const DoctorAppointments = () => {
       filtered = filtered.filter((apt) => apt.icd_code_id === icdCodeFilter);
     }
 
+    if (tagFilter && tagFilter !== "all") {
+      filtered = filtered.filter((apt) => matchesTagFilter(apt as any, tagsFor(apt as any, tagExtras), tagFilter));
+    }
+
     return filtered;
   };
+
+  const tagExtras = useAppointmentTags([...new Set(appointments.map((a: any) => a.doctor_id).filter(Boolean))] as string[], appointments);
 
   // Use server-side numbering map (matches detail page: 1000 + count of created_at <= row)
   const appointmentNumberMap = numberMap;
@@ -900,6 +911,8 @@ const DoctorAppointments = () => {
             </SelectContent>
           </Select>
 
+          <TagFilterSelect value={tagFilter} onChange={setTagFilter} />
+
           <div className="relative flex-1 min-w-[300px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -935,7 +948,7 @@ const DoctorAppointments = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <AppointmentCards items={paginatedAppointments} loading={loading} onOpen={(apt) => openVisitPage(apt)} badge={(apt) => <InlineStatus apt={apt} badge={getStatusBadge(apt.status, apt)} onSaved={patchAppointment} />} number={(a) => appointmentNumberMap.get(a.id)} empty={<EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />} />
+              <AppointmentCards items={paginatedAppointments} loading={loading} onOpen={(apt) => openVisitPage(apt)} badge={(apt) => <InlineStatus apt={apt} badge={getStatusBadge(apt.status, apt)} onSaved={patchAppointment} />} number={(a) => appointmentNumberMap.get(a.id)} empty={<EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || tagFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || tagFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || tagFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setTagFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />} />
               <div className="hidden md:block">
               <Table>
                 <TableHeader>
@@ -974,7 +987,7 @@ const DoctorAppointments = () => {
                   ) : paginatedAppointments.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={isGynecologist ? 9 : 8} className="text-center text-muted-foreground py-8">
-                        <EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />
+                        <EmptyState icon={CalendarDays} title={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || tagFilter !== "all" || searchQuery ? "No appointments match these filters" : "No appointments yet"} text={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || tagFilter !== "all" || searchQuery ? "Try a different date or status, or clear the filters." : "Book the first appointment, or add a walk-in patient."} actions={statusFilter !== "all" || dateFilter !== "all" || icdCodeFilter !== "all" || tagFilter !== "all" || searchQuery ? [{ label: "Clear filters", variant: "outline", onClick: () => { setStatusFilter("all"); setDateFilter("all"); setIcdCodeFilter("all"); setTagFilter("all"); setSearchQuery(""); } }] : [{ label: "New appointment", onClick: () => setShowAddDialog(true) }]} />
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -994,6 +1007,7 @@ const DoctorAppointments = () => {
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span>{apt.patients?.full_name || "-"}</span>
+                            <AppointmentTagBadges tags={tagsFor(apt as any, tagExtras)} />
                             {apt.appointment_type === "video_consultation" && (
                               <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
                                 <Video className="h-3 w-3" />

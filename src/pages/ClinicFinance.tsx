@@ -3,6 +3,7 @@ import { money, moneySymbol } from "@/lib/region";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { Calendar as CalendarIcon, Banknote, Building2, Stethoscope, X, Download, FileSpreadsheet, Receipt, TrendingUp, TrendingDown, Search, Eye } from "lucide-react";
 import TableSkeleton from "@/components/TableSkeleton";
 import { Input } from "@/components/ui/input";
@@ -238,6 +239,7 @@ export default function ClinicFinance() {
         return;
       }
 
+      const build = () => {
       let query = supabase
         .from("appointments")
         .select(`
@@ -263,8 +265,10 @@ export default function ClinicFinance() {
       if (endDate) {
         query = query.lte("appointment_date", format(endDate, "yyyy-MM-dd"));
       }
+      return query;
+      };
 
-      const { data, error } = await query;
+      const { data, error } = await fetchAllRows<any>(build);
 
       if (error) throw error;
 

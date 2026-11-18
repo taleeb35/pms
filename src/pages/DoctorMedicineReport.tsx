@@ -3,6 +3,7 @@ import { format, subDays, differenceInCalendarDays } from "date-fns";
 import { CalendarIcon, Pill, Search, Users, ClipboardList, Clock, FileText, Download, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -154,23 +155,21 @@ const DoctorMedicineReport = () => {
       const toIso = `${toStr}T23:59:59.999`;
 
       // Structured prescribed medicines
-      const { data: structured } = await supabase
+      const { data: structured } = await fetchAllRows<any>(() => supabase
         .from("appointment_prescribed_medicines")
-        .select("medicine_name, brand, dosage, frequency, timing, duration, duration_days, patient_id, prescribed_at, appointment_id")
+        .select("id, medicine_name, brand, dosage, frequency, timing, duration, duration_days, patient_id, prescribed_at, appointment_id")
         .eq("doctor_id", user.id)
         .gte("prescribed_at", fromIso)
-        .lte("prescribed_at", toIso)
-        .limit(5000);
+        .lte("prescribed_at", toIso));
 
       // Visit records prescription text (for parsing pre-existing data)
-      const { data: visits } = await supabase
+      const { data: visits } = await fetchAllRows<any>(() => supabase
         .from("visit_records")
         .select("id, patient_id, appointment_id, visit_date, current_prescription")
         .eq("doctor_id", user.id)
         .gte("visit_date", fromIso)
         .lte("visit_date", toIso)
-        .not("current_prescription", "is", null)
-        .limit(5000);
+        .not("current_prescription", "is", null));
 
       // Collect patient names
       const patientIds = new Set<string>();

@@ -3,6 +3,7 @@ import { isRevenueAppointment, grossFee } from "@/lib/revenue";
 import { money, moneySymbol } from "@/lib/region";
 import { MAX_CONSULT_MINUTES, MIN_CONSULT_SAMPLE } from "@/lib/consultTime";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import MobileAppShell from "@/components/MobileAppShell";
 import { Card } from "@/components/ui/card";
 import {
@@ -41,25 +42,25 @@ const MobileReports = () => {
       const to = format(dateTo, "yyyy-MM-dd");
 
       const [apptRes, patientRes, allApptRes, medRecRes, icdRes, doctorRes] = await Promise.all([
-        supabase
+        fetchAllRows<any>(() => supabase
           .from("appointments")
           .select("id, appointment_date, appointment_time, status, consultation_fee, procedure_fee, other_fee, total_fee, refund, appointment_type, patient_id, started_at, completed_at, icd_code_id")
           .eq("doctor_id", user.id)
           .gte("appointment_date", from)
           .lte("appointment_date", to)
-          .order("appointment_date"),
-        supabase
+          .order("appointment_date")),
+        fetchAllRows<any>(() => supabase
           .from("patients")
           .select("id, full_name, gender, date_of_birth, city, created_at, allergies, pregnancy_start_date")
-          .eq("created_by", user.id),
-        supabase
+          .eq("created_by", user.id)),
+        fetchAllRows<any>(() => supabase
           .from("appointments")
           .select("id, appointment_date, patient_id, status")
-          .eq("doctor_id", user.id),
-        supabase
+          .eq("doctor_id", user.id)),
+        fetchAllRows<any>(() => supabase
           .from("medical_records")
           .select("id, diagnosis, patient_id, visit_date")
-          .eq("doctor_id", user.id),
+          .eq("doctor_id", user.id)),
         supabase
           .from("doctor_icd_codes")
           .select("id, code, description")

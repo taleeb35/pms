@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { money, moneySymbol } from "@/lib/region";
 import { supabase } from "@/integrations/supabase/client";
+import { AppointmentTagBadges, TagFilterSelect } from "@/components/AppointmentTags";
+import { useAppointmentTags } from "@/hooks/useAppointmentTags";
+import { tagsFor, matchesTagFilter } from "@/lib/appointmentTags";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +28,7 @@ const DoctorReceptionistAppointments = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [tagFilter, setTagFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [showCalendar, setShowCalendar] = useState(true);
   const [pageSize, setPageSize] = useState(10);
@@ -40,7 +45,7 @@ const DoctorReceptionistAppointments = () => {
     if (!doctorId) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await fetchAllRows<any>(() => supabase
         .from("appointments")
         .select(`
           *,
@@ -48,7 +53,7 @@ const DoctorReceptionistAppointments = () => {
         `)
         .eq("doctor_id", doctorId)
         .order("appointment_date", { ascending: false })
-        .order("appointment_time", { ascending: false });
+        .order("appointment_time", { ascending: false }));
 
       if (error) throw error;
       setAppointments(data || []);
@@ -79,11 +84,13 @@ const DoctorReceptionistAppointments = () => {
     return <Badge variant={variants[status] || "secondary"}>{labels[status] || status}</Badge>;
   };
 
+  const tagExtras = useAppointmentTags(doctorId ? [doctorId] : [], appointments);
   const filteredAppointments = appointments.filter((a) => {
     const query = searchQuery.toLowerCase();
     return (
-      a.patients?.full_name?.toLowerCase().includes(query) ||
-      a.patients?.patient_id?.toLowerCase().includes(query)
+      (a.patients?.full_name?.toLowerCase().includes(query) ||
+      a.patients?.patient_id?.toLowerCase().includes(query)) &&
+      matchesTagFilter(a, tagsFor(a, tagExtras), tagFilter)
     );
   });
 
@@ -215,6 +222,7 @@ const DoctorReceptionistAppointments = () => {
                   </div>
                 )}
               </div>
+              <TagFilterSelect value={tagFilter} onChange={(v) => { setTagFilter(v); setCurrentPage(1); }} />
               <div className="relative w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -262,6 +270,7 @@ const DoctorReceptionistAppointments = () => {
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span>{appt.patients?.full_name || "N/A"}</span>
+                            <AppointmentTagBadges tags={tagsFor(appt, tagExtras)} />
                             {appt.appointment_type === "video_consultation" && (
                               <span title="Video Consultation" className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/10 text-primary">
                                 <Video className="h-3 w-3" />

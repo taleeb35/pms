@@ -834,7 +834,7 @@ const ClinicAppointmentDetail = () => {
             <Printer className="h-4 w-4 mr-2" />
             Print Prescription
           </Button>
-          <AskReviewButton doctorId={appointment.doctor_id} patient={appointment.patients} />
+          <AskReviewButton doctorId={appointment.doctor_id} patient={appointment.patients} appointmentId={appointment.id} />
           <Button variant="outline" size="sm" onClick={() => setShowReportDialog(true)} className="border-teal-600 text-teal-700 hover:bg-teal-600 hover:text-white">
             <FileBarChart className="h-4 w-4 mr-2" />
             Generate Report
