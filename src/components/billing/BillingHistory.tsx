@@ -51,7 +51,8 @@ export default function BillingHistory() {
     }
     billingAction<{ invoices: Invoice[]; payments: Payment[] }>("history")
       .then((r) => { setInvoices(r.invoices); setPayments(r.payments); })
-      .catch((e) => { setError(e.message); setInvoices([]); setPayments([]); });
+      // "Not set up" is already explained in the card payment section above.
+      .catch((e) => { if (!/not set up/i.test(e.message)) setError(e.message); setInvoices([]); setPayments([]); });
   }, [loading, state]);
 
   if (loading || !state || !state.is_owner) return null;
