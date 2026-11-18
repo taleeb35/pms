@@ -21,6 +21,10 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Only admins send approval emails (before: anyone could send one to any address).
+  try { await requireRole(req, ["admin"]); }
+  catch (e) { return authErrorResponse(e, corsHeaders) ?? new Response("error", { status: 500, headers: corsHeaders }); }
+
   try {
     const { clinicName, email, ownerName }: ApprovalEmailRequest = await req.json();
 
