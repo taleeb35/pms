@@ -74,6 +74,27 @@ serve(async (req: Request) => {
     if (!acct) return json(400, { error: "No billing account for this login." });
     if (acct.exempt) return json(400, { error: "This account is billed manually. Please contact support." });
 
+    // Test and live Stripe records can't see each other. A customer saved under the other mode
+    // (e.g. live key connected first, then a test key) is ignored here; it is only replaced when the
+    // owner starts a new checkout, so reading the page never wipes a live subscription.
+    const mode = key.includes("_live_") ? "live" : "test";
+    if (acct.stripe_customer_id) {
+      let otherMode = !!acct.stripe_mode && acct.stripe_mode !== mode;
+      if (!acct.stripe_mode) {
+        try { await stripe(key, "GET", `customers/${acct.stripe_customer_id}`); }
+        catch (e) {
+          if (e instanceof StripeError && (e.status === 404 || e.code === "resource_missing")) otherMode = true;
+          else throw e;
+        }
+      }
+      if (otherMode) {
+        acct.stripe_customer_id = null;
+        acct.stripe_subscription_id = null;
+        acct.status = "none";
+        acct.cancel_at_period_end = false;
+      }
+    }
+
     // Past invoices and card payments, read from Stripe for this customer only.
     if (action === "history") {
       if (!acct.stripe_customer_id) return json(200, { invoices: [], payments: [] });
@@ -140,7 +161,10 @@ serve(async (req: Request) => {
         email: ou?.user?.email || user.email, name, metadata: { owner_id: ownerId, kind: state.kind },
       });
       customerId = cus.id;
-      await admin.from("billing_accounts").update({ stripe_customer_id: customerId, updated_at: new Date().toISOString() }).eq("owner_id", ownerId);
+      await admin.from("billing_accounts").update({
+        stripe_customer_id: customerId, stripe_mode: mode, stripe_subscription_id: null, status: "none",
+        cancel_at_period_end: false, updated_at: new Date().toISOString(),
+      }).eq("owner_id", ownerId);
     }
 
     if (action === "portal") {

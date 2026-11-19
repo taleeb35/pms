@@ -110,6 +110,7 @@ export async function saveSubscription(admin: SupabaseClient, sub: any, ownerHin
     quantity: item?.quantity ?? null,
     current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
     cancel_at_period_end: !!sub.cancel_at_period_end,
+    stripe_mode: sub.livemode ? "live" : "test",
     updated_at: new Date().toISOString(),
   };
   if (ownerId) {
