@@ -3,6 +3,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { adminClient, authErrorResponse, requireRole } from "../_shared/auth.ts";
 import { buildCorsHeaders, checkRateLimit, rateLimitResponse } from "../_shared/security.ts";
+import { addedDoctorEmail } from "../_shared/welcomeEmails.ts";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const APP = "https://app.zonoir.com";
@@ -15,25 +16,11 @@ async function sendWelcome(admin: ReturnType<typeof adminClient>, clinicId: stri
     if (error || !link?.properties?.action_link) { console.error("clinic-add-doctor link", error?.message); return false; }
     const { data: c } = await admin.from("clinics").select("clinic_name, city").eq("id", clinicId).maybeSingle();
     const clinicName = c?.clinic_name || "your clinic";
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;line-height:1.6;color:#333;max-width:600px;margin:0 auto;padding:20px">
-  <div style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);padding:24px;border-radius:10px 10px 0 0;text-align:center">
-    <h1 style="color:#fff;margin:0;font-size:24px">Welcome to ${esc(clinicName)}</h1>
-  </div>
-  <div style="background:#f8f9fa;padding:28px;border-radius:0 0 10px 10px">
-    <p style="font-size:16px">Dear <strong>Dr. ${esc(fullName)}</strong>,</p>
-    <p style="font-size:16px"><strong>${esc(clinicName)}</strong> has added you as a doctor on Zonoir. Your login email is <strong>${esc(email)}</strong>.</p>
-    <p style="font-size:16px">Choose your password to start:</p>
-    <p style="text-align:center;margin:28px 0"><a href="${link.properties.action_link}" style="background:#059669;color:#fff;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:600;display:inline-block">Set your password</a></p>
-    <p style="font-size:13px;color:#666">This link works for 24 hours. After that, use "Forgot password" on ${APP}/login.</p>
-    <hr style="border:none;border-top:1px solid #ddd;margin:24px 0">
-    <p style="font-size:12px;color:#888;text-align:center">If you weren't expecting this email, you can ignore it.</p>
-  </div>
-</body></html>`;
+    const mail = addedDoctorEmail({ clinicName, fullName, email, link: link.properties.action_link });
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${Deno.env.get("RESEND_API_KEY") ?? ""}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: "Zonoir <noreply@zonoir.com>", to: [email], subject: `You've been added to ${clinicName} on Zonoir`, html }),
+      body: JSON.stringify({ from: "Zonoir <noreply@zonoir.com>", to: [email], subject: mail.subject, html: mail.html }),
     });
     if (!res.ok) console.error("clinic-add-doctor email", res.status, (await res.text()).slice(0, 200));
     return res.ok;
