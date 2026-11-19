@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { clinicSignupEmail } from "../_shared/adminSignupEmail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -64,6 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Only send for a real, just-created clinic account (stops anyone using this to send emails).
+    let newClinicId = "";
     {
       const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
       const { data: prof } = await supabase.from("profiles").select("id").ilike("email", String(email).trim()).maybeSingle();
@@ -75,6 +77,7 @@ const handler = async (req: Request): Promise<Response> => {
           status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
         });
       }
+      newClinicId = clinic.id;
     }
 
     const { data: settingsData, error: settingsError } = await supabase
@@ -283,127 +286,8 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Send admin notification email
-    const adminEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Clinic Registration - Zonoir Admin</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 40px 0;">
-              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
-                
-                <!-- Header -->
-                <tr>
-                  <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 30px; text-align: center;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
-                      🏥 New Clinic Registration
-                    </h1>
-                    <p style="margin: 10px 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">
-                      Admin Notification - Auto-Approved
-                    </p>
-                  </td>
-                </tr>
-                
-                <!-- Body -->
-                <tr>
-                  <td style="padding: 40px 30px;">
-                    <div style="background-color: #ecfdf5; border-left: 4px solid #10b981; padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 0 0 25px;">
-                      <p style="margin: 0; color: #065f46; font-size: 16px; font-weight: 600;">
-                        ✅ New clinic has been automatically activated with 14-day trial
-                      </p>
-                    </div>
-                    
-                    <!-- Clinic Details Card -->
-                    <div style="background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%); border-radius: 12px; padding: 25px; margin: 25px 0;">
-                      <h3 style="margin: 0 0 15px; color: #667eea; font-size: 18px;">📋 Clinic Details</h3>
-                      <table style="width: 100%; border-collapse: collapse;">
-                        <tr>
-                          <td style="padding: 10px 0; color: #666; font-size: 14px; width: 40%; border-bottom: 1px solid #ddd;">Clinic Name:</td>
-                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;">${clinicName}</td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 10px 0; color: #666; font-size: 14px; border-bottom: 1px solid #ddd;">Email:</td>
-                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;"><a href="mailto:${email}" style="color: #667eea;">${email}</a></td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 10px 0; color: #666; font-size: 14px; border-bottom: 1px solid #ddd;">Phone:</td>
-                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;"><a href="tel:${phoneNumber}" style="color: #667eea;">${phoneNumber}</a></td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 10px 0; color: #666; font-size: 14px; border-bottom: 1px solid #ddd;">City:</td>
-                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;">${city}</td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 10px 0; color: #666; font-size: 14px; border-bottom: 1px solid #ddd;">Address:</td>
-                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600; border-bottom: 1px solid #ddd;">${address}</td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 10px 0; color: #666; font-size: 14px;">Requested Doctors:</td>
-                          <td style="padding: 10px 0; color: #333; font-size: 14px; font-weight: 600;">${numberOfDoctors}</td>
-                        </tr>
-                      </table>
-                    </div>
-                    
-                    <!-- Fee Summary -->
-                    <div style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 12px; padding: 25px; margin: 25px 0; border: 1px solid #10b981;">
-                      <h3 style="margin: 0 0 15px; color: #065f46; font-size: 18px;">💰 Expected Revenue</h3>
-                      <table style="width: 100%; border-collapse: collapse;">
-                        <tr>
-                          <td style="padding: 8px 0; color: #065f46; font-size: 14px;">Fee per Doctor:</td>
-                          <td style="padding: 8px 0; color: #065f46; font-size: 16px; font-weight: 600;">${usd(feePerDoctor)}</td>
-                        </tr>
-                        <tr>
-                          <td style="padding: 8px 0; color: #065f46; font-size: 14px;">Number of Doctors:</td>
-                          <td style="padding: 8px 0; color: #065f46; font-size: 16px; font-weight: 600;">${numberOfDoctors}</td>
-                        </tr>
-                        <tr style="border-top: 2px solid #10b981;">
-                          <td style="padding: 12px 0 8px; color: #065f46; font-size: 16px; font-weight: 700;">Total Monthly:</td>
-                          <td style="padding: 12px 0 8px; color: #065f46; font-size: 22px; font-weight: 700;">${usd(totalMonthlyFee)}</td>
-                        </tr>
-                      </table>
-                    </div>
-                    
-                    <!-- Registration Time -->
-                    <div style="background-color: #f3f4f6; border-radius: 8px; padding: 15px 20px; margin: 25px 0;">
-                      <p style="margin: 0; color: #374151; font-size: 14px;">
-                        <strong>📅 Registration Time:</strong> ${new Date().toLocaleString('en-PK', { timeZone: 'Asia/Karachi', dateStyle: 'full', timeStyle: 'short' })}
-                      </p>
-                    </div>
-                    
-                    <p style="margin: 25px 0 0; color: #555; font-size: 14px; line-height: 1.6;">
-                      Please login to the admin dashboard to review this registration.
-                    </p>
-                  </td>
-                </tr>
-                
-                <!-- Footer -->
-                <tr>
-                  <td style="background-color: #1f2937; padding: 30px; text-align: center;">
-                    <p style="margin: 0 0 10px; color: #9ca3af; font-size: 14px;">
-                      Zonoir Admin Notification
-                    </p>
-                    <p style="margin: 0 0 8px; color: #6b7280; font-size: 12px;">
-                      140 B, Khayaban e Amin, Lahore, Pakistan
-                    </p>
-                    <p style="margin: 0; color: #6b7280; font-size: 12px;">
-                      © ${new Date().getFullYear()} Zonoir. All rights reserved.
-                    </p>
-                  </td>
-                </tr>
-                
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-      </html>
-    `;
+    // Admin notification: details read from the database.
+    const adminMail = await clinicSignupEmail(supabase, newClinicId);
 
     // Send admin notification with retry
     console.log("Attempting to send admin notification to:", adminEmail);
@@ -416,8 +300,8 @@ const handler = async (req: Request): Promise<Response> => {
         adminNotification = await resend.emails.send({
           from: "Zonoir System <noreply@zonoir.com>",
           to: [adminEmail],
-          subject: `🏥 New Clinic Registration: ${clinicName} - Auto-Approved`,
-          html: adminEmailHtml,
+          subject: adminMail?.subject || `New clinic sign-up: ${clinicName}`,
+          html: adminMail?.html || "",
           headers: {
             "X-Priority": "1",
             "X-MSMail-Priority": "High",

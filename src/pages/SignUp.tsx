@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PhoneInput from "@/components/PhoneInput";
 import { CitySelect } from "@/components/CitySelect";
+import { parsePhoneNumberFromString } from "libphonenumber-js/min";
+import { activeRegion, countryName, currencyForCountry, licenceLabel } from "@/lib/region";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { useToast } from "@/hooks/use-toast";
 import { PRICE_MONTHLY, PRICE_YEARLY_MONTHLY, usd } from "@/lib/pricingConfig";
@@ -39,6 +41,8 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [city, setCity] = useState("");
+  const [country, setCountry] = useState<string>(activeRegion().country_code);
+  const [countryPicked, setCountryPicked] = useState(false);
   const [specialization, setSpecialization] = useState("");
   const [doctorsCount, setDoctorsCount] = useState("1");
   const [address, setAddress] = useState("");
@@ -54,6 +58,14 @@ export default function SignUp() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  // The phone number's country (e.g. +1 -> US) decides the country, unless it was changed in step 2.
+  useEffect(() => {
+    if (countryPicked) return;
+    const p = phone.startsWith("+") ? parsePhoneNumberFromString(phone) : null;
+    const next = p?.country || activeRegion().country_code;
+    if (next !== country) { setCountry(next); setCity(""); }
+  }, [phone, countryPicked, country]);
 
   useEffect(() => {
     document.title = "Sign up | Zonoir";
@@ -122,11 +134,12 @@ export default function SignUp() {
           consultation_fee: fee ? parseFloat(fee) : null,
           clinic_percentage: 0, introduction: null, pmdc_number: licence.trim() || null,
           city, clinic_id: null, approved: true, referred_by: code, payment_plan: plan,
+          country_code: country, currency_code: currencyForCountry(country), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || activeRegion().timezone,
         });
         if (dErr) throw dErr;
         try {
           await supabase.functions.invoke("send-doctor-signup-email", {
-            body: { doctorName: name.trim(), email: email.trim(), specialization, city, monthlyFee: perDoctor },
+            body: { doctorName: name.trim(), email: email.trim(), specialization, city, country: countryName(country), phone, monthlyFee: perDoctor },
           });
         } catch (mailErr) { console.error("Signup email failed", mailErr); }
         await supabase.auth.signOut();
@@ -136,12 +149,13 @@ export default function SignUp() {
         const { error: cErr } = await supabase.from("clinics").insert({
           id: uid, clinic_name: name.trim(), city, phone_number: phone, address: address.trim(),
           requested_doctors: count, referred_by: code, status: "active", payment_plan: plan,
+          country_code: country, currency_code: currencyForCountry(country), timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || activeRegion().timezone,
         });
         if (cErr) throw cErr;
         // The clinic role is added by the database when the clinic record is created.
         try {
           await supabase.functions.invoke("send-clinic-welcome-email", {
-            body: { clinicName: name.trim(), email: email.trim(), phoneNumber: phone, city, address: address.trim(), requestedDoctors: count },
+            body: { clinicName: name.trim(), email: email.trim(), phoneNumber: phone, city, country: countryName(country), address: address.trim(), requestedDoctors: count },
           });
         } catch (mailErr) { console.error("Welcome email failed", mailErr); }
       }
@@ -245,7 +259,9 @@ export default function SignUp() {
                 </div>
               )}
               <div>
-                <CitySelect value={city} onValueChange={setCity} />
+                <CitySelect value={city} onValueChange={setCity} label="Country and city" country={country}
+                  onCountryChange={(c) => { setCountryPicked(true); setCountry(c); setCity(""); }} />
+                {country !== "PK" && !city && <p className="mt-1 text-xs text-muted-foreground">Type your city in the box and choose it.</p>}
                 {fieldErr(errors.city)}
               </div>
               {kind === "clinic" && (
@@ -276,12 +292,12 @@ export default function SignUp() {
                         {fieldErr(errors.experience)}
                       </div>
                       <div>
-                        <Label htmlFor="su-fee" className="text-xs">Consultation fee</Label>
+                        <Label htmlFor="su-fee" className="text-xs">Consultation fee ({currencyForCountry(country)})</Label>
                         <Input id="su-fee" inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value.replace(/[^\d.]/g, ""))} />
                         {fieldErr(errors.fee)}
                       </div>
                       <div className="sm:col-span-2">
-                        <Label htmlFor="su-lic" className="text-xs">Medical licence number</Label>
+                        <Label htmlFor="su-lic" className="text-xs">{licenceLabel(country)}</Label>
                         <Input id="su-lic" value={licence} onChange={(e) => setLicence(e.target.value)} />
                       </div>
                     </div>
