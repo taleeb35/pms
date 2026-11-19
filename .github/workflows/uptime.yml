@@ -1,0 +1,41 @@
+name: Uptime check app.zonoir.com
+
+# Checks the live site from outside the server every 15 minutes. If the server is down it can't
+# send its own alert, so this job fails instead and GitHub emails the repository owner.
+# (The server's own health check, /opt/zonoir-supabase/healthcheck.py, covers everything else.)
+# The key below is the public site key that is already in the website code; it is not a secret.
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Site, sign-in service, database and server functions respond
+        env:
+          SITE: https://app.zonoir.com
+          ANON: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzk0MjkzODg1LCJleHAiOjE5NTE5NzM4ODV9.uD1pZoxMSfA6FuXdr4dN2DpziSIT0kSH_b9nUGWngNk
+        run: |
+          set -u
+          fail=0
+          check() {
+            name="$1"; want="$2"; shift 2
+            for attempt in 1 2 3; do
+              code=$(curl -s -o /dev/null -m 20 -w "%{http_code}" "$@" || echo "000")
+              if [ "$code" = "$want" ]; then echo "OK   $name ($code)"; return 0; fi
+              sleep 20
+            done
+            echo "FAIL $name: got $code, expected $want"; fail=1
+          }
+          check "Website"          200 "$SITE/"
+          check "Login page"       200 "$SITE/login"
+          check "Sign-in service"  200 "$SITE/auth/v1/health" -H "apikey: $ANON"
+          check "Database"         200 -X POST "$SITE/rest/v1/rpc/get_public_settings" -H "apikey: $ANON" -H "Content-Type: application/json" -d "{}"
+          check "Server functions" 405 "$SITE/functions/v1/stripe-webhook"
+          exit $fail

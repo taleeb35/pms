@@ -28,7 +28,8 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    await requireRole(req, ["admin", "clinic"]);
+    // Clinics no longer call this (clinic-add-doctor sends a set-password link instead); admin only.
+    await requireRole(req, ["admin"]);
   } catch (e) {
     return authErrorResponse(e, corsHeaders)!;
   }

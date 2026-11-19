@@ -122,8 +122,6 @@ const ClinicAddDoctor = () => {
     const emailValidation = validateEmail(formData.email);
     if (!emailValidation.isValid) errors.push(`Email: ${emailValidation.message}`);
     
-    const passwordValidation = validatePassword(formData.password);
-    if (!passwordValidation.isValid) errors.push(`Password: ${passwordValidation.message}`);
     
     const phoneValidation = validatePhone(formData.contactNumber);
     if (!phoneValidation.isValid) errors.push(`Contact Number: ${phoneValidation.message}`);
@@ -148,24 +146,12 @@ const ClinicAddDoctor = () => {
       if (!session) throw new Error("Not authenticated");
       const user = session.user;
 
-      // Fetch clinic details for the email
-      const { data: clinicData } = await supabase
-        .from("clinics")
-        .select("clinic_name, address, city, phone_number")
-        .eq("id", user.id)
-        .single();
-
-      const clinicName = clinicData?.clinic_name || "Your Clinic";
-      const clinicAddress = clinicData?.address || "";
-      const clinicCity = clinicData?.city || "";
-      const clinicPhone = clinicData?.phone_number || "";
 
       // The server creates the doctor's login and profile (the browser stays signed in as the clinic).
       const { data: added, error: addErr } = await supabase.functions.invoke("clinic-add-doctor", {
         body: {
           fullName: formData.fullName,
           email: formData.email,
-          password: formData.password,
           specialization: formData.specialization,
           contactNumber: formData.contactNumber,
           experienceYears: formData.experienceYears,
@@ -182,29 +168,11 @@ const ClinicAddDoctor = () => {
       }
       if (!added?.doctor_id) throw new Error("Failed to create doctor account");
 
-      // Send welcome email with credentials to the doctor
-      try {
-        await supabase.functions.invoke('send-clinic-doctor-welcome-email', {
-          body: {
-            doctorName: formData.fullName,
-            doctorEmail: formData.email,
-            password: formData.password,
-            clinicName: clinicName,
-            clinicAddress: clinicAddress,
-            clinicCity: clinicCity,
-            clinicPhone: clinicPhone,
-            specialization: formData.specialization,
-          },
-        });
-        console.log("Doctor welcome email sent successfully");
-      } catch (emailError) {
-        console.error("Failed to send doctor welcome email:", emailError);
-        // Don't throw - email failure shouldn't block the registration
-      }
-
       toast({
         title: "✓ Doctor Added Successfully!",
-        description: "The doctor has been registered and a welcome email with login credentials has been sent.",
+        description: added.email_sent
+          ? "We emailed the doctor a link to set their own password."
+          : "The doctor was added, but the welcome email could not be sent. They can use Forgot password on the login page.",
       });
 
       navigate("/clinic/doctors");
@@ -310,24 +278,6 @@ const ClinicAddDoctor = () => {
                   className={formErrors.email ? "border-destructive" : ""}
                 />
                 {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => {
-                    setFormData({ ...formData, password: e.target.value });
-                    const validation = validatePassword(e.target.value);
-                    setFormErrors(prev => ({ ...prev, password: validation.isValid ? "" : validation.message }));
-                  }}
-                  required
-                  minLength={6}
-                  className={formErrors.password ? "border-destructive" : ""}
-                />
-                {formErrors.password && <p className="text-sm text-destructive">{formErrors.password}</p>}
               </div>
 
               <div className="space-y-2">

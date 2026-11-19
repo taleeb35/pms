@@ -138,8 +138,7 @@ export default function SignUp() {
           requested_doctors: count, referred_by: code, status: "active", payment_plan: plan,
         });
         if (cErr) throw cErr;
-        const { error: rErr } = await supabase.from("user_roles").insert({ user_id: uid, role: "clinic" });
-        if (rErr) throw rErr;
+        // The clinic role is added by the database when the clinic record is created.
         try {
           await supabase.functions.invoke("send-clinic-welcome-email", {
             body: { clinicName: name.trim(), email: email.trim(), phoneNumber: phone, city, address: address.trim(), requestedDoctors: count },

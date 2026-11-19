@@ -1,5 +1,5 @@
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 
 interface RichTextEditorProps {
   value: string;
@@ -30,7 +30,7 @@ const formats = [
   'bold', 'italic', 'underline', 'strike',
   'color', 'background',
   'script',
-  'list', 'bullet', 'indent',
+  'list', 'indent',
   'direction', 'align',
   'blockquote', 'code-block',
   'link', 'image', 'video'
