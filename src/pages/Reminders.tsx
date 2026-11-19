@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useSEO } from "@/hooks/useSEO";
 import { useCareDoctors } from "@/hooks/useCareDoctors";
+import AutoEmailReminderToggle from "@/components/AutoEmailReminderToggle";
 import { whatsappLink } from "@/lib/phoneLinks";
 import { friendlyDate, friendlyTime } from "@/lib/datetime";
 import { zonedNow } from "@/lib/region";
@@ -91,6 +92,8 @@ export default function Reminders() {
         <h1 className="flex items-center gap-2 text-2xl font-bold sm:text-3xl"><BellRing className="h-6 w-6 text-primary" /> Reminders</h1>
         <p className="text-sm text-muted-foreground">Send appointment reminders and follow-up messages on WhatsApp in one tap. Each patient is ticked off once sent.</p>
       </div>
+
+      <AutoEmailReminderToggle />
 
       <Tabs defaultValue="reminders">
         <TabsList>

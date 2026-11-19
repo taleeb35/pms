@@ -311,33 +311,6 @@ const AdminSettings = () => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5" />
-            Support WhatsApp
-          </CardTitle>
-          <CardDescription>
-            Number used by the floating WhatsApp button. Leave empty to hide the button.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="support-whatsapp">WhatsApp number with country code</Label>
-            <Input
-              id="support-whatsapp"
-              inputMode="tel"
-              placeholder="e.g. 971501234567"
-              value={supportWhatsapp}
-              onChange={(e) => setSupportWhatsapp(e.target.value)}
-            />
-          </div>
-          <Button onClick={handleSaveWhatsapp} disabled={savingWhatsapp}>
-            {savingWhatsapp ? "Saving..." : "Save Number"}
-          </Button>
-        </CardContent>
-      </Card>
-
       <Card className="border-destructive/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">

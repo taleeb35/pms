@@ -40,6 +40,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import DeletingOverlay from "@/components/DeletingOverlay";
+import BillingModeControl from "@/components/billing/BillingModeControl";
+import { STATUS_LABEL } from "@/lib/billingUtils";
 
 interface Doctor {
   id: string;
@@ -95,6 +97,15 @@ const Doctors = () => {
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  // Single doctors billed by card through Stripe subscribe, renew and cancel themselves; admin only views.
+  const [billingRow, setBillingRow] = useState<{ exempt: boolean; status: string; current_period_end: string | null; cancel_at_period_end: boolean } | null>(null);
+  const [billingTick, setBillingTick] = useState(0);
+  useEffect(() => {
+    if (!selectedDoctor || selectedDoctor.clinic_id) { setBillingRow(null); return; }
+    (supabase as any).from("billing_accounts").select("exempt, status, current_period_end, cancel_at_period_end")
+      .eq("owner_id", selectedDoctor.id).maybeSingle().then(({ data }: any) => setBillingRow(data || null));
+  }, [selectedDoctor?.id, billingTick]);
+  const cardBilled = !!billingRow && !billingRow.exempt;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [doctorToDelete, setDoctorToDelete] = useState<Doctor | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -733,7 +744,21 @@ const Doctors = () => {
                     <p className="text-sm font-medium text-muted-foreground">License Number</p>
                     <p className="text-sm">{selectedDoctor.license_number || "N/A"}</p>
                   </div>
-                  {!selectedDoctor.clinic_id && (
+                  {!selectedDoctor.clinic_id && cardBilled && (
+                    <>
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Subscription</p>
+                        <p className="text-sm">{STATUS_LABEL[billingRow!.status] || billingRow!.status}{billingRow!.cancel_at_period_end ? " (cancelled, ends at period end)" : ""}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">{billingRow!.status === "none" || billingRow!.status === "canceled" ? "Free trial ends" : "Next charge / ends"}</p>
+                        <p className="text-sm">{billingRow!.status === "none" || billingRow!.status === "canceled"
+                          ? (selectedDoctor.trial_end_date ? new Date(selectedDoctor.trial_end_date).toLocaleDateString() : "N/A")
+                          : (billingRow!.current_period_end ? new Date(billingRow!.current_period_end).toLocaleDateString() : "N/A")}</p>
+                      </div>
+                    </>
+                  )}
+                  {!selectedDoctor.clinic_id && !cardBilled && (
                     <>
                       <div>
                         <p className="text-sm font-medium text-muted-foreground">Payment Plan</p>
@@ -781,8 +806,17 @@ const Doctors = () => {
                   )}
                 </div>
                 
+                {!selectedDoctor.clinic_id && (
+                  <BillingModeControl ownerId={selectedDoctor.id} kind="doctor" onChange={() => setBillingTick((t) => t + 1)} />
+                )}
+                {!selectedDoctor.clinic_id && cardBilled && (
+                  <p className="text-xs text-muted-foreground">
+                    This doctor pays by card through Stripe. Subscribing, renewing and cancelling are done by the doctor on their Billing &amp; Subscription page; unpaid accounts become read-only automatically.
+                  </p>
+                )}
+
                 {/* Extend Trial Section for Single Doctors - only show if not subscribed */}
-                {!selectedDoctor.clinic_id && selectedDoctor.trial_end_date !== null && (
+                {!selectedDoctor.clinic_id && selectedDoctor.trial_end_date !== null && (!cardBilled || billingRow!.status === "none" || billingRow!.status === "canceled") && (
                   <div className="bg-muted/50 border rounded-lg p-4">
                     <p className="text-sm font-medium text-muted-foreground mb-2">Extend Trial (Days)</p>
                     <div className="flex gap-2 flex-wrap">
@@ -823,8 +857,8 @@ const Doctors = () => {
                   </div>
                 )}
 
-                {/* End Trial & Activate Subscription for single doctors with active trial */}
-                {!selectedDoctor.clinic_id && 
+                {/* End Trial & Activate Subscription for single doctors with active trial (manual billing only) */}
+                {!selectedDoctor.clinic_id && !cardBilled &&
                  selectedDoctor.trial_end_date !== null && 
                  getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
                  getTrialDaysRemaining(selectedDoctor.trial_end_date)! > 0 && 
@@ -861,8 +895,8 @@ const Doctors = () => {
                 )}
               </div>
 
-              {/* End Trial Button for expired single doctors - set to inactive */}
-              {!selectedDoctor.clinic_id && 
+              {/* End Trial Button for expired single doctors - set to inactive (manual billing only) */}
+              {!selectedDoctor.clinic_id && !cardBilled &&
                selectedDoctor.trial_end_date !== null &&
                getTrialDaysRemaining(selectedDoctor.trial_end_date) !== null && 
                getTrialDaysRemaining(selectedDoctor.trial_end_date)! <= 0 && 
@@ -879,8 +913,8 @@ const Doctors = () => {
                 </div>
               )}
 
-              {/* Activate Account Button for inactive single doctors */}
-              {!selectedDoctor.clinic_id && !selectedDoctor.approved && (
+              {/* Activate Account Button for inactive single doctors (manual billing only) */}
+              {!selectedDoctor.clinic_id && !cardBilled && !selectedDoctor.approved && (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
                   <p className="text-sm text-green-700 font-medium mb-3">💳 Payment Received? Activate account.</p>
                   <Button 

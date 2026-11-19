@@ -56,47 +56,10 @@ Zonoir provides a comprehensive healthcare management solution designed specific
 ## Public Pages
 
 - [Home](${BASE_URL}/)
-- [Features](${BASE_URL}/features)
-- [Pricing](${BASE_URL}/pricing)
-- [Find Doctors](${BASE_URL}/find-doctors)
-- [Blog](${BASE_URL}/blog)
-- [Contact](${BASE_URL}/contact)
-- [Reviews](${BASE_URL}/reviews)
 - [Knowledge Base](${APP_URL}/knowledge-base)
-- [Referral Program](${BASE_URL}/referral-program)
 - [Privacy Policy](${BASE_URL}/privacy-policy)
 - [Terms of Service](${BASE_URL}/terms-of-service)
-
-## Doctor Discovery by Specialty
-
 `;
-
-    const specialties = [
-      "General Physician", "Gynecologist", "Dermatologist", "Pediatrician",
-      "Cardiologist", "Orthopedic Surgeon", "ENT Specialist", "Neurologist",
-      "Psychiatrist", "Urologist", "Gastroenterologist", "Pulmonologist",
-      "Endocrinologist", "Nephrologist", "Oncologist", "Rheumatologist",
-      "Ophthalmologist", "Dentist", "Plastic Surgeon", "Neurosurgeon",
-      "General Surgeon", "Vascular Surgeon", "Infectious Disease Specialist",
-      "Allergist", "Pain Management Specialist", "Sexologist", "Nutritionist",
-      "Physiotherapist", "Psychologist", "Homeopath", "Diabetologist",
-      "Hematologist", "Family Medicine"
-    ];
-
-    for (const s of specialties) {
-      output += `- [${s}](${APP_URL}/doctors/${generateSpecialtySlug(s)})\n`;
-    }
-
-    // City pages
-    output += `\n## EMR Software by City\n\n`;
-    const cities = [
-      "Lahore", "Karachi", "Islamabad", "Rawalpindi", "Faisalabad",
-      "Multan", "Peshawar", "Quetta", "Sialkot", "Gujranwala",
-      "Hyderabad", "Bahawalpur", "Sargodha", "Sukkur", "Abbottabad"
-    ];
-    for (const city of cities) {
-      output += `- [${city}](${BASE_URL}/emr-software-for-doctors-in-${generateCitySlug(city)})\n`;
-    }
 
     // Knowledge base
     output += `\n## Knowledge Base Articles\n\n`;
@@ -124,109 +87,6 @@ Zonoir provides a comprehensive healthcare management solution designed specific
       output += `- [${a.title}](${APP_URL}/knowledge-base/${a.slug})\n`;
     }
 
-    // Blog posts
-    const { data: blogPosts } = await supabase
-      .from("blogs")
-      .select("slug, title")
-      .eq("status", "published");
-
-    if (blogPosts && blogPosts.length > 0) {
-      output += `\n## Blog Posts\n\n`;
-      for (const post of blogPosts) {
-        output += `- [${post.title}](${BASE_URL}/blog/${post.slug})\n`;
-      }
-    }
-
-    // Doctor profiles from SEO listings
-    const { data: seoListings } = await supabase
-      .from("seo_doctor_listings")
-      .select("full_name, specialization, city, qualification, experience_years")
-      .eq("is_published", true);
-
-    // Doctor profiles from approved doctors
-    const { data: approvedDoctors } = await supabase
-      .from("doctors")
-      .select(`
-        specialization,
-        city,
-        qualification,
-        experience_years,
-        profiles!inner(full_name)
-      `)
-      .eq("approved", true);
-
-    // Combine all doctors, deduplicate
-    const addedUrls = new Set<string>();
-    const allDoctors: Array<{
-      name: string;
-      specialization: string;
-      city: string;
-      qualification: string;
-      url: string;
-    }> = [];
-
-    if (seoListings) {
-      for (const doc of seoListings) {
-        if (!doc.city || !doc.specialization || !doc.full_name) continue;
-        const citySlug = generateCitySlug(doc.city);
-        const specialtySlug = generateSpecialtySlug(doc.specialization);
-        const doctorSlug = generateDoctorSlug(doc.full_name);
-        const urlKey = `${specialtySlug}/${doctorSlug}`;
-        if (addedUrls.has(urlKey)) continue;
-        addedUrls.add(urlKey);
-        allDoctors.push({
-          name: doc.full_name,
-          specialization: doc.specialization,
-          city: doc.city,
-          qualification: doc.qualification || "",
-          url: `${APP_URL}/doctors/${urlKey}`,
-        });
-      }
-    }
-
-    if (approvedDoctors) {
-      for (const doc of approvedDoctors) {
-        if (!doc.city || !doc.specialization) continue;
-        const profile = doc.profiles as unknown as { full_name: string };
-        if (!profile?.full_name) continue;
-        const citySlug = generateCitySlug(doc.city);
-        const specialtySlug = generateSpecialtySlug(doc.specialization);
-        const doctorSlug = generateDoctorSlug(profile.full_name);
-        const urlKey = `${specialtySlug}/${doctorSlug}`;
-        if (addedUrls.has(urlKey)) continue;
-        addedUrls.add(urlKey);
-        allDoctors.push({
-          name: profile.full_name,
-          specialization: doc.specialization,
-          city: doc.city,
-          qualification: doc.qualification || "",
-          url: `${APP_URL}/doctors/${urlKey}`,
-        });
-      }
-    }
-
-    // Group doctors by city
-    if (allDoctors.length > 0) {
-      output += `\n## Doctor Profiles (${allDoctors.length} doctors)\n\n`;
-
-      const byCity = new Map<string, typeof allDoctors>();
-      for (const doc of allDoctors) {
-        const existing = byCity.get(doc.city) || [];
-        existing.push(doc);
-        byCity.set(doc.city, existing);
-      }
-
-      const sortedCities = [...byCity.keys()].sort();
-      for (const city of sortedCities) {
-        const docs = byCity.get(city)!;
-        output += `### ${city} (${docs.length} doctors)\n\n`;
-        for (const doc of docs) {
-          output += `#### [${doc.name}](${doc.url})\n`;
-          output += `${doc.specialization}${doc.qualification ? ` — ${doc.qualification}` : ""}. Based in ${doc.city}.\n\n`;
-        }
-      }
-    }
-
     // FAQ section — LLMs quote these verbatim
     output += `\n## Frequently Asked Questions
 
@@ -246,7 +106,7 @@ Yes. Every new clinic gets a 14-day free trial with full access to all features.
 Yes. Clinics can add unlimited doctors, assign receptionists, manage individual schedules, and track each doctor's appointments, revenue, and patients separately.
 
 ### Can patients book appointments online?
-Yes. Every doctor on Zonoir gets a public profile with online booking, weekly schedule, qualifications, clinic location, and reviews. Patients can book directly from ${BASE_URL}/find-doctors.
+Yes. Each doctor has a booking page they can share with their patients.
 
 ### Does Zonoir support video consultations?
 Yes. Zonoir has built-in video consultations powered by Daily.co. Doctors can conduct secure video visits with patients directly inside the platform.
@@ -270,7 +130,7 @@ Yes. Zonoir supports CSV import/export for patient records, so clinics can migra
 Zonoir includes AI-powered prescription assistance, visit summaries, patient insights, revenue forecasting, and a public AI doctor finder chatbot to help patients find the right specialist.
 
 ### How do I sign up as a doctor?
-Doctors can sign up directly at ${BASE_URL}/find-doctors or be added by a clinic. Single-doctor signups also get a 14-day free trial.
+Doctors can sign up directly at ${APP_URL}/auth or be added by a clinic. Single-doctor signups also get a 14-day free trial.
 
 ### How do I contact Zonoir support?
 Email or WhatsApp Zonoir at +92 300 4313139, or visit ${BASE_URL}/contact. Clinics also have an in-app support ticket system.

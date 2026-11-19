@@ -10219,7 +10219,7 @@ const FreeTrialArticle = () => {
                 <ol className="space-y-2 list-none pl-0">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
-                    <span><strong>Contact support</strong> via WhatsApp at <strong>+92 300 4313139</strong> or the in-app chat.</span>
+                    <span><strong>Contact support</strong> from the Support page or the in-app chat.</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-primary mt-1 shrink-0" />
@@ -19315,12 +19315,12 @@ const MonthlyFinancialReportsArticle = () => {
               If a report figure looks incorrect or you need help reconciling with your bank, our support team can walk you through the data sources and formulas.
             </p>
             <div className="flex flex-wrap gap-3">
-              <a href="https://wa.me/923004313139" target="_blank" rel="noopener noreferrer">
+              <Link to={`${kbBase.replace(/\/knowledge-base$/, "")}/support`}>
                 <Button variant="outline" className="gap-2">
                   <Phone className="w-4 h-4" />
-                  WhatsApp Support
+                  Contact Support
                 </Button>
-              </a>
+              </Link>
               <Link to={`${kbBase}/payment-tracking`}>
                 <Button variant="ghost" className="gap-2">
                   <ChevronRight className="w-4 h-4" />
@@ -19721,12 +19721,12 @@ const AIPrescriptionAssistantArticle = () => {
               For full details, see our Privacy Policy.
             </p>
             <div className="flex flex-wrap gap-3">
-              <a href="https://wa.me/923004313139" target="_blank" rel="noopener noreferrer">
+              <Link to={`${kbBase.replace(/\/knowledge-base$/, "")}/support`}>
                 <Button variant="outline" className="gap-2">
                   <Phone className="w-4 h-4" />
-                  WhatsApp Support
+                  Contact Support
                 </Button>
-              </a>
+              </Link>
               <Link to={`${kbBase}/prescription-templates`}>
                 <Button variant="ghost" className="gap-2">
                   <ChevronRight className="w-4 h-4" />

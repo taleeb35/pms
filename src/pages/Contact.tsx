@@ -16,7 +16,7 @@ const Contact = () => {
   useSEO({
     title: "Contact Zonoir — Sales, Support & Demo Requests",
     description:
-      "Get in touch with the Zonoir team. Request a demo, ask about pricing, or reach our support via email, phone, or WhatsApp.",
+      "Get in touch with the Zonoir team. Request a demo, ask about pricing, or reach our support by email or phone.",
     canonicalUrl: "https://zonoir.com/contact",
     ogUrl: "https://zonoir.com/contact",
     breadcrumbs: [

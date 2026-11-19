@@ -457,14 +457,7 @@ const Layout = ({ children }: LayoutProps) => {
         { path: "/clinic/memberships", icon: Sparkles, label: "Membership Cards" },
       ],
     },
-    {
-      label: "Finance",
-      icon: Banknote,
-      items: [
-        { path: "/receptionist/finance", icon: Banknote, label: "Finance" },
-        { path: "/receptionist/expenses", icon: FileText, label: "Expenses" },
-      ],
-    },
+    // Receptionists don't see Finance or Expenses (owner's decision, 19 Nov 2026).
   ];
 
   // Doctor's receptionist menu

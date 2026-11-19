@@ -116,14 +116,12 @@ const PublicDoctorProfile = () => {
       // request and there are more listings than that, so the fallback loads the full list in pages.
       const nameWords = (doctorSlug || "").split("-").filter((w) => w.length >= 3 && !["dr", "prof", "asst", "assoc", "mr", "mrs", "ms"].includes(w));
       const byName = () => nameWords.reduce((q: any, w) => q.ilike("full_name", `%${w}%`), seoQuery());
-      let { data: seoData, error: seoError } = cityDisplay
-        ? await fetchAllRows<any>(() => seoQuery().ilike("city", cityDisplay))
-        : nameWord.length >= 3 ? await fetchAllRows<any>(byName) : await fetchAllRows<any>(seoQuery);
-      if (!seoError && !cityDisplay && nameWord.length >= 3 && !(seoData || []).some(slugMatch)) {
-        ({ data: seoData, error: seoError } = await fetchAllRows<any>(seoQuery));
-      }
+      // Imported doctor listings were removed from the website (19 Nov 2026); only Zonoir doctors have a page.
+      const seoData: any[] = [];
+      const seoError: any = null;
+      void seoQuery; void slugMatch; void nameWords; void byName;
 
-      if (!seoError && seoData) {
+      if (!seoError && seoData.length) {
         const matchedSeo = seoData.find(doc => {
           const docCitySlug = generateCitySlug(doc.city || "");
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
@@ -591,9 +589,6 @@ const PublicDoctorProfile = () => {
           <p className="text-muted-foreground mb-8">
             The doctor profile you're looking for doesn't exist or has been removed.
           </p>
-          <Button asChild>
-            <Link to="/find-doctors">Find Other Doctors</Link>
-          </Button>
         </main>
       </div>
     );

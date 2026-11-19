@@ -9,7 +9,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import KeyedByParam from "./components/routing/KeyedByParam";
 import { GeoLocationProvider } from "@/contexts/GeoLocationContext";
-import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { PublicDoctorFinderChat } from "@/components/PublicDoctorFinderChat";
 const Index = lazy(() => import("./pages/Index"));
 const DemoLanding = lazy(() => import("./pages/DemoLanding"));
@@ -146,8 +145,6 @@ const ContentWriterDashboard = lazy(() => import("./pages/ContentWriterDashboard
 const ContentWriterBlogs = lazy(() => import("./pages/ContentWriterBlogs"));
 const ContentWriterDoctors = lazy(() => import("./pages/ContentWriterDoctors"));
 const ContentWriterRegisteredDoctors = lazy(() => import("./pages/ContentWriterRegisteredDoctors"));
-const FindDoctors = lazy(() => import("./pages/FindDoctors"));
-const DoctorsBySpecialty = lazy(() => import("./pages/DoctorsBySpecialty"));
 const PublicDoctorProfile = lazy(() => import("./pages/PublicDoctorProfile"));
 const Blogs = lazy(() => import("./pages/Blogs"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
@@ -210,7 +207,6 @@ const App = () => (
           <PortalPageTitle />
           <IdleLogoutWatcher />
           <StandaloneRedirect />
-          <FloatingWhatsApp />
           <PublicDoctorFinderChat />
         <Suspense fallback={<PageLoading />}>
         <Routes>
@@ -268,8 +264,8 @@ const App = () => (
           <Route path="/clinic/knowledge-base" element={<Layout><KBEmbeddedProvider><KnowledgeBase /></KBEmbeddedProvider></Layout>} />
           <Route path="/clinic/knowledge-base/:slug" element={<Layout><KBEmbeddedProvider><KnowledgeBaseArticle /></KBEmbeddedProvider></Layout>} />
           <Route path="/referral-program" element={<MarketingRedirect><ReferralProgram /></MarketingRedirect>} />
-          <Route path="/find-doctors" element={<FindDoctors />} />
-          <Route path="/doctors/:specialty" element={<DoctorsBySpecialty />} />
+          <Route path="/find-doctors" element={<MarketingRedirect><span /></MarketingRedirect>} />
+          <Route path="/doctors/:specialty" element={<MarketingRedirect><span /></MarketingRedirect>} />
           <Route path="/doctors/:specialty/:doctorSlug" element={<PublicDoctorProfile />} />
           <Route path="/doctors/:city/:specialty/:doctorSlug" element={<LegacyDoctorRedirect />} />
           <Route path="/doctors/:country/:city/:specialty/:doctorSlug" element={<LegacyDoctorRedirect />} />
@@ -919,22 +915,9 @@ const App = () => (
                 </Layout>
               }
             />
-            <Route
-              path="/receptionist/finance"
-              element={
-                <Layout>
-                  <ClinicFinance />
-                </Layout>
-              }
-            />
-            <Route
-              path="/receptionist/expenses"
-              element={
-                <Layout>
-                  <ClinicExpenses />
-                </Layout>
-              }
-            />
+            {/* Receptionists don't see Finance or Expenses. */}
+            <Route path="/receptionist/finance" element={<Navigate to="/receptionist/dashboard" replace />} />
+            <Route path="/receptionist/expenses" element={<Navigate to="/receptionist/dashboard" replace />} />
             <Route
               path="/receptionist/doctors"
               element={

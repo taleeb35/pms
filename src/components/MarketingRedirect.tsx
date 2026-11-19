@@ -5,14 +5,13 @@ const APP_HOSTS = ["app.zonoir.com", "zonoir.lovable.app", "staging.72-62-45-147
 export const isAppHost = () =>
   typeof window !== "undefined" && APP_HOSTS.includes(window.location.hostname);
 
-/** On the app subdomain, send marketing pages to the main website. */
+/** Marketing, city and doctor-listing pages were removed from the app (19 Nov 2026).
+ *  Old links go to the main website's homepage. */
 export const MarketingRedirect = ({ children }: { children: ReactNode }) => {
   const { pathname, search, hash } = useLocation();
-  const redirect = isAppHost();
-  useEffect(() => {
-    if (redirect) window.location.replace(`https://zonoir.com${pathname}${search}${hash}`);
-  }, [redirect, pathname, search, hash]);
-  return redirect ? null : <>{children}</>;
+  void pathname; void search; void hash; void children;
+  useEffect(() => { window.location.replace("https://zonoir.com/"); }, []);
+  return null;
 };
 
 /** On the app subdomain, the homepage goes straight to login. */
