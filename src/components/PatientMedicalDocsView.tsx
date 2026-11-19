@@ -63,7 +63,7 @@ export const PatientMedicalDocsView = ({ patientId }: PatientMedicalDocsViewProp
             test_results,
             doctor_id,
             doctors:doctor_id (
-              profiles:id (
+              profiles!doctors_id_fkey(
                 full_name
               )
             )

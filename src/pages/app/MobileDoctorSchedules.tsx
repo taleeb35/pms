@@ -36,7 +36,7 @@ const MobileDoctorSchedules = () => {
       if (!user) return;
       const { data } = await supabase
         .from("doctors")
-        .select("id, specialization, available_days, available_hours, profiles:id (full_name)")
+        .select("id, specialization, available_days, available_hours, profiles!doctors_id_fkey(full_name)")
         .eq("clinic_id", user.id)
         .eq("approved", true);
 

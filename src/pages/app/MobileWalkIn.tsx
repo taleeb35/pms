@@ -65,7 +65,7 @@ const MobileWalkIn = () => {
         .then(({ data }) => setIsGynecologist(!!data?.specialization?.toLowerCase().includes("gynecologist")));
     } else {
       // clinic — load doctors for selection
-      supabase.from("doctors").select("id, specialization, profiles:id(full_name)")
+      supabase.from("doctors").select("id, specialization, profiles!doctors_id_fkey(full_name)")
         .eq("clinic_id", userId).eq("approved", true)
         .then(({ data }) => setDoctors(data || []));
     }
