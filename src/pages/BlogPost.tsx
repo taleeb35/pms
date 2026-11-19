@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import DOMPurify from "dompurify";
+
+// Blog posts are written by content writers; strip scripts, event handlers and other active content.
+const safeBlogHtml = (html: string) => DOMPurify.sanitize(html || "", { USE_PROFILES: { html: true }, FORBID_TAGS: ["style", "form", "input", "button"], ADD_ATTR: ["target"] });
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -211,7 +215,7 @@ const BlogPost = () => {
           {/* Blog Content */}
           <div
             className="blog-prose prose prose-lg max-w-none prose-headings:text-foreground prose-h2:text-3xl prose-h2:md:text-4xl prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-blockquote:border-primary prose-blockquote:text-muted-foreground prose-ul:list-disc prose-ol:list-decimal prose-li:marker:text-primary"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
+            dangerouslySetInnerHTML={{ __html: safeBlogHtml(blog.content) }}
           />
         </article>
 

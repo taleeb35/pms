@@ -598,7 +598,7 @@ const PublicDoctorProfile = () => {
       {faqJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, String.fromCharCode(92) + "u003c") }}
         />
       )}
       <ProfileTopBar />

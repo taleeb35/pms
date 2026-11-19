@@ -160,39 +160,27 @@ const ClinicAddDoctor = () => {
       const clinicCity = clinicData?.city || "";
       const clinicPhone = clinicData?.phone_number || "";
 
-      // Store clinic owner's session
-      const clinicSession = session;
-
-      // Create auth user for the doctor
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            full_name: formData.fullName,
-          },
+      // The server creates the doctor's login and profile (the browser stays signed in as the clinic).
+      const { data: added, error: addErr } = await supabase.functions.invoke("clinic-add-doctor", {
+        body: {
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+          specialization: formData.specialization,
+          contactNumber: formData.contactNumber,
+          experienceYears: formData.experienceYears,
+          consultationFee: formData.consultationFee,
+          clinicPercentage: formData.clinicPercentage,
+          introduction: formData.introduction,
+          pmdcNumber: formData.pmdcNumber,
         },
       });
-
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("Failed to create doctor account");
-
-      // Create doctor profile
-      const { error: doctorError } = await supabase.from("doctors").insert({
-        id: authData.user.id,
-        specialization: formData.specialization,
-        qualification: "Medical Doctor", // Default value since qualification field is removed
-        contact_number: formData.contactNumber,
-        experience_years: formData.experienceYears ? parseInt(formData.experienceYears) : null,
-        consultation_fee: formData.consultationFee ? parseFloat(formData.consultationFee) : null,
-        clinic_percentage: formData.clinicPercentage ? parseFloat(formData.clinicPercentage) : 0,
-        introduction: formData.introduction || null,
-        pmdc_number: formData.pmdcNumber || null,
-        clinic_id: user.id,
-        approved: true, // Doctors are active by default
-      });
-
-      if (doctorError) throw doctorError;
+      if (addErr) {
+        let msg = addErr.message;
+        try { const j = await (addErr as any).context?.json?.(); if (j?.error) msg = j.error; } catch { /* keep */ }
+        throw new Error(msg);
+      }
+      if (!added?.doctor_id) throw new Error("Failed to create doctor account");
 
       // Send welcome email with credentials to the doctor
       try {
@@ -213,13 +201,6 @@ const ClinicAddDoctor = () => {
         console.error("Failed to send doctor welcome email:", emailError);
         // Don't throw - email failure shouldn't block the registration
       }
-
-      // Sign out the newly created doctor and restore clinic owner's session
-      await supabase.auth.signOut();
-      await supabase.auth.setSession({
-        access_token: clinicSession.access_token,
-        refresh_token: clinicSession.refresh_token,
-      });
 
       toast({
         title: "✓ Doctor Added Successfully!",

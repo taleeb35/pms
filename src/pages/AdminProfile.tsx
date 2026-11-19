@@ -109,10 +109,10 @@ const AdminProfile = () => {
       return;
     }
 
-    if (passwords.newPassword.length < 6) {
+    if (passwords.newPassword.length < 8) {
       toast({
         title: "Error",
-        description: "Password must be at least 6 characters",
+        description: "Password must be at least 8 characters",
         variant: "destructive",
       });
       return;

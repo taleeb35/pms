@@ -237,7 +237,7 @@ const ResetPassword = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                     className="h-11 border-primary/20 focus:border-primary transition-all duration-300 bg-background/50 pr-10"
                   />
                   <button
@@ -249,7 +249,7 @@ const ResetPassword = () => {
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Password must be at least 6 characters long
+                  Password must be at least 8 characters long
                 </p>
               </div>
 
@@ -266,7 +266,7 @@ const ResetPassword = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                     className="h-11 border-primary/20 focus:border-primary transition-all duration-300 bg-background/50 pr-10"
                   />
                   <button

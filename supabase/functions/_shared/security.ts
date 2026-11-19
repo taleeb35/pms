@@ -6,13 +6,11 @@ const ALLOWED_ORIGINS = new Set<string>([
   "https://app.zonoir.com",
   "https://zonoir.com",
   "https://www.zonoir.com",
-  "https://zonoir.lovable.app",
+  "https://staging.72-62-45-147.sslip.io",
 ]);
 
-const ALLOWED_SUFFIXES = [
-  ".lovable.app", // preview / staging
-  ".lovableproject.com", // editor preview
-];
+// The old Lovable addresses were removed after the move to our own server (19 Nov 2026).
+const ALLOWED_SUFFIXES: string[] = [];
 
 const ALLOW_LOCALHOST = true;
 
