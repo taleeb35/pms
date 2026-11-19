@@ -11,6 +11,7 @@ import PublicFooter from "@/components/PublicFooter";
 import PublicCityCombobox from "@/components/PublicCityCombobox";
 import { useSEO } from "@/hooks/useSEO";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { generateDoctorProfileUrl } from "@/lib/slugUtils";
 import VerifiedBadge from "@/components/public/VerifiedBadge";
 
@@ -175,20 +176,21 @@ const DoctorsBySpecialty = () => {
     setLoading(true);
     try {
       // Fetch from SEO doctor listings
-      let seoQuery = supabase
-        .from("seo_doctor_listings")
-        .select("*")
-        .eq("is_published", true)
-        .limit(10000);
-
-      if (specialty) {
-        const searchTerm = specialtyInfo?.name || specialty.replace(/-/g, " ");
-        seoQuery = seoQuery.ilike("specialization", `%${searchTerm}%`);
-      }
-
-      if (selectedCity && selectedCity !== "all") {
-        seoQuery = seoQuery.ilike("city", `%${selectedCity}%`);
-      }
+      // More listings than the server returns in one request (1000), so load them in pages.
+      const buildSeo = () => {
+        let q: any = supabase
+          .from("seo_doctor_listings")
+          .select("*")
+          .eq("is_published", true);
+        if (specialty) {
+          const searchTerm = specialtyInfo?.name || specialty.replace(/-/g, " ");
+          q = q.ilike("specialization", `%${searchTerm}%`);
+        }
+        if (selectedCity && selectedCity !== "all") {
+          q = q.ilike("city", `%${selectedCity}%`);
+        }
+        return q;
+      };
 
       // Fetch from actual system doctors
       let systemQuery = supabase
@@ -215,7 +217,7 @@ const DoctorsBySpecialty = () => {
 
       // Execute both queries in parallel
       const [seoResult, systemResult] = await Promise.all([
-        seoQuery,
+        fetchAllRows<any>(buildSeo),
         systemQuery
       ]);
 

@@ -1,6 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAllRows } from "@/lib/fetchAll";
 import { useSEO } from "@/hooks/useSEO";
 import { slugToDisplayName, generateDoctorSlug, generateCitySlug, generateSpecialtySlug, generateDoctorProfileUrl } from "@/lib/slugUtils";
 import zonoirLogo from "@/assets/main-logo.webp";
@@ -102,19 +103,22 @@ const PublicDoctorProfile = () => {
       const seoQuery = () => supabase
         .from("seo_doctor_listings")
         .select("*")
-        .eq("is_published", true)
-        .limit(2000);
+        .eq("is_published", true);
 
       // The address has no city any more, so narrow by the longest word of the doctor's name first
       // (a handful of rows instead of every listing), and fall back to the full list if that misses.
       const nameWord = (doctorSlug || "").split("-").filter((w) => !["dr", "prof", "asst", "assoc", "mr", "mrs", "ms"].includes(w))
         .sort((a, b) => b.length - a.length)[0] || "";
       const slugMatch = (doc: any) => generateSpecialtySlug(doc.specialization || "") === specialty && generateDoctorSlug(doc.full_name || "") === doctorSlug;
+      // Narrow by every word of the name (a handful of rows); the server returns at most 1000 rows per
+      // request and there are more listings than that, so the fallback loads the full list in pages.
+      const nameWords = (doctorSlug || "").split("-").filter((w) => w.length >= 3 && !["dr", "prof", "asst", "assoc", "mr", "mrs", "ms"].includes(w));
+      const byName = () => nameWords.reduce((q: any, w) => q.ilike("full_name", `%${w}%`), seoQuery());
       let { data: seoData, error: seoError } = cityDisplay
-        ? await seoQuery().ilike("city", cityDisplay)
-        : nameWord.length >= 3 ? await seoQuery().ilike("full_name", `%${nameWord}%`) : await seoQuery();
+        ? await fetchAllRows<any>(() => seoQuery().ilike("city", cityDisplay))
+        : nameWord.length >= 3 ? await fetchAllRows<any>(byName) : await fetchAllRows<any>(seoQuery);
       if (!seoError && !cityDisplay && nameWord.length >= 3 && !(seoData || []).some(slugMatch)) {
-        ({ data: seoData, error: seoError } = await seoQuery());
+        ({ data: seoData, error: seoError } = await fetchAllRows<any>(seoQuery));
       }
 
       if (!seoError && seoData) {
