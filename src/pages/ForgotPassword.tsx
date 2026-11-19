@@ -33,23 +33,8 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      // Server-side eligibility check (bypasses RLS via SECURITY DEFINER)
-      const { data: eligibility, error: eligibilityError } = await supabase
-        .rpc("check_password_reset_eligibility", { _email: email.toLowerCase() });
-
-      if (eligibilityError) {
-        console.error("Eligibility check error:", eligibilityError);
-      } else if (eligibility && (eligibility as any).allowed === false) {
-        const reason = (eligibility as any).reason as string;
-        toast({
-          title: reason === "clinic_not_active" ? "Clinic Not Active" : "Account Not Active",
-          description: (eligibility as any).message,
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
-
+      // The server decides whether a reset email can be sent and always answers the same way,
+      // so this page never reveals whether an email has an account.
       // Send branded reset email (edge function generates the recovery link
       // via admin API so Supabase's default email is NOT triggered)
       const { error: fnError } = await supabase.functions.invoke(
@@ -66,8 +51,8 @@ const ForgotPassword = () => {
 
       setEmailSent(true);
       toast({
-        title: "Email Sent",
-        description: "Check your inbox for password reset instructions.",
+        title: "Check your inbox",
+        description: "If an account exists for this email, we've sent a link to reset the password.",
       });
     } catch (error: any) {
       toast({
@@ -116,8 +101,8 @@ const ForgotPassword = () => {
                 Check Your Email
               </CardTitle>
               <CardDescription className="text-base">
-                We've sent a password reset link to <strong>{email}</strong>. 
-                Please check your inbox and follow the instructions.
+                If an account exists for <strong>{email}</strong>, we've sent it a password reset link.
+                Please check your inbox and spam folder.
               </CardDescription>
             </div>
           ) : (

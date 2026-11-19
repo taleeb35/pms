@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/security.ts";
+import { adminClient, authErrorResponse, requireRole } from "../_shared/auth.ts";
+
+const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
@@ -26,7 +29,30 @@ const handler = async (req: Request): Promise<Response> => {
   if (!rl.ok) return rateLimitResponse(rl, corsHeaders);
 
   try {
-    const { full_name, email, referral_code, type }: ReferralPartnerEmailRequest = await req.json();
+    const body: ReferralPartnerEmailRequest = await req.json();
+    const type = body.type;
+    // Never trust names, codes or addresses from the request: read them from the database.
+    // The sign-up email is only for a partner created in the last hour with this email; every other
+    // type (approved / rejected / deleted) can only be sent by an admin.
+    const admin = adminClient();
+    if (type !== "signup") {
+      try { await requireRole(req, ["admin"], admin); }
+      catch (e) { return authErrorResponse(e, corsHeaders)!; }
+    }
+    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    let q = admin.from("referral_partners").select("full_name, email, referral_code, created_at")
+      .ilike("email", String(body.email || "").trim()).order("created_at", { ascending: false }).limit(1);
+    if (type === "signup") q = q.gte("created_at", since);
+    const { data: rows } = await q;
+    const partner = (rows || [])[0];
+    if (!partner) {
+      return new Response(JSON.stringify({ error: "No matching referral partner" }), {
+        status: 400, headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+    const full_name = esc(partner.full_name);
+    const referral_code = esc(partner.referral_code);
+    const email = partner.email;
 
     let subject = "";
     let html = "";

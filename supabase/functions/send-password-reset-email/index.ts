@@ -29,11 +29,18 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email, redirectTo }: PasswordResetRequest = await req.json();
 
-    console.log("Generating password reset link for:", email);
-
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
+
+    // Same answer whether or not the email has an account, so nobody can find out which emails are
+    // registered. Accounts that may not reset yet (pending clinic or doctor) simply get no email.
+    const okSame = () => new Response(JSON.stringify({ success: true }), {
+      status: 200, headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email))) return okSame();
+    const { data: elig } = await admin.rpc("check_password_reset_eligibility", { _email: String(email).toLowerCase() });
+    if (elig && (elig as any).allowed === false) return okSame();
 
     // The reset page lives in the portal (zonoir.com is the WordPress site).
     // Only allow a redirect whose host is exactly app.zonoir.com.
@@ -54,8 +61,8 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (linkError || !linkData?.properties?.action_link) {
-      console.error("generateLink error:", linkError);
-      throw new Error(linkError?.message || "Failed to generate reset link");
+      // Usually "no account with this email": answer the same as a sent email.
+      return okSame();
     }
 
     const actionLink = linkData.properties.action_link;
