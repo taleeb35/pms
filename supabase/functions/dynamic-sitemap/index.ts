@@ -20,11 +20,8 @@ const generateSpecialtySlug = (specialty: string): string => {
 };
 
 const generateDoctorSlug = (name: string): string => {
-  let slug = name.toLowerCase();
-  if (!slug.startsWith("dr.") && !slug.startsWith("dr ")) {
-    slug = "dr-" + slug;
-  }
-  return slug.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  // Same as the app (src/lib/slugUtils.ts) so sitemap links match the profile pages.
+  return (name || "").toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
 };
 
 serve(async (req) => {

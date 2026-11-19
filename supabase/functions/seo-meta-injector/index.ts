@@ -16,11 +16,8 @@ const generateSpecialtySlug = (specialty: string): string => {
 };
 
 const generateDoctorSlug = (name: string): string => {
-  let slug = name.toLowerCase();
-  if (!slug.startsWith("dr.") && !slug.startsWith("dr ")) {
-    slug = "dr-" + slug;
-  }
-  return slug.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  // Same as the app (src/lib/slugUtils.ts) so sitemap links match the profile pages.
+  return (name || "").toLowerCase().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
 };
 
 serve(async (req) => {
@@ -64,7 +61,7 @@ serve(async (req) => {
         const docCitySlug = generateCitySlug(doc.city || "");
         const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
         const docNameSlug = generateDoctorSlug(doc.full_name || "");
-        return docCitySlug === city && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+        return docCitySlug === city && docSpecialtySlug === specialty && (docNameSlug === doctorSlug || `dr-${docNameSlug}` === doctorSlug);
       });
 
       if (matchedSeo) {
@@ -104,7 +101,7 @@ serve(async (req) => {
           const docCitySlug = generateCitySlug(doc.city || "");
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(profile?.full_name || "");
-          return docCitySlug === city && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          return docCitySlug === city && docSpecialtySlug === specialty && (docNameSlug === doctorSlug || `dr-${docNameSlug}` === doctorSlug);
         });
 
         if (matchedDoctor) {

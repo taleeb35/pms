@@ -109,7 +109,9 @@ const PublicDoctorProfile = () => {
       // (a handful of rows instead of every listing), and fall back to the full list if that misses.
       const nameWord = (doctorSlug || "").split("-").filter((w) => !["dr", "prof", "asst", "assoc", "mr", "mrs", "ms"].includes(w))
         .sort((a, b) => b.length - a.length)[0] || "";
-      const slugMatch = (doc: any) => generateSpecialtySlug(doc.specialization || "") === specialty && generateDoctorSlug(doc.full_name || "") === doctorSlug;
+      // Old sitemap links put an extra "dr-" in front of every name; accept both forms.
+      const nameMatches = (name: string) => { const s = generateDoctorSlug(name || ""); return s === doctorSlug || `dr-${s}` === doctorSlug; };
+      const slugMatch = (doc: any) => generateSpecialtySlug(doc.specialization || "") === specialty && nameMatches(doc.full_name);
       // Narrow by every word of the name (a handful of rows); the server returns at most 1000 rows per
       // request and there are more listings than that, so the fallback loads the full list in pages.
       const nameWords = (doctorSlug || "").split("-").filter((w) => w.length >= 3 && !["dr", "prof", "asst", "assoc", "mr", "mrs", "ms"].includes(w));
@@ -127,7 +129,7 @@ const PublicDoctorProfile = () => {
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(doc.full_name || "");
           const cityMatches = city ? docCitySlug === city || !docCitySlug : true;
-          return cityMatches && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          return cityMatches && docSpecialtySlug === specialty && (docNameSlug === doctorSlug || `dr-${docNameSlug}` === doctorSlug);
         });
 
         if (matchedSeo) {
@@ -199,7 +201,7 @@ const PublicDoctorProfile = () => {
           const docSpecialtySlug = generateSpecialtySlug(doc.specialization || "");
           const docNameSlug = generateDoctorSlug(profile?.full_name || "");
           const cityMatches = city ? docCitySlug === city || !docCitySlug : true;
-          return cityMatches && docSpecialtySlug === specialty && docNameSlug === doctorSlug;
+          return cityMatches && docSpecialtySlug === specialty && (docNameSlug === doctorSlug || `dr-${docNameSlug}` === doctorSlug);
         });
 
         if (matchedDoctor) {
