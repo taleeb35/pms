@@ -57,15 +57,3 @@ img.main_logo.new_logo {
         height: 40px;
     }
 }
-/* Keep the header logo from running under the header icons */
-header.dr img.main_logo.new_logo {
-    max-width: 112px !important;
-    min-width: 0;
-    flex-shrink: 1;
-}
-@media (min-width: 640px) {
-    header.dr img.main_logo.new_logo { max-width: 180px !important; }
-}
-@media (min-width: 1024px) {
-    header.dr img.main_logo.new_logo { max-width: none !important; }
-}

@@ -619,7 +619,7 @@ const Layout = ({ children }: LayoutProps) => {
                 <img
                   src={clinicLogo}
                   alt="Zonoir"
-                  className="main_logo new_logo hover:scale-110 transition-transform duration-300 h-8 sm:h-10 w-auto max-w-[140px] sm:max-w-none object-contain"
+                  className="main_logo new_logo hover:scale-110 transition-transform duration-300 h-8 sm:h-10 w-auto min-w-0 shrink max-w-[104px] min-[400px]:max-w-[140px] sm:max-w-[180px] lg:max-w-none object-contain"
                 />
               </div>
             </div>
