@@ -84,10 +84,10 @@ export const GlobalSearch = () => {
   return (
     <>
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}
-        className="h-9 gap-2 text-muted-foreground font-normal sm:w-56 justify-start" aria-label="Search patients and pages">
+        className="h-9 gap-2 text-muted-foreground font-normal w-9 px-0 justify-center lg:w-56 lg:px-3 lg:justify-start" aria-label="Search patients and pages">
         <Search className="h-4 w-4 shrink-0" />
-        <span className="hidden sm:inline">Search patients…</span>
-        <kbd className="ml-auto hidden sm:inline rounded border bg-muted px-1.5 text-[10px] font-medium">Ctrl K</kbd>
+        <span className="hidden lg:inline">Search patients…</span>
+        <kbd className="ml-auto hidden lg:inline rounded border bg-muted px-1.5 text-[10px] font-medium">Ctrl K</kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a patient name, phone or ID, or a page…" value={q} onValueChange={setQ} />

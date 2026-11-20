@@ -624,13 +624,15 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-3 lg:gap-4 shrink-0">
             <GlobalSearch />
             <div className="flex items-center">
               <WhatsNewButton />
               <NotificationBell />
-              <HelpLink />
-              <ThemeToggle />
+              <span className="hidden sm:contents">
+                <HelpLink />
+                <ThemeToggle />
+              </span>
             </div>
             <span className="new_bg hidden text-sm lg:inline px-3 py-1.5 rounded-full max-w-[220px] truncate">{user.email}</span>
             <Button
